@@ -73,7 +73,6 @@ public:
         ColSnr,
         ColMainId,
         ColSubId,
-        ColCode,
         ColLevel,
         ColLocation,
         ColPower,
@@ -83,8 +82,11 @@ public:
         ColTxCoordinatesLon,
         ColRxCoordinatesLat,
         ColRxCoordinatesLon,
+        ColCode,  // this is only used to display in TII table, skipped for scanner and export
         NumCols,
-        NumColsWithoutCoordinates = ColTxCoordinatesLat
+        LastColumn = ColRxCoordinatesLon,
+        LastColumnWithoutCoordinates = ColAzimuth,
+        NumColsWithoutCoordinates = LastColumnWithoutCoordinates + 1,
     };
     Q_ENUM(TxTableCols)
 

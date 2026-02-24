@@ -214,6 +214,7 @@ Item {
             }
         }
         Loader {
+            id: tiiTableLoader
             active: backend.isTii && showTable
             asynchronous: true
 
@@ -241,10 +242,10 @@ Item {
         Connections {
             target: backend
             function onTxTableColChanged() {
-                if (tiiTableView.visible) {
+                if (tiiTableLoader.item && tiiTableLoader.item.visible) {
                     backend.selectTx(-1); // deselection of transmitter
-                    tiiTableView.calculatePreferedWidth();
-                    tiiTableView.autoAdjustColumns();
+                    tiiTableLoader.item.calculatePreferedWidth();
+                    tiiTableLoader.item.autoAdjustColumns();
                 }
             }
         }

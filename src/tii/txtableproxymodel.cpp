@@ -197,7 +197,7 @@ bool TxTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex
     if (!m_filterCols)
     {  // we do not display coordinates, these are only used for export to CSV
         // we do not display code in scanner mode
-        return source_column < TxTableModel::NumColsWithoutCoordinates && source_column != TxTableModel::ColCode;
+        return source_column <= TxTableModel::LastColumnWithoutCoordinates;
     }
 
     // When m_filterCols is true (TII mode), accept all columns.

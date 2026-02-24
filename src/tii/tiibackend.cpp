@@ -93,15 +93,15 @@ void TIIBackend::logTiiData() const
     {
         QTextStream out(m_logFile);
 
-        int lastCol = m_exportCoordinates ? (TxTableModel::NumCols - 1) : (TxTableModel::NumColsWithoutCoordinates - 1);
+        int lastCol = m_exportCoordinates ? (TxTableModel::LastColumn) : (TxTableModel::LastColumnWithoutCoordinates);
 
         // Body
         for (int row = 0; row < m_model->rowCount(); ++row)
         {
             for (int col = 0; col < lastCol; ++col)
             {
-                if (col != TxTableModel::ColNumServices && col != TxTableModel::ColCode)
-                {  // num services and code is not logged
+                if (col != TxTableModel::ColNumServices)
+                {  // num services
                     out << m_model->data(m_model->index(row, col), m_exportRole).toString() << ";";
                 }
             }
@@ -262,11 +262,11 @@ void TIIBackend::startStopLog()
                 m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
 
             // Header
-            int lastCol = m_exportCoordinates ? (TxTableModel::NumCols - 1) : (TxTableModel::NumColsWithoutCoordinates - 1);
+            int lastCol = m_exportCoordinates ? (TxTableModel::LastColumn) : (TxTableModel::LastColumnWithoutCoordinates);
             for (int col = 0; col < lastCol; ++col)
             {
-                if (col != TxTableModel::ColNumServices && col != TxTableModel::ColCode)
-                {  // num services and code is not logged
+                if (col != TxTableModel::ColNumServices)
+                {  // num services
                     out << m_model->headerData(col, Qt::Horizontal, m_exportRole).toString() << ";";
                 }
             }

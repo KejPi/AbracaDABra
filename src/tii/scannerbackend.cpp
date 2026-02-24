@@ -360,14 +360,11 @@ void ScannerBackend::saveToFile(const QString &fileName)
     auto exportRole = m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
 
     // Header
-    for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
+    for (int col = 0; col < TxTableModel::LastColumnWithoutCoordinates; ++col)
     {
-        if (col != TxTableModel::ColCode)  // code is not exported
-        {
-            out << m_model->headerData(col, Qt::Horizontal, exportRole).toString() << ";";
-        }
+        out << m_model->headerData(col, Qt::Horizontal, exportRole).toString() << ";";
     }
-    out << m_model->headerData(TxTableModel::NumColsWithoutCoordinates - 1, Qt::Horizontal, exportRole).toString() << Qt::endl;
+    out << m_model->headerData(TxTableModel::LastColumnWithoutCoordinates, Qt::Horizontal, exportRole).toString() << Qt::endl;
 
     // Body
     for (int row = 0; row < m_model->rowCount(); ++row)
@@ -377,14 +374,11 @@ void ScannerBackend::saveToFile(const QString &fileName)
             continue;
         }
 
-        for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
+        for (int col = 0; col < TxTableModel::LastColumnWithoutCoordinates; ++col)
         {
-            if (col != TxTableModel::ColCode)
-            {  // code is not exported
-                out << m_model->data(m_model->index(row, col), exportRole).toString() << ";";
-            }
+            out << m_model->data(m_model->index(row, col), exportRole).toString() << ";";
         }
-        out << m_model->data(m_model->index(row, TxTableModel::NumColsWithoutCoordinates - 1), exportRole).toString() << Qt::endl;
+        out << m_model->data(m_model->index(row, TxTableModel::LastColumnWithoutCoordinates), exportRole).toString() << Qt::endl;
     }
     out.flush();
 
@@ -453,14 +447,11 @@ void ScannerBackend::startAutoSaveCsv()
 
     // Write header
     QTextStream out(m_autoSaveFile);
-    for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
+    for (int col = 0; col < TxTableModel::LastColumnWithoutCoordinates; ++col)
     {
-        if (col != TxTableModel::ColCode)  // code is not exported
-        {
-            out << m_model->headerData(col, Qt::Horizontal, m_autoSaveExportRole).toString() << ";";
-        }
+        out << m_model->headerData(col, Qt::Horizontal, m_autoSaveExportRole).toString() << ";";
     }
-    out << m_model->headerData(TxTableModel::NumColsWithoutCoordinates - 1, Qt::Horizontal, m_autoSaveExportRole).toString() << Qt::endl;
+    out << m_model->headerData(TxTableModel::LastColumnWithoutCoordinates, Qt::Horizontal, m_autoSaveExportRole).toString() << Qt::endl;
     out.flush();
     m_autoSaveFile->flush();
 
@@ -488,14 +479,11 @@ void ScannerBackend::appendAutoSaveRows(int firstRow, int lastRow)
             continue;
         }
 
-        for (int col = 0; col < TxTableModel::NumColsWithoutCoordinates - 1; ++col)
+        for (int col = 0; col < TxTableModel::LastColumnWithoutCoordinates; ++col)
         {
-            if (col != TxTableModel::ColCode)  // code is not exported
-            {
-                out << m_model->data(m_model->index(row, col), m_autoSaveExportRole).toString() << ";";
-            }
+            out << m_model->data(m_model->index(row, col), m_autoSaveExportRole).toString() << ";";
         }
-        out << m_model->data(m_model->index(row, TxTableModel::NumColsWithoutCoordinates - 1), m_autoSaveExportRole).toString() << Qt::endl;
+        out << m_model->data(m_model->index(row, TxTableModel::LastColumnWithoutCoordinates), m_autoSaveExportRole).toString() << Qt::endl;
     }
     out.flush();
     m_autoSaveFile->flush();

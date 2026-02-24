@@ -669,7 +669,7 @@ void TxTableModel::setAsLocalTx(const QModelIndex &idx, bool setAsLocal)
         {
             if (m_modelData.at(row).ensId() == ensId && m_modelData.at(row).id() == id)
             {
-                emit dataChanged(index(row, 0), index(row, NumColsWithoutCoordinates - 1), {TxTableModelRoles::IsLocalRole});
+                emit dataChanged(index(row, 0), index(row, LastColumnWithoutCoordinates), {TxTableModelRoles::IsLocalRole});
             }
         }
     }
@@ -679,7 +679,7 @@ void TxTableModel::clearLocalTx()
 {
     Q_ASSERT(m_localTxList != nullptr);
     m_localTxList->clear();
-    emit dataChanged(index(0, 0), index(m_modelData.count() - 1, NumColsWithoutCoordinates - 1), {TxTableModelRoles::IsLocalRole});
+    emit dataChanged(index(0, 0), index(m_modelData.count() - 1, LastColumnWithoutCoordinates), {TxTableModelRoles::IsLocalRole});
 }
 
 void TxTableModel::beginLoadingFromFile()
