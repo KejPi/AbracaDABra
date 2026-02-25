@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
+<!-- Note: versionCode and versionName are set by CMake (QT_ANDROID_VERSION_CODE/NAME properties) -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.qtproject.abracadabra"
     android:installLocation="auto"
-    android:versionCode="1"
-    android:versionName="1.0">
+    android:versionCode="-- %%INSERT_VERSION_CODE%% --"
+    android:versionName="-- %%INSERT_VERSION_NAME%% --">
 
     <!-- Required permissions -->
     <uses-permission android:name="android.permission.INTERNET" />

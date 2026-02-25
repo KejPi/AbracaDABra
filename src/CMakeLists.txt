@@ -558,9 +558,18 @@ if(ANDROID)
     endif()
     
     # Set Android package properties
+    # Calculate Android version code: MAJOR * 10000 + MINOR * 100 + PATCH * 10 + GIT_COMMITS
+    # This ensures the version code increases with every release
+    message(STATUS "Setting Android version - MAJOR: ${VER_MAJOR}, MINOR: ${VER_MINOR}, PATCH: ${VER_PATCH}, GIT: ${VER_GIT}")
+    math(EXPR ANDROID_VERSION_CODE "${VER_MAJOR} * 10000 + ${VER_MINOR} * 100 + ${VER_PATCH} * 10 + ${VER_GIT}")
+    
     set_target_properties(${TARGET} PROPERTIES
         QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android"
+        QT_ANDROID_VERSION_NAME "${VER_MAJOR}.${VER_MINOR}.${VER_PATCH}"
+        QT_ANDROID_VERSION_CODE "${ANDROID_VERSION_CODE}"
     )
+    
+    message(STATUS "Android version: ${VER_MAJOR}.${VER_MINOR}.${VER_PATCH} (code: ${ANDROID_VERSION_CODE})")
     
     # Add OpenSSL libraries if ANDROID_OPENSSL_DIR is set
     # Must be called BEFORE qt_finalize_executable
