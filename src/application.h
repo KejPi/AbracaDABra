@@ -124,6 +124,12 @@ public:
         EpgCurrentProgColor,
         EpgCurrentProgProgressColor,
         EmptyLogoColor,
+        MessagePositive,
+        MessageNeutral,
+        MessageNegative,
+        MessageTextPositive,
+        MessageTextNeutral,
+        MessageTextNegative,
 
         NumColors,
     };

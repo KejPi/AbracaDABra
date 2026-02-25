@@ -40,13 +40,13 @@ ToolTip {
     timeout: messageType === UI.InfoMessageType.Negative ? 4000 : 2000
     property int messageType: UI.InfoMessageType.Neutral
 
-    property color textColor: messageType === UI.InfoMessageType.Positive ?  UI.colors.buttonTextPositive
-                                    : (messageType === UI.InfoMessageType.Negative ? UI.colors.buttonTextNegative
-                                                                                   : UI.colors.textSecondary)
+    property color textColor: messageType === UI.InfoMessageType.Positive ?  UI.colors.messageTextPositive
+                                    : (messageType === UI.InfoMessageType.Negative ? UI.colors.messageTextNegative
+                                                                                   : UI.colors.messageTextNeutral)
 
-    property color backgroundColor: messageType === UI.InfoMessageType.Positive ?  UI.colors.buttonPositive
-                                : (messageType === UI.InfoMessageType.Negative ? UI.colors.buttonNegative
-                                                                               : UI.colors.backgroundLight)
+    property color backgroundColor: messageType === UI.InfoMessageType.Positive ?  UI.colors.messagePositive
+                                : (messageType === UI.InfoMessageType.Negative ? UI.colors.messageNegative
+                                                                               : UI.colors.messageNeutral)
 
     visible: false
     delay: Application.styleHints.mousePressAndHoldInterval

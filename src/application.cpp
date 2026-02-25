@@ -4378,10 +4378,15 @@ void ApplicationUI::setupDarkMode(bool isDarkMode)
         m_colors[EpgCurrentProgColor] = QColor(0x1565C0);          // Darker blue for current program
         m_colors[EpgCurrentProgProgressColor] = QColor(0x1976D2);  // Medium blue for progress
         m_colors[EmptyLogoColor] = QColor(0x424242);               // Dark gray for empty logo
+        m_colors[MessageNeutral] = QColor(0x2d2d2d);
+        m_colors[MessagePositive] = QColor(0x348745);
+        m_colors[MessageNegative] = QColor(0xB42F34);
+        m_colors[MessageTextNeutral] = QColor(0x9e9e9e);
+        m_colors[MessageTextPositive] = QColor(0xD5FDE7);
+        m_colors[MessageTextNegative] = QColor(0xFBE0E3);
     }
     else
-    {
-        // Light mode colors
+    {  // Light mode colors
         m_colors[Background] = QColor(0xf9fafb);
         m_colors[BackgroundLight] = QColor("white");
         m_colors[BackgroundDark] = QColor(0xf9fafb).darker(120);
@@ -4430,6 +4435,12 @@ void ApplicationUI::setupDarkMode(bool isDarkMode)
         m_colors[EpgCurrentProgColor] = QColor(0x1976D2).lighter(220);
         m_colors[EpgCurrentProgProgressColor] = QColor(0x1976D2).lighter(200);
         m_colors[EmptyLogoColor] = QColor("white");
+        m_colors[MessageNeutral] = QColor("white");
+        m_colors[MessagePositive] = QColor(0xD5FDE7);
+        m_colors[MessageNegative] = QColor(0xFBE0E3);
+        m_colors[MessageTextNeutral] = QColor(0x637381);
+        m_colors[MessageTextPositive] = QColor(0x348745);
+        m_colors[MessageTextNegative] = QColor(0xB42F34);
     }
     emit colorsChanged();
 }

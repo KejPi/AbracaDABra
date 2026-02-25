@@ -150,5 +150,13 @@ QtObject {
         readonly property color epgCurrentProgProgressColor: appUI.colors[ApplicationUI.EpgCurrentProgProgressColor]
 
         readonly property color emptyLogoColor: appUI.colors[ApplicationUI.EmptyLogoColor]
+
+        readonly property color messageNeutral: appUI.colors[ApplicationUI.MessageNeutral]
+        readonly property color messagePositive: appUI.colors[ApplicationUI.MessagePositive]
+        readonly property color messageNegative: appUI.colors[ApplicationUI.MessageNegative]
+
+        readonly property color messageTextNeutral: appUI.colors[ApplicationUI.MessageTextNeutral]
+        readonly property color messageTextPositive: appUI.colors[ApplicationUI.MessageTextPositive]
+        readonly property color messageTextNegative: appUI.colors[ApplicationUI.MessageTextNegative]
     }
 }
