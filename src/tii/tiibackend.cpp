@@ -229,6 +229,7 @@ void TIIBackend::startStopLog()
         if (!AndroidFileHelper::mkpath(m_settings->dataStoragePath, TII_DIR_NAME))
         {
             qCCritical(tii) << "Failed to create TII log directory:" << AndroidFileHelper::lastError();
+            showInfoMessage(tr("Failed to create TII log directory"), -1);
             return;
         }
 
@@ -236,6 +237,7 @@ void TIIBackend::startStopLog()
         {
             qCCritical(tii) << "No permission to write to:" << tiiPath;
             qCCritical(tii) << "Please select a new data storage folder in settings.";
+            showInfoMessage(tr("No permission to write log"), -1);
             return;
         }
 
@@ -275,8 +277,10 @@ void TIIBackend::startStopLog()
         else
         {
             qCCritical(tii) << "Unable to write TII log:" << AndroidFileHelper::lastError();
+            showInfoMessage(tr("Failed to write TII log"), -1);
             setIsRecordingLog(false);
         }
+        showInfoMessage(tr("Failed to write TII log"), -1);
     }
     else
     {

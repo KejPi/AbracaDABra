@@ -483,4 +483,9 @@ Item {
         id: messageBox
         messageBoxBackend: scannerBackend.messageBoxBackend
     }
+    AbracaMessage {
+        id: msg
+        messageType: scannerBackend.infoMessageType
+        text: scannerBackend.infoMessageText
+    }
 }

@@ -56,6 +56,8 @@ class TxMapBackend : public UIControlProvider
     Q_PROPERTY(QAbstractItemModel *tableModel READ tableModel CONSTANT FINAL)
     Q_PROPERTY(QItemSelectionModel *tableSelectionModel READ tableSelectionModel CONSTANT FINAL)
     Q_PROPERTY(bool showSpetrumPlot READ showSpetrumPlot WRITE setShowSpetrumPlot NOTIFY showSpetrumPlotChanged FINAL)
+    UI_PROPERTY(QString, infoMessageText);
+    UI_PROPERTY_DEFAULT(int, infoMessageType, 0);
 
 public:
     explicit TxMapBackend(Settings *settings, bool isTii, QObject *parent = nullptr);
@@ -136,6 +138,13 @@ protected:
     void doLocationUpdate(bool en);
     QModelIndex mapToSourceModel(const QModelIndex &proxyIndex) const;
     void setupSelectionModel();
+
+    void showInfoMessage(const QString &message, int type = 0)
+    {
+        infoMessageText("");  // this is to force text changed
+        infoMessageType(type);
+        infoMessageText(message);
+    }
 
 private:
     QGeoPositionInfoSource *m_geopositionSource = nullptr;

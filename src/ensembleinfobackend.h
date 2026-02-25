@@ -56,6 +56,8 @@ class EnsembleInfoBackend : public QAbstractListModel
     UI_PROPERTY_DEFAULT(bool, isCsvUploadEnabled, false);
     UI_PROPERTY(QString, recordingSize);
     UI_PROPERTY(QString, recordingLength);
+    UI_PROPERTY(QString, infoMessageText);
+    UI_PROPERTY_DEFAULT(int, infoMessageType, 0);
 
 public:
     enum Roles
@@ -197,6 +199,13 @@ private:
     float m_serviceBitrateNet = 0;
     QString m_ensembleConfigurationText;
     EnsembleSubchModel *m_ensembleSubchModel = nullptr;
+
+    void showInfoMessage(const QString &message, int type = 0)
+    {
+        infoMessageText("");  // this is to force text changed
+        infoMessageType(type);
+        infoMessageText(message);
+    }
 };
 
 class EnsembleInfoModel : public QSortFilterProxyModel

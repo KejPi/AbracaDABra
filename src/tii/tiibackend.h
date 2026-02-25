@@ -46,7 +46,7 @@ class TIIBackend : public TxMapBackend
     QML_ELEMENT
     QML_UNCREATABLE("TIIBackend cannot be instantiated")
     UI_PROPERTY_SETTINGS(QVariant, splitterState, m_settings->tii.splitterState)
-    // Q_PROPERTY(int sortColumn READ sortColumn WRITE setSortColumn NOTIFY sortColumnChanged FINAL)
+
 public:
     explicit TIIBackend(Settings *settings, QObject *parent = nullptr);
     ~TIIBackend();

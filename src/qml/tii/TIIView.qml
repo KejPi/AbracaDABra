@@ -277,4 +277,9 @@ Item {
             }
         }
     }
+    AbracaMessage {
+        id: msg
+        messageType: tiiBackend.infoMessageType
+        text: tiiBackend.infoMessageText
+    }
 }

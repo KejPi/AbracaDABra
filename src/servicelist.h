@@ -74,7 +74,7 @@ public:
     void save(const QString &filename);
     void load(const QString &filename);
     void loadFromSettings(QSettings *settings);
-    void exportCSV(const QString &path, const QString &filename);
+    bool exportCSV(const QString &path, const QString &filename);
 
     void beginEnsembleUpdate(const RadioControlEnsemble &e);
     void endEnsembleUpdate(const RadioControlEnsemble &e);

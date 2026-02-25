@@ -242,6 +242,10 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
                 if (!time.isValid())
                 {
                     qCWarning(scanner) << "Invalid time value" << qsl.at(TxTableModel::ColTime) << "line #" << lineNum;
+
+                    infoMessageType(-1);  // negative
+                    showInfoMessage(tr("Failed to load file"), -1);
+
                     res = false;
                     break;
                 }
@@ -268,6 +272,8 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
                 if (!isOk)
                 {
                     qCWarning(scanner) << "Invalid frequency value" << qsl.at(TxTableModel::ColFreq) << "line #" << lineNum;
+
+                    showInfoMessage(tr("Failed to load file"), -1);
                     res = false;
                     break;
                 }
@@ -276,6 +282,7 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
                 if (!isOk)
                 {
                     qCWarning(scanner) << "Invalid UEID value" << qsl.at(TxTableModel::ColEnsId) << "line #" << lineNum;
+                    showInfoMessage(tr("Failed to load file"), -1);
                     res = false;
                     break;
                 }
@@ -283,6 +290,8 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
                 if (!isOk)
                 {
                     qCWarning(scanner) << "Invalid number of services value" << qsl.at(TxTableModel::ColNumServices) << "line #" << lineNum;
+
+                    showInfoMessage(tr("Failed to load file"), -1);
                     res = false;
                     break;
                 }
@@ -291,6 +300,7 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
                 if (!isOk)
                 {
                     qCWarning(scanner) << "Invalid SNR value" << qsl.at(TxTableModel::ColSnr) << "line #" << lineNum;
+                    showInfoMessage(tr("Failed to load file"), -1);
                     res = false;
                     break;
                 }
@@ -301,6 +311,7 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
                     if (!isOk)
                     {
                         qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColMainId) << "line #" << lineNum;
+                        showInfoMessage(tr("Failed to load file"), -1);
                         res = false;
                         break;
                     }
@@ -308,6 +319,7 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
                     if (!isOk)
                     {
                         qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColSubId) << "line #" << lineNum;
+                        showInfoMessage(tr("Failed to load file"), -1);
                         res = false;
                         break;
                     }
@@ -315,6 +327,7 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
                     if (!isOk)
                     {
                         qCWarning(scanner) << "Invalid TX level value" << qsl.at(TxTableModel::ColLevel) << "line #" << lineNum;
+                        showInfoMessage(tr("Failed to load file"), -1);
                         res = false;
                         break;
                     }
@@ -328,6 +341,7 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
             else
             {
                 qCWarning(scanner) << "Unexpected number of cols, line #" << lineNum;
+                showInfoMessage(tr("Failed to load file"), -1);
                 res = false;
                 break;
             }
@@ -387,6 +401,7 @@ void ScannerBackend::saveToFile(const QString &fileName)
     if (!AndroidFileHelper::mkpath(basePath))
     {
         qCWarning(scanner) << "Failed to create export directory:" << AndroidFileHelper::lastError();
+        showInfoMessage(tr("Failed to save log"), -1);
         return;
     }
 
@@ -404,10 +419,12 @@ void ScannerBackend::saveToFile(const QString &fileName)
     if (AndroidFileHelper::writeTextFile(targetBase, fileName, csvContent, "text/csv"))
     {
         qCInfo(scanner) << "Log CSV saved to:" << QString("%1/%2").arg(targetBase, fileName);
+        showInfoMessage(tr("Log saved to CSV file"), 0);
     }
     else
     {
         qCWarning(scanner) << "Failed to save log CSV:" << AndroidFileHelper::lastError();
+        showInfoMessage(tr("Failed to save log"), -1);
     }
 }
 
@@ -422,6 +439,7 @@ void ScannerBackend::startAutoSaveCsv()
     if (!AndroidFileHelper::mkpath(basePath))
     {
         qCWarning(scanner) << "Failed to create export directory:" << AndroidFileHelper::lastError();
+        showInfoMessage(tr("Failed to save log"), -1);
         return;
     }
 
@@ -431,6 +449,7 @@ void ScannerBackend::startAutoSaveCsv()
         if (!AndroidFileHelper::hasWritePermission(basePath))
         {
             qCWarning(scanner) << "No permission to write to:" << basePath;
+            showInfoMessage(tr("No permission to write log"), -1);
             return;
         }
     }
@@ -439,6 +458,7 @@ void ScannerBackend::startAutoSaveCsv()
     if (m_autoSaveFile == nullptr)
     {
         qCWarning(scanner) << "Failed to open auto-save file:" << AndroidFileHelper::lastError();
+        showInfoMessage(tr("Failed to save log"), -1);
         return;
     }
 
@@ -462,6 +482,7 @@ void ScannerBackend::startAutoSaveCsv()
     }
 
     qCInfo(scanner) << "Auto-save CSV started:" << fileName;
+    showInfoMessage(tr("Auto-save CSV started"), 0);
 }
 
 void ScannerBackend::appendAutoSaveRows(int firstRow, int lastRow)
@@ -846,6 +867,8 @@ void ScannerBackend::saveEnsembleCSV(int srcModelRow)
     if (!AndroidFileHelper::hasWritePermission(ensemblePath))
     {
         qCWarning(scanner) << "No permission to write to:" << ensemblePath;
+        showInfoMessage(tr("No permission to write ensemble information"), -1);
+
         return;
     }
 
@@ -855,10 +878,12 @@ void ScannerBackend::saveEnsembleCSV(int srcModelRow)
     if (AndroidFileHelper::writeTextFile(ensemblePath, fileName, item.ensConfigCSV(), "text/csv"))
     {
         qCInfo(scanner) << "Ensemble CSV exported to:" << ensemblePath << "/" << fileName;
+        showInfoMessage(tr("Ensemble information exported"), 0);
     }
     else
     {
         qCWarning(scanner) << "Failed to export ensemble CSV:" << AndroidFileHelper::lastError();
+        showInfoMessage(tr("Failed to export ensemble information"), -1);
     }
 }
 

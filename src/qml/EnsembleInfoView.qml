@@ -544,6 +544,10 @@ UndockablePage {
             topDownDirection: false
             shadowDistance: flickable.contentHeight - flickable.height - flickable.contentY
         }
+        AbracaMessage {
+            messageType: ensembleInfo.infoMessageType
+            text: ensembleInfo.infoMessageText
+        }
     }
     Loader {
         id: ensembleConfigDialogLoader

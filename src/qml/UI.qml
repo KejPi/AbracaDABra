@@ -48,6 +48,11 @@ QtObject {
         Normal = 0,
         IconOnly = 1
     }
+    enum InfoMessageType {
+        Neutral = 0,
+        Positive = 1,
+        Negative = -1
+    }
 
     readonly property bool isMacOS: Qt.platform.os === "osx" || Qt.platform.os === "macos"
     readonly property bool isWindows: Qt.platform.os === "windows"

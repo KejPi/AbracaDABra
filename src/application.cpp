@@ -4188,7 +4188,14 @@ void Application::exportServiceList()
 {
     QString fileName = QString("servicelist_%1.csv").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
 
-    m_serviceList->exportCSV(m_settings->dataStoragePath, fileName);
+    if (m_serviceList->exportCSV(m_settings->dataStoragePath, fileName))
+    {
+        m_ui->showInfoMessage(tr("Service list exported"), 0);
+    }
+    else
+    {
+        m_ui->showInfoMessage(tr("Failed to export service list"), -1);
+    }
 }
 
 void Application::clearServiceList()

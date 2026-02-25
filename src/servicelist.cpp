@@ -429,7 +429,7 @@ void ServiceList::loadFromSettings(QSettings *settings)
     settings->endArray();
 }
 
-void ServiceList::exportCSV(const QString &path, const QString &filename)
+bool ServiceList::exportCSV(const QString &path, const QString &filename)
 {
     // Build CSV content
     QString csvContent;
@@ -460,7 +460,7 @@ void ServiceList::exportCSV(const QString &path, const QString &filename)
     if (!AndroidFileHelper::mkpath(path))
     {
         qCWarning(serviceList) << "Failed to create export directory:" << AndroidFileHelper::lastError();
-        return;
+        return false;
     }
 
     if (AndroidFileHelper::isContentUri(path))
@@ -469,7 +469,7 @@ void ServiceList::exportCSV(const QString &path, const QString &filename)
         if (!AndroidFileHelper::hasWritePermission(path))
         {
             qCWarning(serviceList) << "No permission to write to:" << path;
-            return;
+            return false;
         }
     }
 
@@ -480,7 +480,9 @@ void ServiceList::exportCSV(const QString &path, const QString &filename)
     else
     {
         qCWarning(serviceList) << "Failed to save log CSV:" << AndroidFileHelper::lastError();
+        return false;
     }
+    return true;
 }
 
 // this marks all services as obsolete

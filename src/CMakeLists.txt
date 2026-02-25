@@ -324,6 +324,7 @@ qt_add_qml_module(${TARGET}
         qml/controls/AbracaDialog.qml
         qml/controls/AbracaSplitView.qml
         qml/controls/AbracaScrollView.qml
+        qml/controls/AbracaMessage.qml
 
         qml/settings/Settings.qml
         qml/settings/SettingsView.qml
