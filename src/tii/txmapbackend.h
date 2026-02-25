@@ -114,6 +114,7 @@ signals:
     void centerToCurrentPositionChanged();
     void txTableColChanged();
     void showSpetrumPlotChanged();
+    void showInfoMessage(const QString &message, int type);
 
 protected:
     void setIsActive(bool isActive);
@@ -138,13 +139,6 @@ protected:
     void doLocationUpdate(bool en);
     QModelIndex mapToSourceModel(const QModelIndex &proxyIndex) const;
     void setupSelectionModel();
-
-    void showInfoMessage(const QString &message, int type = 0)
-    {
-        infoMessageText("");  // this is to force text changed
-        infoMessageType(type);
-        infoMessageText(message);
-    }
 
 private:
     QGeoPositionInfoSource *m_geopositionSource = nullptr;

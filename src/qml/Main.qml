@@ -383,4 +383,15 @@ ApplicationWindow {
             onRejected: dialogLoader.active = false
         }
     }
+    AbracaMessage {
+        id: infoMessage
+        Connections {
+            target: application
+            function onShowInfoMessage(text : string, type : int) {
+                infoMessage.text = text;
+                infoMessage.messageType = type;
+                infoMessage.visible = true;
+            }
+        }
+    }
 }

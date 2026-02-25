@@ -278,8 +278,14 @@ Item {
         }
     }
     AbracaMessage {
-        id: msg
-        messageType: tiiBackend.infoMessageType
-        text: tiiBackend.infoMessageText
+        id: infoMessage
+        Connections {
+            target: tiiBackend
+            function onShowInfoMessage(text : string, type : int) {
+                infoMessage.text = text;
+                infoMessage.messageType = type;
+                infoMessage.visible = true;
+            }
+        }
     }
 }

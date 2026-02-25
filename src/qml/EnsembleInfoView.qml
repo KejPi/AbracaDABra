@@ -545,8 +545,15 @@ UndockablePage {
             shadowDistance: flickable.contentHeight - flickable.height - flickable.contentY
         }
         AbracaMessage {
-            messageType: ensembleInfo.infoMessageType
-            text: ensembleInfo.infoMessageText
+            id: infoMessage
+            Connections {
+                target: ensembleInfo
+                function onShowInfoMessage(text : string, type : int) {
+                    infoMessage.text = text;
+                    infoMessage.messageType = type;
+                    infoMessage.visible = true;
+                }
+            }
         }
     }
     Loader {

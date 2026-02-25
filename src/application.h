@@ -211,9 +211,6 @@ public:
     UI_PROPERTY_DEFAULT(bool, isSystemDarkMode, false)
     UI_PROPERTY_DEFAULT(bool, isCompact, false)
 
-    UI_PROPERTY(QString, infoMessageText);
-    UI_PROPERTY_DEFAULT(int, infoMessageType, 0);
-
     QString fixedFontFamily() const { return QFontDatabase::systemFont(QFontDatabase::FixedFont).family(); }
     QList<QColor> colors() const { return m_colors; }
 
@@ -229,12 +226,6 @@ public:
     int currentView() const { return m_currentView; }
     void setCurrentView(int newCurrentView);
     void setIsPortraitView(bool portraitView);
-    void showInfoMessage(const QString &message, int type = 0)
-    {
-        infoMessageText("");  // this is to force text changed
-        infoMessageType(type);
-        infoMessageText(message);
-    }
 
 private:
     QList<QColor> m_colors;
@@ -328,14 +319,9 @@ signals:
     void epgBackendChanged();
     void catSlsBackendChanged();
     void applicationQuitEvent();
+    void showInfoMessage(const QString &message, int type);
 
 private:
-    // void closeEvent(QCloseEvent *event) override;
-    // void resizeEvent(QResizeEvent *event) override;
-    // void changeEvent(QEvent *e) override;
-
-    // private:
-    // constants
     enum Instance
     {
         Service = 0,

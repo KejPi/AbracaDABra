@@ -44,7 +44,7 @@ ToolTip {
                                     : (messageType === UI.InfoMessageType.Negative ? UI.colors.buttonTextNegative
                                                                                    : UI.colors.textSecondary)
 
-    property color backgroundColor: messageType === UI.InfoMessageType.Positive ?  UI.colors.buttonPositiveClicked
+    property color backgroundColor: messageType === UI.InfoMessageType.Positive ?  UI.colors.buttonPositive
                                 : (messageType === UI.InfoMessageType.Negative ? UI.colors.buttonNegative
                                                                                : UI.colors.backgroundLight)
 
@@ -60,12 +60,6 @@ ToolTip {
     bottomInset: -10
     rightInset: -10
     leftInset: -10
-
-    onTextChanged: {
-        if (text.length > 0) {
-            visible = true
-        }
-    }
 
     contentItem: Text {
         text: control.text

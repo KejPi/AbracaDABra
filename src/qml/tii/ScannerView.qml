@@ -484,8 +484,14 @@ Item {
         messageBoxBackend: scannerBackend.messageBoxBackend
     }
     AbracaMessage {
-        id: msg
-        messageType: scannerBackend.infoMessageType
-        text: scannerBackend.infoMessageText
+        id: infoMessage
+        Connections {
+            target: scannerBackend
+            function onShowInfoMessage(text : string, type : int) {
+                infoMessage.text = text;
+                infoMessage.messageType = type;
+                infoMessage.visible = true;
+            }
+        }
     }
 }

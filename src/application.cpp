@@ -4190,11 +4190,11 @@ void Application::exportServiceList()
 
     if (m_serviceList->exportCSV(m_settings->dataStoragePath, fileName))
     {
-        m_ui->showInfoMessage(tr("Service list exported"), 0);
+        emit showInfoMessage(tr("Service list exported"), 1);
     }
     else
     {
-        m_ui->showInfoMessage(tr("Failed to export service list"), -1);
+        emit showInfoMessage(tr("Failed to export service list"), -1);
     }
 }
 
@@ -4398,19 +4398,19 @@ void ApplicationUI::setupDarkMode(bool isDarkMode)
         m_colors[ListItemSelected] = QColor(0x1976D2);
         m_colors[ButtonPrimary] = QColor(0x1976D2);
         m_colors[ButtonNeutral] = QColor(0xd4d6d8);
-        m_colors[ButtonPositive] = QColor("lightgreen");
+        m_colors[ButtonPositive] = QColor(0xE0FBE7);
         m_colors[ButtonNegative] = QColor(0xE6543D);
         m_colors[ButtonTextPrimary] = QColor("white");
         m_colors[ButtonTextNeutral] = QColor(0x474F5B);
-        m_colors[ButtonTextPositive] = QColor("white");
+        m_colors[ButtonTextPositive] = QColor(0x474F5B);
         m_colors[ButtonTextNegative] = QColor("white");
         m_colors[ButtonPrimaryHover] = QColor(0x1976D2).lighter(120);
         m_colors[ButtonNeutralHover] = QColor(0xE0E3E8);
-        m_colors[ButtonPositiveHover] = QColor("lightgreen").lighter(120);
+        m_colors[ButtonPositiveHover] = QColor(0xE0FBE7).lighter(120);
         m_colors[ButtonNegativeHover] = QColor(0xE6543D).lighter(120);
         m_colors[ButtonPrimaryClicked] = QColor(0x1976D2).darker(120);
         m_colors[ButtonNeutralClicked] = QColor(0xd4d6d8).darker(120);
-        m_colors[ButtonPositiveClicked] = QColor("lightgreen").darker(120);
+        m_colors[ButtonPositiveClicked] = QColor(0xE0FBE7).darker(120);
         m_colors[ButtonNegativeClicked] = QColor(0xE6543D).darker(120);
         m_colors[TextPrimary] = QColor(0x26282a);
         m_colors[TextSecondary] = QColor(0x637381);

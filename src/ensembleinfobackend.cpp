@@ -588,7 +588,7 @@ void EnsembleInfoBackend::onEnsembleCSV(const QString &csvString)
     if (!AndroidFileHelper::mkpath(m_settings->dataStoragePath, ENSEMBLE_DIR_NAME))
     {
         qCWarning(application) << "Failed to create ensemble export directory:" << AndroidFileHelper::lastError();
-        showInfoMessage(tr("Ensemble information export failed"), -1);
+        emit showInfoMessage(tr("Ensemble information export failed"), -1);
         return;
     }
 
@@ -596,20 +596,19 @@ void EnsembleInfoBackend::onEnsembleCSV(const QString &csvString)
     {
         qCWarning(application) << "No permission to write to:" << ensemblePath;
         qCWarning(application) << "Please select a new data storage folder in settings.";
-        showInfoMessage(tr("No permission to write ensemble information"), -1);
+        emit showInfoMessage(tr("No permission to write ensemble information"), -1);
         return;
     }
 
     if (AndroidFileHelper::writeTextFile(ensemblePath, fileName, csvString, "text/csv"))
     {
         qCInfo(application) << "Ensemble CSV exported to:" << QString("%1/%2").arg(ensemblePath, fileName);
-        // showInfoMessage(tr("Ensemble information exported to\n%1/%2").arg(ensemblePath, fileName), 0);
-        showInfoMessage(tr("Ensemble information exported"), 0);
+        emit showInfoMessage(tr("Ensemble information exported"), 1);
     }
     else
     {
         qCWarning(application) << "Failed to export ensemble CSV:" << AndroidFileHelper::lastError();
-        showInfoMessage(tr("Failed to export ensemble information"), -1);
+        emit showInfoMessage(tr("Failed to export ensemble information"), -1);
     }
 }
 
