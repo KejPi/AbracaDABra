@@ -407,9 +407,8 @@ Item {
                         }
                     }
                     onPressAndHold: (mouse) => {
-                        if (mouse.source === Qt.MouseEventNotSynthesized && tableItem.contextMenuEnabled) {
+                        if (tableItem.contextMenuEnabled) {
                             tableView.selectionModel.select(tableView.model.index(row, 0), ItemSelectionModel.ClearAndSelect | ItemSelectionModel.Current | ItemSelectionModel.Rows);
-
                             populateContextMenu(row)
                             contextMenu.popup()
                         }
