@@ -39,7 +39,6 @@
 
 class EnsembleInfoModelItem;
 class Settings;
-// class EnsembleSubchModel;
 
 class EnsembleInfoBackend : public QAbstractListModel
 {
@@ -97,8 +96,8 @@ public:
     void clearSignalInfo();
     void clearFreqInfo();
     void clearSubchInfo();
-    void resetFibStat();
-    void resetMscStat();
+    Q_INVOKABLE void resetFibStat();
+    Q_INVOKABLE void resetMscStat();
 
     void enableRecording(bool ena);
     void onRecording(bool isActive);
@@ -169,6 +168,12 @@ private:
 
         NumLabels
 
+    };
+    enum ContextMenuActionId
+    {
+        ResetStats = 0,
+        ResetFIB,
+        ResetMSC,
     };
 
     Settings *m_settings = nullptr;

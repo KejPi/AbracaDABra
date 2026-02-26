@@ -141,7 +141,7 @@ UndockablePage {
                         columns: (flickable.width < 2 * UI.narrowViewWidth ? (flickable.width < contentItem.controlGridMinWidth ? 1 : 2) : 4)
                         Repeater {
                             id: boxRepeater
-                            model: 4
+                            model: 3
                             delegate: Rectangle {
                                 id: box
                                 Layout.fillWidth: true
@@ -179,6 +179,82 @@ UndockablePage {
                                                 horizontalAlignment: Text.AlignRight
                                             }
                                         }
+                                    }
+                                }
+                            }
+                        }
+                        Rectangle {
+                            id: statsBox
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: statsBoxLayout.implicitHeight + 2 * UI.standardMargin
+
+                            color: "transparent"
+                            border.width: 1
+                            border.color: UI.colors.inactive
+                            radius: UI.controlRadius
+
+                            ColumnLayout {
+                                id: statsBoxLayout
+                                x: UI.standardMargin
+                                y: UI.standardMargin
+                                width: statsBox.width - 2 * UI.standardMargin
+                                Repeater {
+                                    model: EnsembleInfoModel {
+                                        group: 3
+                                        sourceModel: ensembleInfo
+                                    }
+                                    delegate: RowLayout {
+                                        required property string label
+                                        required property string info
+                                        AbracaLabel {
+                                            text: label
+                                            elide: Text.ElideMiddle
+                                            role: UI.LabelRole.Secondary
+                                        }
+                                        AbracaLabel {
+                                            text: info
+                                            Layout.fillWidth: true
+                                            horizontalAlignment: Text.AlignRight
+                                        }
+                                    }
+                                }
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                onClicked: (mouse)=> {
+                                    if (mouse.button === Qt.RightButton) {
+                                        statsContextMenu.x = mouse.x;
+                                        statsContextMenu.y = mouse.y;
+                                        statsContextMenu.open();
+                                    }
+                                }
+                                onPressAndHold: (mouse) => {
+                                    statsContextMenu.x = mouse.x;
+                                    statsContextMenu.y = mouse.y;
+                                    statsContextMenu.open();
+                                }
+                            }
+                            AbracaMenu {
+                                id: statsContextMenu
+                                AbracaMenuItem {
+                                    text: qsTr("Reset statistics")
+                                    onTriggered: {
+                                        ensembleInfo.resetFibStat()
+                                        ensembleInfo.resetMscStat()
+                                    }
+                                }
+                                AbracaMenuSeparator {}
+                                AbracaMenuItem {
+                                    text: qsTr("Reset FIB statistics")
+                                    onTriggered: {
+                                        ensembleInfo.resetFibStat()
+                                    }
+                                }
+                                AbracaMenuItem {
+                                    text: qsTr("Reset MSC statistics")
+                                    onTriggered: {
+                                        ensembleInfo.resetMscStat()
                                     }
                                 }
                             }
