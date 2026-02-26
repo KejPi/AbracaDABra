@@ -1194,7 +1194,11 @@ QString RadioControl::ensembleConfigurationCSV_FMLIST() const
                 QString pty = DabTables::getPtyNameEnglish(s.pty.s);
                 if (pty == "None")
                 {
-                    pty = "none";
+                    pty = DabTables::getPtyNameEnglish(s.pty.d);
+                    if (pty == "None")
+                    {
+                        pty = "none";
+                    }
                 }
                 strOut << pty;
             }
