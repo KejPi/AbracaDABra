@@ -35,7 +35,7 @@ NavigationModel::NavigationModel(QObject *parent) : QAbstractListModel{parent}
                                 (NavigationOption::EnabledOption |
                                     NavigationOption::PortraitOption |
                                     NavigationOption::PortraitSmallOption)),
-        new NavigationModelItem(NavigationId::Service, tr("Service"), "", "ServiceView.qml", "icon-service.svg",
+        new NavigationModelItem(NavigationId::Service, tr("Service"), tr("Current service"), "ServiceView.qml", "icon-service.svg",
                                 (NavigationOption::EnabledOption |
                                     NavigationOption::Landscape1Option |
                                     NavigationOption::PortraitOption |
