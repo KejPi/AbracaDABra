@@ -12,6 +12,8 @@ import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.util.Log;
 import android.Manifest;
@@ -30,6 +32,12 @@ public class AudioServiceHelper {
     private static boolean foregroundServiceRunning = false;
     private static boolean userStoppedPlayback = false;
     private static boolean serviceStartPending = false;
+    
+    // Timeout mechanism for stuck playback states
+    private static Handler timeoutHandler = null;
+    private static Runnable timeoutRunnable = null;
+    private static final long PLAYBACK_RESUME_TIMEOUT_MS = 30000; // 30 seconds
+    private static long lastPlaybackTime = 0;
 
     /**
      * Initialize the context when the application starts
@@ -278,6 +286,10 @@ public class AudioServiceHelper {
             Context originalContext = context;
             appContext = context.getApplicationContext();
             
+            // Cancel any pending timeout since we're starting playback
+            cancelPlaybackResumeTimeout();
+            lastPlaybackTime = System.currentTimeMillis();
+            
             if (wakeLock != null && wakeLock.isHeld()) {
                 Log.d(TAG, "Wake lock already held, ensuring foreground service is running");
                 // Even if wake lock is held, make sure foreground service is running
@@ -401,6 +413,53 @@ public class AudioServiceHelper {
      */
     public static void onUserStoppedPlayback() {
         userStoppedPlayback = true;
+        cancelPlaybackResumeTimeout();
+    }
+    
+    /**
+     * Called when playback is actively happening (to reset timeout)
+     */
+    public static void onPlaybackActive() {
+        lastPlaybackTime = System.currentTimeMillis();
+        cancelPlaybackResumeTimeout();
+    }
+    
+    /**
+     * Start a timeout that will force release wake lock if playback doesn't resume
+     */
+    private static void startPlaybackResumeTimeout() {
+        if (timeoutHandler == null) {
+            timeoutHandler = new Handler(Looper.getMainLooper());
+        }
+        
+        cancelPlaybackResumeTimeout();
+        
+        timeoutRunnable = new Runnable() {
+            @Override
+            public void run() {
+                Log.w(TAG, "Playback resume timeout expired - forcing resource release");
+                if (wakeLock != null && wakeLock.isHeld()) {
+                    Log.d(TAG, "Force releasing wake lock due to timeout");
+                    userStoppedPlayback = true;  // Force release
+                    if (appContext != null) {
+                        releaseWakeLock(appContext);
+                    }
+                }
+            }
+        };
+        
+        timeoutHandler.postDelayed(timeoutRunnable, PLAYBACK_RESUME_TIMEOUT_MS);
+        Log.d(TAG, "Started playback resume timeout (" + PLAYBACK_RESUME_TIMEOUT_MS + " ms)");
+    }
+    
+    /**
+     * Cancel the playback resume timeout
+     */
+    private static void cancelPlaybackResumeTimeout() {
+        if (timeoutHandler != null && timeoutRunnable != null) {
+            timeoutHandler.removeCallbacks(timeoutRunnable);
+            timeoutRunnable = null;
+        }
     }
 
     /**
@@ -409,16 +468,21 @@ public class AudioServiceHelper {
      */
     public static void releaseWakeLock(Context context) {
         try {
-            // If user didn't explicitly stop, keep the wake lock running
+            // If user didn't explicitly stop, keep the wake lock running temporarily
             // (it might be a temporary starvation in background)
+            // but start a timeout to eventually release if playback doesn't resume
             if (!userStoppedPlayback) {
                 Log.d(TAG, "Wake lock kept - waiting for playback to resume or user stop");
                 Log.d(TAG, "Foreground service running: " + AudioPlaybackService.isRunning());
+                startPlaybackResumeTimeout();
                 return;
             }
             
             Log.d(TAG, "User stopped playback - releasing resources");
             userStoppedPlayback = false;
+            
+            // Cancel any pending timeout
+            cancelPlaybackResumeTimeout();
             
             // Release audio focus
             abandonAudioFocus();

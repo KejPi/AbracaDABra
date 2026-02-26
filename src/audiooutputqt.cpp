@@ -29,6 +29,7 @@
 #include <QAudioDevice>
 #include <QAudioSink>
 #include <QDebug>
+#include <QElapsedTimer>
 #include <QLoggingCategory>
 #include <QThread>
 
@@ -45,6 +46,8 @@ AudioOutputQt::AudioOutputQt(QObject *parent) : AudioOutput(parent)
     m_ioDevice = nullptr;
     m_linearVolume = 1.0;
     m_ioDevice = new AudioIODevice();
+    m_consecutiveRestarts = 0;
+    m_lastRestartTimer.start();
 }
 
 AudioOutputQt::~AudioOutputQt()
@@ -114,6 +117,9 @@ void AudioOutputQt::start(audioFifo_t *buffer)
     m_ioDevice->setBuffer(m_currentFifoPtr);
     m_ioDevice->start();
     m_audioSink->start(m_ioDevice);
+    
+    // Reset restart counter on successful start
+    resetRestartCounter();
 }
 
 void AudioOutputQt::restart(audioFifo_t *buffer)
@@ -242,13 +248,29 @@ void AudioOutputQt::doRestart(audioFifo_t *buffer)
     start(buffer);
 }
 
+void AudioOutputQt::resetRestartCounter()
+{
+    m_consecutiveRestarts = 0;
+    m_lastRestartTimer.restart();
+}
+
 void AudioOutputQt::handleStateChanged(QAudio::State newState)
 {
     // qDebug() << Q_FUNC_INFO << newState;
     switch (newState)
     {
         case QAudio::ActiveState:
-            // do nothing
+            // Successfully playing - reset restart counter
+            resetRestartCounter();
+#ifdef Q_OS_ANDROID
+            // Notify Android that playback is active (resumed from idle)
+            try {
+                QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", 
+                                                   "onPlaybackActive", "()V");
+            } catch (...) {
+                // Ignore exceptions
+            }
+#endif
             break;
         case QAudio::IdleState:
             // no more data
@@ -258,23 +280,66 @@ void AudioOutputQt::handleStateChanged(QAudio::State newState)
                 {  // restart was requested
                     doRestart(m_restartFifoPtr);
                 }
-                else
-                {  // stop was requested
+                else if (m_ioDevice->isStopRequested())
+                {  // explicit stop was requested
                     doStop();
+                }
+                else
+                {
+#ifdef Q_OS_ANDROID
+                    // On Android, going idle while muted is often just a temporary buffer underrun
+                    // Don't stop the audio sink - let it stay idle and wait for data
+                    // This prevents race conditions with Android's audio system stopping the player
+                    qCDebug(audioOutput) << "Audio idle while muted - waiting for data (Android)";
+#else
+                    // On other platforms, stop as normal
+                    doStop();
+#endif
                 }
             }
             else
             {
                 if (QAudio::Error::NoError == m_audioSink->error())
                 {
-                    qCWarning(audioOutput) << "Audio going to Idle state unexpectly, trying to restart...";
-                    doRestart(m_currentFifoPtr);
+                    // Check restart counter to prevent infinite loops
+                    if (m_lastRestartTimer.hasExpired(RESTART_RESET_INTERVAL_MS))
+                    {
+                        // Enough time has passed, reset counter
+                        resetRestartCounter();
+                    }
+                    
+                    if (m_consecutiveRestarts >= MAX_CONSECUTIVE_RESTARTS)
+                    {
+                        qCWarning(audioOutput) << "Too many consecutive restarts (" << m_consecutiveRestarts 
+                                             << "), stopping playback to prevent loop";
+#ifdef Q_OS_ANDROID
+                        // Mark as user stop so resources are properly released
+                        QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", 
+                                                          "onUserStoppedPlayback", "()V");
+#endif
+                        doStop();
+                        emit audioOutputError();
+                        resetRestartCounter();
+                    }
+                    else
+                    {
+                        m_consecutiveRestarts++;
+                        qCWarning(audioOutput) << "Audio going to Idle state unexpectedly, trying to restart... (attempt " 
+                                             << m_consecutiveRestarts << "/" << MAX_CONSECUTIVE_RESTARTS << ")";
+                        doRestart(m_currentFifoPtr);
+                    }
                 }
                 else
                 {  // some error -> doing stop
                     qCWarning(audioOutput) << "Audio going to Idle state unexpectly, error code:" << m_audioSink->error();
+#ifdef Q_OS_ANDROID
+                    // Mark as user stop so resources are properly released
+                    QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", 
+                                                      "onUserStoppedPlayback", "()V");
+#endif
                     doStop();
                     emit audioOutputError();
+                    resetRestartCounter();
                 }
             }
             break;
@@ -531,6 +596,17 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
     if (false == muteRequest)
     {  // unmute can be requested only when there is enough samples
         qCInfo(audioOutput) << "Unmuting audio";
+        
+#ifdef Q_OS_ANDROID
+        // Notify Android that playback is active to reset timeout
+        try {
+            QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", 
+                                               "onPlaybackActive", "()V");
+        } catch (...) {
+            // Ignore exceptions
+        }
+#endif
+        
         float coe = 2.0 - m_muteFactor;
         if (numSamples < AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz)
         {

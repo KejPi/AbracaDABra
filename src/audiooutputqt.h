@@ -28,6 +28,7 @@
 #define AUDIOOUTPUTQT_H
 
 #include <QAudioSink>
+#include <QElapsedTimer>
 #include <QIODevice>
 #include <QMediaDevices>
 #include <QMutex>
@@ -60,11 +61,18 @@ private:
     AudioIODevice *m_ioDevice;
     QAudioSink *m_audioSink;
     float m_linearVolume;
+    
+    // Restart tracking to prevent loops
+    int m_consecutiveRestarts = 0;
+    QElapsedTimer m_lastRestartTimer;
+    static constexpr int MAX_CONSECUTIVE_RESTARTS = 3;
+    static constexpr qint64 RESTART_RESET_INTERVAL_MS = 5000;  // Reset counter after 5s
 
     void handleStateChanged(QAudio::State newState);
     int64_t bytesAvailable();
     void doStop();
     void doRestart(audioFifo_t *buffer);
+    void resetRestartCounter();
 
 #ifdef Q_OS_ANDROID
     void acquireAndroidWakeLock();
@@ -88,6 +96,7 @@ public:
 
     void mute(bool on);
     bool isMuted() const { return AudioOutputPlaybackState::Muted == m_playbackState; }
+    bool isStopRequested() const { return m_stopFlag; }
 
 private:
     audioFifo_t *m_inFifoPtr = nullptr;
