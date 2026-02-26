@@ -252,6 +252,7 @@ void TIIBackend::startStopLog()
         if (m_logFile)
         {
             qCInfo(tii) << "Recording TII log to:" << QString("%1/%2").arg(tiiPath, fileName);
+            emit showInfoMessage(tr("TII log started"), 0);
 
             setIsRecordingLog(true);
 
@@ -280,7 +281,6 @@ void TIIBackend::startStopLog()
             emit showInfoMessage(tr("Failed to write TII log"), -1);
             setIsRecordingLog(false);
         }
-        emit showInfoMessage(tr("Failed to write TII log"), -1);
     }
     else
     {
