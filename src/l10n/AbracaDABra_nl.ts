@@ -98,12 +98,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/controls/AbracaTimePicker.qml" line="197"/>
+        <location filename="../qml/controls/AbracaTimePicker.qml" line="217"/>
         <source>Minute</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/controls/AbracaTimePicker.qml" line="232"/>
+        <location filename="../qml/controls/AbracaTimePicker.qml" line="271"/>
         <source>Period</source>
         <translation type="unfinished"></translation>
     </message>
@@ -187,8 +187,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="271"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="270"/>
         <source>Bias Tee:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/AirspyDevice.qml" line="286"/>
+        <source>Prefer 4096kHz rate:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -274,353 +279,363 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="351"/>
-        <location filename="../application.cpp" line="353"/>
+        <location filename="../application.cpp" line="352"/>
+        <location filename="../application.cpp" line="354"/>
         <source>Mute</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="353"/>
+        <location filename="../application.cpp" line="354"/>
         <source>Unmute</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="408"/>
+        <location filename="../application.cpp" line="411"/>
         <source>Audio coding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="413"/>
+        <location filename="../application.cpp" line="416"/>
         <source>Ongoing announcement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="825"/>
+        <location filename="../application.cpp" line="829"/>
         <source>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1005"/>
+        <location filename="../application.cpp" line="1016"/>
         <source>System time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1015"/>
-        <location filename="../application.cpp" line="4044"/>
+        <location filename="../application.cpp" line="1026"/>
+        <location filename="../application.cpp" line="4087"/>
         <source>DAB time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1025"/>
+        <location filename="../application.cpp" line="1036"/>
         <source>&lt;b&gt;DAB audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1025"/>
+        <location filename="../application.cpp" line="1036"/>
         <source>MPEG-1 layer 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1029"/>
-        <location filename="../application.cpp" line="1033"/>
-        <location filename="../application.cpp" line="1037"/>
+        <location filename="../application.cpp" line="1040"/>
+        <location filename="../application.cpp" line="1044"/>
+        <location filename="../application.cpp" line="1048"/>
         <source>&lt;b&gt;DAB+ audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1029"/>
+        <location filename="../application.cpp" line="1040"/>
         <source>MPEG-4 Low Complexity AAC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1033"/>
+        <location filename="../application.cpp" line="1044"/>
         <source>MPEG-4 High Efficiency AAC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1037"/>
+        <location filename="../application.cpp" line="1048"/>
         <source>MPEG-4 High Efficiency AAC v2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1054"/>
+        <location filename="../application.cpp" line="1065"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Sample rate: %2 kHz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1058"/>
+        <location filename="../application.cpp" line="1069"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Sample rate: %2 kHz (SBR %3)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1059"/>
-        <location filename="../application.cpp" line="1061"/>
+        <location filename="../application.cpp" line="1070"/>
+        <location filename="../application.cpp" line="1072"/>
         <source>on</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1059"/>
-        <location filename="../application.cpp" line="1061"/>
+        <location filename="../application.cpp" line="1070"/>
+        <location filename="../application.cpp" line="1072"/>
         <source>off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1069"/>
+        <location filename="../application.cpp" line="1080"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1074"/>
+        <location filename="../application.cpp" line="1085"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz (SBR: %2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1095"/>
+        <location filename="../application.cpp" line="1106"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1 (dynamic)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1102"/>
+        <location filename="../application.cpp" line="1113"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1122"/>
+        <location filename="../application.cpp" line="1133"/>
         <source>Tuning...  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1185"/>
         <location filename="../application.cpp" line="1198"/>
+        <location filename="../application.cpp" line="1210"/>
         <source>Tune to %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1285"/>
+        <location filename="../application.cpp" line="1297"/>
         <source>End of file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1286"/>
+        <location filename="../application.cpp" line="1298"/>
         <source>Select any service to restart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1300"/>
+        <location filename="../application.cpp" line="1312"/>
         <source>Input device error: Device disconnected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1301"/>
         <location filename="../application.cpp" line="1313"/>
+        <location filename="../application.cpp" line="1325"/>
         <source>Try to reconnect the device or choose another device in Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1312"/>
+        <location filename="../application.cpp" line="1324"/>
         <source>Input device error: No data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1336"/>
+        <location filename="../application.cpp" line="1348"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you change DAB channel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1339"/>
+        <location filename="../application.cpp" line="1351"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you switch current service.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1344"/>
+        <location filename="../application.cpp" line="1356"/>
         <source>Stop audio recording?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1361"/>
+        <location filename="../application.cpp" line="1373"/>
         <source>Keep recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1362"/>
+        <location filename="../application.cpp" line="1374"/>
         <source>Stop recording and do not ask again</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1363"/>
+        <location filename="../application.cpp" line="1375"/>
         <source>Stop recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1602"/>
+        <location filename="../application.cpp" line="1614"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1656"/>
+        <location filename="../application.cpp" line="1670"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Capacity units: %4 CU</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1667"/>
+        <location filename="../application.cpp" line="1681"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Protection level: %2&lt;br&gt;Capacity units: %3 CU</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1677"/>
+        <location filename="../application.cpp" line="1691"/>
         <source>%1 kbps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1679"/>
+        <location filename="../application.cpp" line="1693"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1705"/>
+        <location filename="../application.cpp" line="1719"/>
         <source>Service currently unavailable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1706"/>
+        <location filename="../application.cpp" line="1720"/>
         <source>Service was removed from ensemble</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1738"/>
+        <location filename="../application.cpp" line="1752"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;on current service</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1752"/>
+        <location filename="../application.cpp" line="1766"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1769"/>
+        <location filename="../application.cpp" line="1783"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1814"/>
+        <location filename="../application.cpp" line="1828"/>
         <source>Default audio device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1891"/>
+        <location filename="../application.cpp" line="1905"/>
         <source>Stop audio recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1897"/>
+        <location filename="../application.cpp" line="1911"/>
         <source>Start audio recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1907"/>
+        <location filename="../application.cpp" line="1921"/>
         <source>Audio recording ongoing (%2 kBytes recorded)
 File: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1915"/>
+        <location filename="../application.cpp" line="1929"/>
         <source>Scheduled audio recording is getting ready</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1927"/>
+        <location filename="../application.cpp" line="1941"/>
         <source>Scheduled recording should start in %1 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1930"/>
+        <location filename="../application.cpp" line="1944"/>
         <source>Ongoing recording now prevents the start of a scheduled recording. The schedule will be cancelled if you do not choose otherwise. If you select to keep the schedule, the service might be switched.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1943"/>
+        <location filename="../application.cpp" line="1957"/>
         <source>Keep current recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1944"/>
+        <location filename="../application.cpp" line="1958"/>
         <source>Keep schedule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1953"/>
+        <location filename="../application.cpp" line="1967"/>
         <source>Scheduled recording starts in %1 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1956"/>
+        <location filename="../application.cpp" line="1970"/>
         <source>Recording is going to start according to the schedule. The service might be switched if it differs from the current one.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1967"/>
+        <location filename="../application.cpp" line="1981"/>
         <source>Continue as planned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1968"/>
+        <location filename="../application.cpp" line="1982"/>
         <source>Cancel plan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2116"/>
+        <location filename="../application.cpp" line="2136"/>
         <source>SPI MOT directory not complete
 Decoded %1 / %2 MOT objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2120"/>
+        <location filename="../application.cpp" line="2140"/>
         <source>SPI MOT directory complete
 %1 MOT objects decoded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2125"/>
+        <location filename="../application.cpp" line="2145"/>
         <source>SPI MOT directory decoding started</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2334"/>
+        <location filename="../application.cpp" line="2354"/>
         <source>No ensemble</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2335"/>
+        <location filename="../application.cpp" line="2355"/>
         <source>No ensemble tuned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2346"/>
+        <location filename="../application.cpp" line="2366"/>
         <source>No service</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2352"/>
+        <location filename="../application.cpp" line="2372"/>
         <source>No service playing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4152"/>
+        <location filename="../application.cpp" line="4193"/>
+        <source>Service list exported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application.cpp" line="4197"/>
+        <source>Failed to export service list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application.cpp" line="4204"/>
         <source>Clear service list?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4152"/>
+        <location filename="../application.cpp" line="4204"/>
         <source>Current service list including favorites will be deleted. This action is irreversible.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4166"/>
+        <location filename="../application.cpp" line="4218"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4167"/>
+        <location filename="../application.cpp" line="4219"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -704,68 +719,68 @@ Click &apos;Add&apos; to create a new recording.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="95"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="96"/>
         <source>Audio recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="108"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="109"/>
         <source>Folder:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="123"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="124"/>
         <source>Record encoded DAB/DAB+ stream (MP2 or AAC format)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="136"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="137"/>
         <source>Record decoded audio (WAV format)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="150"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="151"/>
         <source>Do not ask to stop audio recording when service changes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="160"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="161"/>
         <source>Record DL messages</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="169"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="171"/>
         <source>Record DAB time for DL messages</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="189"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="192"/>
         <source>Expert settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="202"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="205"/>
         <source>AAC audio decoder:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="215"/>
-        <location filename="../qml/settings/AudioSettings.qml" line="248"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="218"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="251"/>
         <source>Restart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="227"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="230"/>
         <source>Audio decoder change will take effect after application restart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="233"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="236"/>
         <source>Audio output framework:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="259"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="262"/>
         <source>Audio output change will take effect after application restart.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -811,12 +826,12 @@ Click &apos;Add&apos; to create a new recording.</source>
 <context>
     <name>BandScanBackend</name>
     <message>
-        <location filename="../bandscanbackend.cpp" line="46"/>
+        <location filename="../bandscanbackend.cpp" line="61"/>
         <source>Press Start to perform band scan.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../bandscanbackend.cpp" line="121"/>
+        <location filename="../bandscanbackend.cpp" line="136"/>
         <source>Scanning channel:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -894,72 +909,72 @@ Click &apos;Add&apos; to create a new recording.</source>
 <context>
     <name>DabSignalView</name>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="202"/>
+        <location filename="../qml/DabSignalView.qml" line="205"/>
         <source>RF level </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="203"/>
+        <location filename="../qml/DabSignalView.qml" line="206"/>
         <source>Estimated RF level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="220"/>
+        <location filename="../qml/DabSignalView.qml" line="223"/>
         <source>Gain </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="221"/>
+        <location filename="../qml/DabSignalView.qml" line="224"/>
         <source>Tuner gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="238"/>
+        <location filename="../qml/DabSignalView.qml" line="241"/>
         <source>Frequency </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="239"/>
+        <location filename="../qml/DabSignalView.qml" line="242"/>
         <source>Tuned frequency</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="256"/>
+        <location filename="../qml/DabSignalView.qml" line="259"/>
         <source>Offset </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="257"/>
+        <location filename="../qml/DabSignalView.qml" line="260"/>
         <source>Estimated frequency offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="289"/>
+        <location filename="../qml/DabSignalView.qml" line="292"/>
         <source>Frequency offset correction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="296"/>
+        <location filename="../qml/DabSignalView.qml" line="299"/>
         <source>Slow update (1 sec)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="302"/>
+        <location filename="../qml/DabSignalView.qml" line="305"/>
         <source>Normal update (500 msec)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="308"/>
+        <location filename="../qml/DabSignalView.qml" line="311"/>
         <source>Fast update (300 msec)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="314"/>
+        <location filename="../qml/DabSignalView.qml" line="317"/>
         <source>Very fast update (100 msec)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="321"/>
+        <location filename="../qml/DabSignalView.qml" line="324"/>
         <source>Show SNR value</source>
         <translation type="unfinished"></translation>
     </message>
@@ -976,6 +991,11 @@ Click &apos;Add&apos; to create a new recording.</source>
         <source>Connect</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../qml/settings/DeviceSettings.qml" line="79"/>
+        <source>Disconnect</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>EPG</name>
@@ -988,32 +1008,32 @@ Click &apos;Add&apos; to create a new recording.</source>
 <context>
     <name>EPGView</name>
     <message>
-        <location filename="../qml/epg/EPGView.qml" line="72"/>
+        <location filename="../qml/epg/EPGView.qml" line="87"/>
         <source>Today</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/epg/EPGView.qml" line="99"/>
+        <location filename="../qml/epg/EPGView.qml" line="114"/>
         <source>Hide services without schedule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/epg/EPGView.qml" line="107"/>
+        <location filename="../qml/epg/EPGView.qml" line="124"/>
         <source>Show only current ensemble</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/epg/EPGView.qml" line="136"/>
+        <location filename="../qml/epg/EPGView.qml" line="163"/>
         <source>Current time: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/epg/EPGView.qml" line="324"/>
+        <location filename="../qml/epg/EPGView.qml" line="351"/>
         <source>No program available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/epg/EPGView.qml" line="450"/>
+        <location filename="../qml/epg/EPGView.qml" line="477"/>
         <source>Schedule audio recording</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1418,6 +1438,26 @@ Click &apos;Add&apos; to create a new recording.</source>
         <source> sec</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../ensembleinfobackend.cpp" line="591"/>
+        <source>Ensemble information export failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfobackend.cpp" line="599"/>
+        <source>No permission to write ensemble information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfobackend.cpp" line="606"/>
+        <source>Ensemble information exported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ensembleinfobackend.cpp" line="611"/>
+        <source>Failed to export ensemble information</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>EnsembleInfoView</name>
@@ -1568,6 +1608,11 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="38"/>
         <source>Service</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../navigationmodel.cpp" line="38"/>
+        <source>Current service</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1735,162 +1780,172 @@ Click &apos;Add&apos; to create a new recording.</source>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="128"/>
-        <source>Dynamic Label Plus (DL+)</source>
+        <source>Compact view (smaller controls, etc.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="140"/>
+        <source>Dynamic Label Plus (DL+)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/OtherSettings.qml" line="152"/>
         <source>Show tray icon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="151"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="164"/>
         <source>Show system time when DAB time is not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="163"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="176"/>
         <source>Show ensemble country flag (internet connection required)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="175"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="188"/>
         <source>Show service country flag (internet connection required)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="192"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="205"/>
         <source>Slideshow background:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="214"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="227"/>
         <source>Language:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="230"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="243"/>
         <source>Restart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="238"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="251"/>
         <source>Language change will take effect after application restart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="254"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="267"/>
         <source>Data storage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="271"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="284"/>
         <source>Folder:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="282"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="295"/>
         <source>Data storage folder...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="292"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="305"/>
         <source>Application uses this folder to store all data like audio recording, IQ recording and logs, etc.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="306"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="319"/>
         <source>Network proxy configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="318"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="331"/>
         <source>Proxy type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="334"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="347"/>
         <source>Apply</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="343"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="356"/>
         <source>Server:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="359"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="372"/>
         <source>Port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="380"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="393"/>
         <source>Username:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="396"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="409"/>
         <source>Password:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="422"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="435"/>
         <source>FMLIST</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="433"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="446"/>
         <source>Upload ensemble information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="447"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="461"/>
         <source>Ensemble information is a small CSV file with list of services in the ensemble,
 it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="454"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="468"/>
         <source>Application automatically uploads ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="455"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="469"/>
         <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="463"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="477"/>
         <source>Thank you for supporting the community!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="464"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="478"/>
         <source>Please consider enabling this option to help the community.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="478"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="492"/>
         <source>Restore application windows on start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="490"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="505"/>
         <source>Check for application update on start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="502"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="518"/>
         <source>Include XML header in raw data recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="537"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="530"/>
+        <source>DAB cable channels (16A - 17D)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/OtherSettings.qml" line="566"/>
         <source>Select SLS Background Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="551"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="580"/>
         <source>Data storage folder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1974,8 +2029,8 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="174"/>
-        <location filename="../dabtables.cpp" line="2209"/>
+        <location filename="../dabtables.cpp" line="166"/>
+        <location filename="../dabtables.cpp" line="2201"/>
         <location filename="../dlplusmodel.cpp" line="319"/>
         <source>News</source>
         <translation type="unfinished"></translation>
@@ -1991,7 +2046,7 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="180"/>
+        <location filename="../dabtables.cpp" line="172"/>
         <location filename="../dlplusmodel.cpp" line="328"/>
         <source>Sport</source>
         <translation type="unfinished"></translation>
@@ -2017,7 +2072,7 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2213"/>
+        <location filename="../dabtables.cpp" line="2205"/>
         <location filename="../dlplusmodel.cpp" line="343"/>
         <source>Event</source>
         <translation type="unfinished"></translation>
@@ -2038,7 +2093,7 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2211"/>
+        <location filename="../dabtables.cpp" line="2203"/>
         <location filename="../dlplusmodel.cpp" line="358"/>
         <source>Weather</source>
         <translation type="unfinished"></translation>
@@ -2049,7 +2104,7 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2201"/>
+        <location filename="../dabtables.cpp" line="2193"/>
         <location filename="../dlplusmodel.cpp" line="364"/>
         <source>Alarm</source>
         <translation type="unfinished"></translation>
@@ -2190,1813 +2245,1798 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="172"/>
+        <location filename="../dabtables.cpp" line="164"/>
         <source>No programme type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="176"/>
+        <location filename="../dabtables.cpp" line="168"/>
         <source>Current Affairs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="178"/>
+        <location filename="../dabtables.cpp" line="170"/>
         <source>Information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="182"/>
+        <location filename="../dabtables.cpp" line="174"/>
         <source>Education</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="184"/>
+        <location filename="../dabtables.cpp" line="176"/>
         <source>Drama</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="186"/>
+        <location filename="../dabtables.cpp" line="178"/>
         <source>Culture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="188"/>
+        <location filename="../dabtables.cpp" line="180"/>
         <source>Science</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="190"/>
+        <location filename="../dabtables.cpp" line="182"/>
         <source>Varied</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="192"/>
+        <location filename="../dabtables.cpp" line="184"/>
         <source>Pop Music</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="194"/>
+        <location filename="../dabtables.cpp" line="186"/>
         <source>Rock Music</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="196"/>
+        <location filename="../dabtables.cpp" line="188"/>
         <source>Easy Listening Music</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="198"/>
+        <location filename="../dabtables.cpp" line="190"/>
         <source>Light Classical</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="200"/>
+        <location filename="../dabtables.cpp" line="192"/>
         <source>Serious Classical</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="202"/>
+        <location filename="../dabtables.cpp" line="194"/>
         <source>Other Music</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="204"/>
+        <location filename="../dabtables.cpp" line="196"/>
         <source>Weather/meteorology</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="206"/>
+        <location filename="../dabtables.cpp" line="198"/>
         <source>Finance/Business</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="208"/>
+        <location filename="../dabtables.cpp" line="200"/>
         <source>Children&apos;s programmes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="210"/>
+        <location filename="../dabtables.cpp" line="202"/>
         <source>Social Affairs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="212"/>
+        <location filename="../dabtables.cpp" line="204"/>
         <source>Religion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="214"/>
+        <location filename="../dabtables.cpp" line="206"/>
         <source>Phone In</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="216"/>
+        <location filename="../dabtables.cpp" line="208"/>
         <source>Travel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="218"/>
+        <location filename="../dabtables.cpp" line="210"/>
         <source>Leisure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="220"/>
+        <location filename="../dabtables.cpp" line="212"/>
         <source>Jazz Music</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="222"/>
+        <location filename="../dabtables.cpp" line="214"/>
         <source>Country Music</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="224"/>
+        <location filename="../dabtables.cpp" line="216"/>
         <source>National Music</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="226"/>
+        <location filename="../dabtables.cpp" line="218"/>
         <source>Oldies Music</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="228"/>
+        <location filename="../dabtables.cpp" line="220"/>
         <source>Folk Music</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="230"/>
+        <location filename="../dabtables.cpp" line="222"/>
         <source>Documentary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="236"/>
+        <location filename="../dabtables.cpp" line="228"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="318"/>
+        <location filename="../dabtables.cpp" line="310"/>
         <source>Unknown/NA</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="320"/>
+        <location filename="../dabtables.cpp" line="312"/>
         <source>Albanian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="322"/>
+        <location filename="../dabtables.cpp" line="314"/>
         <source>Breton</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="324"/>
+        <location filename="../dabtables.cpp" line="316"/>
         <source>Catalan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="326"/>
+        <location filename="../dabtables.cpp" line="318"/>
         <source>Croatian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="328"/>
+        <location filename="../dabtables.cpp" line="320"/>
         <source>Welsh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="330"/>
+        <location filename="../dabtables.cpp" line="322"/>
         <source>Czech</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="332"/>
+        <location filename="../dabtables.cpp" line="324"/>
         <source>Danish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="334"/>
+        <location filename="../dabtables.cpp" line="326"/>
         <source>German</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="336"/>
+        <location filename="../dabtables.cpp" line="328"/>
         <source>English</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="338"/>
+        <location filename="../dabtables.cpp" line="330"/>
         <source>Spanish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="340"/>
+        <location filename="../dabtables.cpp" line="332"/>
         <source>Esperanto</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="342"/>
+        <location filename="../dabtables.cpp" line="334"/>
         <source>Estonian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="344"/>
+        <location filename="../dabtables.cpp" line="336"/>
         <source>Basque</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="346"/>
+        <location filename="../dabtables.cpp" line="338"/>
         <source>Faroese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="348"/>
+        <location filename="../dabtables.cpp" line="340"/>
         <source>French</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="350"/>
+        <location filename="../dabtables.cpp" line="342"/>
         <source>Frisian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="352"/>
+        <location filename="../dabtables.cpp" line="344"/>
         <source>Irish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="354"/>
+        <location filename="../dabtables.cpp" line="346"/>
         <source>Gaelic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="356"/>
+        <location filename="../dabtables.cpp" line="348"/>
         <source>Galician</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="358"/>
+        <location filename="../dabtables.cpp" line="350"/>
         <source>Icelandic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="360"/>
+        <location filename="../dabtables.cpp" line="352"/>
         <source>Italian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="362"/>
+        <location filename="../dabtables.cpp" line="354"/>
         <source>Lappish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="364"/>
+        <location filename="../dabtables.cpp" line="356"/>
         <source>Latin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="366"/>
+        <location filename="../dabtables.cpp" line="358"/>
         <source>Latvian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="368"/>
+        <location filename="../dabtables.cpp" line="360"/>
         <source>Luxembourgian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="370"/>
+        <location filename="../dabtables.cpp" line="362"/>
         <source>Lithuanian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="372"/>
+        <location filename="../dabtables.cpp" line="364"/>
         <source>Hungarian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="374"/>
+        <location filename="../dabtables.cpp" line="366"/>
         <source>Maltese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="376"/>
+        <location filename="../dabtables.cpp" line="368"/>
         <source>Dutch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="378"/>
+        <location filename="../dabtables.cpp" line="370"/>
         <source>Norwegian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="380"/>
+        <location filename="../dabtables.cpp" line="372"/>
         <source>Occitan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="382"/>
+        <location filename="../dabtables.cpp" line="374"/>
         <source>Polish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="384"/>
+        <location filename="../dabtables.cpp" line="376"/>
         <source>Portuguese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="386"/>
+        <location filename="../dabtables.cpp" line="378"/>
         <source>Romanian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="388"/>
+        <location filename="../dabtables.cpp" line="380"/>
         <source>Romansh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="390"/>
+        <location filename="../dabtables.cpp" line="382"/>
         <source>Serbian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="392"/>
+        <location filename="../dabtables.cpp" line="384"/>
         <source>Slovak</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="394"/>
+        <location filename="../dabtables.cpp" line="386"/>
         <source>Slovene</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="396"/>
+        <location filename="../dabtables.cpp" line="388"/>
         <source>Finnish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="398"/>
+        <location filename="../dabtables.cpp" line="390"/>
         <source>Swedish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="400"/>
+        <location filename="../dabtables.cpp" line="392"/>
         <source>Turkish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="402"/>
+        <location filename="../dabtables.cpp" line="394"/>
         <source>Flemish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="404"/>
+        <location filename="../dabtables.cpp" line="396"/>
         <source>Walloon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="406"/>
+        <location filename="../dabtables.cpp" line="398"/>
         <source>Background sound/clean feed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="408"/>
+        <location filename="../dabtables.cpp" line="400"/>
         <source>Zulu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="410"/>
+        <location filename="../dabtables.cpp" line="402"/>
         <source>Vietnamese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="412"/>
+        <location filename="../dabtables.cpp" line="404"/>
         <source>Uzbek</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="414"/>
+        <location filename="../dabtables.cpp" line="406"/>
         <source>Urdu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="416"/>
+        <location filename="../dabtables.cpp" line="408"/>
         <source>Ukranian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="418"/>
+        <location filename="../dabtables.cpp" line="410"/>
         <source>Thai</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="420"/>
+        <location filename="../dabtables.cpp" line="412"/>
         <source>Telugu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="422"/>
+        <location filename="../dabtables.cpp" line="414"/>
         <source>Tatar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="424"/>
+        <location filename="../dabtables.cpp" line="416"/>
         <source>Tamil</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="426"/>
+        <location filename="../dabtables.cpp" line="418"/>
         <source>Tadzhik</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="428"/>
+        <location filename="../dabtables.cpp" line="420"/>
         <source>Swahili</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="430"/>
+        <location filename="../dabtables.cpp" line="422"/>
         <source>Sranan Tongo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="432"/>
+        <location filename="../dabtables.cpp" line="424"/>
         <source>Somali</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="434"/>
+        <location filename="../dabtables.cpp" line="426"/>
         <source>Sinhalese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="436"/>
+        <location filename="../dabtables.cpp" line="428"/>
         <source>Shona</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="438"/>
+        <location filename="../dabtables.cpp" line="430"/>
         <source>Serbo-Croat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="440"/>
+        <location filename="../dabtables.cpp" line="432"/>
         <source>Rusyn</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="442"/>
+        <location filename="../dabtables.cpp" line="434"/>
         <source>Russian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="444"/>
+        <location filename="../dabtables.cpp" line="436"/>
         <source>Quechua</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="446"/>
+        <location filename="../dabtables.cpp" line="438"/>
         <source>Pushtu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="448"/>
+        <location filename="../dabtables.cpp" line="440"/>
         <source>Punjabi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="450"/>
+        <location filename="../dabtables.cpp" line="442"/>
         <source>Persian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="452"/>
+        <location filename="../dabtables.cpp" line="444"/>
         <source>Papiamento</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="454"/>
+        <location filename="../dabtables.cpp" line="446"/>
         <source>Oriya</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="456"/>
+        <location filename="../dabtables.cpp" line="448"/>
         <source>Nepali</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="458"/>
+        <location filename="../dabtables.cpp" line="450"/>
         <source>Ndebele</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="460"/>
+        <location filename="../dabtables.cpp" line="452"/>
         <source>Marathi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="462"/>
+        <location filename="../dabtables.cpp" line="454"/>
         <source>Moldavian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="464"/>
+        <location filename="../dabtables.cpp" line="456"/>
         <source>Malaysian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="466"/>
+        <location filename="../dabtables.cpp" line="458"/>
         <source>Malagasay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="468"/>
+        <location filename="../dabtables.cpp" line="460"/>
         <source>Macedonian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="470"/>
+        <location filename="../dabtables.cpp" line="462"/>
         <source>Laotian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="472"/>
+        <location filename="../dabtables.cpp" line="464"/>
         <source>Korean</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="474"/>
+        <location filename="../dabtables.cpp" line="466"/>
         <source>Khmer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="476"/>
+        <location filename="../dabtables.cpp" line="468"/>
         <source>Kazakh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="478"/>
+        <location filename="../dabtables.cpp" line="470"/>
         <source>Kannada</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="480"/>
+        <location filename="../dabtables.cpp" line="472"/>
         <source>Japanese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="482"/>
+        <location filename="../dabtables.cpp" line="474"/>
         <source>Indonesian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="484"/>
+        <location filename="../dabtables.cpp" line="476"/>
         <source>Hindi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="486"/>
+        <location filename="../dabtables.cpp" line="478"/>
         <source>Hebrew</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="488"/>
+        <location filename="../dabtables.cpp" line="480"/>
         <source>Hausa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="490"/>
+        <location filename="../dabtables.cpp" line="482"/>
         <source>Gurani</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="492"/>
+        <location filename="../dabtables.cpp" line="484"/>
         <source>Gujurati</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="494"/>
+        <location filename="../dabtables.cpp" line="486"/>
         <source>Greek</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="496"/>
+        <location filename="../dabtables.cpp" line="488"/>
         <source>Georgian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="498"/>
+        <location filename="../dabtables.cpp" line="490"/>
         <source>Fulani</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="500"/>
+        <location filename="../dabtables.cpp" line="492"/>
         <source>Dari</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="502"/>
+        <location filename="../dabtables.cpp" line="494"/>
         <source>Chuvash</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="504"/>
+        <location filename="../dabtables.cpp" line="496"/>
         <source>Chinese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="506"/>
+        <location filename="../dabtables.cpp" line="498"/>
         <source>Burmese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="508"/>
+        <location filename="../dabtables.cpp" line="500"/>
         <source>Bulgarian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="510"/>
+        <location filename="../dabtables.cpp" line="502"/>
         <source>Bengali</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="512"/>
+        <location filename="../dabtables.cpp" line="504"/>
         <source>Belorussian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="514"/>
+        <location filename="../dabtables.cpp" line="506"/>
         <source>Bambora</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="516"/>
+        <location filename="../dabtables.cpp" line="508"/>
         <source>Azerbaijani</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="518"/>
+        <location filename="../dabtables.cpp" line="510"/>
         <source>Assamese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="520"/>
+        <location filename="../dabtables.cpp" line="512"/>
         <source>Armenian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="522"/>
+        <location filename="../dabtables.cpp" line="514"/>
         <source>Arabic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="524"/>
+        <location filename="../dabtables.cpp" line="516"/>
         <source>Amharic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="526"/>
-        <location filename="../dabtables.cpp" line="1229"/>
-        <location filename="../dabtables.cpp" line="2225"/>
+        <location filename="../dabtables.cpp" line="518"/>
+        <location filename="../dabtables.cpp" line="1221"/>
+        <location filename="../dabtables.cpp" line="2217"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="775"/>
+        <location filename="../dabtables.cpp" line="767"/>
         <source>USA/Puerto Rico</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="780"/>
+        <location filename="../dabtables.cpp" line="772"/>
         <source>Canada</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="782"/>
+        <location filename="../dabtables.cpp" line="774"/>
         <source>Greenland</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="784"/>
+        <location filename="../dabtables.cpp" line="776"/>
         <source>Anguilla</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="786"/>
+        <location filename="../dabtables.cpp" line="778"/>
         <source>Antigua and Barbuda</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="788"/>
+        <location filename="../dabtables.cpp" line="780"/>
         <source>Ecuador</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="790"/>
+        <location filename="../dabtables.cpp" line="782"/>
         <source>Falkland Islands</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="792"/>
+        <location filename="../dabtables.cpp" line="784"/>
         <source>Barbados</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="794"/>
+        <location filename="../dabtables.cpp" line="786"/>
         <source>Belize</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="796"/>
+        <location filename="../dabtables.cpp" line="788"/>
         <source>Cayman Islands</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="798"/>
+        <location filename="../dabtables.cpp" line="790"/>
         <source>Costa Rica</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="800"/>
+        <location filename="../dabtables.cpp" line="792"/>
         <source>Cuba</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="802"/>
+        <location filename="../dabtables.cpp" line="794"/>
         <source>Argentina</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="804"/>
-        <location filename="../dabtables.cpp" line="877"/>
+        <location filename="../dabtables.cpp" line="796"/>
+        <location filename="../dabtables.cpp" line="869"/>
         <source>Brazil</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="806"/>
+        <location filename="../dabtables.cpp" line="798"/>
         <source>Bermuda</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="808"/>
+        <location filename="../dabtables.cpp" line="800"/>
         <source>Netherlands Antilles</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="810"/>
+        <location filename="../dabtables.cpp" line="802"/>
         <source>Guadeloupe</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="812"/>
+        <location filename="../dabtables.cpp" line="804"/>
         <source>Bahamas</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="814"/>
+        <location filename="../dabtables.cpp" line="806"/>
         <source>Bolivia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="816"/>
+        <location filename="../dabtables.cpp" line="808"/>
         <source>Colombia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="818"/>
+        <location filename="../dabtables.cpp" line="810"/>
         <source>Jamaica</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="820"/>
+        <location filename="../dabtables.cpp" line="812"/>
         <source>Martinique</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="822"/>
+        <location filename="../dabtables.cpp" line="814"/>
         <source>Paraguay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="824"/>
+        <location filename="../dabtables.cpp" line="816"/>
         <source>Nicaragua</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="826"/>
+        <location filename="../dabtables.cpp" line="818"/>
         <source>Panama</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="828"/>
+        <location filename="../dabtables.cpp" line="820"/>
         <source>Dominica</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="830"/>
+        <location filename="../dabtables.cpp" line="822"/>
         <source>Dominican Republic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="832"/>
+        <location filename="../dabtables.cpp" line="824"/>
         <source>Chile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="834"/>
+        <location filename="../dabtables.cpp" line="826"/>
         <source>Grenada</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="836"/>
+        <location filename="../dabtables.cpp" line="828"/>
         <source>Turks and Caicos islands</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="838"/>
+        <location filename="../dabtables.cpp" line="830"/>
         <source>Guyana</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="840"/>
+        <location filename="../dabtables.cpp" line="832"/>
         <source>Guatemala</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="842"/>
+        <location filename="../dabtables.cpp" line="834"/>
         <source>Honduras</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="844"/>
+        <location filename="../dabtables.cpp" line="836"/>
         <source>Aruba</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="846"/>
+        <location filename="../dabtables.cpp" line="838"/>
         <source>Montserrat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="848"/>
+        <location filename="../dabtables.cpp" line="840"/>
         <source>Trinidad and Tobago</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="850"/>
+        <location filename="../dabtables.cpp" line="842"/>
         <source>Peru</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="852"/>
+        <location filename="../dabtables.cpp" line="844"/>
         <source>Surinam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="854"/>
+        <location filename="../dabtables.cpp" line="846"/>
         <source>Uruguay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="856"/>
+        <location filename="../dabtables.cpp" line="848"/>
         <source>St. Kitts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="858"/>
+        <location filename="../dabtables.cpp" line="850"/>
         <source>St. Lucia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="860"/>
+        <location filename="../dabtables.cpp" line="852"/>
         <source>El Salvador</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="862"/>
+        <location filename="../dabtables.cpp" line="854"/>
         <source>Haiti</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="864"/>
+        <location filename="../dabtables.cpp" line="856"/>
         <source>Venezuela</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="866"/>
-        <location filename="../dabtables.cpp" line="872"/>
+        <location filename="../dabtables.cpp" line="858"/>
+        <location filename="../dabtables.cpp" line="864"/>
         <source>Mexico</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="868"/>
+        <location filename="../dabtables.cpp" line="860"/>
         <source>St. Vincent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="879"/>
+        <location filename="../dabtables.cpp" line="871"/>
         <source>St. Pierre and Miquelon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="882"/>
+        <location filename="../dabtables.cpp" line="874"/>
         <source>Cameroon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="884"/>
+        <location filename="../dabtables.cpp" line="876"/>
         <source>Central African Republic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="886"/>
+        <location filename="../dabtables.cpp" line="878"/>
         <source>Djibouti</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="888"/>
+        <location filename="../dabtables.cpp" line="880"/>
         <source>Madagascar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="890"/>
+        <location filename="../dabtables.cpp" line="882"/>
         <source>Mali</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="892"/>
+        <location filename="../dabtables.cpp" line="884"/>
         <source>Angola</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="894"/>
+        <location filename="../dabtables.cpp" line="886"/>
         <source>Equatorial Guinea</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="896"/>
+        <location filename="../dabtables.cpp" line="888"/>
         <source>Gabon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="898"/>
+        <location filename="../dabtables.cpp" line="890"/>
         <source>Republic of Guinea</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="900"/>
+        <location filename="../dabtables.cpp" line="892"/>
         <source>South Africa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="902"/>
+        <location filename="../dabtables.cpp" line="894"/>
         <source>Burkina Faso</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="904"/>
+        <location filename="../dabtables.cpp" line="896"/>
         <source>Congo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="906"/>
+        <location filename="../dabtables.cpp" line="898"/>
         <source>Togo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="908"/>
+        <location filename="../dabtables.cpp" line="900"/>
         <source>Benin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="910"/>
+        <location filename="../dabtables.cpp" line="902"/>
         <source>Malawi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="912"/>
+        <location filename="../dabtables.cpp" line="904"/>
         <source>Namibia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="914"/>
+        <location filename="../dabtables.cpp" line="906"/>
         <source>Liberia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="916"/>
+        <location filename="../dabtables.cpp" line="908"/>
         <source>Ghana</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="918"/>
+        <location filename="../dabtables.cpp" line="910"/>
         <source>Mauritania</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="920"/>
+        <location filename="../dabtables.cpp" line="912"/>
         <source>Sao Tome and Principe</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="922"/>
+        <location filename="../dabtables.cpp" line="914"/>
         <source>Cape Verde</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="924"/>
+        <location filename="../dabtables.cpp" line="916"/>
         <source>Senegal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="926"/>
+        <location filename="../dabtables.cpp" line="918"/>
         <source>Gambia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="928"/>
+        <location filename="../dabtables.cpp" line="920"/>
         <source>Burundi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="930"/>
+        <location filename="../dabtables.cpp" line="922"/>
         <source>Ascension Island</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="932"/>
+        <location filename="../dabtables.cpp" line="924"/>
         <source>Botswana</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="934"/>
+        <location filename="../dabtables.cpp" line="926"/>
         <source>Comoros</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="936"/>
+        <location filename="../dabtables.cpp" line="928"/>
         <source>Tanzania</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="938"/>
+        <location filename="../dabtables.cpp" line="930"/>
         <source>Ethiopia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="940"/>
+        <location filename="../dabtables.cpp" line="932"/>
         <source>Nigeria</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="942"/>
+        <location filename="../dabtables.cpp" line="934"/>
         <source>Sierra Leone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="944"/>
+        <location filename="../dabtables.cpp" line="936"/>
         <source>Zimbabwe</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="946"/>
+        <location filename="../dabtables.cpp" line="938"/>
         <source>Mozambique</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="948"/>
+        <location filename="../dabtables.cpp" line="940"/>
         <source>Uganda</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="950"/>
+        <location filename="../dabtables.cpp" line="942"/>
         <source>Swaziland</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="952"/>
+        <location filename="../dabtables.cpp" line="944"/>
         <source>Kenya</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="954"/>
+        <location filename="../dabtables.cpp" line="946"/>
         <source>Somalia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="956"/>
+        <location filename="../dabtables.cpp" line="948"/>
         <source>Niger</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="958"/>
+        <location filename="../dabtables.cpp" line="950"/>
         <source>Chad</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="960"/>
+        <location filename="../dabtables.cpp" line="952"/>
         <source>Guinea-Bissau</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="962"/>
+        <location filename="../dabtables.cpp" line="954"/>
         <source>Zaire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="964"/>
+        <location filename="../dabtables.cpp" line="956"/>
         <source>Cote d&apos;Ivoire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="966"/>
+        <location filename="../dabtables.cpp" line="958"/>
         <source>Zanzibar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="968"/>
+        <location filename="../dabtables.cpp" line="960"/>
         <source>Zambia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="970"/>
+        <location filename="../dabtables.cpp" line="962"/>
         <source>Western Sahara</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="972"/>
+        <location filename="../dabtables.cpp" line="964"/>
         <source>Rwanda</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="974"/>
+        <location filename="../dabtables.cpp" line="966"/>
         <source>Lesotho</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="976"/>
+        <location filename="../dabtables.cpp" line="968"/>
         <source>Seychelles</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="978"/>
+        <location filename="../dabtables.cpp" line="970"/>
         <source>Mauritius</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="980"/>
+        <location filename="../dabtables.cpp" line="972"/>
         <source>Sudan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="983"/>
-        <location filename="../dabtables.cpp" line="1007"/>
+        <location filename="../dabtables.cpp" line="975"/>
+        <location filename="../dabtables.cpp" line="999"/>
         <source>Germany</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="985"/>
+        <location filename="../dabtables.cpp" line="977"/>
         <source>Algeria</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="987"/>
+        <location filename="../dabtables.cpp" line="979"/>
         <source>Andorra</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="989"/>
+        <location filename="../dabtables.cpp" line="981"/>
         <source>Israel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="991"/>
+        <location filename="../dabtables.cpp" line="983"/>
         <source>Italy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="993"/>
+        <location filename="../dabtables.cpp" line="985"/>
         <source>Belgium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="995"/>
+        <location filename="../dabtables.cpp" line="987"/>
         <source>Russian Federation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="997"/>
+        <location filename="../dabtables.cpp" line="989"/>
         <source>Palestine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="999"/>
+        <location filename="../dabtables.cpp" line="991"/>
         <source>Albania</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1001"/>
+        <location filename="../dabtables.cpp" line="993"/>
         <source>Austria</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1003"/>
+        <location filename="../dabtables.cpp" line="995"/>
         <source>Hungary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1005"/>
+        <location filename="../dabtables.cpp" line="997"/>
         <source>Malta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1009"/>
+        <location filename="../dabtables.cpp" line="1001"/>
         <source>Egypt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1011"/>
+        <location filename="../dabtables.cpp" line="1003"/>
         <source>Greece</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1013"/>
+        <location filename="../dabtables.cpp" line="1005"/>
         <source>Cyprus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1015"/>
+        <location filename="../dabtables.cpp" line="1007"/>
         <source>San Marino</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1017"/>
+        <location filename="../dabtables.cpp" line="1009"/>
         <source>Switzerland</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1019"/>
+        <location filename="../dabtables.cpp" line="1011"/>
         <source>Jordan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1021"/>
+        <location filename="../dabtables.cpp" line="1013"/>
         <source>Finland</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1023"/>
+        <location filename="../dabtables.cpp" line="1015"/>
         <source>Luxembourg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1025"/>
+        <location filename="../dabtables.cpp" line="1017"/>
         <source>Bulgaria</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1027"/>
+        <location filename="../dabtables.cpp" line="1019"/>
         <source>Denmark</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1030"/>
+        <location filename="../dabtables.cpp" line="1022"/>
         <source>Gibraltar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1032"/>
+        <location filename="../dabtables.cpp" line="1024"/>
         <source>Iraq</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1034"/>
+        <location filename="../dabtables.cpp" line="1026"/>
         <source>United Kingdom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1036"/>
+        <location filename="../dabtables.cpp" line="1028"/>
         <source>Libya</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1038"/>
+        <location filename="../dabtables.cpp" line="1030"/>
         <source>Romania</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1040"/>
+        <location filename="../dabtables.cpp" line="1032"/>
         <source>France</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1042"/>
+        <location filename="../dabtables.cpp" line="1034"/>
         <source>Morocco</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1044"/>
+        <location filename="../dabtables.cpp" line="1036"/>
         <source>Czech Republic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1046"/>
+        <location filename="../dabtables.cpp" line="1038"/>
         <source>Poland</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1048"/>
+        <location filename="../dabtables.cpp" line="1040"/>
         <source>Vatican</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1050"/>
+        <location filename="../dabtables.cpp" line="1042"/>
         <source>Slovakia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1052"/>
+        <location filename="../dabtables.cpp" line="1044"/>
         <source>Syria</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1054"/>
+        <location filename="../dabtables.cpp" line="1046"/>
         <source>Tunisia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1056"/>
+        <location filename="../dabtables.cpp" line="1048"/>
         <source>Liechtenstein</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1058"/>
+        <location filename="../dabtables.cpp" line="1050"/>
         <source>Iceland</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1060"/>
+        <location filename="../dabtables.cpp" line="1052"/>
         <source>Monaco</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1062"/>
+        <location filename="../dabtables.cpp" line="1054"/>
         <source>Lithuania</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1064"/>
+        <location filename="../dabtables.cpp" line="1056"/>
         <source>Serbia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1066"/>
+        <location filename="../dabtables.cpp" line="1058"/>
         <source>Spain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1069"/>
+        <location filename="../dabtables.cpp" line="1061"/>
         <source>Norway</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1071"/>
+        <location filename="../dabtables.cpp" line="1063"/>
         <source>Montenegro</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1073"/>
+        <location filename="../dabtables.cpp" line="1065"/>
         <source>Ireland</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1075"/>
+        <location filename="../dabtables.cpp" line="1067"/>
         <source>Turkey</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1077"/>
+        <location filename="../dabtables.cpp" line="1069"/>
         <source>Tajikistan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1079"/>
+        <location filename="../dabtables.cpp" line="1071"/>
         <source>Netherlands</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1081"/>
+        <location filename="../dabtables.cpp" line="1073"/>
         <source>Latvia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1083"/>
+        <location filename="../dabtables.cpp" line="1075"/>
         <source>Lebanon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1085"/>
+        <location filename="../dabtables.cpp" line="1077"/>
         <source>Azerbaijan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1087"/>
+        <location filename="../dabtables.cpp" line="1079"/>
         <source>Croatia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1089"/>
+        <location filename="../dabtables.cpp" line="1081"/>
         <source>Kazakhstan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1091"/>
+        <location filename="../dabtables.cpp" line="1083"/>
         <source>Sweden</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1093"/>
+        <location filename="../dabtables.cpp" line="1085"/>
         <source>Belarus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1095"/>
+        <location filename="../dabtables.cpp" line="1087"/>
         <source>Moldova</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1097"/>
+        <location filename="../dabtables.cpp" line="1089"/>
         <source>Estonia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1099"/>
+        <location filename="../dabtables.cpp" line="1091"/>
         <source>Macedonia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1101"/>
+        <location filename="../dabtables.cpp" line="1093"/>
         <source>Ukraine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1103"/>
+        <location filename="../dabtables.cpp" line="1095"/>
         <source>Kosovo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1107"/>
+        <location filename="../dabtables.cpp" line="1099"/>
         <source>Portugal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1109"/>
+        <location filename="../dabtables.cpp" line="1101"/>
         <source>Slovenia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1111"/>
+        <location filename="../dabtables.cpp" line="1103"/>
         <source>Armenia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1113"/>
+        <location filename="../dabtables.cpp" line="1105"/>
         <source>Uzbekistan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1115"/>
+        <location filename="../dabtables.cpp" line="1107"/>
         <source>Georgia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1117"/>
+        <location filename="../dabtables.cpp" line="1109"/>
         <source>Turkmenistan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1119"/>
+        <location filename="../dabtables.cpp" line="1111"/>
         <source>Bosnia Herzegovina</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1121"/>
+        <location filename="../dabtables.cpp" line="1113"/>
         <source>Kyrgyzstan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1124"/>
+        <location filename="../dabtables.cpp" line="1116"/>
         <source>Australia: Capital Cities (commercial and community broadcasters)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1126"/>
+        <location filename="../dabtables.cpp" line="1118"/>
         <source>Australia: Regional New South Wales and ACT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1128"/>
+        <location filename="../dabtables.cpp" line="1120"/>
         <source>Australia: Capital Cities (national broadcasters)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1130"/>
+        <location filename="../dabtables.cpp" line="1122"/>
         <source>Australia: Regional Queensland</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1132"/>
+        <location filename="../dabtables.cpp" line="1124"/>
         <source>Australia: Regional South Australia and Northern Territory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1134"/>
+        <location filename="../dabtables.cpp" line="1126"/>
         <source>Australia: Regional Western Australia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1136"/>
+        <location filename="../dabtables.cpp" line="1128"/>
         <source>Australia: Regional Victoria and Tasmania</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1138"/>
+        <location filename="../dabtables.cpp" line="1130"/>
         <source>Australia: Regional (future)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1140"/>
+        <location filename="../dabtables.cpp" line="1132"/>
         <source>Saudi Arabia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1142"/>
+        <location filename="../dabtables.cpp" line="1134"/>
         <source>Afghanistan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1144"/>
+        <location filename="../dabtables.cpp" line="1136"/>
         <source>Myanmar (Burma)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1146"/>
+        <location filename="../dabtables.cpp" line="1138"/>
         <source>China</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1148"/>
+        <location filename="../dabtables.cpp" line="1140"/>
         <source>Korea (North)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1150"/>
+        <location filename="../dabtables.cpp" line="1142"/>
         <source>Bahrain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1152"/>
+        <location filename="../dabtables.cpp" line="1144"/>
         <source>Malaysia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1154"/>
+        <location filename="../dabtables.cpp" line="1146"/>
         <source>Kiribati</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1156"/>
+        <location filename="../dabtables.cpp" line="1148"/>
         <source>Bhutan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1158"/>
+        <location filename="../dabtables.cpp" line="1150"/>
         <source>Bangladesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1160"/>
+        <location filename="../dabtables.cpp" line="1152"/>
         <source>Pakistan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1162"/>
+        <location filename="../dabtables.cpp" line="1154"/>
         <source>Fiji</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1164"/>
+        <location filename="../dabtables.cpp" line="1156"/>
         <source>Oman</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1166"/>
+        <location filename="../dabtables.cpp" line="1158"/>
         <source>Nauru</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1168"/>
+        <location filename="../dabtables.cpp" line="1160"/>
         <source>Iran</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1170"/>
+        <location filename="../dabtables.cpp" line="1162"/>
         <source>New Zealand</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1172"/>
+        <location filename="../dabtables.cpp" line="1164"/>
         <source>Solomon Islands</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1174"/>
+        <location filename="../dabtables.cpp" line="1166"/>
         <source>Brunei Darussalam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1176"/>
+        <location filename="../dabtables.cpp" line="1168"/>
         <source>Sri Lanka</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1178"/>
+        <location filename="../dabtables.cpp" line="1170"/>
         <source>Taiwan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1180"/>
+        <location filename="../dabtables.cpp" line="1172"/>
         <source>Korea (South)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1182"/>
+        <location filename="../dabtables.cpp" line="1174"/>
         <source>Hong Kong</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1184"/>
+        <location filename="../dabtables.cpp" line="1176"/>
         <source>Kuwait</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1186"/>
+        <location filename="../dabtables.cpp" line="1178"/>
         <source>Qatar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1188"/>
+        <location filename="../dabtables.cpp" line="1180"/>
         <source>Cambodia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1190"/>
+        <location filename="../dabtables.cpp" line="1182"/>
         <source>Western Samoa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1192"/>
+        <location filename="../dabtables.cpp" line="1184"/>
         <source>India</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1194"/>
+        <location filename="../dabtables.cpp" line="1186"/>
         <source>Macau</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1196"/>
+        <location filename="../dabtables.cpp" line="1188"/>
         <source>Vietnam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1198"/>
+        <location filename="../dabtables.cpp" line="1190"/>
         <source>Philippines</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1200"/>
+        <location filename="../dabtables.cpp" line="1192"/>
         <source>Japan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1202"/>
+        <location filename="../dabtables.cpp" line="1194"/>
         <source>Singapore</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1204"/>
+        <location filename="../dabtables.cpp" line="1196"/>
         <source>Maldives</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1206"/>
+        <location filename="../dabtables.cpp" line="1198"/>
         <source>Indonesia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1208"/>
+        <location filename="../dabtables.cpp" line="1200"/>
         <source>United Arab Emirates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1210"/>
+        <location filename="../dabtables.cpp" line="1202"/>
         <source>Nepal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1212"/>
+        <location filename="../dabtables.cpp" line="1204"/>
         <source>Vanuatu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1214"/>
+        <location filename="../dabtables.cpp" line="1206"/>
         <source>Laos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1216"/>
+        <location filename="../dabtables.cpp" line="1208"/>
         <source>Thailand</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1218"/>
+        <location filename="../dabtables.cpp" line="1210"/>
         <source>Tonga</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1220"/>
+        <location filename="../dabtables.cpp" line="1212"/>
         <source>Papua New Guinea</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1222"/>
+        <location filename="../dabtables.cpp" line="1214"/>
         <source>Yemen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1224"/>
+        <location filename="../dabtables.cpp" line="1216"/>
         <source>Micronesia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1226"/>
+        <location filename="../dabtables.cpp" line="1218"/>
         <source>Mongolia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2203"/>
+        <location filename="../dabtables.cpp" line="2195"/>
         <source>Traffic News</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2205"/>
+        <location filename="../dabtables.cpp" line="2197"/>
         <source>Transport News</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2207"/>
+        <location filename="../dabtables.cpp" line="2199"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2215"/>
+        <location filename="../dabtables.cpp" line="2207"/>
         <source>Special event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2217"/>
+        <location filename="../dabtables.cpp" line="2209"/>
         <source>Radio Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2219"/>
+        <location filename="../dabtables.cpp" line="2211"/>
         <source>Sport news</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2221"/>
+        <location filename="../dabtables.cpp" line="2213"/>
         <source>Financial news</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2223"/>
+        <location filename="../dabtables.cpp" line="2215"/>
         <source>Alarm Test</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../slmodelitem.cpp" line="111"/>
-        <source>Short label:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../slmodelitem.cpp" line="141"/>
-        <source>Channel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../slmodelitem.cpp" line="142"/>
-        <source>Frequency: %1 MHz</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4021,62 +4061,72 @@ it is anonymous and contains no personal data.</source>
 <context>
     <name>RawFileDevice</name>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="50"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="52"/>
         <source>Open file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="77"/>
-        <source>Loop file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="92"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="78"/>
         <source>No file selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="130"/>
-        <source>Recording date:</source>
+        <location filename="../qml/settings/RawFileDevice.qml" line="117"/>
+        <source>%1 / %2 sec</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/RawFileDevice.qml" line="132"/>
+        <source>Disable repeat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="133"/>
+        <source>Enable repeat</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/RawFileDevice.qml" line="153"/>
+        <source>Recording date:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/RawFileDevice.qml" line="156"/>
         <source>Recorder:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="136"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="159"/>
         <source>Device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="139"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="162"/>
         <source>Model:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="142"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="165"/>
         <source>Sample rate [Hz]:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="145"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="168"/>
         <source>Frequency [kHz]:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="148"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="171"/>
         <source>Recording length [sec]:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="151"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="174"/>
         <source>Sample format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="174"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="197"/>
         <source>Binary files</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4195,98 +4245,98 @@ it is anonymous and contains no personal data.</source>
 <context>
     <name>RtlTcpDevice</name>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="48"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="50"/>
         <source>IP address:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="54"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="56"/>
         <source>IP address of RTL-TCP server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="66"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="70"/>
         <source>Port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="80"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="85"/>
         <source>Connect to control socket if available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="100"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="107"/>
         <source>Connected device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="103"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="110"/>
         <source>Tuner:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="106"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="113"/>
         <source>Sample format:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="124"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="131"/>
         <source>Gain control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="132"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="139"/>
         <source>Software</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="132"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="139"/>
         <source>Device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="132"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="139"/>
         <source>Manual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="153"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="160"/>
         <source>Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="186"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="193"/>
         <source>Expert settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="199"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="206"/>
         <source>SW AGC level threshold:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="213"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="220"/>
         <source>Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="219"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="226"/>
         <source>Set default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="231"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="238"/>
         <source>Frequency correction:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="250"/>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="284"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="257"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="291"/>
         <source>Reset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="262"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="269"/>
         <source>RF level correction:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4348,100 +4398,151 @@ it is anonymous and contains no personal data.</source>
 <context>
     <name>ScannerBackend</name>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="143"/>
+        <location filename="../tii/scannerbackend.cpp" line="141"/>
         <source>Scanning finished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="162"/>
+        <location filename="../tii/scannerbackend.cpp" line="160"/>
         <source>Replace data in the table?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="162"/>
+        <location filename="../tii/scannerbackend.cpp" line="160"/>
         <source>Current data in the table will be deleted. This action is irreversible.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="173"/>
+        <location filename="../tii/scannerbackend.cpp" line="171"/>
         <source>Replace</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="174"/>
-        <location filename="../tii/scannerbackend.cpp" line="864"/>
-        <location filename="../tii/scannerbackend.cpp" line="884"/>
+        <location filename="../tii/scannerbackend.cpp" line="172"/>
+        <location filename="../tii/scannerbackend.cpp" line="1003"/>
+        <location filename="../tii/scannerbackend.cpp" line="1023"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="417"/>
+        <location filename="../tii/scannerbackend.cpp" line="247"/>
+        <location filename="../tii/scannerbackend.cpp" line="276"/>
+        <location filename="../tii/scannerbackend.cpp" line="285"/>
+        <location filename="../tii/scannerbackend.cpp" line="294"/>
+        <location filename="../tii/scannerbackend.cpp" line="303"/>
+        <location filename="../tii/scannerbackend.cpp" line="314"/>
+        <location filename="../tii/scannerbackend.cpp" line="322"/>
+        <location filename="../tii/scannerbackend.cpp" line="330"/>
+        <location filename="../tii/scannerbackend.cpp" line="344"/>
+        <source>Failed to load file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerbackend.cpp" line="404"/>
+        <location filename="../tii/scannerbackend.cpp" line="427"/>
+        <location filename="../tii/scannerbackend.cpp" line="442"/>
+        <location filename="../tii/scannerbackend.cpp" line="461"/>
+        <source>Failed to save log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerbackend.cpp" line="422"/>
+        <source>Log saved to CSV file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerbackend.cpp" line="452"/>
+        <source>No permission to write log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerbackend.cpp" line="485"/>
+        <source>Auto-save CSV started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerbackend.cpp" line="535"/>
         <source>Channel:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="490"/>
+        <location filename="../tii/scannerbackend.cpp" line="613"/>
         <source>%1  (cycle %2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="671"/>
+        <location filename="../tii/scannerbackend.cpp" line="802"/>
         <source>Mark as local (known) transmitter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="671"/>
+        <location filename="../tii/scannerbackend.cpp" line="802"/>
         <source>Unmark local (known) transmitter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="673"/>
+        <location filename="../tii/scannerbackend.cpp" line="804"/>
         <source>Show ensemble information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="784"/>
+        <location filename="../tii/scannerbackend.cpp" line="870"/>
+        <source>No permission to write ensemble information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerbackend.cpp" line="881"/>
+        <source>Ensemble information exported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerbackend.cpp" line="886"/>
+        <source>Failed to export ensemble information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerbackend.cpp" line="920"/>
         <source>Scanning failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="831"/>
+        <location filename="../tii/scannerbackend.cpp" line="970"/>
+        <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerbackend.cpp" line="974"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="836"/>
-        <source>Antenna height: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../tii/scannerbackend.cpp" line="838"/>
+        <location filename="../tii/scannerbackend.cpp" line="963"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="852"/>
+        <location filename="../tii/scannerbackend.cpp" line="991"/>
         <source>Clear scan results?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="852"/>
+        <location filename="../tii/scannerbackend.cpp" line="991"/>
         <source>You will loose current scan results, this action is irreversible.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="863"/>
-        <location filename="../tii/scannerbackend.cpp" line="883"/>
+        <location filename="../tii/scannerbackend.cpp" line="1002"/>
+        <location filename="../tii/scannerbackend.cpp" line="1022"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="872"/>
+        <location filename="../tii/scannerbackend.cpp" line="1011"/>
         <source>Clear local (known) transmitter database?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="872"/>
+        <location filename="../tii/scannerbackend.cpp" line="1011"/>
         <source>You will loose all records in the database, this action is irreversible.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4663,92 +4764,87 @@ it is anonymous and contains no personal data.</source>
 <context>
     <name>SdrPlayDevice</name>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="74"/>
-        <source>Disconnect</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="74"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="75"/>
         <source>Reload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="79"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="80"/>
         <source>RX channel number:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="99"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="100"/>
         <source>Antenna:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="123"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="124"/>
         <source>Use any available SDRplay device if the selected one fails</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="142"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="143"/>
         <source>Connected device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="145"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="146"/>
         <source>Serial number:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="163"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="164"/>
         <source>Gain control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="171"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="172"/>
         <source>Software</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="171"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="172"/>
         <source>Manual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="199"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="200"/>
         <source>RF gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="230"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="231"/>
         <source>IF gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="248"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="249"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="252"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="253"/>
         <source>AGC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="269"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="270"/>
         <source>Expert settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="283"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="284"/>
         <source>Frequency correction:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="302"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="303"/>
         <source>Reset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="314"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="315"/>
         <source>Bias Tee:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4761,25 +4857,38 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="339"/>
-        <location filename="../qml/ServiceList.qml" line="503"/>
+        <location filename="../qml/ServiceList.qml" line="377"/>
+        <location filename="../qml/ServiceList.qml" line="552"/>
         <source>Remove service from favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="340"/>
-        <location filename="../qml/ServiceList.qml" line="504"/>
+        <location filename="../qml/ServiceList.qml" line="378"/>
+        <location filename="../qml/ServiceList.qml" line="553"/>
         <source>Add service to favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="654"/>
+        <location filename="../qml/ServiceList.qml" line="690"/>
         <source>Services</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="657"/>
+        <location filename="../qml/ServiceList.qml" line="693"/>
         <source>Ensembles</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ServicePanel</name>
+    <message>
+        <location filename="../qml/ServicePanel.qml" line="112"/>
+        <source>Dock page back to main window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServicePanel.qml" line="112"/>
+        <source>Undock page to separate window</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4823,7 +4932,7 @@ it is anonymous and contains no personal data.</source>
 <context>
     <name>SettingsBackend</name>
     <message>
-        <location filename="../settingsbackend.cpp" line="47"/>
+        <location filename="../settingsbackend.cpp" line="49"/>
         <source>
         Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;
         &lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;,
@@ -4833,136 +4942,136 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="60"/>
+        <location filename="../settingsbackend.cpp" line="62"/>
         <source>Device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="61"/>
+        <location filename="../settingsbackend.cpp" line="63"/>
         <source>Audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="62"/>
+        <location filename="../settingsbackend.cpp" line="64"/>
         <source>Announcements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="63"/>
+        <location filename="../settingsbackend.cpp" line="65"/>
         <source>User applications</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="64"/>
+        <location filename="../settingsbackend.cpp" line="66"/>
         <source>TII</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="65"/>
+        <location filename="../settingsbackend.cpp" line="67"/>
         <source>Others</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="84"/>
+        <location filename="../settingsbackend.cpp" line="86"/>
         <source>Unsigned 8 bits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="85"/>
+        <location filename="../settingsbackend.cpp" line="87"/>
         <source>Signed 16 bits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="168"/>
+        <location filename="../settingsbackend.cpp" line="164"/>
         <source>Disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="229"/>
-        <location filename="../settingsbackend.cpp" line="278"/>
+        <location filename="../settingsbackend.cpp" line="225"/>
+        <location filename="../settingsbackend.cpp" line="274"/>
         <source>System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="230"/>
-        <location filename="../settingsbackend.cpp" line="279"/>
+        <location filename="../settingsbackend.cpp" line="226"/>
+        <location filename="../settingsbackend.cpp" line="275"/>
         <source>Manual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="232"/>
+        <location filename="../settingsbackend.cpp" line="228"/>
         <source>Serial port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="268"/>
+        <location filename="../settingsbackend.cpp" line="264"/>
         <source>System language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="277"/>
+        <location filename="../settingsbackend.cpp" line="273"/>
         <source>No proxy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="848"/>
-        <location filename="../settingsbackend.cpp" line="886"/>
-        <location filename="../settingsbackend.cpp" line="2013"/>
+        <location filename="../settingsbackend.cpp" line="862"/>
+        <location filename="../settingsbackend.cpp" line="900"/>
+        <location filename="../settingsbackend.cpp" line="2053"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="901"/>
+        <location filename="../settingsbackend.cpp" line="915"/>
         <source>RTL SDR device connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="904"/>
+        <location filename="../settingsbackend.cpp" line="918"/>
         <source>RTL TCP device connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="907"/>
+        <location filename="../settingsbackend.cpp" line="921"/>
         <source>No device connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="910"/>
+        <location filename="../settingsbackend.cpp" line="924"/>
         <source>Raw file connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="913"/>
+        <location filename="../settingsbackend.cpp" line="927"/>
         <source>Airspy device connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="916"/>
+        <location filename="../settingsbackend.cpp" line="930"/>
         <source>Soapy SDR device connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1370"/>
+        <location filename="../settingsbackend.cpp" line="1384"/>
         <source>Update failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1380"/>
+        <location filename="../settingsbackend.cpp" line="1394"/>
         <source>Last update: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1384"/>
+        <location filename="../settingsbackend.cpp" line="1398"/>
         <source>Data not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1720"/>
+        <location filename="../settingsbackend.cpp" line="1760"/>
         <source>sec</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.h" line="398"/>
+        <location filename="../settingsbackend.h" line="405"/>
         <source>No file selected</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4991,8 +5100,8 @@ it is anonymous and contains no personal data.</source>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="276"/>
-        <location filename="../signalbackend.cpp" line="348"/>
-        <location filename="../signalbackend.cpp" line="359"/>
+        <location filename="../signalbackend.cpp" line="340"/>
+        <location filename="../signalbackend.cpp" line="351"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5038,62 +5147,62 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="67"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="68"/>
         <source>RX channel number:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="83"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="85"/>
         <source>Antenna:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="104"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="107"/>
         <source>Connected device:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="122"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="125"/>
         <source>Gain control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="130"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="133"/>
         <source>Device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="130"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="133"/>
         <source>Manual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="211"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="214"/>
         <source>Expert settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="225"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="228"/>
         <source>Bandwidth:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="240"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="243"/>
         <source>Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="246"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="249"/>
         <source>Set default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="258"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="261"/>
         <source>Frequency correction:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="277"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="280"/>
         <source>Reset</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5148,22 +5257,42 @@ it is anonymous and contains no personal data.</source>
 <context>
     <name>TIIBackend</name>
     <message>
-        <location filename="../tii/tiibackend.cpp" line="197"/>
+        <location filename="../tii/tiibackend.cpp" line="213"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="202"/>
-        <source>Antenna height: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../tii/tiibackend.cpp" line="204"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/tiibackend.cpp" line="302"/>
+        <location filename="../tii/tiibackend.cpp" line="209"/>
+        <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/tiibackend.cpp" line="232"/>
+        <source>Failed to create TII log directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/tiibackend.cpp" line="240"/>
+        <source>No permission to write log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/tiibackend.cpp" line="255"/>
+        <source>TII log started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/tiibackend.cpp" line="281"/>
+        <source>Failed to write TII log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/tiibackend.cpp" line="318"/>
         <source>Carrier pairs</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5171,12 +5300,12 @@ it is anonymous and contains no personal data.</source>
 <context>
     <name>TIIMap</name>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="396"/>
+        <location filename="../qml/tii/TIIMap.qml" line="418"/>
         <source>Stop logging</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="396"/>
+        <location filename="../qml/tii/TIIMap.qml" line="418"/>
         <source>Record CSV log</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5209,95 +5338,138 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="154"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="145"/>
+        <source>Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/TiiSettings.qml" line="170"/>
         <source>GPS coordinates:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="178"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="194"/>
         <source>Serial port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="191"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="208"/>
         <source>Baudrate:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="226"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="243"/>
         <source>Logging</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="240"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="257"/>
         <source>Folder:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="255"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="272"/>
         <source>Timestamp in UTC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="265"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="283"/>
         <source>GPS coordinates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="284"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="303"/>
         <source>Detector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="290"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="309"/>
         <source>Reliable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="306"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="325"/>
         <source>Sensitive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="318"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="337"/>
         <source>User interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="329"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="350"/>
         <source>Show spectrum plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="340"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="362"/>
         <source>Keep no longer detected transmitters on map (grey marker)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="358"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="380"/>
         <source>Remove after:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/TiiSettings.qml" line="413"/>
+        <source>Transmitter table columns</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TiiTableColsSettingsModel</name>
+    <message>
+        <location filename="../tii/tiitablecolssettingsmodel.cpp" line="35"/>
+        <source>Code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/tiitablecolssettingsmodel.cpp" line="36"/>
+        <source>Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/tiitablecolssettingsmodel.cpp" line="37"/>
+        <source>Distance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/tiitablecolssettingsmodel.cpp" line="37"/>
+        <source>Azimuth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/tiitablecolssettingsmodel.cpp" line="38"/>
+        <source>Location</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/tiitablecolssettingsmodel.cpp" line="38"/>
+        <source>Power</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TxMapBackend</name>
     <message>
-        <location filename="../tii/txmapbackend.cpp" line="249"/>
+        <location filename="../tii/txmapbackend.cpp" line="273"/>
         <source>Ensemble: &lt;b&gt;%1&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txmapbackend.cpp" line="253"/>
+        <location filename="../tii/txmapbackend.cpp" line="278"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txmapbackend.cpp" line="261"/>
+        <location filename="../tii/txmapbackend.cpp" line="286"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txmapbackend.cpp" line="266"/>
+        <location filename="../tii/txmapbackend.cpp" line="275"/>
         <source>Channel: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5305,136 +5477,141 @@ it is anonymous and contains no personal data.</source>
 <context>
     <name>TxTableModel</name>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="310"/>
+        <location filename="../tii/txtablemodel.cpp" line="320"/>
         <source>Time (UTC)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="314"/>
-        <location filename="../tii/txtablemodel.cpp" line="355"/>
-        <location filename="../tii/txtablemodel.cpp" line="359"/>
+        <location filename="../tii/txtablemodel.cpp" line="324"/>
+        <location filename="../tii/txtablemodel.cpp" line="367"/>
+        <location filename="../tii/txtablemodel.cpp" line="371"/>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="317"/>
-        <location filename="../tii/txtablemodel.cpp" line="362"/>
+        <location filename="../tii/txtablemodel.cpp" line="327"/>
+        <location filename="../tii/txtablemodel.cpp" line="374"/>
         <source>Channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="319"/>
+        <location filename="../tii/txtablemodel.cpp" line="329"/>
         <source>Frequency</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="321"/>
-        <location filename="../tii/txtablemodel.cpp" line="366"/>
+        <location filename="../tii/txtablemodel.cpp" line="331"/>
+        <location filename="../tii/txtablemodel.cpp" line="378"/>
         <source>UEID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="323"/>
-        <location filename="../tii/txtablemodel.cpp" line="368"/>
+        <location filename="../tii/txtablemodel.cpp" line="333"/>
+        <location filename="../tii/txtablemodel.cpp" line="380"/>
         <source>Label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="325"/>
-        <location filename="../tii/txtablemodel.cpp" line="370"/>
+        <location filename="../tii/txtablemodel.cpp" line="335"/>
+        <location filename="../tii/txtablemodel.cpp" line="382"/>
         <source>Services</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="327"/>
+        <location filename="../tii/txtablemodel.cpp" line="337"/>
         <source>SNR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="329"/>
-        <location filename="../tii/txtablemodel.cpp" line="374"/>
+        <location filename="../tii/txtablemodel.cpp" line="339"/>
+        <location filename="../tii/txtablemodel.cpp" line="386"/>
         <source>Main</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="331"/>
-        <location filename="../tii/txtablemodel.cpp" line="376"/>
+        <location filename="../tii/txtablemodel.cpp" line="341"/>
+        <location filename="../tii/txtablemodel.cpp" line="388"/>
         <source>Sub</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="333"/>
+        <location filename="../tii/txtablemodel.cpp" line="343"/>
+        <source>Code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="345"/>
         <source>Level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="335"/>
-        <location filename="../tii/txtablemodel.cpp" line="380"/>
+        <location filename="../tii/txtablemodel.cpp" line="347"/>
+        <location filename="../tii/txtablemodel.cpp" line="392"/>
         <source>Location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="337"/>
+        <location filename="../tii/txtablemodel.cpp" line="349"/>
         <source>Power</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="339"/>
+        <location filename="../tii/txtablemodel.cpp" line="351"/>
         <source>Distance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="341"/>
+        <location filename="../tii/txtablemodel.cpp" line="353"/>
         <source>Azimuth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="388"/>
+        <location filename="../tii/txtablemodel.cpp" line="400"/>
         <source>Latitude (TX)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="390"/>
+        <location filename="../tii/txtablemodel.cpp" line="402"/>
         <source>Longitude (TX)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="392"/>
+        <location filename="../tii/txtablemodel.cpp" line="404"/>
         <source>Latitude (RX)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="394"/>
+        <location filename="../tii/txtablemodel.cpp" line="406"/>
         <source>Longitude (RX)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="364"/>
+        <location filename="../tii/txtablemodel.cpp" line="376"/>
         <source>Frequency [kHz]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="372"/>
+        <location filename="../tii/txtablemodel.cpp" line="384"/>
         <source>SNR [dB]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="378"/>
+        <location filename="../tii/txtablemodel.cpp" line="390"/>
         <source>Level [dB]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="382"/>
+        <location filename="../tii/txtablemodel.cpp" line="394"/>
         <source>Power [kW]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="384"/>
+        <location filename="../tii/txtablemodel.cpp" line="396"/>
         <source>Distance [km]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="386"/>
+        <location filename="../tii/txtablemodel.cpp" line="398"/>
         <source>Azimuth [deg]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5452,107 +5629,107 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="91"/>
+        <location filename="../qml/settings/UaSettings.qml" line="92"/>
         <source>Download data from internet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="104"/>
+        <location filename="../qml/settings/UaSettings.qml" line="106"/>
         <source>RadioDNS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="117"/>
+        <location filename="../qml/settings/UaSettings.qml" line="119"/>
         <source>Show decoding progress</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="129"/>
+        <location filename="../qml/settings/UaSettings.qml" line="132"/>
         <source>Hide progress when completed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="148"/>
+        <location filename="../qml/settings/UaSettings.qml" line="152"/>
         <source>Data storage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="161"/>
+        <location filename="../qml/settings/UaSettings.qml" line="165"/>
         <source>Folder:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="173"/>
+        <location filename="../qml/settings/UaSettings.qml" line="177"/>
         <source>Overwrite existing files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="193"/>
+        <location filename="../qml/settings/UaSettings.qml" line="198"/>
         <source>Slideshow data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="204"/>
+        <location filename="../qml/settings/UaSettings.qml" line="210"/>
         <source>SLS folder template</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="215"/>
+        <location filename="../qml/settings/UaSettings.qml" line="221"/>
         <source>SPI data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="227"/>
+        <location filename="../qml/settings/UaSettings.qml" line="234"/>
         <source>SPI folder template</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="241"/>
+        <location filename="../qml/settings/UaSettings.qml" line="248"/>
         <source>Data storage path pattern supports these tokens.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="242"/>
+        <location filename="../qml/settings/UaSettings.qml" line="249"/>
         <source>For more information see</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="243"/>
+        <location filename="../qml/settings/UaSettings.qml" line="250"/>
         <source>Documentation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="280"/>
+        <location filename="../qml/settings/UaSettings.qml" line="287"/>
         <source>current audio service ID (hex number)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="290"/>
+        <location filename="../qml/settings/UaSettings.qml" line="297"/>
         <source>current ensemble ID (hex number)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="300"/>
+        <location filename="../qml/settings/UaSettings.qml" line="307"/>
         <source>transport ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="310"/>
+        <location filename="../qml/settings/UaSettings.qml" line="317"/>
         <source>content name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="320"/>
+        <location filename="../qml/settings/UaSettings.qml" line="327"/>
         <source>content name with extension (only SLS)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="330"/>
+        <location filename="../qml/settings/UaSettings.qml" line="337"/>
         <source>transport ID of directory (only SPI)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="340"/>
+        <location filename="../qml/settings/UaSettings.qml" line="347"/>
         <source>service component ID (only SPI)</source>
         <translation type="unfinished"></translation>
     </message>
