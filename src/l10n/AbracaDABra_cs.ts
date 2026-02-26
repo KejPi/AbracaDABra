@@ -95,17 +95,17 @@
     <message>
         <location filename="../qml/controls/AbracaTimePicker.qml" line="147"/>
         <source>Hour</source>
-        <translation type="unfinished"></translation>
+        <translation>Hodina</translation>
     </message>
     <message>
         <location filename="../qml/controls/AbracaTimePicker.qml" line="217"/>
         <source>Minute</source>
-        <translation type="unfinished"></translation>
+        <translation>Minuta</translation>
     </message>
     <message>
         <location filename="../qml/controls/AbracaTimePicker.qml" line="271"/>
         <source>Period</source>
-        <translation type="unfinished"></translation>
+        <translation>AM/PM</translation>
     </message>
 </context>
 <context>
@@ -194,7 +194,7 @@
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="286"/>
         <source>Prefer 4096kHz rate:</source>
-        <translation type="unfinished"></translation>
+        <translation>Upřednostnit vzorkovací frekvenci 4096kHz:</translation>
     </message>
 </context>
 <context>
@@ -212,7 +212,7 @@
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="103"/>
         <source>Bring window to foreground on alarm announcement</source>
-        <translation type="unfinished"></translation>
+        <translation>Přenést okno do popředí při hlášení alarmu</translation>
     </message>
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="123"/>
@@ -233,7 +233,7 @@
     <message>
         <location filename="../qml/AppLogView.qml" line="66"/>
         <source>Save to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit do souboru</translation>
     </message>
     <message>
         <location filename="../qml/AppLogView.qml" line="70"/>
@@ -243,7 +243,7 @@
     <message>
         <location filename="../qml/AppLogView.qml" line="75"/>
         <source>Clear log</source>
-        <translation type="unfinished"></translation>
+        <translation>Smazat log</translation>
     </message>
 </context>
 <context>
@@ -419,7 +419,7 @@
         <location filename="../application.cpp" line="1313"/>
         <location filename="../application.cpp" line="1325"/>
         <source>Try to reconnect the device or choose another device in Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Zkuste zařízení znovu připojit nebo vyberte jiné zařízení v Nastavení</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1324"/>
@@ -439,7 +439,7 @@
     <message>
         <location filename="../application.cpp" line="1356"/>
         <source>Stop audio recording?</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukončit nahrávání zvuku?</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1373"/>
@@ -615,22 +615,22 @@ Dekódováno %1 / %2 MOT objektů</translation>
     <message>
         <location filename="../application.cpp" line="4193"/>
         <source>Service list exported</source>
-        <translation type="unfinished"></translation>
+        <translation>Seznam stanic vyexportován</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4197"/>
         <source>Failed to export service list</source>
-        <translation type="unfinished"></translation>
+        <translation>Export seznamu stanic selhal</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4204"/>
         <source>Clear service list?</source>
-        <translation type="unfinished"></translation>
+        <translation>Vymazat seznam stanic?</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4204"/>
         <source>Current service list including favorites will be deleted. This action is irreversible.</source>
-        <translation type="unfinished"></translation>
+        <translation>Současný seznam stanic včetně oblíbených bude vymazán. Tato akce je nevratná.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4218"/>
@@ -648,22 +648,22 @@ Dekódováno %1 / %2 MOT objektů</translation>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="41"/>
         <source>Audio recording schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Plán nahrávání zvuku</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="49"/>
         <source>Scheduled item name</source>
-        <translation type="unfinished"></translation>
+        <translation>Název plánované položky</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="110"/>
         <source>Stop time:</source>
-        <translation type="unfinished"></translation>
+        <translation>Čas konce:</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="211"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="220"/>
@@ -676,7 +676,7 @@ Dekódováno %1 / %2 MOT objektů</translation>
     <message>
         <location filename="../qml/audiorec/AudioRecordingStatus.qml" line="68"/>
         <source>Audio recording:</source>
-        <translation type="unfinished"></translation>
+        <translation>Záznam zvuku:</translation>
     </message>
 </context>
 <context>
@@ -686,7 +686,9 @@ Dekódováno %1 / %2 MOT objektů</translation>
         <source>No scheduled recordings.
 
 Click &apos;Add&apos; to create a new recording.</source>
-        <translation type="unfinished"></translation>
+        <translation>Žádný naplánovaný záznam zvuku.
+
+Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingView.qml" line="145"/>
@@ -808,7 +810,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/BandScan.qml" line="114"/>
         <source>Clear service list on start</source>
-        <translation type="unfinished"></translation>
+        <translation>Při spuštění vymazat seznam stanic</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="129"/>
@@ -831,7 +833,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../bandscanbackend.cpp" line="61"/>
         <source>Press Start to perform band scan.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyhledánání stanic spustíte tlačítkem Start.</translation>
     </message>
     <message>
         <location filename="../bandscanbackend.cpp" line="136"/>
@@ -844,7 +846,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/CatSLS.qml" line="34"/>
         <source>Categorized slideshow</source>
-        <translation type="unfinished"></translation>
+        <translation>Kategorizovaná slideshow</translation>
     </message>
 </context>
 <context>
@@ -867,7 +869,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/tii/ChannelSelectionDialog.qml" line="102"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../qml/tii/ChannelSelectionDialog.qml" line="117"/>
@@ -885,12 +887,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/charts/ChartView.qml" line="323"/>
         <source>Live</source>
-        <translation type="unfinished"></translation>
+        <translation>Live</translation>
     </message>
     <message>
         <location filename="../qml/charts/ChartView.qml" line="323"/>
         <source>Paused</source>
-        <translation type="unfinished"></translation>
+        <translation>Zastaveno</translation>
     </message>
 </context>
 <context>
@@ -914,7 +916,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="205"/>
         <source>RF level </source>
-        <translation type="unfinished"></translation>
+        <translation>Úroveň </translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="206"/>
@@ -924,7 +926,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="223"/>
         <source>Gain </source>
-        <translation type="unfinished"></translation>
+        <translation>Zisk </translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="224"/>
@@ -934,7 +936,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="241"/>
         <source>Frequency </source>
-        <translation type="unfinished"></translation>
+        <translation>Frekvence </translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="242"/>
@@ -944,7 +946,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="259"/>
         <source>Offset </source>
-        <translation type="unfinished"></translation>
+        <translation>Odchylka </translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="260"/>
@@ -997,7 +999,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/DeviceSettings.qml" line="79"/>
         <source>Disconnect</source>
-        <translation type="unfinished">Odpojit</translation>
+        <translation>Odpojit</translation>
     </message>
 </context>
 <context>
@@ -1005,7 +1007,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/epg/EPG.qml" line="34"/>
         <source>Electronic Programme Guide</source>
-        <translation type="unfinished"></translation>
+        <translation>Elektronický programový průvodce (EPG)</translation>
     </message>
 </context>
 <context>
@@ -1112,7 +1114,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="49"/>
         <source>Frequency offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Frekvenční odchylka</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="49"/>
@@ -1122,7 +1124,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="50"/>
         <source>AGC gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Zisk AGC</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="50"/>
@@ -1132,7 +1134,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="51"/>
         <source>RF level</source>
-        <translation type="unfinished"></translation>
+        <translation>Úroveň</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="51"/>
@@ -1152,7 +1154,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="55"/>
         <source>Service ID</source>
-        <translation type="unfinished"></translation>
+        <translation>Identifikátor stanice</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="55"/>
@@ -1162,7 +1164,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="56"/>
         <source>SCIdS</source>
-        <translation type="unfinished"></translation>
+        <translation>SCIdS</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="56"/>
@@ -1174,12 +1176,12 @@ Click &apos;Add&apos; to create a new recording.</source>
         <location filename="../ensembleinfobackend.cpp" line="57"/>
         <location filename="../ensembleinfobackend.cpp" line="83"/>
         <source>SubChannel</source>
-        <translation type="unfinished"></translation>
+        <translation>Subkanál</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="58"/>
         <source>Start CU</source>
-        <translation type="unfinished"></translation>
+        <translation>První CU</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="58"/>
@@ -1189,7 +1191,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="59"/>
         <source>Number of CU</source>
-        <translation type="unfinished"></translation>
+        <translation>Počet CU</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="59"/>
@@ -1199,7 +1201,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="62"/>
         <source>Service bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Datový tok stanice</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="62"/>
@@ -1209,7 +1211,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="63"/>
         <source>Useful bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Užitečný datový tok</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="63"/>
@@ -1219,7 +1221,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="64"/>
         <source>Audio bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Datový tok zvuku</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="64"/>
@@ -1229,7 +1231,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="65"/>
         <source>PAD bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Datový tok PAD</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="65"/>
@@ -1239,7 +1241,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="66"/>
         <source>Audio ratio</source>
-        <translation type="unfinished"></translation>
+        <translation>Poměr zvuku</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="66"/>
@@ -1249,7 +1251,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="67"/>
         <source>PAD ratio</source>
-        <translation type="unfinished"></translation>
+        <translation>Poměr PAD</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="67"/>
@@ -1259,7 +1261,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="70"/>
         <source>FIB CRC errors</source>
-        <translation type="unfinished"></translation>
+        <translation>Počet chybných CRC</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="70"/>
@@ -1274,7 +1276,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="72"/>
         <source>RS uncorrectable</source>
-        <translation type="unfinished"></translation>
+        <translation>RS neopravitelné</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="72"/>
@@ -1284,7 +1286,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="73"/>
         <source>RS BER</source>
-        <translation type="unfinished"></translation>
+        <translation>RS BER</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="73"/>
@@ -1294,7 +1296,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="74"/>
         <source>Audio CRC errors</source>
-        <translation type="unfinished"></translation>
+        <translation>Počet chybných AU</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="74"/>
@@ -1304,7 +1306,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="75"/>
         <source>Audio error rate</source>
-        <translation type="unfinished"></translation>
+        <translation>Chybovost AU</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="75"/>
@@ -1314,7 +1316,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="78"/>
         <source>Allocated</source>
-        <translation type="unfinished"></translation>
+        <translation>Využito</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="78"/>
@@ -1324,7 +1326,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="79"/>
         <source>Free</source>
-        <translation type="unfinished"></translation>
+        <translation>Volno</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="79"/>
@@ -1359,7 +1361,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="84"/>
         <source>Capacity units</source>
-        <translation type="unfinished"></translation>
+        <translation>Kapacitní jednotky</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="84"/>
@@ -1369,7 +1371,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="85"/>
         <source>Error protection</source>
-        <translation type="unfinished"></translation>
+        <translation>Chybové zabezpečení</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="85"/>
@@ -1379,7 +1381,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="86"/>
         <source>Bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Datový tok</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="86"/>
@@ -1389,7 +1391,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="88"/>
         <source>Content</source>
-        <translation type="unfinished"></translation>
+        <translation>Obsah</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="88"/>
@@ -1444,22 +1446,22 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="591"/>
         <source>Ensemble information export failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Export informace o multiplexu selhal</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="599"/>
         <source>No permission to write ensemble information</source>
-        <translation type="unfinished"></translation>
+        <translation>Chybí oprávnění k zápisu informace o multiplexu</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="606"/>
         <source>Ensemble information exported</source>
-        <translation type="unfinished"></translation>
+        <translation>Informace o multiplexu vyexportována</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="611"/>
         <source>Failed to export ensemble information</source>
-        <translation type="unfinished"></translation>
+        <translation>Export informace o multiplexu selhal</translation>
     </message>
 </context>
 <context>
@@ -1467,7 +1469,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="270"/>
         <source>Show ensemble configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukázat konfiguraci multiplexu</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="284"/>
@@ -1482,7 +1484,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="298"/>
         <source>Timeout</source>
-        <translation type="unfinished"></translation>
+        <translation>Trvání</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="299"/>
