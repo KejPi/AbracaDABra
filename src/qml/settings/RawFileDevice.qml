@@ -56,7 +56,6 @@ Item {
                 }
             }
             AbracaComboBox {
-                Layout.preferredWidth: 1.5*implicitWidth
                 Layout.fillWidth: true
                 model: settingsBackend.rawFileFormatModel
                 textRole: "itemName"
@@ -65,6 +64,13 @@ Item {
                 onActivated: {
                     if (settingsBackend.rawFileFormatModel.currentIndex !== currentIndex) {
                         settingsBackend.rawFileFormatModel.currentIndex = currentIndex;
+                    }
+                }
+                property int w: -1
+                Layout.preferredWidth: w > 0 ? 1.5*w : 1.5*implicitWidth
+                onImplicitWidthChanged: {
+                    if (implicitWidth > w) {
+                        w = implicitWidth
                     }
                 }
             }
