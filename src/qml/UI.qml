@@ -66,18 +66,32 @@ QtObject {
     readonly property bool isDesktop: !isAndroid
     readonly property bool isMobile: isAndroid && (Math.min(Screen.width, Screen.height) < narrowViewWidth)
 
+    // Font scale detection for Android
+    // Measures actual font size vs baseline to detect system font scaling
+    readonly property TextMetrics fontScaleMetrics: TextMetrics {
+        font.family: Qt.application.font.family
+        font.pointSize: Qt.application.font.pointSize
+        text: "Ag"
+    }
+    
+    readonly property real baselineFontHeight: 18.0
+    
+    // Calculate font scale factor: 1.0 = normal, >1.0 = larger fonts
+    // Only apply on Android where font scaling issues occur
+    readonly property real fontScaleFactor: isAndroid ? Math.max(1.0, fontScaleMetrics.height / baselineFontHeight) : 1.0
+
     readonly property int standardMargin: 8
-    readonly property int controlHeight: isAndroid ? 40 : (appUI.isCompact ? 28 : 32)
-    readonly property int controlHeightSmaller: isAndroid ? 30 : 24
-    readonly property int controlHeightSmall: isAndroid ? 20 : 16
+    readonly property int controlHeight: isAndroid ? Math.ceil(40 - baselineFontHeight + (baselineFontHeight * fontScaleFactor)) : (appUI.isCompact ? 28 : 32)
+    readonly property int controlHeightSmaller: isAndroid ? Math.ceil(30 - baselineFontHeight + (baselineFontHeight * fontScaleFactor)) : 24
+    readonly property int controlHeightSmall: isAndroid ? Math.ceil(20 - baselineFontHeight + (baselineFontHeight * fontScaleFactor)) : 16
     readonly property int controlWidth: 100
     readonly property int controlRadius: isAndroid ? 6 : 4
-    readonly property int iconSize: isAndroid ? 24 : 20
-    readonly property int iconSizeSmall: isAndroid ? 20 : 16
+    readonly property int iconSize: isAndroid ? Math.ceil(24 * fontScaleFactor) : 20
+    readonly property int iconSizeSmall: isAndroid ? Math.ceil(20 * fontScaleFactor) : 16
 
     // Navigation buttons
-    readonly property int navigationButtonSize: appUI.isCompact ? (isAndroid ? 46 : 50) : (isAndroid ? 54 : 60)
-    readonly property int navigationSmallButtonSize: isAndroid ? 48 : 44
+    readonly property int navigationButtonSize: appUI.isCompact ? (isAndroid ? Math.ceil(46 * fontScaleFactor) : 50) : (isAndroid ? Math.ceil(54 * fontScaleFactor) : 60)
+    readonly property int navigationSmallButtonSize: isAndroid ? Math.ceil(48 * fontScaleFactor) : 44
 
     readonly property int smallFontPointSize: Qt.application.font.pointSize - (isWindows ? 1 : 2)
     readonly property int biggerFontPointSize: Qt.application.font.pointSize + 2

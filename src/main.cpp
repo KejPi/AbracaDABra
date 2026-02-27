@@ -72,6 +72,10 @@ int main(int argc, char *argv[])
     // QFontDatabase::addApplicationFont(":/resources/fonts/PublicSans-VariableFont_wght.ttf");
     QFontDatabase::addApplicationFont(":/resources/fonts/DMSans-Italic-VariableFont_opsz,wght.ttf");
 #endif
+    // QFont systemFont = guiApp.font();
+    // systemFont.setPointSize(static_cast<int>(systemFont.pointSize() * 1.3185763888888888));
+    // guiApp.setFont(systemFont);
+
     int currentExitCode = 0;
     do
     {

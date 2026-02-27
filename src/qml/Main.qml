@@ -264,6 +264,8 @@ ApplicationWindow {
         setFittingLayout()
 
         appUI.isSystemDarkMode = (Application.styleHints.colorScheme === Qt.ColorScheme.Dark);
+
+        console.log("Font scale factor:", UI.fontScaleFactor, UI.fontScaleMetrics.height);
     }
 
     Connections {

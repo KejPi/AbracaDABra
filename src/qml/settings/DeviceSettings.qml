@@ -72,6 +72,14 @@ Item {
             Component.onCompleted: {
                 currentIndex = model.currentIndex
             }
+
+            property int w: -1
+            Layout.preferredWidth: w > 0 ? w : implicitWidth
+            onImplicitWidthChanged: {
+                if (implicitWidth > w) {
+                    w = implicitWidth
+                }
+            }
         }
         Item { Layout.fillHeight: true; Layout.fillWidth: inputDeviceSelectionRow.mobileView;  }
         AbracaButton {

@@ -119,15 +119,16 @@ Item {
                             ColumnLayout {
                                 id: receiverLocationLayout
                                 anchors.fill: parent
-                                readonly property int labelWidth: Math.max(geoLocationLabel.implicitWidth, coordinatesLabel.implicitWidth)
+                                readonly property int labelWidth: geoLocationLabel.implicitWidth > coordinatesLabel.implicitWidth ? geoLocationLabel.implicitWidth : coordinatesLabel.implicitWidth // Math.max(geoLocationLabel.implicitWidth, coordinatesLabel.implicitWidth)
+
                                 spacing: UI.standardMargin
                                 RowLayout {
                                     Layout.fillWidth: true
-                                    Layout.preferredWidth: receiverLocationLayout.labelWidth
                                     spacing: UI.standardMargin
                                     AbracaLabel {
                                         id: geoLocationLabel
                                         text: qsTr("Geolocation source:")
+                                        Layout.preferredWidth: receiverLocationLayout.labelWidth
                                     }
                                     AbracaComboBox {
                                         id: geoLocationComboBox
@@ -137,6 +138,13 @@ Item {
                                         onActivated: {
                                             if (settingsBackend.locationSourceModel.currentIndex !== currentIndex) {
                                                 settingsBackend.locationSourceModel.currentIndex = currentIndex;
+                                            }
+                                        }
+                                        property int w: -1
+                                        Layout.preferredWidth: w > 0 ? w : implicitWidth
+                                        onImplicitWidthChanged: {
+                                            if (implicitWidth > w) {
+                                                w = implicitWidth
                                             }
                                         }
                                     }

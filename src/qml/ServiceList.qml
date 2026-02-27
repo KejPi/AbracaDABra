@@ -33,7 +33,8 @@ import abracaComponents
 Item {
     id: mainItem
     property bool isPortrait: appUI.isPortraitView
-    property int itemHeight: appUI.isCompact ? UI.controlHeight : 32 + 2 * UI.standardMargin
+    property int itemHeight: appUI.isCompact ? UI.controlHeight : Math.ceil(32 * UI.fontScaleFactor) + 2 * UI.standardMargin
+    //property int itemHeight: appUI.isCompact ? UI.controlHeight : 32 + 2 * UI.standardMargin
     property int listWidth: minWidth
 
     readonly property int minWidth: channelCombo.width + channelUpDownRow.width
@@ -128,7 +129,7 @@ Item {
             AbracaComboBox {
                 id: channelCombo
                 Layout.alignment: Qt.AlignVCenter
-                Layout.preferredWidth: implicitWidth * 0.7
+                Layout.preferredWidth: implicitWidth * 0.8
                 Layout.rightMargin: 5
                 model: channelListModel
                 textRole: "display"

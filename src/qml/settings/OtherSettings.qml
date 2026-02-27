@@ -228,13 +228,19 @@ Item {
                                     }
                                     AbracaComboBox {
                                         id: languageComboBox
-                                        //Layout.preferredWidth: implicitWidth
+                                        property int w: -1
+                                        Layout.preferredWidth: w > 0 ? w : implicitWidth
                                         model: settingsBackend.languageSelectionModel
                                         textRole: "itemName"
                                         currentIndex: settingsBackend.languageSelectionModel.currentIndex
                                         onActivated: {
                                             if (settingsBackend.languageSelectionModel.currentIndex !== currentIndex) {
                                                 settingsBackend.languageSelectionModel.currentIndex = currentIndex;
+                                            }
+                                        }
+                                        onImplicitWidthChanged: {
+                                            if (implicitWidth > w) {
+                                                w = implicitWidth
                                             }
                                         }
                                     }

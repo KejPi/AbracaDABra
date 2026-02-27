@@ -80,6 +80,14 @@ Item {
                                     if (settingsBackend.audioNoiseConcealModel.currentIndex !== currentIndex) {
                                         settingsBackend.audioNoiseConcealModel.currentIndex = currentIndex;
                                     }
+
+                                }
+                                property int w: -1
+                                Layout.preferredWidth: w > 0 ? w : implicitWidth
+                                onImplicitWidthChanged: {
+                                    if (implicitWidth > w) {
+                                        w = implicitWidth
+                                    }
                                 }
                             }
                         }
@@ -213,6 +221,13 @@ Item {
                                             settingsBackend.audioDecoderModel.currentIndex = currentIndex;
                                         }
                                     }
+                                    property int w: -1
+                                    Layout.preferredWidth: w > 0 ? w : implicitWidth
+                                    onImplicitWidthChanged: {
+                                        if (implicitWidth > w) {
+                                            w = implicitWidth
+                                        }
+                                    }
                                 }
                                 AbracaButton {
                                     text: qsTr("Restart")
@@ -243,6 +258,13 @@ Item {
                                     onActivated: {
                                         if (settingsBackend.audioOutputModel.currentIndex !== currentIndex) {
                                             settingsBackend.audioOutputModel.currentIndex = currentIndex;
+                                        }
+                                    }
+                                    property int w: -1
+                                    Layout.preferredWidth: w > 0 ? w : implicitWidth
+                                    onImplicitWidthChanged: {
+                                        if (implicitWidth > w) {
+                                            w = implicitWidth
                                         }
                                     }
                                     visible: UI.isAndroid === false
