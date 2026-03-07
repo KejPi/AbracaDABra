@@ -42,8 +42,8 @@ UndockablePage {
         id: contentItem
         anchors.fill: parent
 
-        onWidthChanged: setFittingLayout()
-        Component.onCompleted: setFittingLayout()
+        onWidthChanged: Qt.callLater(contentItem.setFittingLayout)
+        Component.onCompleted: Qt.callLater(contentItem.setFittingLayout)
 
         readonly property int recControlsWidth: timeoutSpinBox.implicitWidth + timeoutSwitch.implicitWidth + recordButton.implicitWidth + 2*UI.standardMargin
         readonly property int controlRowMinWidth: recControlsWidth + exportCSVButton.implicitWidth + uploadCSVButton.implicitWidth + 280 + 2*UI.standardMargin
@@ -52,36 +52,6 @@ UndockablePage {
                                                        + 3 * UI.standardMargin
 
         function setFittingLayout() {
-            //console.log(contentItem.width, recControlsWidth, controlRowMinWidth, controlGridMinWidth)
-
-/*
-            if (contentItem.width > controlRowMinWidth) {
-                mobileLayout.visible = false;
-                controlGrid.visible = false;
-                controlGridEnsText.visible = false;
-                controlRow.visible = true;
-                console.log("--------------- Using controlRow layout", contentItem.width, controlRowMinWidth)
-            } else {
-                controlRow.visible = false;
-                if (contentItem.width > controlGridMinWidth) {
-                    if (ensTextItem.visible) {
-                        controlGridEnsText.visible = true;
-                        controlGrid.visible = false;
-                        console.log("--------------- Using controlGridEnsText layout", contentItem.width, controlGridMinWidth, controlGrid.implicitWidth)
-                    } else {
-                        controlGridEnsText.visible = false;
-                        controlGrid.visible = true;
-                        console.log("--------------- Using controlGrid layout", contentItem.width, controlGridMinWidth, controlGrid.implicitWidth)
-                    }
-                    mobileLayout.visible = false;
-                } else {
-                    controlGrid.visible = false;
-                    controlGridEnsText.visible = false;
-                    mobileLayout.visible = true;
-                    console.log("--------------- Using mobileLayout layout", contentItem.width, controlGridMinWidth, controlGrid.implicitWidth)
-                }
-            }
-*/
             if (contentItem.width > controlRowMinWidth) {
                 mobileLayout.visible = false;
                 tabletLayout.visible = false;
@@ -326,7 +296,7 @@ UndockablePage {
                                                                    : (contentItem.height - infoGrid.height - subchView.height - subchGrid.height - 4 * colLayout.spacing - 3 * UI.standardMargin - controlGridEnsTextVisible.implicitHeight)
                         Layout.minimumHeight: 150
                         visible: controlRow.visible || (Layout.preferredHeight > 150 && contentItem.width > contentItem.controlGridMinWidth)
-                        onVisibleChanged:  contentItem.setFittingLayout()
+                        onVisibleChanged: Qt.callLater(contentItem.setFittingLayout)
                         AbracaScrollView {
                             id: textEditFlickable
                             anchors.fill: parent

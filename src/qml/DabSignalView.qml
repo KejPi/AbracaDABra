@@ -176,15 +176,15 @@ Rectangle {
                 }
             }
         }
-        Component.onCompleted: setFittingLayout()
-        onWidthChanged: setFittingLayout()
+        Component.onCompleted: Qt.callLater(signalInfo.setFittingLayout)
+        onWidthChanged: Qt.callLater(signalInfo.setFittingLayout)
         Connections {
             target: signalBackend
             function onIsUndockedChanged() {
-                signalInfo.setFittingLayout();
+                Qt.callLater(signalInfo.setFittingLayout)
             }
              function onIsRfLevelVisibleChanged() {
-                signalInfo.setFittingLayout();
+                Qt.callLater(signalInfo.setFittingLayout)
             }
         }
 
