@@ -42,12 +42,36 @@ const int RtlTcpInput::r82xx_gains[] = {0,   9,   14,  27,  37,  77,  87,  125, 
 const int RtlTcpInput::r82xx_gains_olddab[] = {0, 34, 68, 102, 137, 171, 207, 240, 278, 312, 346, 382, 416, 453, 488, 527};
 const int RtlTcpInput::unknown_gains[] = {0 /* no gain values */};
 
+#if defined(_WIN32)
+class SocketInitialiseWrapper
+{
+public:
+    SocketInitialiseWrapper()
+    {
+        WSADATA wsa;
+        qCInfo(rtlTcpInput) << "RTL-TCP: Initialising Winsock...";
+
+        if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+        {
+            qCCritical(rtlTcpInput) << "RTL-TCP: Winsock init failed. Error Code:" << WSAGetLastError();
+        }
+    }
+
+    ~SocketInitialiseWrapper() { WSACleanup(); }
+
+    SocketInitialiseWrapper(SocketInitialiseWrapper &) = delete;
+    SocketInitialiseWrapper &operator=(SocketInitialiseWrapper &) = delete;
+};
+
+static SocketInitialiseWrapper socketInitialiseWrapper;
+#endif
+
 RtlTcpInput::RtlTcpInput(QObject *parent) : InputDevice(parent)
 {
     m_deviceDescription.id = InputDevice::Id::RTLTCP;
 
     m_gainList = nullptr;
-    m_streamSocket = nullptr;
+    m_worker = nullptr;
     m_controlSocket = nullptr;
     m_controlSocketEna = false;
     m_haveControlSocket = false;
@@ -58,23 +82,42 @@ RtlTcpInput::RtlTcpInput(QObject *parent) : InputDevice(parent)
     m_rfLevelOffset = 0.0;
 
     m_frequency = 0;
+    m_sock = INVALID_SOCKET;
     m_address = "127.0.0.1";
     m_port = 1234;
+
+    connect(&m_watchdogTimer, &QTimer::timeout, this, &RtlTcpInput::onWatchdogTimeout);
 }
 
 RtlTcpInput::~RtlTcpInput()
 {
-    // need to close socket
-    if (nullptr != m_streamSocket)
+    // need to end worker thread and close socket
+    if (nullptr != m_worker)
     {
-        m_streamSocket->disconnectFromHost();
-        if (m_streamSocket->state() != QAbstractSocket::UnconnectedState && !m_streamSocket->waitForDisconnected(2000))
-        {
-            m_streamSocket->abort();
-        }
-        delete m_streamSocket;
-    }
+        m_worker->captureIQ(false);
 
+        // close socket
+#if defined(_WIN32)
+        closesocket(m_sock);
+#else
+        ::close(m_sock);
+#endif
+        m_sock = INVALID_SOCKET;
+
+        m_worker->wait(2000);
+
+        while (!m_worker->isFinished())
+        {
+            qCWarning(rtlTcpInput) << "Worker thread not finished after timeout - this should not happen :-(";
+
+            // reset buffer - and tell the thread it is empty - buffer will be reset in any case
+            pthread_mutex_lock(&inputBuffer.countMutex);
+            inputBuffer.count = 0;
+            pthread_cond_signal(&inputBuffer.countCondition);
+            pthread_mutex_unlock(&inputBuffer.countMutex);
+            m_worker->wait(2000);
+        }
+    }
     if (nullptr != m_gainList)
     {
         delete m_gainList;
@@ -83,7 +126,6 @@ RtlTcpInput::~RtlTcpInput()
     {
         delete m_agcLevelMinFactorList;
     }
-
     if (nullptr != m_controlSocket)
     {
         m_controlSocket->disconnectFromHost();
@@ -100,23 +142,169 @@ bool RtlTcpInput::openDevice(const QVariant &hwId, bool fallbackConnection)
     Q_UNUSED(hwId)
     Q_UNUSED(fallbackConnection)
 
-    if (nullptr != m_streamSocket)
+    if (nullptr != m_worker)
     {  // device already opened
         return true;
     }
 
-    qCInfo(rtlTcpInput, "Trying to connect to: %s:%d", m_address.toLocal8Bit().data(), m_port);
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = 0;
+    hints.ai_protocol = 0; /* Any protocol */
 
-    m_streamSocket = new QTcpSocket();
-    m_streamSocket->connectToHost(QHostAddress(m_address), m_port);
-    if (!m_streamSocket->waitForConnected(2000))
-    {  // failed to connect
-        delete m_streamSocket;
-        m_streamSocket = nullptr;
-        qCCritical(rtlTcpInput, "Unable to connect to: %s:%d", m_address.toLocal8Bit().data(), m_port);
+    QString portStr = QString().number(m_port);
+
+    struct addrinfo *result;
+    int s = getaddrinfo(m_address.toLatin1(), portStr.toLatin1(), &hints, &result);
+    if (s != 0)
+    {
+#if defined(_WIN32)
+        qCCritical(rtlTcpInput) << "getaddrinfo error:" << gai_strerrorA(s);
+#else
+        qCCritical(rtlTcpInput) << "getaddrinfo error:" << gai_strerror(s);
+#endif
         return false;
     }
-    qCInfo(rtlTcpInput, "Connected to: %s:%d", m_address.toLocal8Bit().data(), m_port);
+
+    /* getaddrinfo() returns a list of address structures.
+       Try each address until we successfully connect(2).
+       If socket(2) (or connect(2)) fails, we (close the socket
+       and) try the next address. */
+    struct addrinfo *rp;
+    int sfd = -1;
+    for (rp = result; rp != NULL; rp = rp->ai_next)
+    {
+        sfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+        if (sfd == -1)
+        {
+            continue;
+        }
+
+        // Set non-blocking
+#if defined(_WIN32)
+        /// Windows sockets are created in blocking mode by default
+        // currently on windows, there is no easy way to obtain the socket's current blocking mode since WSAIsBlocking was deprecated
+        // https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-ioctlsocket
+        u_long flags = 1;  // If flags != 0, non-blocking mode is enabled.
+        if (NO_ERROR != ioctlsocket(sfd, FIONBIO, &flags))
+        {
+            qCWarning(rtlTcpInput) << "Failed to set non-blocking socket";
+        }
+
+        struct sockaddr_in *sa = (struct sockaddr_in *)rp->ai_addr;
+        qCInfo(rtlTcpInput, "Trying to connect to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
+        ::connect(sfd, rp->ai_addr, rp->ai_addrlen);
+        // https://docs.microsoft.com/en-us/previous-versions/windows/embedded/aa450263(v=msdn.10)
+        //  It is normal for WSAEWOULDBLOCK to be reported as the result from calling connect (Windows Sockets)
+        // on a nonblocking SOCK_STREAM socket, since some time must elapse for the connection to be established.
+#if (_WIN32_WINNT >= 0x0600)
+        struct pollfd pfd;
+        pfd.fd = sfd;
+        pfd.events = POLLIN;
+        if (WSAPoll(&pfd, 1, 2000) > 0)
+        {
+            qCInfo(rtlTcpInput, "Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
+
+            flags = 0;  // If flags != 0, non-blocking mode is enabled.
+            if (NO_ERROR != ioctlsocket(sfd, FIONBIO, &flags))
+            {
+                qCWarning(rtlTcpInput) << "Failed to set blocking socket";
+            }
+
+            m_sock = sfd;
+            break; /* Success */
+        }
+        else
+        {  // -1 is error, 0 is timeout
+            qCCritical(rtlTcpInput) << "Unable to connect";
+        }
+#else  // (_WIN32_WINNT < 0x0600)
+       // poll API does not exist :-(
+       // this part was not tested
+        fd_set connFd;
+        FD_ZERO(&connFd);
+        FD_SET(sfd, &connFd);
+
+        // check if the socket is ready
+        TIMEVAL connTimeout;
+        connTimeout.tv_sec = 2;
+        connTimeout.tv_usec = 0;
+        if (::select(sfd + 1, nullptr, &connFd, nullptr, &connTimeout) > 0)
+        {
+            qCInfo(rtlTcpInput, "Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
+
+            flags = 0;  // If flags != 0, non-blocking mode is enabled.
+            if (NO_ERROR != ioctlsocket(sfd, FIONBIO, &flags))
+            {
+                qCWarning(rtlTcpInput) << "Failed to set blocking socket";
+            }
+
+            m_sock = sfd;
+            break; /* Success */
+        }
+        else
+        {  // -1 is error, 0 is timeout
+            qCCritical(rtlTcpInput) << "Unable to connect";
+        }
+#endif
+
+#else  // not defined(_WIN32)
+        long arg;
+        if ((arg = fcntl(sfd, F_GETFL, NULL)) < 0)
+        {
+            qCWarning(rtlTcpInput, "Error fcntl(..., F_GETFL) (%s)", strerror(errno));
+        }
+        arg |= O_NONBLOCK;
+        if (fcntl(sfd, F_SETFL, arg) < 0)
+        {
+            qCWarning(rtlTcpInput, "Error fcntl(..., F_SETFL) (%s)", strerror(errno));
+        }
+
+        struct sockaddr_in *sa = (struct sockaddr_in *)rp->ai_addr;
+        qCInfo(rtlTcpInput, "Trying to connect to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
+        ::connect(sfd, rp->ai_addr, rp->ai_addrlen);
+
+        struct pollfd pfd;
+        pfd.fd = sfd;
+        pfd.events = POLLIN;
+        if (poll(&pfd, 1, 2000) > 0)
+        {
+            qCInfo(rtlTcpInput, "Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
+
+            // set bloking mode again
+            if ((arg = fcntl(sfd, F_GETFL, NULL)) < 0)
+            {
+                qCWarning(rtlTcpInput, "Error fcntl(..., F_GETFL) (%s)", strerror(errno));
+            }
+            arg &= (~O_NONBLOCK);
+            if (fcntl(sfd, F_SETFL, arg) < 0)
+            {
+                qCWarning(rtlTcpInput, "Error fcntl(..., F_SETFL) (%s)", strerror(errno));
+            }
+
+            m_sock = sfd;
+            break; /* Success */
+        }
+        else
+        {  // -1 is error, 0 is timeout
+            qCCritical(rtlTcpInput) << "Unable to connect";
+        }
+#endif
+
+#if defined(_WIN32)
+        closesocket(sfd);
+#else
+        ::close(sfd);
+#endif
+    }
+
+    if (NULL == rp)
+    { /* No address succeeded */
+        qCCritical(rtlTcpInput) << "Could not connect";
+        return false;
+    }
 
     struct
     {
@@ -125,25 +313,59 @@ bool RtlTcpInput::openDevice(const QVariant &hwId, bool fallbackConnection)
         uint32_t tunerGainCount;
     } dongleInfo;
 
-    // wait 2 sec to receive some data
-    m_streamSocket->waitForReadyRead(2000);
-    if (m_streamSocket->bytesAvailable() < (qint64)sizeof(dongleInfo))
-    {  // error
-        m_streamSocket->disconnectFromHost();
-        if (m_streamSocket->state() != QAbstractSocket::UnconnectedState && !m_streamSocket->waitForDisconnected(2000))
-        {
-            m_streamSocket->abort();
-        }
-        delete m_streamSocket;
-        m_streamSocket = nullptr;
-
+    // get information about RTL stick
+#if defined(_WIN32)
+#if (_WIN32_WINNT >= 0x0600)
+    struct pollfd fd;
+    fd.fd = m_sock;
+    fd.events = POLLIN;
+    if (WSAPoll(&fd, 1, 2000) > 0)
+    {
+        ::recv(m_sock, (char *)&dongleInfo, sizeof(dongleInfo), 0);
+    }
+    else
+    {  // -1 is error, 0 is timeout
         qCCritical(rtlTcpInput) << "Unable to get RTL dongle infomation";
-
         return false;
     }
+#else
+    // poll API does not exist :-(
+    fd_set readFd;
+    FD_ZERO(&readFd);
+    FD_SET(sock, &readFd);
 
-    // get information about RTL stick
-    m_streamSocket->read(reinterpret_cast<char *>(&dongleInfo), sizeof(dongleInfo));
+    // check if the socket is ready
+    TIMEVAL Timeout;
+    Timeout.tv_sec = 2;
+    Timeout.tv_usec = 0;
+    if (::select(sock + 1, nullptr, &readFd, nullptr, &Timeout) > 0)
+    {
+        ::recv(sock, (char *)&dongleInfo, sizeof(dongleInfo), 0);
+    }
+    else
+    {  // -1 is error, 0 is timeout
+        qCCritical(rtlTcpInput) << "Unable to get RTL dongle infomation";
+        return false;
+    }
+#endif
+#else
+    struct pollfd fd;
+    fd.fd = m_sock;
+    fd.events = POLLIN;
+    if (poll(&fd, 1, 2000) > 0)
+    {
+        if (::recv(m_sock, (char *)&dongleInfo, sizeof(dongleInfo), 0) <= 0)
+        {
+            qCCritical(rtlTcpInput) << "Server not responding.";
+            return false;
+        }
+    }
+    else
+    {  // -1 is error, 0 is timeout
+        qCCritical(rtlTcpInput) << "Unable to get RTL dongle infomation";
+        return false;
+    }
+#endif
 
     // Convert the byte order
     const int *gains = unknown_gains;
@@ -281,21 +503,16 @@ bool RtlTcpInput::openDevice(const QVariant &hwId, bool fallbackConnection)
     // setGainMode(RtlGainMode::Software);
     m_gainIdx = -1;
 
-    // // need to create worker, server is pushing samples
-    // m_worker = new RtlTcpWorker(m_sock, this);
-    // connect(m_worker, &RtlTcpWorker::agcLevel, this, &RtlTcpInput::onAgcLevel, Qt::QueuedConnection);
-    // connect(m_worker, &RtlTcpWorker::dataReady, this, [=]() { emit tuned(m_frequency); }, Qt::QueuedConnection);
-    // connect(m_worker, &RtlTcpWorker::recordBuffer, this, &InputDevice::recordBuffer, Qt::DirectConnection);
-    // connect(m_worker, &RtlTcpWorker::finished, this, &RtlTcpInput::onReadThreadStopped, Qt::QueuedConnection);
-    // connect(m_worker, &RtlTcpWorker::finished, m_worker, &QObject::deleteLater);
-    // connect(m_worker, &RtlTcpWorker::destroyed, this, [=]() { m_worker = nullptr; });
-    // m_worker->start();
-    // m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
-
-    m_streamSocket->setReadBufferSize(RTLTCP_CHUNK_SIZE);
-    connect(m_streamSocket, &QAbstractSocket::readyRead, this, &RtlTcpInput::readFromSocket);
-    connect(m_streamSocket, &QAbstractSocket::errorOccurred, this, &RtlTcpInput::onSocketError);
-
+    // need to create worker, server is pushing samples
+    m_worker = new RtlTcpWorker(m_sock, this);
+    connect(m_worker, &RtlTcpWorker::agcLevel, this, &RtlTcpInput::onAgcLevel, Qt::QueuedConnection);
+    connect(m_worker, &RtlTcpWorker::dataReady, this, [=]() { emit tuned(m_frequency); }, Qt::QueuedConnection);
+    connect(m_worker, &RtlTcpWorker::recordBuffer, this, &InputDevice::recordBuffer, Qt::DirectConnection);
+    connect(m_worker, &RtlTcpWorker::finished, this, &RtlTcpInput::onReadThreadStopped, Qt::QueuedConnection);
+    connect(m_worker, &RtlTcpWorker::finished, m_worker, &QObject::deleteLater);
+    connect(m_worker, &RtlTcpWorker::destroyed, this, [=]() { m_worker = nullptr; });
+    m_worker->start();
+    m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
     emit deviceReady();
 
     if (m_controlSocketEna)
@@ -310,20 +527,24 @@ void RtlTcpInput::tune(uint32_t frequency)
 {
     m_frequency = frequency;
 
-    if (m_frequency > 0)
+    if ((m_frequency > 0) && (nullptr != m_worker))
     {  // Tune to new frequency
         sendCommand(RtlTcpCommand::SET_FREQ, m_frequency * 1000);
 
         // does nothing if not SW AGC
         resetAgc();
 
-        captureIQ(true);
+        m_worker->captureIQ(true);
 
         // tuned(m_frequency) is emited when dataReady() from worker
     }
     else
     {
-        captureIQ(false);
+        if (nullptr != m_worker)
+        {
+            m_worker->captureIQ(false);
+        }
+
         emit tuned(0);
     }
 }
@@ -466,22 +687,40 @@ void RtlTcpInput::onAgcLevel(float agcLevel)
     }
 }
 
-void RtlTcpInput::onSocketError(QAbstractSocket::SocketError socketError)
+void RtlTcpInput::onReadThreadStopped()
 {
     qCCritical(rtlTcpInput) << "Server disconnected.";
 
-    m_streamSocket->disconnectFromHost();
-    if (m_streamSocket->state() != QAbstractSocket::UnconnectedState && !m_streamSocket->waitForDisconnected(2000))
-    {
-        m_streamSocket->abort();
-    }
-    m_streamSocket->deleteLater();
-    m_streamSocket = nullptr;
+    // close socket
+#if defined(_WIN32)
+    closesocket(m_sock);
+#else
+    ::close(m_sock);
+#endif
+    m_sock = INVALID_SOCKET;
+    m_watchdogTimer.stop();
 
     // fill buffer (artificially to avoid blocking of the DAB processing thread)
     inputBuffer.fillDummy();
 
     emit error(InputDevice::ErrorCode::DeviceDisconnected);
+}
+
+void RtlTcpInput::onWatchdogTimeout()
+{
+    if (nullptr != m_worker)
+    {
+        if (!m_worker->isRunning())
+        {  // some problem in data input
+            qCCritical(rtlTcpInput) << "Watchdog timeout";
+            inputBuffer.fillDummy();
+            emit error(InputDevice::ErrorCode::NoDataAvailable);
+        }
+    }
+    else
+    {
+        m_watchdogTimer.stop();
+    }
 }
 
 void RtlTcpInput::initControlSocket()
@@ -518,7 +757,10 @@ void RtlTcpInput::readControlSocketData()
 
 void RtlTcpInput::startStopRecording(bool start)
 {
-    m_isRecording = start;
+    if (nullptr != m_worker)
+    {
+        m_worker->startStopRecording(start);
+    }
 }
 
 QList<float> RtlTcpInput::getGainList() const
@@ -533,38 +775,104 @@ QList<float> RtlTcpInput::getGainList() const
 
 void RtlTcpInput::sendCommand(const RtlTcpCommand &cmd, uint32_t param)
 {
-    if (nullptr == m_streamSocket)
+    if (nullptr == m_worker)
     {
         return;
     }
 
-    char cmdBuffer[5];
+    uint8_t cmdBuffer[5];
 
-    cmdBuffer[0] = char(cmd);
+    cmdBuffer[0] = uint8_t(cmd);
     cmdBuffer[4] = param & 0xFF;
     cmdBuffer[3] = (param >> 8) & 0xFF;
     cmdBuffer[2] = (param >> 16) & 0xFF;
     cmdBuffer[1] = (param >> 24) & 0xFF;
 
-    m_streamSocket->write(cmdBuffer, sizeof(cmdBuffer));
+    ::send(m_sock, (char *)cmdBuffer, 5, 0);
 }
 
-void RtlTcpInput::captureIQ(bool ena)
+RtlTcpWorker::RtlTcpWorker(SOCKET sock, QObject *parent) : QThread(parent)
 {
-    if (ena)
+    m_isRecording = false;
+    m_enaCaptureIQ = false;
+    m_sock = sock;
+}
+
+void RtlTcpWorker::startStopRecording(bool ena)
+{
+    m_isRecording = ena;
+}
+
+void RtlTcpWorker::run()
+{
+    m_dcI = 0.0;
+    m_dcQ = 0.0;
+    m_agcLevel = 0.0;
+    m_agcLevelEmitCntr = 0;
+    m_watchdogFlag = false;  // first callback sets it to true
+
+    // read samples
+    while (INVALID_SOCKET != m_sock)
     {
-        m_captureStartCntr = RTLTCP_START_COUNTER_INIT;
-    }
-    m_enaCaptureIQ = ena;
-}
+        size_t read = 0;
+        do
+        {
+            ssize_t ret = ::recv(m_sock, (char *)m_bufferIQ + read, RTLTCP_CHUNK_SIZE - read, 0);
+            if (0 == ret)
+            {  // disconnected => finish thread operation
+                qCCritical(rtlTcpInput) << "Socket disconnected";
+                goto worker_exit;
+            }
+            else if (-1 == ret)
+            {
+#if _WIN32
+                if (WSAEINTR == WSAGetLastError())
+                {
+                    continue;
+                }
+                else if (WSAECONNABORTED == WSAGetLastError())
+                {  // disconnected => finish thread operation
+                    // when socket is diconnected under Win, recv returns -1 but error code is 0
+                    qCCritical(rtlTcpInput) << "RTL-TCP: socket disconnected";
+                    goto worker_exit;
+                }
+                else if ((WSAECONNRESET == WSAGetLastError()) || (WSAEBADF == WSAGetLastError()))
+                {  // disconnected => finish thread operation
+                    qCCritical(rtlTcpInput) << "RTL-TCP: socket read error:" << strerror(WSAGetLastError());
+                    goto worker_exit;
+                }
+                else
+                {
+                    qCCritical(rtlTcpInput) << "RTL-TCP: socket read error:" << strerror(WSAGetLastError());
+                    goto worker_exit;
+                }
+#else
+                if ((EAGAIN == errno) || (EINTR == errno))
+                {
+                    continue;
+                }
+                else if ((ECONNRESET == errno) || (EBADF == errno))
+                {  // disconnected => finish thread operation
+                    qCCritical(rtlTcpInput) << "Error: " << strerror(errno);
+                    goto worker_exit;
+                }
+                else
+                {
+                    qCCritical(rtlTcpInput) << "Socket read error:" << strerror(errno);
+                    goto worker_exit;
+                }
+#endif
+            }
+            else
+            {
+                read += ret;
+            }
+        } while (RTLTCP_CHUNK_SIZE > read);
 
-void RtlTcpInput::readFromSocket()
-{
-    m_bytesReceived += m_streamSocket->read(reinterpret_cast<char *>(m_bufferIQ + m_bytesReceived), RTLTCP_CHUNK_SIZE - m_bytesReceived);
-    if (m_bytesReceived >= RTLTCP_CHUNK_SIZE)
-    {  // full chunk is read
-        m_bytesReceived = 0;
+        // reset watchDog flag, timer sets it to true
+        m_watchdogFlag = true;
 
+        // full chunk is read at this point
         if (m_enaCaptureIQ)
         {  // process data
             if (m_captureStartCntr > 0)
@@ -577,32 +885,50 @@ void RtlTcpInput::readFromSocket()
 
                     m_dcI = 0.0;
                     m_dcQ = 0.0;
-                    // m_agcLevel = 0;
-                    m_agcLevelEmitCntr = 0;
+                    // m_agcLevel = 0.0;
 
-                    emit tuned(m_frequency);
+                    emit dataReady();
                 }
                 else
-                {  // only record if recording
+                {  // only reecord if recording
                     if (m_isRecording)
                     {
                         emit recordBuffer(m_bufferIQ, RTLTCP_CHUNK_SIZE);
                     }
                     else
-                    {                               /* not recording */
-                        m_streamSocket->readAll();  // clear socket buffer to avoid mixing of channels
+                    { /* not recording */
                     }
 
                     // done
-                    return;
+                    continue;
                 }
             }
             processInputData(m_bufferIQ, RTLTCP_CHUNK_SIZE);
         }
     }
+
+worker_exit:
+    // single exit point
+    return;
 }
 
-void RtlTcpInput::processInputData(unsigned char *buf, uint32_t len)
+void RtlTcpWorker::captureIQ(bool ena)
+{
+    if (ena)
+    {
+        m_captureStartCntr = RTLTCP_START_COUNTER_INIT;
+    }
+    m_enaCaptureIQ = ena;
+}
+
+bool RtlTcpWorker::isRunning()
+{
+    bool flag = m_watchdogFlag;
+    m_watchdogFlag = false;
+    return flag;
+}
+
+void RtlTcpWorker::processInputData(unsigned char *buf, uint32_t len)
 {
 #if (RTLTCP_DOC_ENABLE > 0)
     int_fast32_t sumI = 0;
@@ -779,7 +1105,7 @@ void RtlTcpInput::processInputData(unsigned char *buf, uint32_t len)
     m_agcLevel = agcLev;
     if (0 == (++m_agcLevelEmitCntr & 0x0F))
     {
-        onAgcLevel(agcLev);
+        emit agcLevel(agcLev);
     }
 #endif
 
