@@ -288,6 +288,7 @@ public:
     Q_INVOKABLE QVariantMap restoreWindowGeometry();
     Q_INVOKABLE void saveUndockedWindows() const;
     Q_INVOKABLE void setAndroidNavigationBar();
+    Q_INVOKABLE void setAndroidKeepScreenOn(bool enable);
 
     bool eventFilter(QObject *obj, QEvent *event) override;
 

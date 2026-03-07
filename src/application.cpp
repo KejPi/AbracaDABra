@@ -3026,6 +3026,11 @@ void Application::loadSettings()
     m_settings->showSystemTime = settings->value("showSystemTime", false).toBool();
     m_settings->showEnsFlag = settings->value("showEnsembleCountryFlag", false).toBool();
     m_settings->showServiceFlag = settings->value("showServiceCountryFlag", false).toBool();
+#ifdef Q_OS_ANDROID
+    m_settings->keepScreenOn = settings->value("keepScreenOn", false).toBool();
+#else
+    m_settings->keepScreenOn = false;  // Not applicable on non-Android platforms
+#endif
 
     m_settings->uaDump.dataStoragePath = m_settings->dataStoragePath;
     m_settings->uaDump.overwriteEna = settings->value("UA-STORAGE/overwriteEna", false).toBool();
@@ -3336,6 +3341,9 @@ void Application::saveSettings()
     settings->setValue("dataStoragePath", m_settings->dataStoragePath);
     settings->setValue("compactUi", m_settings->compactUi);
     settings->setValue("cableChannelsEna", m_settings->cableChannelsEna);
+#ifdef Q_OS_ANDROID
+    settings->setValue("keepScreenOn", m_settings->keepScreenOn);
+#endif
 
     settings->setValue("AppWindow/x", m_settings->appWindow.x);
     settings->setValue("AppWindow/y", m_settings->appWindow.y);
@@ -3923,6 +3931,32 @@ void Application::setAndroidNavigationBar()
     catch (const std::exception &e)
     {
         qWarning() << "Exception setting Android navigation bar:" << QString::fromStdString(e.what());
+    }
+#endif
+}
+
+void Application::setAndroidKeepScreenOn(bool enable)
+{
+#ifdef Q_OS_ANDROID
+    try
+    {
+        // Get the Activity context
+        QJniObject activity = QNativeInterface::QAndroidApplication::context();
+        if (!activity.isValid())
+        {
+            qWarning() << "Failed to get Android activity context for keep screen on";
+            return;
+        }
+
+        // Call NavigationBarHelper (UI helper) to set FLAG_KEEP_SCREEN_ON
+        QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/NavigationBarHelper", "setKeepScreenOn", "(Landroid/app/Activity;Z)V",
+                                           activity.object(), enable);
+        
+        qCInfo(application) << "Android keep screen on:" << (enable ? "enabled" : "disabled");
+    }
+    catch (const std::exception &e)
+    {
+        qWarning() << "Exception setting Android keep screen on:" << QString::fromStdString(e.what());
     }
 #endif
 }

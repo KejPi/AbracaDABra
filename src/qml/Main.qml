@@ -249,6 +249,8 @@ ApplicationWindow {
             if (settingsBackend.fullscreen) {
                 appWindow.visibility = Window.FullScreen;
             }
+            // Apply keep screen on setting
+            application.setAndroidKeepScreenOn(settingsBackend.keepScreenOn);
         }
         else {
             var geometry = application.restoreWindowGeometry();
@@ -279,8 +281,14 @@ ApplicationWindow {
                 }
             }
         }
+        function onKeepScreenOnChanged() {
+            if (UI.isAndroid) {
+                application.setAndroidKeepScreenOn(settingsBackend.keepScreenOn);
+            }
+        }
     }
-    onVisibilityChanged: {
+
+    onVisibleChanged: {
         if (UI.isAndroid && settingsBackend.fullscreen === false  ) {
             application.setAndroidNavigationBar();
         }

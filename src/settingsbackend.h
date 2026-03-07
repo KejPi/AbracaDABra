@@ -219,6 +219,7 @@ class SettingsBackend : public UIControlProvider
     UI_PROPERTY_SETTINGS(bool, isCheckForUpdatesEnabled, m_settings->updateCheckEna)
     UI_PROPERTY_SETTINGS(bool, isXmlHeaderEnabled, m_settings->xmlHeaderEna)
     UI_PROPERTY_SETTINGS(QString, dataStoragePath, m_settings->dataStoragePath)
+    UI_PROPERTY_SETTINGS(bool, keepScreenOn, m_settings->keepScreenOn)
 
 public:
     SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *parent = nullptr);

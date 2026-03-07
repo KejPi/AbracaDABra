@@ -125,6 +125,19 @@ Item {
                                 }
                                 AbracaSwitch {
                                     Layout.fillWidth: true
+                                    text: qsTr("Keep screen on")
+                                    checked: settingsBackend.keepScreenOn
+                                    onCheckedChanged: {
+                                        if (settingsBackend.keepScreenOn !== checked) {
+                                            settingsBackend.keepScreenOn = checked
+                                        }
+                                    }
+                                    visible: UI.isAndroid === true
+                                    wrapMode: Text.WordWrap
+                                    elideMode: Text.ElideNone
+                                }
+                                AbracaSwitch {
+                                    Layout.fillWidth: true
                                     text: qsTr("Compact view (smaller controls, etc.)")
                                     checked: settingsBackend.compactUi
                                     onCheckedChanged: {

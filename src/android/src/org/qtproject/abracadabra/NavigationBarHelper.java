@@ -30,10 +30,11 @@ import android.app.Activity;
 import android.os.Build;
 import android.view.Window;
 import android.view.WindowInsetsController;
+import android.view.WindowManager;
 import android.view.View;
 
 /**
- * Helper class for managing Android navigation bar appearance.
+ * Helper class for managing Android UI and window features.
  * All methods run on the Android main thread via Activity.runOnUiThread().
  */
 public class NavigationBarHelper {
@@ -101,6 +102,44 @@ public class NavigationBarHelper {
                     }
                 } catch (Exception e) {
                     android.util.Log.w(TAG, "Error updating navigation bar: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    /**
+     * Set the FLAG_KEEP_SCREEN_ON flag to keep the screen on.
+     * This method is thread-safe and posts to the main thread if needed.
+     *
+     * @param activity The Activity instance
+     * @param enable true to keep screen on, false to allow screen to turn off
+     */
+    public static void setKeepScreenOn(Activity activity, boolean enable) {
+        if (activity == null) {
+            android.util.Log.e(TAG, "setKeepScreenOn: activity is null");
+            return;
+        }
+
+        // Run on the main thread to avoid threading issues
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Window window = activity.getWindow();
+                    if (window == null) {
+                        android.util.Log.e(TAG, "setKeepScreenOn: window is null");
+                        return;
+                    }
+
+                    if (enable) {
+                        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                        android.util.Log.d(TAG, "FLAG_KEEP_SCREEN_ON enabled");
+                    } else {
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                        android.util.Log.d(TAG, "FLAG_KEEP_SCREEN_ON disabled");
+                    }
+                } catch (Exception e) {
+                    android.util.Log.e(TAG, "Failed to set FLAG_KEEP_SCREEN_ON: " + e.getMessage(), e);
                 }
             }
         });
