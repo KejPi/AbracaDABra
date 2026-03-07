@@ -337,7 +337,6 @@ void SignalBackend::updateRfLevel(float rfLevel, float gain)
     m_tunerGain = gain;
     if (std::isnan(gain))
     {
-        rfLevelLabel(tr("N/A"));
         setGainVisible(false);
     }
     else
@@ -348,7 +347,7 @@ void SignalBackend::updateRfLevel(float rfLevel, float gain)
 
     if (std::isnan(rfLevel))
     {  // level is not available (input device in HW mode or not RTL-SDR)
-        rfLevelLabel(tr("N/A"));
+        rfLevelLabel("");
         isRfLevelVisible(false);
         m_spectYRangeMin = -140;
         m_spectYRangeMax = 0;
