@@ -26,92 +26,95 @@
 
 import QtQuick
 import QtQuick.Layouts
-
-import abracaComponents 1.0
+import abracaComponents
 
 Item {
     id: mainItem
-    // color: "red"
 
-    readonly property int marginSize: UI.standardMargin
     property bool showDockingControls: false
     property bool pageIsUndocked: false
+    readonly property int marginSize: UI.standardMargin
+
     signal controlClicked()
 
-    implicitHeight: servicePanelLayout.implicitHeight + 2 * marginSize
+    implicitHeight: 32 + 2 * marginSize
     implicitWidth: mainLayout.implicitWidth
 
-    RowLayout {
+    GridLayout {
         id: mainLayout
-        anchors.fill: parent
-        // anchors.leftMargin: marginSize
-        anchors.rightMargin: mainItem.marginSize
-        RowLayout {
-            id: servicePanelLayout
+        rows: 2
+        flow: GridLayout.TopToBottom
+        anchors.verticalCenter: mainItem.verticalCenter
+        anchors.left: mainItem.left
+        anchors.right: mainItem.right
+        anchors.leftMargin: mainItem.marginSize
+        anchors.rightMargin: mainItem.marginSize + (mainItem.showDockingControls ? dockingControlButton.width : 0) // extra space for docking control button
+        rowSpacing: 2 // mainItem.showDockingControls ? 4 : 0
+        columnSpacing: mainItem.marginSize
+
+        Image {
+            id: serviceLogoImage
+            Layout.rowSpan: 2
+            Layout.preferredWidth: 32
+            Layout.preferredHeight: 32
+            visible: appUI.isServiceLogoVisible
+            source: appUI.isServiceLogoVisible ? "image://metadata/logo/" + appUI.ensembleId + "/" + appUI.serviceId : ""
+            cache: false
+            // onVisibleChanged: {
+            //     if (visible) {
+            //         // Force reload of the logo when it becomes visible, to reflect possible changes
+            //         serviceLogoImage.source = ""
+            //         serviceLogoImage.source = "image://metadata/logo/" + appUI.ensembleId + "/" + appUI.serviceId
+            //     }
+            // }
+        }
+
+        AbracaLabel {
+            Layout.fillHeight: true
             Layout.fillWidth: true
-            Layout.margins: mainItem.marginSize
-            // Layout.preferredHeight: 32
-            Image {
-                id: serviceLogoImage
-                Layout.preferredWidth: 32
-                Layout.preferredHeight: Layout.preferredWidth
-                visible: appUI.isServiceLogoVisible
-                source: appUI.isServiceLogoVisible ? "image://metadata/logo/" + appUI.ensembleId + "/" + appUI.serviceId : ""
-                cache: false
-                // onVisibleChanged: {
-                //     if (visible) {
-                //         // Force reload of the logo when it becomes visible, to reflect possible changes
-                //         serviceLogoImage.source = ""
-                //         serviceLogoImage.source = "image://metadata/logo/" + appUI.ensembleId + "/" + appUI.serviceId
-                //     }
-                // }
-            }
-            ColumnLayout {
-                Layout.fillWidth: true
-                AbracaLabel {
-                    text: appUI.serviceLabel
-                    toolTipText: appUI.serviceLabelToolTip
-                    font.bold: true
-                }
-                StackLayout {
-                    Layout.fillWidth: true
-                    currentIndex: appUI.serviceInstance
-                    AbracaLabel {
-                        Layout.fillWidth: true
-                        text: appUI.dlService
-                        elide: Text.ElideRight
-                    }
-                    AbracaLabel {
-                        Layout.fillWidth: true
-                        text: appUI.dlAnnouncement
-                        elide: Text.ElideRight
-                    }
-                }
-
-            }
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+            verticalAlignment: Text.AlignTop
+            text: appUI.serviceLabel
+            toolTipText: appUI.serviceLabelToolTip
+            font.bold: true
         }
-
-        ColumnLayout {
+        StackLayout {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            currentIndex: appUI.serviceInstance
             AbracaLabel {
-                text: appUI.ensembleLabel
-                Layout.alignment: Qt.AlignRight
-                role: UI.LabelRole.Secondary
+                verticalAlignment: Text.AlignBottom
+                text: appUI.dlService
+                elide: Text.ElideRight
             }
             AbracaLabel {
-                text: appUI.channelIndex >= 0 ? channelListModel.data(channelListModel.index(appUI.channelIndex, 0), Qt.DisplayRole) : ""
-                Layout.alignment: Qt.AlignRight
-                role: UI.LabelRole.Secondary
+                verticalAlignment: Text.AlignBottom
+                text: appUI.dlAnnouncement
+                elide: Text.ElideRight
             }
         }
-        AbracaImgButton {
-            visible: showDockingControls
-            onClicked: controlClicked()
-            source: pageIsUndocked ? UI.imagesUrl +  "icon-dock.svg" : UI.imagesUrl + "icon-undock.svg"
-            iconSize: UI.controlHeight
-            colorizationColor: UI.colors.iconInactive
-            toolTipText: pageIsUndocked ? qsTr("Dock page back to main window") : qsTr("Undock page to separate window")
-        }
 
+        AbracaLabel {
+            Layout.alignment: Qt.AlignRight | Qt.AlignTop
+            text: appUI.ensembleLabel
+            role: UI.LabelRole.Secondary
+        }
+        AbracaLabel {
+            Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+            text: appUI.channelIndex >= 0 ? channelListModel.data(channelListModel.index(appUI.channelIndex, 0), Qt.DisplayRole) : ""
+            role: UI.LabelRole.Secondary
+        }
+    }
+    AbracaImgButton {
+        id: dockingControlButton
+        anchors.verticalCenter: mainItem.verticalCenter
+        anchors.right: mainItem.right
+        visible: showDockingControls
+        onClicked: controlClicked()
+        source: pageIsUndocked ? UI.imagesUrl +  "icon-dock.svg" : UI.imagesUrl + "icon-undock.svg"
+        iconSize: UI.controlHeight
+        colorizationColor: UI.colors.iconInactive
+        toolTipText: pageIsUndocked ? qsTr("Dock page back to main window") : qsTr("Undock page to separate window")
     }
 }
 
