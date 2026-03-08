@@ -117,7 +117,7 @@ void AudioOutputQt::start(audioFifo_t *buffer)
     m_ioDevice->setBuffer(m_currentFifoPtr);
     m_ioDevice->start();
     m_audioSink->start(m_ioDevice);
-    
+
     // Reset restart counter on successful start
     resetRestartCounter();
 }
@@ -256,7 +256,6 @@ void AudioOutputQt::resetRestartCounter()
 
 void AudioOutputQt::handleStateChanged(QAudio::State newState)
 {
-    // qDebug() << Q_FUNC_INFO << newState;
     switch (newState)
     {
         case QAudio::ActiveState:
@@ -264,10 +263,12 @@ void AudioOutputQt::handleStateChanged(QAudio::State newState)
             resetRestartCounter();
 #ifdef Q_OS_ANDROID
             // Notify Android that playback is active (resumed from idle)
-            try {
-                QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", 
-                                                   "onPlaybackActive", "()V");
-            } catch (...) {
+            try
+            {
+                QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "onPlaybackActive", "()V");
+            }
+            catch (...)
+            {
                 // Ignore exceptions
             }
 #endif
@@ -287,10 +288,12 @@ void AudioOutputQt::handleStateChanged(QAudio::State newState)
                 else
                 {
 #ifdef Q_OS_ANDROID
-                    // On Android, going idle while muted is often just a temporary buffer underrun
-                    // Don't stop the audio sink - let it stay idle and wait for data
-                    // This prevents race conditions with Android's audio system stopping the player
-                    qCDebug(audioOutput) << "Audio idle while muted - waiting for data (Android)";
+                    // On Android, going idle while muted is a temporary buffer underrun.
+                    // Some Android vendors/versions transition to idle despite readData returning data.
+                    // Restart the audio sink to recover - readData will continue producing silence
+                    // until the decoder provides samples again.
+                    qCDebug(audioOutput) << "Audio idle while muted on Android - restarting audio sink";
+                    doRestart(m_currentFifoPtr);
 #else
                     // On other platforms, stop as normal
                     doStop();
@@ -307,15 +310,14 @@ void AudioOutputQt::handleStateChanged(QAudio::State newState)
                         // Enough time has passed, reset counter
                         resetRestartCounter();
                     }
-                    
+
                     if (m_consecutiveRestarts >= MAX_CONSECUTIVE_RESTARTS)
                     {
-                        qCWarning(audioOutput) << "Too many consecutive restarts (" << m_consecutiveRestarts 
-                                             << "), stopping playback to prevent loop";
+                        qCWarning(audioOutput) << "Too many consecutive restarts (" << m_consecutiveRestarts
+                                               << "), stopping playback to prevent loop";
 #ifdef Q_OS_ANDROID
                         // Mark as user stop so resources are properly released
-                        QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", 
-                                                          "onUserStoppedPlayback", "()V");
+                        QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "onUserStoppedPlayback", "()V");
 #endif
                         doStop();
                         emit audioOutputError();
@@ -324,8 +326,8 @@ void AudioOutputQt::handleStateChanged(QAudio::State newState)
                     else
                     {
                         m_consecutiveRestarts++;
-                        qCWarning(audioOutput) << "Audio going to Idle state unexpectedly, trying to restart... (attempt " 
-                                             << m_consecutiveRestarts << "/" << MAX_CONSECUTIVE_RESTARTS << ")";
+                        qCWarning(audioOutput) << "Audio going to Idle state unexpectedly, trying to restart... (attempt " << m_consecutiveRestarts
+                                               << "/" << MAX_CONSECUTIVE_RESTARTS << ")";
                         doRestart(m_currentFifoPtr);
                     }
                 }
@@ -334,8 +336,7 @@ void AudioOutputQt::handleStateChanged(QAudio::State newState)
                     qCWarning(audioOutput) << "Audio going to Idle state unexpectly, error code:" << m_audioSink->error();
 #ifdef Q_OS_ANDROID
                     // Mark as user stop so resources are properly released
-                    QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", 
-                                                      "onUserStoppedPlayback", "()V");
+                    QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "onUserStoppedPlayback", "()V");
 #endif
                     doStop();
                     emit audioOutputError();
@@ -430,7 +431,7 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
     m_bufferFullnessAvrg += count;
     m_avrgCntr++;
 #endif
-    // qDebug() << "Audio:" << len << count << count * 1.0 / AUDIO_FIFO_SIZE;
+    // qDebug() << "Audio:" << len << count << count * 1.0 / AUDIO_FIFO_SIZE << m_muteFlag << m_stopFlag;
 
     if (AudioOutputPlaybackState::Muted == m_playbackState)
     {  // muted
@@ -596,17 +597,19 @@ qint64 AudioIODevice::readData(char *data, qint64 len)
     if (false == muteRequest)
     {  // unmute can be requested only when there is enough samples
         qCInfo(audioOutput) << "Unmuting audio";
-        
+
 #ifdef Q_OS_ANDROID
         // Notify Android that playback is active to reset timeout
-        try {
-            QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", 
-                                               "onPlaybackActive", "()V");
-        } catch (...) {
+        try
+        {
+            QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "onPlaybackActive", "()V");
+        }
+        catch (...)
+        {
             // Ignore exceptions
         }
 #endif
-        
+
         float coe = 2.0 - m_muteFactor;
         if (numSamples < AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz)
         {
@@ -750,6 +753,17 @@ qint64 AudioIODevice::bytesAvailable() const
     m_inFifoPtr->mutex.lock();
     int64_t count = m_inFifoPtr->count;
     m_inFifoPtr->mutex.unlock();
+
+#ifdef Q_OS_ANDROID
+    // On Android, always report data available when device is open and not stopping.
+    // readData() handles producing silence when FIFO is empty.
+    // Returning 0 causes some Android audio implementations to transition to IdleState,
+    // which stops pulling data and creates a deadlock when the decoder recovers.
+    if (!m_stopFlag && isOpen() && count == 0)
+    {
+        return 4096;
+    }
+#endif
 
     return count;
 }
