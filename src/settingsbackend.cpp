@@ -47,11 +47,10 @@
 #include "txdataloader.h"
 
 const QString SettingsBackend::m_coordinatesHelp = QString(QT_TR_NOOP(R"(
-        Enter coordinates in "latitude, longitude" format, for example: 1.234,-5.678</p>
-        <p>Tip: <i>Go to <a href="https://www.google.com/maps">Google maps</a>,
-        right click on your location, click on coordinates in popup menu to copy them
-        and then insert the values here as they are.</i></p>
-    )"));
+Enter coordinates in "latitude, longitude" format, for example: 1.234,-5.678</p>
+<p>Tip: <i>Go to <a href="https://www.google.com/maps">Google maps</a>,
+right click on your location, click on coordinates in popup menu to copy them
+and then insert the values here as they are.</i></p>)"));
 
 SettingsBackend::SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *parent) : UIControlProvider(parent)
 {

@@ -1469,17 +1469,17 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="211"/>
         <source>Reset statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Vynulovat statistiky</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="219"/>
         <source>Reset FIB statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Vynulovat statistiku FIB</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="225"/>
         <source>Reset MSC statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Vynulovat statistiku MSC</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="316"/>
@@ -1569,7 +1569,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="116"/>
         <source>%1 (+%2)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 (+%2)</translation>
     </message>
 </context>
 <context>
@@ -1577,7 +1577,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../qml/Main.qml" line="40"/>
         <source>AbracaDABra</source>
-        <translation type="unfinished"></translation>
+        <translation>AbracaDABra</translation>
     </message>
 </context>
 <context>
@@ -1585,7 +1585,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../messageboxbackend.cpp" line="181"/>
         <source>OK</source>
-        <translation type="unfinished">OK</translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../messageboxbackend.cpp" line="183"/>
@@ -1595,27 +1595,27 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../messageboxbackend.cpp" line="185"/>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>Ano</translation>
     </message>
     <message>
         <location filename="../messageboxbackend.cpp" line="187"/>
         <source>No</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne</translation>
     </message>
     <message>
         <location filename="../messageboxbackend.cpp" line="189"/>
         <source>Abort</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <location filename="../messageboxbackend.cpp" line="191"/>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>Znovu</translation>
     </message>
     <message>
         <location filename="../messageboxbackend.cpp" line="193"/>
         <source>Ignore</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorovat</translation>
     </message>
 </context>
 <context>
@@ -1623,7 +1623,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../navigationmodel.cpp" line="34"/>
         <source>List</source>
-        <translation type="unfinished"></translation>
+        <translation>Seznam</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="38"/>
@@ -1633,12 +1633,12 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../navigationmodel.cpp" line="38"/>
         <source>Current service</source>
-        <translation type="unfinished"></translation>
+        <translation>Současná stanice</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="44"/>
         <source>Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="44"/>
@@ -1648,22 +1648,22 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../navigationmodel.cpp" line="50"/>
         <source>EPG</source>
-        <translation type="unfinished"></translation>
+        <translation>EPG</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="50"/>
         <source>Electronic Programme Guide</source>
-        <translation type="unfinished">Elektronický programový průvodce (EPG)</translation>
+        <translation>Elektronický programový průvodce (EPG)</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="57"/>
         <source>CatSLS</source>
-        <translation type="unfinished"></translation>
+        <translation>CatSLS</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="57"/>
         <source>Categorized slideshow</source>
-        <translation type="unfinished">Kategorizovaná slideshow</translation>
+        <translation>Kategorizovaná slideshow</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="63"/>
@@ -1673,22 +1673,22 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../navigationmodel.cpp" line="69"/>
         <source>Scanner</source>
-        <translation type="unfinished"></translation>
+        <translation>Scanner</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="69"/>
         <source>DAB Scanner</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB Scanner</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="75"/>
         <source>Signal</source>
-        <translation type="unfinished"></translation>
+        <translation>Signál</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="75"/>
         <source>DAB Signal Overview</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB signál</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="82"/>
@@ -1703,7 +1703,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../navigationmodel.cpp" line="95"/>
         <source>Audio recording schedule</source>
-        <translation type="unfinished">Plán nahrávání zvuku</translation>
+        <translation>Plán nahrávání zvuku</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="95"/>
@@ -1728,7 +1728,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../navigationmodel.cpp" line="107"/>
         <source>Export service list</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportovat seznam stanic</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="109"/>
@@ -1738,7 +1738,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../navigationmodel.cpp" line="115"/>
         <source>Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="115"/>
@@ -1763,7 +1763,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../navigationmodel.cpp" line="123"/>
         <source>Quit AbracaDABra</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukončit AbracaDABra</translation>
     </message>
 </context>
 <context>
@@ -1781,12 +1781,12 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="80"/>
         <source>Light</source>
-        <translation type="unfinished"></translation>
+        <translation>Světlý</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="80"/>
         <source>Dark</source>
-        <translation type="unfinished"></translation>
+        <translation>Tmavý</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="105"/>
@@ -1796,17 +1796,17 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="115"/>
         <source>Fullscreen mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobrazit na celou obrazovku</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="128"/>
         <source>Keep screen on</source>
-        <translation type="unfinished"></translation>
+        <translation>Nezhasínat obrazovku</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="141"/>
         <source>Compact view (smaller controls, etc.)</source>
-        <translation type="unfinished"></translation>
+        <translation>Kompaktní zobrazení (menší ovládací prvky, atd.)</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="153"/>
@@ -1866,12 +1866,12 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="314"/>
         <source>Data storage folder...</source>
-        <translation type="unfinished"></translation>
+        <translation>Adresář pro ukládání dat...</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="324"/>
         <source>Application uses this folder to store all data like audio recording, IQ recording and logs, etc.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplikace používá tento adresář pro ukládání všech soiuborů jako je záznam zvuku, záznam I, logy, atd.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="338"/>
@@ -1881,7 +1881,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="350"/>
         <source>Proxy type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfigurace:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="366"/>
@@ -1922,7 +1922,8 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
         <location filename="../qml/settings/OtherSettings.qml" line="480"/>
         <source>Ensemble information is a small CSV file with list of services in the ensemble,
 it is anonymous and contains no personal data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Informace o multiplexu je malý soubor CSV se seznamem stanic v multiplexu,
+je anonymní a neobsahuje žádná osobní data.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="487"/>
@@ -1962,7 +1963,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="549"/>
         <source>DAB cable channels (16A - 17D)</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB kanály kabelové TV (16A - 17D)</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="585"/>
@@ -4071,12 +4072,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RartTcpDevice.qml" line="47"/>
         <source>IP address:</source>
-        <translation type="unfinished"></translation>
+        <translation>IP adresa:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RartTcpDevice.qml" line="52"/>
         <source>IP address of RaRT-TCP server</source>
-        <translation type="unfinished"></translation>
+        <translation>IP adresa a port RaRT-TCP serveru</translation>
     </message>
     <message>
         <location filename="../qml/settings/RartTcpDevice.qml" line="64"/>
@@ -4089,7 +4090,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="52"/>
         <source>Open file</source>
-        <translation type="unfinished"></translation>
+        <translation>Otevřít soubor</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="84"/>
@@ -4099,17 +4100,17 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="123"/>
         <source>%1 / %2 sec</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 / %2 s</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="138"/>
         <source>Disable repeat</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypnout opakování</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="139"/>
         <source>Enable repeat</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapnout opakování</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="159"/>
@@ -4260,7 +4261,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="304"/>
         <source>RF level estimation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Estimace úrovně signálu:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="318"/>
@@ -4278,12 +4279,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="50"/>
         <source>IP address:</source>
-        <translation type="unfinished"></translation>
+        <translation>IP adresa:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="56"/>
         <source>IP address of RTL-TCP server</source>
-        <translation type="unfinished"></translation>
+        <translation>IP adresa a port RTL-TCP serveru</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="70"/>
@@ -4410,7 +4411,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/SLSView.qml" line="52"/>
         <source>Save to file</source>
-        <translation type="unfinished">Uložit do souboru</translation>
+        <translation>Uložit do souboru</translation>
     </message>
     <message>
         <location filename="../qml/SLSView.qml" line="56"/>
@@ -4436,17 +4437,17 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="160"/>
         <source>Replace data in the table?</source>
-        <translation type="unfinished"></translation>
+        <translation>Nahradit data v tabulce?</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="160"/>
         <source>Current data in the table will be deleted. This action is irreversible.</source>
-        <translation type="unfinished"></translation>
+        <translation>Současná data v tabulce budou smazána. Tato akce je nevratná.</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="171"/>
         <source>Replace</source>
-        <translation type="unfinished"></translation>
+        <translation>Nahradit</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="172"/>
@@ -4466,7 +4467,7 @@ it is anonymous and contains no personal data.</source>
         <location filename="../tii/scannerbackend.cpp" line="330"/>
         <location filename="../tii/scannerbackend.cpp" line="344"/>
         <source>Failed to load file</source>
-        <translation type="unfinished"></translation>
+        <translation>Načtení souboru se nezdařilo</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="404"/>
@@ -4474,22 +4475,22 @@ it is anonymous and contains no personal data.</source>
         <location filename="../tii/scannerbackend.cpp" line="442"/>
         <location filename="../tii/scannerbackend.cpp" line="461"/>
         <source>Failed to save log</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložení logu se nezdařilo</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="422"/>
         <source>Log saved to CSV file</source>
-        <translation type="unfinished"></translation>
+        <translation>Log byl uložen do souboru CSV</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="452"/>
         <source>No permission to write log</source>
-        <translation type="unfinished"></translation>
+        <translation>Chybí oprávnění k zápisu logu</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="485"/>
         <source>Auto-save CSV started</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatický záznam CSV zahájen</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="535"/>
@@ -4519,17 +4520,17 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="870"/>
         <source>No permission to write ensemble information</source>
-        <translation type="unfinished">Chybí oprávnění k zápisu informace o multiplexu</translation>
+        <translation>Chybí oprávnění k zápisu informace o multiplexu</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="881"/>
         <source>Ensemble information exported</source>
-        <translation type="unfinished">Informace o multiplexu vyexportována</translation>
+        <translation>Informace o multiplexu vyexportována</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="886"/>
         <source>Failed to export ensemble information</source>
-        <translation type="unfinished">Export informace o multiplexu selhal</translation>
+        <translation>Export informace o multiplexu selhal</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="920"/>
@@ -4539,7 +4540,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="970"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Nadmořská výška: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="974"/>
@@ -4554,7 +4555,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="991"/>
         <source>Clear scan results?</source>
-        <translation type="unfinished"></translation>
+        <translation>Vymazat výsledky scanu?</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="991"/>
@@ -4570,7 +4571,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1011"/>
         <source>Clear local (known) transmitter database?</source>
-        <translation type="unfinished"></translation>
+        <translation>Vymazat databázi místních (známých) vysílačů?</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1011"/>
@@ -4583,7 +4584,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="41"/>
         <source>Scanner configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavení scanneru</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="54"/>
@@ -4704,7 +4705,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="88"/>
         <source>Configuration...</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavení...</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="159"/>
@@ -4789,7 +4790,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="469"/>
         <source>CSV files</source>
-        <translation type="unfinished"></translation>
+        <translation>Soubory CSV</translation>
     </message>
 </context>
 <context>
@@ -4907,7 +4908,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/ServiceList.qml" line="694"/>
         <source>Ensembles</source>
-        <translation type="unfinished"></translation>
+        <translation>Multiplexy</translation>
     </message>
 </context>
 <context>
@@ -4915,12 +4916,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/ServicePanel.qml" line="117"/>
         <source>Dock page back to main window</source>
-        <translation type="unfinished"></translation>
+        <translation>Dokovat stránku zpět do hlavního okna</translation>
     </message>
     <message>
         <location filename="../qml/ServicePanel.qml" line="117"/>
         <source>Undock page to separate window</source>
-        <translation type="unfinished"></translation>
+        <translation>Oddokovat stránku do samostaného okna</translation>
     </message>
 </context>
 <context>
@@ -4938,18 +4939,18 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/ServiceView.qml" line="207"/>
         <source>Switch to another ensemble</source>
-        <translation type="unfinished"></translation>
+        <translation>Přepnout na jiný multiplex</translation>
     </message>
     <message>
         <location filename="../qml/ServiceView.qml" line="287"/>
         <source>Right click to copy Dynamic label</source>
-        <translation type="unfinished"></translation>
+        <translation>Kliknutím pravým tlačítkem se zkopíruje Dynamic Label</translation>
     </message>
     <message>
         <location filename="../qml/ServiceView.qml" line="312"/>
         <location filename="../qml/ServiceView.qml" line="324"/>
         <source>Right click to copy Dynamic label +</source>
-        <translation type="unfinished"></translation>
+        <translation>Kliknutím pravým tlačítkem se zkopíruje Dynamic Label +</translation>
     </message>
 </context>
 <context>
@@ -4965,139 +4966,142 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../settingsbackend.cpp" line="49"/>
         <source>
-        Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;
-        &lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;,
-        right click on your location, click on coordinates in popup menu to copy them
-        and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
-    </source>
-        <translation type="unfinished"></translation>
+Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;
+&lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;,
+right click on your location, click on coordinates in popup menu to copy them
+and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
+        <translation>
+Zadejte souřadnice ve formátu &quot;zeměpisná šířka, zeměpisná délka&quot;, například: 1.234,-5.678&lt;/p&gt;
+&lt;p&gt;Tip: &lt;i&gt;Bežte na &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;,
+klikněte pravým tlačítkem na vaši polohu, klikněte na souřadnice v kontextovém menu, abyste je zkopírovali,
+a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="62"/>
+        <location filename="../settingsbackend.cpp" line="61"/>
         <source>Device</source>
         <translation>Zařízení</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="63"/>
+        <location filename="../settingsbackend.cpp" line="62"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="64"/>
+        <location filename="../settingsbackend.cpp" line="63"/>
         <source>Announcements</source>
         <translation>Hlášení</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="65"/>
+        <location filename="../settingsbackend.cpp" line="64"/>
         <source>User applications</source>
         <translation>Aplikace</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="66"/>
+        <location filename="../settingsbackend.cpp" line="65"/>
         <source>TII</source>
         <translation>TII</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="67"/>
+        <location filename="../settingsbackend.cpp" line="66"/>
         <source>Others</source>
         <translation>Ostatní</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="86"/>
+        <location filename="../settingsbackend.cpp" line="85"/>
         <source>Unsigned 8 bits</source>
         <translation>8 bitů bez znaménka</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="87"/>
+        <location filename="../settingsbackend.cpp" line="86"/>
         <source>Signed 16 bits</source>
         <translation>16 bitů se znaménkem</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="165"/>
+        <location filename="../settingsbackend.cpp" line="164"/>
         <source>Disabled</source>
         <translation>Zakázáno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="226"/>
-        <location filename="../settingsbackend.cpp" line="275"/>
+        <location filename="../settingsbackend.cpp" line="225"/>
+        <location filename="../settingsbackend.cpp" line="274"/>
         <source>System</source>
         <translation>Systém</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="227"/>
-        <location filename="../settingsbackend.cpp" line="276"/>
+        <location filename="../settingsbackend.cpp" line="226"/>
+        <location filename="../settingsbackend.cpp" line="275"/>
         <source>Manual</source>
         <translation>Manuálně</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="229"/>
+        <location filename="../settingsbackend.cpp" line="228"/>
         <source>Serial port</source>
-        <translation type="unfinished"></translation>
+        <translation>Sériový port</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="265"/>
+        <location filename="../settingsbackend.cpp" line="264"/>
         <source>System language</source>
         <translation>Jazyk systému</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="274"/>
+        <location filename="../settingsbackend.cpp" line="273"/>
         <source>No proxy</source>
         <translation>Nepoužívat proxy</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="871"/>
-        <location filename="../settingsbackend.cpp" line="909"/>
-        <location filename="../settingsbackend.cpp" line="2063"/>
+        <location filename="../settingsbackend.cpp" line="870"/>
+        <location filename="../settingsbackend.cpp" line="908"/>
+        <location filename="../settingsbackend.cpp" line="2062"/>
         <source>N/A</source>
         <translation>Nedostupný</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="924"/>
+        <location filename="../settingsbackend.cpp" line="923"/>
         <source>RTL SDR device connected</source>
         <translation>RTL SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="927"/>
+        <location filename="../settingsbackend.cpp" line="926"/>
         <source>RTL TCP device connected</source>
         <translation>RTL TCP zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="930"/>
+        <location filename="../settingsbackend.cpp" line="929"/>
         <source>No device connected</source>
         <translation>Žádné zařízení není připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="933"/>
+        <location filename="../settingsbackend.cpp" line="932"/>
         <source>Raw file connected</source>
         <translation>Raw soubor připojen</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="936"/>
+        <location filename="../settingsbackend.cpp" line="935"/>
         <source>Airspy device connected</source>
         <translation>Airspy zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="939"/>
+        <location filename="../settingsbackend.cpp" line="938"/>
         <source>Soapy SDR device connected</source>
         <translation>Soapy SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1394"/>
+        <location filename="../settingsbackend.cpp" line="1393"/>
         <source>Update failed</source>
         <translation>Aktualizace selhala</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1404"/>
+        <location filename="../settingsbackend.cpp" line="1403"/>
         <source>Last update: </source>
         <translation>Poslední aktualizace: </translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1408"/>
+        <location filename="../settingsbackend.cpp" line="1407"/>
         <source>Data not available</source>
         <translation>Není k dispozici</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1770"/>
+        <location filename="../settingsbackend.cpp" line="1769"/>
         <source>sec</source>
         <translation>s</translation>
     </message>
@@ -5112,12 +5116,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../signalbackend.cpp" line="84"/>
         <source>Frequency [MHz]</source>
-        <translation type="unfinished"></translation>
+        <translation>Frekvence [MHz]</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="85"/>
         <source>dBFS</source>
-        <translation type="unfinished"></translation>
+        <translation>dBFS</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="145"/>
@@ -5173,7 +5177,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="59"/>
         <source>Soapy SDR device arguments</source>
-        <translation type="unfinished"></translation>
+        <translation>Argumenty Soapy SDR zařízení</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="68"/>
@@ -5254,7 +5258,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/SubchannelsView.qml" line="87"/>
         <source>Subchannel </source>
-        <translation type="unfinished"></translation>
+        <translation>Subkanál </translation>
     </message>
 </context>
 <context>
@@ -5298,32 +5302,32 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/tiibackend.cpp" line="209"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Nadmořská výška: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="232"/>
         <source>Failed to create TII log directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se vytvořit TII adresář</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="240"/>
         <source>No permission to write log</source>
-        <translation type="unfinished"></translation>
+        <translation>Chybí oprávnění k zápisu logu</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="255"/>
         <source>TII log started</source>
-        <translation type="unfinished"></translation>
+        <translation>Záznam TII logu zahájen</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="281"/>
         <source>Failed to write TII log</source>
-        <translation type="unfinished"></translation>
+        <translation>Zápis TII logu se nezdařil</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="318"/>
         <source>Carrier pairs</source>
-        <translation type="unfinished"></translation>
+        <translation>Carrier pairs</translation>
     </message>
 </context>
 <context>
@@ -5369,7 +5373,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="153"/>
         <source>Apply</source>
-        <translation type="unfinished">Použít</translation>
+        <translation>Použít</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="178"/>
@@ -5404,7 +5408,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="291"/>
         <source>GPS coordinates</source>
-        <translation type="unfinished"></translation>
+        <translation>GPS souřadnice</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="311"/>
@@ -5444,7 +5448,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="421"/>
         <source>Transmitter table columns</source>
-        <translation type="unfinished"></translation>
+        <translation>Sloupce tabulky vysílačů</translation>
     </message>
 </context>
 <context>
@@ -5452,32 +5456,32 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/tiitablecolssettingsmodel.cpp" line="35"/>
         <source>Code</source>
-        <translation type="unfinished"></translation>
+        <translation>Kód</translation>
     </message>
     <message>
         <location filename="../tii/tiitablecolssettingsmodel.cpp" line="36"/>
         <source>Level</source>
-        <translation type="unfinished">Úroveň</translation>
+        <translation>Úroveň</translation>
     </message>
     <message>
         <location filename="../tii/tiitablecolssettingsmodel.cpp" line="37"/>
         <source>Distance</source>
-        <translation type="unfinished">Vzdálenost</translation>
+        <translation>Vzdálenost</translation>
     </message>
     <message>
         <location filename="../tii/tiitablecolssettingsmodel.cpp" line="37"/>
         <source>Azimuth</source>
-        <translation type="unfinished">Azimut</translation>
+        <translation>Azimut</translation>
     </message>
     <message>
         <location filename="../tii/tiitablecolssettingsmodel.cpp" line="38"/>
         <source>Location</source>
-        <translation type="unfinished">Umístění</translation>
+        <translation>Umístění</translation>
     </message>
     <message>
         <location filename="../tii/tiitablecolssettingsmodel.cpp" line="38"/>
         <source>Power</source>
-        <translation type="unfinished">Výkon</translation>
+        <translation>Výkon</translation>
     </message>
 </context>
 <context>
@@ -5566,7 +5570,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="343"/>
         <source>Code</source>
-        <translation type="unfinished"></translation>
+        <translation>Kód</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="345"/>
@@ -5675,7 +5679,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="132"/>
         <source>Hide progress when completed</source>
-        <translation type="unfinished"></translation>
+        <translation>Skrýt průběh po dokončení</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="152"/>
@@ -5700,7 +5704,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="210"/>
         <source>SLS folder template</source>
-        <translation type="unfinished"></translation>
+        <translation>Šablona SLS cesty</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="221"/>
@@ -5710,57 +5714,57 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="234"/>
         <source>SPI folder template</source>
-        <translation type="unfinished"></translation>
+        <translation>Šablona SPI cesty</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="248"/>
         <source>Data storage path pattern supports these tokens.</source>
-        <translation type="unfinished"></translation>
+        <translation>Šablona cesty podporuje tyto proměnné.</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="249"/>
         <source>For more information see</source>
-        <translation type="unfinished"></translation>
+        <translation>Pro více informací si přečtěte</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="250"/>
         <source>Documentation</source>
-        <translation type="unfinished"></translation>
+        <translation>Dokumentaci</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="287"/>
         <source>current audio service ID (hex number)</source>
-        <translation type="unfinished"></translation>
+        <translation>ID současné stanice (hexadecimální číslo)</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="297"/>
         <source>current ensemble ID (hex number)</source>
-        <translation type="unfinished"></translation>
+        <translation>ID současného multiplexu (hexadecimální číslo)</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="307"/>
         <source>transport ID</source>
-        <translation type="unfinished"></translation>
+        <translation>transport ID MOT objektu</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="317"/>
         <source>content name</source>
-        <translation type="unfinished"></translation>
+        <translation>jméno MOT objektu</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="327"/>
         <source>content name with extension (only SLS)</source>
-        <translation type="unfinished"></translation>
+        <translation>jméno MOT objektu s příponou (jen SLS)</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="337"/>
         <source>transport ID of directory (only SPI)</source>
-        <translation type="unfinished"></translation>
+        <translation>transport ID MOT adresáře (jen SPI)</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="347"/>
         <source>service component ID (only SPI)</source>
-        <translation type="unfinished"></translation>
+        <translation>service component ID (jen SPI)</translation>
     </message>
 </context>
 <context>
@@ -5768,13 +5772,14 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/UndockablePage.qml" line="109"/>
         <source>Page is currently undocked</source>
-        <translation type="unfinished"></translation>
+        <translation>Stránka je momentálně oddokovaná</translation>
     </message>
     <message>
         <location filename="../qml/UndockablePage.qml" line="117"/>
         <source>The content is displayed in a separate window.
 Use the &apos;Dock Page&apos; button above to bring it back.</source>
-        <translation type="unfinished"></translation>
+        <translation>Obsah je zobrazený v samostatném okně.
+Použijte dokovací tlačítko nahoře pro opětovné připojení.</translation>
     </message>
 </context>
 <context>
@@ -5787,12 +5792,12 @@ Use the &apos;Dock Page&apos; button above to bring it back.</source>
     <message>
         <location filename="../qml/UpdateDialog.qml" line="66"/>
         <source>Current version:</source>
-        <translation type="unfinished"></translation>
+        <translation>Současná verze:</translation>
     </message>
     <message>
         <location filename="../qml/UpdateDialog.qml" line="75"/>
         <source>Available version:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nová verze:</translation>
     </message>
     <message>
         <location filename="../qml/UpdateDialog.qml" line="105"/>

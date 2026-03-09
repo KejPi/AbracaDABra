@@ -4962,139 +4962,138 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../settingsbackend.cpp" line="49"/>
         <source>
-        Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;
-        &lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;,
-        right click on your location, click on coordinates in popup menu to copy them
-        and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;
-    </source>
+Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;
+&lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;,
+right click on your location, click on coordinates in popup menu to copy them
+and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="62"/>
+        <location filename="../settingsbackend.cpp" line="61"/>
         <source>Device</source>
         <translation>Gerät</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="63"/>
+        <location filename="../settingsbackend.cpp" line="62"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="64"/>
+        <location filename="../settingsbackend.cpp" line="63"/>
         <source>Announcements</source>
         <translation>Durchsagen</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="65"/>
+        <location filename="../settingsbackend.cpp" line="64"/>
         <source>User applications</source>
         <translation>Benutzeranwendungen</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="66"/>
+        <location filename="../settingsbackend.cpp" line="65"/>
         <source>TII</source>
         <translation>TII</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="67"/>
+        <location filename="../settingsbackend.cpp" line="66"/>
         <source>Others</source>
         <translation>Andere</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="86"/>
+        <location filename="../settingsbackend.cpp" line="85"/>
         <source>Unsigned 8 bits</source>
         <translation>Unsigned 8 Bits</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="87"/>
+        <location filename="../settingsbackend.cpp" line="86"/>
         <source>Signed 16 bits</source>
         <translation>Signed 16 Bits</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="165"/>
+        <location filename="../settingsbackend.cpp" line="164"/>
         <source>Disabled</source>
         <translation>Deaktiviert</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="226"/>
-        <location filename="../settingsbackend.cpp" line="275"/>
+        <location filename="../settingsbackend.cpp" line="225"/>
+        <location filename="../settingsbackend.cpp" line="274"/>
         <source>System</source>
         <translation>System</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="227"/>
-        <location filename="../settingsbackend.cpp" line="276"/>
+        <location filename="../settingsbackend.cpp" line="226"/>
+        <location filename="../settingsbackend.cpp" line="275"/>
         <source>Manual</source>
         <translation>Manuell</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="229"/>
+        <location filename="../settingsbackend.cpp" line="228"/>
         <source>Serial port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="265"/>
+        <location filename="../settingsbackend.cpp" line="264"/>
         <source>System language</source>
         <translation>Systemsprache</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="274"/>
+        <location filename="../settingsbackend.cpp" line="273"/>
         <source>No proxy</source>
         <translation>Kein Proxy</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="871"/>
-        <location filename="../settingsbackend.cpp" line="909"/>
-        <location filename="../settingsbackend.cpp" line="2063"/>
+        <location filename="../settingsbackend.cpp" line="870"/>
+        <location filename="../settingsbackend.cpp" line="908"/>
+        <location filename="../settingsbackend.cpp" line="2062"/>
         <source>N/A</source>
         <translation>unzutreff.</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="924"/>
+        <location filename="../settingsbackend.cpp" line="923"/>
         <source>RTL SDR device connected</source>
         <translation>RTL-SDR-Gerät verbunden</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="927"/>
+        <location filename="../settingsbackend.cpp" line="926"/>
         <source>RTL TCP device connected</source>
         <translation>RTL-TCP-Gerät verbunden</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="930"/>
+        <location filename="../settingsbackend.cpp" line="929"/>
         <source>No device connected</source>
         <translation>Kein Gerät verbunden</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="933"/>
+        <location filename="../settingsbackend.cpp" line="932"/>
         <source>Raw file connected</source>
         <translation>Rohdatei verbunden</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="936"/>
+        <location filename="../settingsbackend.cpp" line="935"/>
         <source>Airspy device connected</source>
         <translation>Airspygerät verbunden</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="939"/>
+        <location filename="../settingsbackend.cpp" line="938"/>
         <source>Soapy SDR device connected</source>
         <translation>Soapy SDR-Gerät verbunden</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1394"/>
+        <location filename="../settingsbackend.cpp" line="1393"/>
         <source>Update failed</source>
         <translation>Aktualisierung fehlgeschlagen</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1404"/>
+        <location filename="../settingsbackend.cpp" line="1403"/>
         <source>Last update: </source>
         <translation>Letze Aktualisierung: </translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1408"/>
+        <location filename="../settingsbackend.cpp" line="1407"/>
         <source>Data not available</source>
         <translation>Daten nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1770"/>
+        <location filename="../settingsbackend.cpp" line="1769"/>
         <source>sec</source>
         <translation>sec</translation>
     </message>
