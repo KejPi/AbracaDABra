@@ -3134,6 +3134,7 @@ void Application::loadSettings()
     m_settings->rtlsdr.biasT = settings->value("RTL-SDR/bias-T", false).toBool();
     m_settings->rtlsdr.agcLevelMax = settings->value("RTL-SDR/agcLevelMax", 0).toInt();
     m_settings->rtlsdr.ppm = settings->value("RTL-SDR/ppm", 0).toInt();
+    m_settings->rtlsdr.rfLevelEna = settings->value("RTL-SDR/rfLevelEna", true).toBool();
     m_settings->rtlsdr.rfLevelOffset = settings->value("RTL-SDR/rfLevelOffset", 0.0).toFloat();
 
     m_settings->rtltcp.gainIdx = settings->value("RTL-TCP/gainIndex", 0).toInt();
@@ -3450,6 +3451,7 @@ void Application::saveSettings()
     settings->setValue("RTL-SDR/bias-T", m_settings->rtlsdr.biasT);
     settings->setValue("RTL-SDR/agcLevelMax", m_settings->rtlsdr.agcLevelMax);
     settings->setValue("RTL-SDR/ppm", m_settings->rtlsdr.ppm);
+    settings->setValue("RTL-SDR/rfLevelEna", m_settings->rtlsdr.rfLevelEna);
     settings->setValue("RTL-SDR/rfLevelOffset", m_settings->rtlsdr.rfLevelOffset);
 
 #if HAVE_AIRSPY

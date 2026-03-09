@@ -301,7 +301,22 @@ Item {
                         onClicked: settingsBackend.rtlSdrFreqCorrection = 0
                     }
                     AbracaLabel {
+                        text: qsTr("RF level estimation:")
+                        visible: settingsBackend.haveRtlSdrOldDabDriver
+                    }
+                    AbracaSwitch {
+                        Layout.alignment: Qt.AlignHCenter
+                        text: ""
+                        checked: settingsBackend.isRtlSdrRfLevelEna
+                        onCheckedChanged: if (settingsBackend.isRtlSdrRfLevelEna !== checked) {
+                            settingsBackend.isRtlSdrRfLevelEna = checked
+                        }
+                        visible: settingsBackend.haveRtlSdrOldDabDriver
+                    }
+                    Item {visible: settingsBackend.haveRtlSdrOldDabDriver}
+                    AbracaLabel {
                         text: qsTr("RF level correction:")
+                        visible: settingsBackend.haveRtlSdrOldDabDriver
                     }
                     AbracaDoubleSpinBox {
                         id: rfLevelCorrSpinBox
@@ -318,6 +333,8 @@ Item {
                         }
                         editable: true
                         suffix: " dB"
+                        enabled: settingsBackend.isRtlSdrRfLevelEna
+                        visible: settingsBackend.haveRtlSdrOldDabDriver
                     }
                     AbracaButton {
                         Layout.fillWidth: true
@@ -332,7 +349,8 @@ Item {
                         }
                         display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
                         onClicked: settingsBackend.rtlSdrRfLevelCorrection = 0.0
-                        enabled: settingsBackend.rtlSdrRfLevelCorrection !== 0
+                        enabled: settingsBackend.isRtlSdrRfLevelEna && settingsBackend.rtlSdrRfLevelCorrection !== 0
+                        visible: settingsBackend.haveRtlSdrOldDabDriver
                     }
                     AbracaLabel {
                         text: qsTr("Bias Tee:")

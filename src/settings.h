@@ -106,6 +106,7 @@ public:
         int agcLevelMax;
         int ppm;
         float rfLevelOffset;
+        bool rfLevelEna;
     } rtlsdr;
     struct
     {

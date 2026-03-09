@@ -600,7 +600,7 @@ void RtlSdrInput::resetAgc()
 void RtlSdrInput::onAgcLevel(float agcLevel)
 {
 #ifdef RTLSDR_OLD_DAB
-    if (RtlGainMode::Hardware != m_gainMode)
+    if (RtlGainMode::Hardware != m_gainMode && m_rfLevelEna)
     {
         if (++m_levelReadCntr > 4)
         {
@@ -741,6 +741,18 @@ void RtlSdrInput::setPPM(int ppm)
             {
                 tune(m_frequency);
             }
+        }
+    }
+}
+
+void RtlSdrInput::setRfLevelEna(bool ena)
+{
+    if (ena != m_rfLevelEna)
+    {
+        m_rfLevelEna = ena;
+        if (!ena)
+        {  // signalize that RF level is not available
+            emit rfLevel(NAN, NAN);
         }
     }
 }

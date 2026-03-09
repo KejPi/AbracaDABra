@@ -101,6 +101,7 @@ class SettingsBackend : public UIControlProvider
     UI_PROPERTY_DEFAULT(int, rtlSdrGainMode, 0)
     UI_PROPERTY_DEFAULT(int, rtlSdrBandWidth, 0)
     UI_PROPERTY_DEFAULT(int, rtlSdrFreqCorrection, 0)
+    UI_PROPERTY_SETTINGS(bool, isRtlSdrRfLevelEna, m_settings->rtlsdr.rfLevelEna)
     UI_PROPERTY_DEFAULT(float, rtlSdrRfLevelCorrection, 0)
     UI_PROPERTY_DEFAULT(bool, rtlSdrBiasT, false)
     UI_PROPERTY_SETTINGS(bool, isRtlSdrFallbackChecked, m_settings->rtlsdr.fallbackConnection)
@@ -434,6 +435,7 @@ private:
 
     void activateRtlSdrControls(bool en);
     void updateRtlSdrGainLabel();
+    void onRtlSdrRfLevelEnaChanged();
 
     void activateRtlTcpControls(bool en);
     void updateRtlTcpGainLabel();

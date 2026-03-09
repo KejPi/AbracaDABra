@@ -122,6 +122,7 @@ SettingsBackend::SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *pare
     connect(this, &SettingsBackend::rtlSdrGainIndexMaxChanged, this, &SettingsBackend::updateRtlSdrGainLabel);
     connect(this, &SettingsBackend::rtlSdrBandWidthChanged, this, &SettingsBackend::onBandwidthChanged);
     connect(this, &SettingsBackend::rtlSdrFreqCorrectionChanged, this, &SettingsBackend::onFrequencyCorrectionChanged);
+    connect(this, &SettingsBackend::isRtlSdrRfLevelEnaChanged, this, &SettingsBackend::onRtlSdrRfLevelEnaChanged);
     connect(this, &SettingsBackend::rtlSdrRfLevelCorrectionChanged, this, &SettingsBackend::onRfLevelOffsetChanged);
     connect(this, &SettingsBackend::rtlSdrBiasTChanged, this, &SettingsBackend::onBiasTChanged);
 
@@ -793,6 +794,14 @@ void SettingsBackend::onBiasTChanged()
     }
 }
 
+void SettingsBackend::onRtlSdrRfLevelEnaChanged()
+{
+    if (dynamic_cast<RtlSdrInput *>(m_device))
+    {
+        dynamic_cast<RtlSdrInput *>(m_device)->setRfLevelEna(m_settings->rtlsdr.rfLevelEna);
+    }
+}
+
 void SettingsBackend::onRfLevelOffsetChanged()
 {
     switch (m_inputDeviceId)
@@ -1066,6 +1075,7 @@ void SettingsBackend::setInputDevice(InputDevice::Id id, InputDevice *device)
             m_device->setRfLevelOffset(m_settings->rtlsdr.rfLevelOffset);
             dynamic_cast<RtlSdrInput *>(m_device)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
             dynamic_cast<RtlSdrInput *>(m_device)->setAgcLevelMax(m_settings->rtlsdr.agcLevelMax);
+            dynamic_cast<RtlSdrInput *>(m_device)->setRfLevelEna(m_settings->rtlsdr.rfLevelEna);
             m_settings->rtlsdr.hwId = m_device->hwId();
             connect(m_device, &InputDevice::gainIdx, this, &SettingsBackend::setRtlSdrGainIndex);
             activateRtlSdrControls(true);
