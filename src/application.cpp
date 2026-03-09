@@ -490,9 +490,8 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
         connect(m_audioOutput, &AudioOutput::audioDeviceChanged, this, &Application::onAudioDeviceChanged);
         connect(this, &Application::audioOutput, m_audioOutput, &AudioOutput::setAudioDevice);
         onAudioDevicesList(m_audioOutput->getAudioDevices());
-
-        qCInfo(application) << "Audio output: PortAudio";
 #endif
+        qCInfo(application) << "Audio output: PortAudio";
     }
     else
 #endif
@@ -3951,7 +3950,7 @@ void Application::setAndroidKeepScreenOn(bool enable)
         // Call NavigationBarHelper (UI helper) to set FLAG_KEEP_SCREEN_ON
         QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/NavigationBarHelper", "setKeepScreenOn", "(Landroid/app/Activity;Z)V",
                                            activity.object(), enable);
-        
+
         qCInfo(application) << "Android keep screen on:" << (enable ? "enabled" : "disabled");
     }
     catch (const std::exception &e)
