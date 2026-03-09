@@ -227,7 +227,7 @@ void SLModel::sort(int column, Qt::SortOrder order)
                   {
                       if ((a->isFavoriteService() && b->isFavoriteService()) || (!a->isFavoriteService() && !b->isFavoriteService()))
                       {
-                          return a->label().toUpper() < b->label().toUpper();
+                          return QString::localeAwareCompare(a->label().toUpper(), b->label().toUpper()) < 0;
                       }
                       if (a->isFavoriteService())
                       {
@@ -243,7 +243,7 @@ void SLModel::sort(int column, Qt::SortOrder order)
                   {
                       if ((a->isFavoriteService() && b->isFavoriteService()) || (!a->isFavoriteService() && !b->isFavoriteService()))
                       {
-                          return a->label().toUpper() > b->label().toUpper();
+                          return QString::localeAwareCompare(a->label().toUpper(), b->label().toUpper()) > 0;
                       }
                       if (b->isFavoriteService())
                       {
