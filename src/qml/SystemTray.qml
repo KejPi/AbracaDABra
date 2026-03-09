@@ -28,6 +28,8 @@ import QtQuick
 import QtQuick.Controls
 import Qt.labs.platform
 
+import abracaComponents
+
 SystemTrayIcon {
     id: trayIcon
 
@@ -37,8 +39,8 @@ SystemTrayIcon {
     property var settingsBackend
 
     visible: settingsBackend.showTrayIcon
-    icon.mask: true
-    icon.source: UI.imagesUrl + "trayIcon.svg"
+    icon.mask: UI.isWindows === false
+    icon.source: UI.isWindows ? "qrc:/resources/appIcon.png" : UI.imagesUrl + "trayIcon.svg"
 
     menu: Menu {
         MenuItem {
