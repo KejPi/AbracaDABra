@@ -559,10 +559,9 @@ if(ANDROID)
     endif()
     
     # Set Android package properties
-    # Calculate Android version code: MAJOR * 10000 + MINOR * 100 + PATCH * 10 + GIT_COMMITS
+    # Calculate Android version code: (((MAJOR*100)+MINOR)*100+PATCH)*1000+GIT
     # This ensures the version code increases with every release
-    message(STATUS "Setting Android version - MAJOR: ${VER_MAJOR}, MINOR: ${VER_MINOR}, PATCH: ${VER_PATCH}, GIT: ${VER_GIT}")
-    math(EXPR ANDROID_VERSION_CODE "${VER_MAJOR} * 10000 + ${VER_MINOR} * 100 + ${VER_PATCH} * 10 + ${VER_GIT}")
+    math(EXPR ANDROID_VERSION_CODE "(((${VER_MAJOR} * 100) + ${VER_MINOR}) * 100 + ${VER_PATCH}) * 1000 + ${VER_GIT}")
     
     set_target_properties(${TARGET} PROPERTIES
         QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android"
