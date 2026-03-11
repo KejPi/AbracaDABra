@@ -44,7 +44,7 @@ enum SLModelRole
     SmallLogoIdRole,  // this role is used to trick QML for loading the logo when available
     EpgModelRole,
     EnsembleListRole,
-    IsFavoriteRole,
+    IsFavoriteRole,  // do not move, used for seraching in service list in QML (Qt::UserRole + 5)
     SIdHexRole,
     ChannelRole,
 };

@@ -284,6 +284,33 @@ Item {
             });
         }
 
+        Keys.onPressed: (event) => {
+            if (event.text.length === 1) {
+                let letter = event.text.toUpperCase();
+                let count = slModel.rowCount();
+                if (count === 0) return;
+
+                let targetIndex = count - 1; // default: last item
+                for (let i = 0; i < count; i++) {
+                    let isFavorite = slModel.data(slModel.index(i, 0), Qt.UserRole + 5); // isFavorite role
+                    let name = slModel.data(slModel.index(i, 0), Qt.DisplayRole);
+                    if (isFavorite) {
+                        continue; // skip favorites when searching by letter
+                    }
+                    let firstChar = name.charAt(0).toUpperCase();
+                    if (firstChar.localeCompare(letter) >= 0) {
+                        targetIndex = i;
+                        break;
+                    }
+                }
+
+                serviceList.currentIndex = targetIndex;
+                serviceList.positionViewAtIndex(targetIndex, ListView.Contain);
+                serviceList.restartHighlightAnimation();
+                event.accepted = true;
+            }
+        }
+
         delegate: AbracaItemDelegate {
             required property string serviceName
             required property int index
