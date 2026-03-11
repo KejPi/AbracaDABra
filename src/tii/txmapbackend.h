@@ -123,11 +123,11 @@ protected:
 
     virtual void onSelectedRowChanged() { /* do nothing by default */ };
 
-    Settings *m_settings;
-    TxTableModel *m_model;
-    TxTableProxyModel *m_sortedFilteredModel;
-    QAbstractItemModel *m_tableModel;  // exposed model (m_sortedFilteredModel or column proxy on top)
-    QItemSelectionModel *m_tableSelectionModel;
+    Settings *m_settings = nullptr;
+    TxTableModel *m_model = nullptr;
+    TxTableProxyModel *m_sortedFilteredModel = nullptr;
+    QAbstractItemModel *m_tableModel = nullptr;  // exposed model (m_sortedFilteredModel or column proxy on top)
+    QItemSelectionModel *m_tableSelectionModel = nullptr;
 
     // UI
     RadioControlEnsemble m_currentEnsemble;

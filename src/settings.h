@@ -250,6 +250,8 @@ public:
             TxTableCol dist;
             TxTableCol azimuth;
         } txTable;
+        int txTableSortCol;
+        int txTableSortOrder;
     } tii;
     struct SignalDialog
     {
@@ -308,6 +310,8 @@ public:
         bool centerMapToCurrentPosition;
         QGeoCoordinate mapCenter;
         float mapZoom;
+        int txTableSortCol;
+        int txTableSortOrder;
     } scanner;
 };
 

@@ -230,8 +230,18 @@ Item {
                 visible: backend.tableModel.rowCount > 0
 
                 sortingEnabled: true
-                sortIndicatorColumn: 1
-                sortIndicatorOrder: Qt.DescendingOrder
+                sortIndicatorColumn: backend.txTableSortCol
+                onSortIndicatorColumnChanged: {
+                    if (sortIndicatorColumn !== backend.txTableSortCol) {
+                        backend.txTableSortCol = sortIndicatorColumn;
+                    }
+                }
+                sortIndicatorOrder: backend.txTableSortOrder
+                onSortIndicatorOrderChanged: {
+                    if (sortIndicatorOrder !== backend.txTableSortOrder) {
+                        backend.txTableSortOrder = sortIndicatorOrder;
+                    }
+                }
                 cellsLeftAligned: false
                 maxColumnWidth: 200
 

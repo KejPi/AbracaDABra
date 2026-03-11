@@ -319,6 +319,18 @@ Item {
                 onPopulateContextMenu: function(row) {
                     scannerBackend.createContextMenu(row)
                 }
+                sortIndicatorColumn: scannerBackend.txTableSortCol
+                onSortIndicatorColumnChanged: {
+                    if (sortIndicatorColumn !== scannerBackend.txTableSortCol) {
+                        scannerBackend.txTableSortCol = sortIndicatorColumn;
+                    }
+                }
+                sortIndicatorOrder: scannerBackend.txTableSortOrder
+                onSortIndicatorOrderChanged: {
+                    if (sortIndicatorOrder !== scannerBackend.txTableSortOrder) {
+                        scannerBackend.txTableSortOrder = sortIndicatorOrder;
+                    }
+                }
                 // minColumnWidth: 50
             }
 

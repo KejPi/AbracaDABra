@@ -3070,6 +3070,8 @@ void Application::loadSettings()
     m_settings->tii.txTable.power.order = settings->value("TII/txTable/powerIdx", 4).toInt();
     m_settings->tii.txTable.location.enabled = settings->value("TII/txTable/locationEna", false).toBool();
     m_settings->tii.txTable.location.order = settings->value("TII/txTable/locationIdx", 5).toInt();
+    m_settings->tii.txTableSortCol = settings->value("TII/txTableSortCol", 1).toInt();
+    m_settings->tii.txTableSortOrder = settings->value("TII/txTableSortOrder", Qt::DescendingOrder).toInt();
 
     m_settings->scanner.splitterState = settings->value("Scanner/layout");
     m_settings->scanner.restore = settings->value("Scanner/restore", false).toBool();
@@ -3084,6 +3086,8 @@ void Application::loadSettings()
     m_settings->scanner.mapCenter =
         QGeoCoordinate(settings->value("Scanner/mapCenterLat", 50.08804).toDouble(), settings->value("Scanner/mapCenterLon", 14.42076).toDouble());
     m_settings->scanner.mapZoom = settings->value("Scanner/mapZoom", 9.0).toFloat();
+    m_settings->scanner.txTableSortCol = settings->value("Scanner/txTableSortCol", 0).toInt();
+    m_settings->scanner.txTableSortOrder = settings->value("Scanner/txTableSortOrder", Qt::AscendingOrder).toInt();
     int numCh = settings->beginReadArray("Scanner/channels");
     for (int ch = 0; ch < numCh; ++ch)
     {
@@ -3390,6 +3394,8 @@ void Application::saveSettings()
     settings->setValue("TII/txTable/powerIdx", m_settings->tii.txTable.power.order);
     settings->setValue("TII/txTable/locationEna", m_settings->tii.txTable.location.enabled);
     settings->setValue("TII/txTable/locationIdx", m_settings->tii.txTable.location.order);
+    settings->setValue("TII/txTableSortCol", m_settings->tii.txTableSortCol);
+    settings->setValue("TII/txTableSortOrder", m_settings->tii.txTableSortOrder);
 
     settings->setValue("Scanner/layout", m_settings->scanner.splitterState);
     settings->setValue("Scanner/restore", m_settings->scanner.restore);
@@ -3402,6 +3408,8 @@ void Application::saveSettings()
     settings->setValue("Scanner/mapCenterLat", m_settings->scanner.mapCenter.latitude());
     settings->setValue("Scanner/mapCenterLon", m_settings->scanner.mapCenter.longitude());
     settings->setValue("Scanner/mapZoom", m_settings->scanner.mapZoom);
+    settings->setValue("Scanner/txTableSortCol", m_settings->scanner.txTableSortCol);
+    settings->setValue("Scanner/txTableSortOrder", m_settings->scanner.txTableSortOrder);
 
     settings->beginWriteArray("Scanner/channels");
     int ch = 0;
