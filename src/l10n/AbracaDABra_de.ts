@@ -74,7 +74,7 @@
     <message>
         <location filename="../qml/controls/AbracaDatePicker.qml" line="40"/>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Datum</translation>
     </message>
 </context>
 <context>
@@ -95,17 +95,17 @@
     <message>
         <location filename="../qml/controls/AbracaTimePicker.qml" line="147"/>
         <source>Hour</source>
-        <translation type="unfinished"></translation>
+        <translation>Stunde</translation>
     </message>
     <message>
         <location filename="../qml/controls/AbracaTimePicker.qml" line="217"/>
         <source>Minute</source>
-        <translation type="unfinished"></translation>
+        <translation>Minute</translation>
     </message>
     <message>
         <location filename="../qml/controls/AbracaTimePicker.qml" line="271"/>
         <source>Period</source>
-        <translation type="unfinished"></translation>
+        <translation>Dauer</translation>
     </message>
 </context>
 <context>
@@ -194,7 +194,7 @@
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="286"/>
         <source>Prefer 4096kHz rate:</source>
-        <translation type="unfinished"></translation>
+        <translation>4096kHz Takt bevorzugen</translation>
     </message>
 </context>
 <context>
@@ -212,7 +212,7 @@
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="103"/>
         <source>Bring window to foreground on alarm announcement</source>
-        <translation type="unfinished"></translation>
+        <translation>Bringe Fenster in den Vordergrund bei Alarmdurchsagen</translation>
     </message>
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="123"/>
@@ -233,7 +233,7 @@
     <message>
         <location filename="../qml/AppLogView.qml" line="66"/>
         <source>Save to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Speicher in Datei</translation>
     </message>
     <message>
         <location filename="../qml/AppLogView.qml" line="70"/>
@@ -243,7 +243,7 @@
     <message>
         <location filename="../qml/AppLogView.qml" line="75"/>
         <source>Clear log</source>
-        <translation type="unfinished"></translation>
+        <translation>Log leeren</translation>
     </message>
 </context>
 <context>
@@ -419,7 +419,7 @@
         <location filename="../application.cpp" line="1312"/>
         <location filename="../application.cpp" line="1324"/>
         <source>Try to reconnect the device or choose another device in Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Versuche, das Gerät neu zu verbinden, oder wähle anderes in den Einstellungen</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1323"/>
@@ -439,7 +439,7 @@
     <message>
         <location filename="../application.cpp" line="1355"/>
         <source>Stop audio recording?</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioaufzeichnung beenden?</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1372"/>
@@ -615,22 +615,22 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../application.cpp" line="4228"/>
         <source>Service list exported</source>
-        <translation type="unfinished"></translation>
+        <translation>Dienstliste exportiert</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4232"/>
         <source>Failed to export service list</source>
-        <translation type="unfinished"></translation>
+        <translation>Export der Dienstliste fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4239"/>
         <source>Clear service list?</source>
-        <translation type="unfinished"></translation>
+        <translation>Dienstliste leeren?</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4239"/>
         <source>Current service list including favorites will be deleted. This action is irreversible.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuelle Dienstliste inkl. Favoriten wird gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4253"/>
@@ -648,22 +648,22 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="41"/>
         <source>Audio recording schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioaufnahme-Planer</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="49"/>
         <source>Scheduled item name</source>
-        <translation type="unfinished"></translation>
+        <translation>Geplanter Aufnahmename</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="110"/>
         <source>Stop time:</source>
-        <translation type="unfinished"></translation>
+        <translation>Endzeit:</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="211"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="220"/>
@@ -676,7 +676,7 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../qml/audiorec/AudioRecordingStatus.qml" line="68"/>
         <source>Audio recording:</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioaufnahme:</translation>
     </message>
 </context>
 <context>
@@ -686,7 +686,9 @@ Decoded %1 / %2 MOT objects</source>
         <source>No scheduled recordings.
 
 Click &apos;Add&apos; to create a new recording.</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Aufnahmen geplant
+
+Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingView.qml" line="145"/>
@@ -808,7 +810,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/BandScan.qml" line="114"/>
         <source>Clear service list on start</source>
-        <translation type="unfinished"></translation>
+        <translation>Dienstliste beim Start leeren</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="129"/>
@@ -831,7 +833,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../bandscanbackend.cpp" line="61"/>
         <source>Press Start to perform band scan.</source>
-        <translation type="unfinished"></translation>
+        <translation>Drücke Start für einen Bandscan.</translation>
     </message>
     <message>
         <location filename="../bandscanbackend.cpp" line="136"/>
@@ -844,7 +846,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/CatSLS.qml" line="34"/>
         <source>Categorized slideshow</source>
-        <translation type="unfinished"></translation>
+        <translation>Kategorisierte Slideshow</translation>
     </message>
 </context>
 <context>
@@ -867,7 +869,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/tii/ChannelSelectionDialog.qml" line="102"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../qml/tii/ChannelSelectionDialog.qml" line="117"/>
@@ -885,12 +887,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/charts/ChartView.qml" line="323"/>
         <source>Live</source>
-        <translation type="unfinished"></translation>
+        <translation>Direkt</translation>
     </message>
     <message>
         <location filename="../qml/charts/ChartView.qml" line="323"/>
         <source>Paused</source>
-        <translation type="unfinished"></translation>
+        <translation>Pausiert</translation>
     </message>
 </context>
 <context>
@@ -914,7 +916,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="205"/>
         <source>RF level </source>
-        <translation type="unfinished"></translation>
+        <translation>RF Pegel</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="206"/>
@@ -924,7 +926,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="223"/>
         <source>Gain </source>
-        <translation type="unfinished"></translation>
+        <translation>Verstärkung</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="224"/>
@@ -934,7 +936,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="241"/>
         <source>Frequency </source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenz</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="242"/>
@@ -944,7 +946,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/DabSignalView.qml" line="259"/>
         <source>Offset </source>
-        <translation type="unfinished"></translation>
+        <translation>Versatz </translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="260"/>
@@ -997,7 +999,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/DeviceSettings.qml" line="87"/>
         <source>Disconnect</source>
-        <translation type="unfinished">Trennen</translation>
+        <translation>Trennen</translation>
     </message>
 </context>
 <context>
@@ -1005,7 +1007,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/epg/EPG.qml" line="34"/>
         <source>Electronic Programme Guide</source>
-        <translation type="unfinished"></translation>
+        <translation>Elektronischer Programmführer</translation>
     </message>
 </context>
 <context>
@@ -1112,7 +1114,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="49"/>
         <source>Frequency offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenzversatz</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="49"/>
@@ -1122,7 +1124,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="50"/>
         <source>AGC gain</source>
-        <translation type="unfinished"></translation>
+        <translation>AGC-Verstärkung</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="50"/>
@@ -1132,7 +1134,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="51"/>
         <source>RF level</source>
-        <translation type="unfinished"></translation>
+        <translation>RF-Pegel</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="51"/>
@@ -1152,7 +1154,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="55"/>
         <source>Service ID</source>
-        <translation type="unfinished"></translation>
+        <translation>Dienst ID</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="55"/>
@@ -1162,7 +1164,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="56"/>
         <source>SCIdS</source>
-        <translation type="unfinished"></translation>
+        <translation>SCIdS</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="56"/>
@@ -1174,12 +1176,12 @@ Click &apos;Add&apos; to create a new recording.</source>
         <location filename="../ensembleinfobackend.cpp" line="57"/>
         <location filename="../ensembleinfobackend.cpp" line="83"/>
         <source>SubChannel</source>
-        <translation type="unfinished"></translation>
+        <translation>Unterkanal</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="58"/>
         <source>Start CU</source>
-        <translation type="unfinished"></translation>
+        <translation>Start CU</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="58"/>
@@ -1189,7 +1191,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="59"/>
         <source>Number of CU</source>
-        <translation type="unfinished"></translation>
+        <translation>Anzahl an CUs</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="59"/>
@@ -1199,7 +1201,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="62"/>
         <source>Service bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Dienstbitrate</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="62"/>
@@ -1209,7 +1211,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="63"/>
         <source>Useful bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Verwendbare Bitrate</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="63"/>
@@ -1219,7 +1221,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="64"/>
         <source>Audio bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Audiobitrate</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="64"/>
@@ -1229,7 +1231,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="65"/>
         <source>PAD bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>PAD-Bitrate</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="65"/>
@@ -1239,7 +1241,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="66"/>
         <source>Audio ratio</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioanteil</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="66"/>
@@ -1249,7 +1251,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="67"/>
         <source>PAD ratio</source>
-        <translation type="unfinished"></translation>
+        <translation>PAD-Anteil</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="67"/>
@@ -1259,7 +1261,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="70"/>
         <source>FIB CRC errors</source>
-        <translation type="unfinished"></translation>
+        <translation>FIB CRC-Fehler</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="70"/>
@@ -1274,7 +1276,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="72"/>
         <source>RS uncorrectable</source>
-        <translation type="unfinished"></translation>
+        <translation>RS nicht korrigierbar</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="72"/>
@@ -1284,7 +1286,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="73"/>
         <source>RS BER</source>
-        <translation type="unfinished"></translation>
+        <translation>RS BER</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="73"/>
@@ -1294,7 +1296,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="74"/>
         <source>Audio CRC errors</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio CRC-Fehler</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="74"/>
@@ -1304,7 +1306,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="75"/>
         <source>Audio error rate</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio Fehlerrate</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="75"/>
@@ -1314,7 +1316,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="78"/>
         <source>Allocated</source>
-        <translation type="unfinished"></translation>
+        <translation>Belegt</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="78"/>
@@ -1324,7 +1326,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="79"/>
         <source>Free</source>
-        <translation type="unfinished"></translation>
+        <translation>Frei</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="79"/>
@@ -1359,7 +1361,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="84"/>
         <source>Capacity units</source>
-        <translation type="unfinished"></translation>
+        <translation>Kapazitätseinheiten</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="84"/>
@@ -1369,7 +1371,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="85"/>
         <source>Error protection</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehlerschutz</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="85"/>
@@ -1379,7 +1381,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="86"/>
         <source>Bitrate</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitrate</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="86"/>
@@ -1389,7 +1391,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="88"/>
         <source>Content</source>
-        <translation type="unfinished"></translation>
+        <translation>Inhalt</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="88"/>
@@ -1434,7 +1436,7 @@ Click &apos;Add&apos; to create a new recording.</source>
         <location filename="../ensembleinfobackend.cpp" line="391"/>
         <location filename="../ensembleinfobackend.cpp" line="482"/>
         <source>N/A</source>
-        <translation>unzutreff.</translation>
+        <translation>k.A.</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="556"/>
@@ -1444,22 +1446,22 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="591"/>
         <source>Ensemble information export failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Export der Ensemble Informationen fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="599"/>
         <source>No permission to write ensemble information</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Berechtigung, die Ensembleinformationen zu schreiben</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="606"/>
         <source>Ensemble information exported</source>
-        <translation type="unfinished"></translation>
+        <translation>Ensemble Informationen exportiert</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="611"/>
         <source>Failed to export ensemble information</source>
-        <translation type="unfinished"></translation>
+        <translation>Export der Ensembleinformationen fehlgeschlagen</translation>
     </message>
 </context>
 <context>
@@ -1467,22 +1469,22 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="211"/>
         <source>Reset statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Statistik zurücksetzen</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="219"/>
         <source>Reset FIB statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>FIB Statistik zurücksetzen</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="225"/>
         <source>Reset MSC statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>MSC Statistik zurücksetzen</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="316"/>
         <source>Show ensemble configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeige Ensemblezusammenstellung</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="330"/>
@@ -1583,7 +1585,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../messageboxbackend.cpp" line="181"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="../messageboxbackend.cpp" line="183"/>
@@ -1593,27 +1595,27 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../messageboxbackend.cpp" line="185"/>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>Ja</translation>
     </message>
     <message>
         <location filename="../messageboxbackend.cpp" line="187"/>
         <source>No</source>
-        <translation type="unfinished"></translation>
+        <translation>Nein</translation>
     </message>
     <message>
         <location filename="../messageboxbackend.cpp" line="189"/>
         <source>Abort</source>
-        <translation type="unfinished"></translation>
+        <translation>Abbrechen</translation>
     </message>
     <message>
         <location filename="../messageboxbackend.cpp" line="191"/>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiederholen</translation>
     </message>
     <message>
         <location filename="../messageboxbackend.cpp" line="193"/>
         <source>Ignore</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorieren</translation>
     </message>
 </context>
 <context>
@@ -1631,12 +1633,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="38"/>
         <source>Current service</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktueller Dienst</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="44"/>
         <source>Info</source>
-        <translation type="unfinished"></translation>
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="44"/>
@@ -1646,22 +1648,22 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="50"/>
         <source>EPG</source>
-        <translation type="unfinished"></translation>
+        <translation>EPG</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="50"/>
         <source>Electronic Programme Guide</source>
-        <translation type="unfinished"></translation>
+        <translation>Elektronischer Programmführer</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="57"/>
         <source>CatSLS</source>
-        <translation type="unfinished"></translation>
+        <translation>CatSLS</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="57"/>
         <source>Categorized slideshow</source>
-        <translation type="unfinished"></translation>
+        <translation>Kategorisierte Slideshow</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="63"/>
@@ -1671,22 +1673,22 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="69"/>
         <source>Scanner</source>
-        <translation type="unfinished"></translation>
+        <translation>Scanner</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="69"/>
         <source>DAB Scanner</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB-Scanner</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="75"/>
         <source>Signal</source>
-        <translation type="unfinished"></translation>
+        <translation>Signal</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="75"/>
         <source>DAB Signal Overview</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB Signalübersicht</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="82"/>
@@ -1701,7 +1703,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="95"/>
         <source>Audio recording schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Audioaufnahme-Planer</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="95"/>
@@ -1726,7 +1728,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="107"/>
         <source>Export service list</source>
-        <translation type="unfinished"></translation>
+        <translation>Dienstliste exportieren</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="109"/>
@@ -1736,7 +1738,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="115"/>
         <source>Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Log</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="115"/>
@@ -1761,7 +1763,7 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../navigationmodel.cpp" line="123"/>
         <source>Quit AbracaDABra</source>
-        <translation type="unfinished"></translation>
+        <translation>Beende AbracaDABra</translation>
     </message>
 </context>
 <context>
@@ -1794,17 +1796,17 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="115"/>
         <source>Fullscreen mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Vollbildmodus</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="128"/>
         <source>Keep screen on</source>
-        <translation type="unfinished"></translation>
+        <translation>Bildschirm anlassen</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="141"/>
         <source>Compact view (smaller controls, etc.)</source>
-        <translation type="unfinished"></translation>
+        <translation>Kompakte Ansicht (kleinere Schaltflächen, usw.)</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="153"/>
@@ -1864,12 +1866,12 @@ Click &apos;Add&apos; to create a new recording.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="314"/>
         <source>Data storage folder...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordner des Datenspeichers...</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="324"/>
         <source>Application uses this folder to store all data like audio recording, IQ recording and logs, etc.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dieser Ordner wird zum Speichern aller Daten verwendet, wie Audioaufnahmen, IQ-Aufnahmen, Logs, usw.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="338"/>
@@ -1920,7 +1922,8 @@ Click &apos;Add&apos; to create a new recording.</source>
         <location filename="../qml/settings/OtherSettings.qml" line="480"/>
         <source>Ensemble information is a small CSV file with list of services in the ensemble,
 it is anonymous and contains no personal data.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ensembleinformation ist eine kleine CSV-Datei mit einer Liste an Diensten im Ensemble,
+es ist anonym und enthält keine persönlichen Daten.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="487"/>
@@ -1960,7 +1963,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="549"/>
         <source>DAB cable channels (16A - 17D)</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB Kabelkanäle (16A - 17D)</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="585"/>
@@ -4068,12 +4071,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RartTcpDevice.qml" line="47"/>
         <source>IP address:</source>
-        <translation type="unfinished"></translation>
+        <translation>IP-Adresse:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RartTcpDevice.qml" line="52"/>
         <source>IP address of RaRT-TCP server</source>
-        <translation type="unfinished"></translation>
+        <translation>IP-Adresse des RaRT-TCP Servers</translation>
     </message>
     <message>
         <location filename="../qml/settings/RartTcpDevice.qml" line="64"/>
@@ -4086,7 +4089,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="52"/>
         <source>Open file</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffne Datei</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="84"/>
@@ -4101,12 +4104,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="138"/>
         <source>Disable repeat</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiederholung ausschalten</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="139"/>
         <source>Enable repeat</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiederholung einschalten</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="159"/>
@@ -4257,12 +4260,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="304"/>
         <source>RF level estimation:</source>
-        <translation type="unfinished"></translation>
+        <translation>RF-Pegel geschätzt:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="318"/>
         <source>RF level correction:</source>
-        <translation></translation>
+        <translation>RF-Pegel Korrektur:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlSdrDevice.qml" line="356"/>
@@ -4275,12 +4278,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="50"/>
         <source>IP address:</source>
-        <translation type="unfinished"></translation>
+        <translation>IP-Adresse:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="56"/>
         <source>IP address of RTL-TCP server</source>
-        <translation type="unfinished"></translation>
+        <translation>IP-Adresse des RTL-TCP Servers</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="70"/>
@@ -4407,12 +4410,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/SLSView.qml" line="52"/>
         <source>Save to file</source>
-        <translation type="unfinished"></translation>
+        <translation>In Datei speichern</translation>
     </message>
     <message>
         <location filename="../qml/SLSView.qml" line="56"/>
         <source>Copy to clipboard</source>
-        <translation>In die Zwischenablage kopieren</translation>
+        <translation>In  Zwischenablage kopieren</translation>
     </message>
 </context>
 <context>
@@ -4433,17 +4436,17 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="160"/>
         <source>Replace data in the table?</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle Daten der Tabelle ersetzen?</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="160"/>
         <source>Current data in the table will be deleted. This action is irreversible.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuelle Daten in der Tabelle werden gelöscht. Diese Aktion ist unumkehrbar.</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="171"/>
         <source>Replace</source>
-        <translation type="unfinished"></translation>
+        <translation>Ersetzen</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="172"/>
@@ -4463,7 +4466,7 @@ it is anonymous and contains no personal data.</source>
         <location filename="../tii/scannerbackend.cpp" line="330"/>
         <location filename="../tii/scannerbackend.cpp" line="344"/>
         <source>Failed to load file</source>
-        <translation type="unfinished"></translation>
+        <translation>Laden der Datei fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="404"/>
@@ -4471,17 +4474,17 @@ it is anonymous and contains no personal data.</source>
         <location filename="../tii/scannerbackend.cpp" line="442"/>
         <location filename="../tii/scannerbackend.cpp" line="461"/>
         <source>Failed to save log</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichern des Logs fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="422"/>
         <source>Log saved to CSV file</source>
-        <translation type="unfinished"></translation>
+        <translation>Log in CSV-Datei gespeichert</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="452"/>
         <source>No permission to write log</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Berechtigung, Log zu schreiben</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="485"/>
@@ -4516,17 +4519,17 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="870"/>
         <source>No permission to write ensemble information</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Berechtigung, Ensembleinformationen zu schreiben</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="881"/>
         <source>Ensemble information exported</source>
-        <translation type="unfinished"></translation>
+        <translation>Ensembleinformatinoen exportiert</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="886"/>
         <source>Failed to export ensemble information</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportieren der Ensembleinformationen fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="920"/>
@@ -4551,7 +4554,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="991"/>
         <source>Clear scan results?</source>
-        <translation type="unfinished"></translation>
+        <translation>Scanergebnisse leeren?</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="991"/>
@@ -4580,7 +4583,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="41"/>
         <source>Scanner configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Scannerkonfiguration</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="54"/>
@@ -4701,7 +4704,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="88"/>
         <source>Configuration...</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfiguration...</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="159"/>
@@ -4786,7 +4789,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="469"/>
         <source>CSV files</source>
-        <translation type="unfinished"></translation>
+        <translation>CSV-Dateien</translation>
     </message>
 </context>
 <context>
@@ -4849,7 +4852,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="249"/>
         <source>N/A</source>
-        <translation>unzutreff.</translation>
+        <translation>k.A.</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="253"/>
@@ -4904,7 +4907,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/ServiceList.qml" line="694"/>
         <source>Ensembles</source>
-        <translation type="unfinished"></translation>
+        <translation>Ensembles</translation>
     </message>
 </context>
 <context>
@@ -4935,18 +4938,18 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/ServiceView.qml" line="207"/>
         <source>Switch to another ensemble</source>
-        <translation type="unfinished"></translation>
+        <translation>Auf anderes Ensemble schalten</translation>
     </message>
     <message>
         <location filename="../qml/ServiceView.qml" line="287"/>
         <source>Right click to copy Dynamic label</source>
-        <translation type="unfinished"></translation>
+        <translation>Rechtsklick, um Dynamic Label zu kopieren</translation>
     </message>
     <message>
         <location filename="../qml/ServiceView.qml" line="312"/>
         <location filename="../qml/ServiceView.qml" line="324"/>
         <source>Right click to copy Dynamic label +</source>
-        <translation type="unfinished"></translation>
+        <translation>Rechtsklick, um Dynamic Label + zu kopieren</translation>
     </message>
 </context>
 <context>
@@ -4966,7 +4969,11 @@ Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,
 &lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;,
 right click on your location, click on coordinates in popup menu to copy them
 and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>
+Koordinaten in &quot;Längengrad, Breitengrad&quot; Format eingeben, zB: 1.234,-5.678&lt;/p&gt;
+&lt;p&gt;Tipp: &lt;i&gt;Auf &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt; gehen,
+Rechtsklick auf den Standort, Klick auf Koordinaten im Popupmenü um zu kopieren und
+dann die Wert hier einfügen.&lt;/i&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="61"/>
@@ -5028,7 +5035,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../settingsbackend.cpp" line="228"/>
         <source>Serial port</source>
-        <translation type="unfinished"></translation>
+        <translation>Serieller Anschluss</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="264"/>
@@ -5045,7 +5052,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
         <location filename="../settingsbackend.cpp" line="908"/>
         <location filename="../settingsbackend.cpp" line="2062"/>
         <source>N/A</source>
-        <translation>unzutreff.</translation>
+        <translation>k.A.</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="923"/>
@@ -5108,7 +5115,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../signalbackend.cpp" line="84"/>
         <source>Frequency [MHz]</source>
-        <translation type="unfinished"></translation>
+        <translation>Frequenz [MHz]</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="85"/>
@@ -5128,7 +5135,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../signalbackend.cpp" line="276"/>
         <source>N/A</source>
-        <translation>unzutreff.</translation>
+        <translation>k.A.</translation>
     </message>
 </context>
 <context>
@@ -5250,7 +5257,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../qml/SubchannelsView.qml" line="87"/>
         <source>Subchannel </source>
-        <translation type="unfinished"></translation>
+        <translation>Unterkanal </translation>
     </message>
 </context>
 <context>
@@ -5294,32 +5301,32 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../tii/tiibackend.cpp" line="209"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Seehöhe: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="232"/>
         <source>Failed to create TII log directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Erstellen des TII Logordners fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="240"/>
         <source>No permission to write log</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine Berechtigung, das Log zu schreiben</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="255"/>
         <source>TII log started</source>
-        <translation type="unfinished"></translation>
+        <translation>TII Log gestartet</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="281"/>
         <source>Failed to write TII log</source>
-        <translation type="unfinished"></translation>
+        <translation>Schreiben des TII Logs fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="318"/>
         <source>Carrier pairs</source>
-        <translation type="unfinished"></translation>
+        <translation>Trägerpaare</translation>
     </message>
 </context>
 <context>
@@ -5365,7 +5372,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="153"/>
         <source>Apply</source>
-        <translation type="unfinished">Anwenden</translation>
+        <translation>Anwenden</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="178"/>
@@ -5400,7 +5407,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="291"/>
         <source>GPS coordinates</source>
-        <translation type="unfinished"></translation>
+        <translation>GPS-Koordinaten</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="311"/>
@@ -5448,32 +5455,32 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../tii/tiitablecolssettingsmodel.cpp" line="35"/>
         <source>Code</source>
-        <translation type="unfinished"></translation>
+        <translation>Code</translation>
     </message>
     <message>
         <location filename="../tii/tiitablecolssettingsmodel.cpp" line="36"/>
         <source>Level</source>
-        <translation type="unfinished">Feldstärke</translation>
+        <translation>Stärke</translation>
     </message>
     <message>
         <location filename="../tii/tiitablecolssettingsmodel.cpp" line="37"/>
         <source>Distance</source>
-        <translation type="unfinished">Entfernung</translation>
+        <translation>Entfernung</translation>
     </message>
     <message>
         <location filename="../tii/tiitablecolssettingsmodel.cpp" line="37"/>
         <source>Azimuth</source>
-        <translation type="unfinished">Azimut</translation>
+        <translation>Azimut</translation>
     </message>
     <message>
         <location filename="../tii/tiitablecolssettingsmodel.cpp" line="38"/>
         <source>Location</source>
-        <translation type="unfinished">Standort</translation>
+        <translation>Standort</translation>
     </message>
     <message>
         <location filename="../tii/tiitablecolssettingsmodel.cpp" line="38"/>
         <source>Power</source>
-        <translation type="unfinished">Leistung</translation>
+        <translation>Leistung</translation>
     </message>
 </context>
 <context>
@@ -5562,7 +5569,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="343"/>
         <source>Code</source>
-        <translation type="unfinished"></translation>
+        <translation>Code</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="345"/>
@@ -5716,12 +5723,12 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="249"/>
         <source>For more information see</source>
-        <translation type="unfinished"></translation>
+        <translation>Für weitere Infos siehe</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="250"/>
         <source>Documentation</source>
-        <translation type="unfinished"></translation>
+        <translation>Dokumentation</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="287"/>
@@ -5783,12 +5790,12 @@ Use the &apos;Dock Page&apos; button above to bring it back.</source>
     <message>
         <location filename="../qml/UpdateDialog.qml" line="66"/>
         <source>Current version:</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuelle Version:</translation>
     </message>
     <message>
         <location filename="../qml/UpdateDialog.qml" line="75"/>
         <source>Available version:</source>
-        <translation type="unfinished"></translation>
+        <translation>Verfügbare Version:</translation>
     </message>
     <message>
         <location filename="../qml/UpdateDialog.qml" line="105"/>
