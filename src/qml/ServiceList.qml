@@ -427,6 +427,7 @@ Item {
             // selectionBehavior: TableView.SelectRows
             selectionBehavior: TableView.SelectionDisabled
             pointerNavigationEnabled: true
+            flickableDirection: Flickable.VerticalFlick
 
             property int previousCurrentRow: -1
             property bool shouldAnimate: false
