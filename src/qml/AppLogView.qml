@@ -45,7 +45,18 @@ Item {
         model: log.logModel
         clip: true
         flickableDirection: Flickable.HorizontalAndVerticalFlick
+        boundsBehavior: Flickable.DragAndOvershootBounds
         contentWidth: Math.max(width, contentItem.childrenRect.width)
+
+        function clampHorizontalBounds() {
+            const minX = originX
+            const maxX = Math.max(minX, originX + contentWidth - width)
+            const boundedX = Math.max(minX, Math.min(contentX, maxX))
+            if (contentX !== boundedX) {
+                contentX = boundedX
+            }
+        }
+
         delegate: Text {
             width: implicitWidth
             height: implicitHeight
@@ -54,6 +65,7 @@ Item {
             font.family: UI.fixedFontFamily
             font.pointSize: Qt.application.font.pointSize - 2
         }
+        onContentXChanged: clampHorizontalBounds()
         onCountChanged: positionViewAtEnd()
 
     }
