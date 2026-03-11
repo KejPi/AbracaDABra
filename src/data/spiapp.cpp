@@ -133,8 +133,7 @@ void SPIApp::reset()
     {
         delete decoder;
     }
-    m_downloadReqQueue.clear();
-    m_radioDnsDownloadQueue.clear();
+
     m_motObjRequestList.clear();
     m_decoderMap.clear();
     m_parsedDirectoryIds.clear();
@@ -174,10 +173,14 @@ void SPIApp::enable(bool ena)
 
 void SPIApp::setEnableRadioDNS(bool ena)
 {
-    m_enaRadioDNS = ena;
-    if (m_enaRadioDNS)
+    if (m_enaRadioDNS != ena)
     {
-        emit radioDNSAvailable();
+        m_enaRadioDNS = ena;
+        m_radioDnsDownloadQueue.clear();
+        if (m_enaRadioDNS)
+        {
+            emit radioDNSAvailable();
+        }
     }
 }
 
@@ -1610,38 +1613,43 @@ void SPIApp::setAttribute_dabBearerURI(QDomElement &element, const QString &name
     }
 }
 
-void SPIApp::radioDNSLookup(const QString &fqdn)
+void SPIApp::radioDNSLookup()
 {
-    if (m_useDoH)
-    {  // DNS over http
-        QString cnameUrl = QString("https://dns.google/resolve?name=%1&type=CNAME").arg(fqdn);
-        qCDebug(spiApp) << "DNS CNAME query:" << cnameUrl;
-        downloadFile(cnameUrl, "DOH_CNAME", false);
+    if (m_radioDnsDownloadQueue.isEmpty())
+    {
+        return;
+    }
+
+    auto fqdn = m_radioDnsDownloadQueue.head().first;
+
+    if (m_dnsCache.contains(fqdn))
+    {  // we have record in cache
+
+        QString file = m_radioDnsDownloadQueue.dequeue().second;
+
+        if (!m_dnsCache[fqdn].isEmpty())
+        {  // valid address
+            downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(m_dnsCache[fqdn], file), "XML|" + file);
+        }
+        else
+        {
+            qCDebug(spiApp) << "Invalid DNS record for" << fqdn << file;
+        }
+
+        // next dns lookup
+        QTimer::singleShot(10, this, [this, fqdn]() { radioDNSLookup(); });
     }
     else
     {
-        if (m_dnsCache.contains(fqdn))
-        {  // we have record in cache
-            if (!m_radioDnsDownloadQueue.isEmpty())
-            {  // take record from the queue
-                QString file = m_radioDnsDownloadQueue.dequeue().second;
+        if (m_useDoH)
+        {  // DNS over http
+            QString cnameUrl = QString("https://dns.google/resolve?name=%1&type=CNAME").arg(fqdn);
+            qCDebug(spiApp) << "DNS CNAME query:" << cnameUrl;
 
-                if (!m_dnsCache[fqdn].isEmpty())
-                {  // valid address
-                    downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(m_dnsCache[fqdn], file), "XML|" + file);
-                }
-                else
-                {
-                    qCDebug(spiApp) << "Invalid DNS record for" << fqdn << file;
-                }
-
-                // next dns lookup
-                if (!m_radioDnsDownloadQueue.isEmpty())
-                {
-                    QString fqdn = m_radioDnsDownloadQueue.head().first;
-                    radioDNSLookup(fqdn);
-                }
-            }
+            QNetworkRequest request;
+            request.setUrl(QUrl(cnameUrl));
+            auto reply = m_netAccessManager->get(request);
+            reply->setProperty("requestId", "DOH_CNAME");
         }
         else
         {
@@ -1656,14 +1664,10 @@ void SPIApp::getSI(const ServiceListId &servId, const uint32_t &ueid)
 {
     if (m_useInternet && m_enaRadioDNS)
     {  // query RadioDNS
-        if (m_radioDnsDownloadQueue.isEmpty())
-        {
-            m_radioDnsDownloadQueue.enqueue({radioDNSFQDN(servId, ueid), "SI.xml"});
-            radioDNSLookup(radioDNSFQDN(servId, ueid));
-        }
-        else
-        {
-            m_radioDnsDownloadQueue.enqueue({radioDNSFQDN(servId, ueid), "SI.xml"});
+        m_radioDnsDownloadQueue.enqueue({radioDNSFQDN(servId, ueid), "SI.xml"});
+        if (m_radioDnsDownloadQueue.size() == 1)
+        {  // trigger lookup
+            radioDNSLookup();
         }
     }
 }
@@ -1674,16 +1678,11 @@ void SPIApp::getPI(const ServiceListId &servId, const QList<uint32_t> &ueidList,
     {  // query RadioDNS
         for (const auto &ueid : ueidList)
         {
-            if (m_radioDnsDownloadQueue.isEmpty())
-            {
-                m_radioDnsDownloadQueue.enqueue(
-                    {radioDNSFQDN(servId, ueid), QString("%1/%2_PI.xml").arg(radioDNSServiceIdentifier(servId, ueid), date.toString("yyyyMMdd"))});
-                radioDNSLookup(radioDNSFQDN(servId, ueid));
-            }
-            else
-            {
-                m_radioDnsDownloadQueue.enqueue(
-                    {radioDNSFQDN(servId, ueid), QString("%1/%2_PI.xml").arg(radioDNSServiceIdentifier(servId, ueid), date.toString("yyyyMMdd"))});
+            m_radioDnsDownloadQueue.enqueue(
+                {radioDNSFQDN(servId, ueid), QString("%1/%2_PI.xml").arg(radioDNSServiceIdentifier(servId, ueid), date.toString("yyyyMMdd"))});
+            if (m_radioDnsDownloadQueue.size() == 1)
+            {  // trigger lookup
+                radioDNSLookup();
             }
         }
     }
@@ -1728,11 +1727,9 @@ void SPIApp::handleRadioDNSLookup()
         {
             QString fqdn = m_radioDnsDownloadQueue.dequeue().first;
             m_dnsCache[fqdn] = "";  // invalid record in cache
-            if (!m_radioDnsDownloadQueue.isEmpty())
-            {
-                QString fqdn = m_radioDnsDownloadQueue.head().first;
-                radioDNSLookup(fqdn);
-            }
+
+            // next lookup
+            QTimer::singleShot(10, this, [this, fqdn]() { radioDNSLookup(); });
         }
         return;
     }
@@ -1768,14 +1765,94 @@ void SPIApp::handleRadioDNSLookup()
                 address = QString("http://%1").arg(record.target());
             }
             m_dnsCache[fqdn] = address;
-            QString file = request.second;
-            downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(address, file), "XML|" + file);
-            if (!m_radioDnsDownloadQueue.isEmpty())
+            downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(address, request.second), "XML|" + request.second);
+
+            QTimer::singleShot(10, this, [this, fqdn]() { radioDNSLookup(); });
+        }
+    }
+}
+
+void SPIApp::handleRadioDoHLookup(QNetworkReply *reply)
+{
+    QString requestId = reply->property("requestId").toString();
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+    QVariantMap map = jsonDoc.toVariant().toMap();
+    if (map.contains("Answer"))
+    {
+        QVariantList answer = map["Answer"].toList();
+        if (answer.length() > 0)
+        {
+            QString data = answer.at(0).toMap().value("data", QVariant("")).toString();
+            if (!data.isEmpty())
             {
-                QString fqdn = m_radioDnsDownloadQueue.head().first;
-                radioDNSLookup(fqdn);
+                if (requestId == "DOH_CNAME")
+                {
+                    if (data.endsWith('.'))
+                    {
+                        data = data.first(data.length() - 1);
+                    }
+                    // giving priority to non TLS (against standard)
+                    QString srvUrl = QString("https://dns.google/resolve?name=_radioepg._tcp.%1&type=SRV").arg(data);
+                    downloadFile(srvUrl, "DOH_SRV", false);
+                    return;
+                }
+                else if (requestId == "DOH_SRV")
+                {
+                    static const QRegularExpression re("[\\d\\s]+\\s+(.*\\w)\\.?");
+                    QRegularExpressionMatch match = re.match(data);
+                    if (match.hasMatch())
+                    {
+                        QPair<QString, QString> request = m_radioDnsDownloadQueue.dequeue();
+
+                        QString fqdn = request.first;
+                        QString address;
+                        QString name = answer.at(0).toMap().value("name", QVariant("")).toString();
+                        if (name.startsWith("_radiospi._tcp."))
+                        {
+                            address = QString("https://%1").arg(match.captured(1));
+                        }
+                        else
+                        {
+                            address = QString("http://%1").arg(match.captured(1));
+                        }
+                        m_dnsCache[fqdn] = address;
+                        downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(address, request.second), "XML|" + request.second);
+
+                        // next lookup
+                        QTimer::singleShot(10, this, [this, fqdn]() { radioDNSLookup(); });
+                        return;
+                    }
+                }
             }
         }
+    }
+
+    // we are here if no valid answer was found
+    if (requestId == "DOH_SRV")
+    {
+        if (map.contains("Question"))
+        {
+            QVariantList question = map["Question"].toList();
+            if (question.size() > 0)
+            {
+                QString name = question.at(0).toMap().value("name", QVariant("")).toString();
+                if (name.startsWith("_radioepg._tcp."))
+                {  // try  TLS lookup
+                    QString srvUrl = QString("https://dns.google/resolve?name=%1&type=SRV").arg(name.replace("_radioepg._tcp.", "_radiospi._tcp."));
+                    downloadFile(srvUrl, "DOH_SRV", false);
+                    return;
+                }
+            }
+        }
+    }
+
+    // failure => proceed with next lookup
+    if (!m_radioDnsDownloadQueue.isEmpty())
+    {
+        QString fqdn = m_radioDnsDownloadQueue.dequeue().first;
+        m_dnsCache[fqdn] = "";  // invalid record in cache
+        // next lookup
+        QTimer::singleShot(10, this, [this]() { radioDNSLookup(); });
     }
 }
 
@@ -1787,35 +1864,21 @@ void SPIApp::downloadFile(const QString &url, const QString &requestId, bool use
         return;
     }
 
-    if (m_downloadReqQueue.isEmpty())
+    QNetworkRequest request;
+    if (useCache)
     {
-        m_downloadReqQueue.enqueue({url, requestId});
-
-        QNetworkRequest request;
-        if (useCache)
-        {
-            request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
-        }
-        request.setUrl(QUrl(url));
-        m_netAccessManager->get(request);
+        request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
     }
-    else
-    {
-        m_downloadReqQueue.enqueue({url, requestId});
-    }
+    request.setUrl(QUrl(url));
+    auto reply = m_netAccessManager->get(request);
+    reply->setProperty("requestId", requestId);
 }
 
 void SPIApp::onFileDownloaded(QNetworkReply *reply)
 {
-    if (m_downloadReqQueue.isEmpty())
-    {  // do nothing, it can happen on reset
-        reply->deleteLater();
-        return;
-    }
-
     if (reply->error() == QNetworkReply::NoError)
     {
-        QString requestId = m_downloadReqQueue.head().second;
+        QString requestId = reply->property("requestId").toString();
         if (requestId.startsWith("XML|"))
         {
             QByteArray data = reply->readAll();
@@ -1830,51 +1893,9 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
             }
             emit xmlDocument(QString(data), scopeId, SPI_APP_INVALID_DECODER_ID);
         }
-        else if (requestId == "DOH_CNAME")
+        else if (requestId.startsWith("DOH_"))
         {
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-
-            QVariantMap map = jsonDoc.toVariant().toMap();
-            if (map.contains("Answer"))
-            {
-                QVariantList answer = map["Answer"].toList();
-                if (answer.length() > 0)
-                {
-                    QString data = answer.at(0).toMap().value("data", QVariant("")).toString();
-                    if (!data.isEmpty())
-                    {
-                        if (data.endsWith('.'))
-                        {
-                            data = data.first(data.length() - 1);
-                        }
-                        QString srvUrl = QString("https://dns.google/resolve?name=_radioepg._tcp.%1&type=SRV").arg(data);
-                        downloadFile(srvUrl, "DOH_SRV", false);
-                    }
-                }
-            }
-        }
-        else if (requestId == "DOH_SRV")
-        {
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-
-            QVariantMap map = jsonDoc.toVariant().toMap();
-            if (map.contains("Answer"))
-            {
-                QVariantList answer = map["Answer"].toList();
-                if (answer.length() > 0)
-                {
-                    QString data = answer.at(0).toMap().value("data", QVariant("")).toString();
-                    if (!data.isEmpty())
-                    {
-                        static const QRegularExpression re("[\\d\\s]+\\s+(.*\\w)\\.?");
-                        QRegularExpressionMatch match = re.match(data);
-                        if (match.hasMatch())
-                        {
-                            downloadFile(QString("http://%1/radiodns/spi/3.1/SI.xml").arg(match.captured(1)), "XML|");
-                        }
-                    }
-                }
-            }
+            handleRadioDoHLookup(reply);
         }
         else
         {  // logo
@@ -1884,16 +1905,6 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
     else
     {
         qCDebug(spiApp) << "Failed to download: " << reply->request().url().toString() << "|" << reply->error();
-    }
-
-    m_downloadReqQueue.dequeue();
-
-    if (!m_downloadReqQueue.isEmpty())
-    {
-        QNetworkRequest request;
-        request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
-        request.setUrl(QUrl(m_downloadReqQueue.head().first));
-        m_netAccessManager->get(request);
     }
 
     reply->deleteLater();
