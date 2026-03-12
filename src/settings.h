@@ -232,6 +232,7 @@ public:
         int inactiveTxTimeout;
         bool timestampInUTC;
         bool saveCoordinates;
+        bool saveNoTii;
         bool centerMapToCurrentPosition;
         QGeoCoordinate mapCenter;
         float mapZoom;

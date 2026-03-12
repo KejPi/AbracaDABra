@@ -81,6 +81,8 @@ private:
     float m_snr = 0.0;
 
     bool m_exportCoordinates = false;
+    bool m_exportNoTii = false;
+    bool m_exportUTC = false;
     TxTableModel::TxTableModelRoles m_exportRole = TxTableModel::TxTableModelRoles::ExportRole;
 
     void logTiiData() const;

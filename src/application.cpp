@@ -3052,6 +3052,7 @@ void Application::loadSettings()
     m_settings->tii.inactiveTxTimeout = settings->value("TII/inactiveTxTimeout", 5).toInt();
     m_settings->tii.timestampInUTC = settings->value("TII/timestampInUTC", false).toBool();
     m_settings->tii.saveCoordinates = settings->value("TII/saveCoordinates", false).toBool();
+    m_settings->tii.saveNoTii = settings->value("TII/saveNoTii", false).toBool();
     m_settings->tii.centerMapToCurrentPosition = settings->value("TII/mapCenterCurrPos", true).toBool();
     m_settings->tii.mapCenter =
         QGeoCoordinate(settings->value("TII/mapCenterLat", 50.08804).toDouble(), settings->value("TII/mapCenterLon", 14.42076).toDouble());
@@ -3379,6 +3380,7 @@ void Application::saveSettings()
     settings->setValue("TII/inactiveTxTimeout", m_settings->tii.inactiveTxTimeout);
     settings->setValue("TII/timestampInUTC", m_settings->tii.timestampInUTC);
     settings->setValue("TII/saveCoordinates", m_settings->tii.saveCoordinates);
+    settings->setValue("TII/saveNoTii", m_settings->tii.saveNoTii);
     settings->setValue("TII/mapCenterCurrPos", m_settings->tii.centerMapToCurrentPosition);
     settings->setValue("TII/mapCenterLat", m_settings->tii.mapCenter.latitude());
     settings->setValue("TII/mapCenterLon", m_settings->tii.mapCenter.longitude());

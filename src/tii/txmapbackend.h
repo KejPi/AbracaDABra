@@ -128,6 +128,7 @@ protected:
     TxTableProxyModel *m_sortedFilteredModel = nullptr;
     QAbstractItemModel *m_tableModel = nullptr;  // exposed model (m_sortedFilteredModel or column proxy on top)
     QItemSelectionModel *m_tableSelectionModel = nullptr;
+    QGeoCoordinate m_currentPosition;
 
     // UI
     RadioControlEnsemble m_currentEnsemble;
@@ -142,7 +143,6 @@ protected:
 
 private:
     QGeoPositionInfoSource *m_geopositionSource = nullptr;
-    QGeoCoordinate m_currentPosition;
     bool m_positionValid = false;
     const bool m_isTii;
     bool m_isRecordingLog = false;

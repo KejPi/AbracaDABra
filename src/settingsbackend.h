@@ -193,6 +193,7 @@ class SettingsBackend : public UIControlProvider
     UI_PROPERTY_SETTINGS(QString, tiiSerialPort, m_settings->tii.serialPort)
     UI_PROPERTY_SETTINGS(bool, tiiLogUtcTimestamp, m_settings->tii.timestampInUTC)
     UI_PROPERTY_SETTINGS(bool, tiiLogCoordinates, m_settings->tii.saveCoordinates)
+    UI_PROPERTY_SETTINGS(bool, tiiLogNone, m_settings->tii.saveNoTii)
     UI_PROPERTY_SETTINGS(int, tiiModeValue, m_settings->tii.mode)
     UI_PROPERTY_SETTINGS(bool, tiiShowSpectrumPlot, m_settings->tii.showSpectumPlot)
     UI_PROPERTY_SETTINGS(bool, tiiShowInactive, m_settings->tii.showInactiveTx)

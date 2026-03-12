@@ -271,10 +271,11 @@ Item {
                                         elide: Text.ElideLeft
                                     }
                                 }
-                                RowLayout {
+                                GridLayout {
                                     Layout.fillWidth: true
-                                    spacing: UI.standardMargin
-                                    uniformCellSizes: true
+                                    columnSpacing: UI.standardMargin
+                                    rowSpacing: UI.standardMargin
+                                    columns: UI.isMobile ? 1 : 3
                                     AbracaSwitch {
                                         Layout.fillWidth: true
                                         text: qsTr("Timestamp in UTC")
@@ -294,6 +295,17 @@ Item {
                                         onCheckedChanged: {
                                             if (settingsBackend.tiiLogCoordinates !== checked) {
                                                 settingsBackend.tiiLogCoordinates = checked
+                                            }
+                                        }
+                                    }
+                                    AbracaSwitch {
+                                        Layout.fillWidth: true
+                                        text: qsTr("No TII (signal monitoring)")
+                                        wrapMode: Text.WordWrap
+                                        checked: settingsBackend.tiiLogNone
+                                        onCheckedChanged: {
+                                            if (settingsBackend.tiiLogNone !== checked) {
+                                                settingsBackend.tiiLogNone = checked
                                             }
                                         }
                                     }

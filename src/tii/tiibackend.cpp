@@ -96,8 +96,15 @@ void TIIBackend::logTiiData() const
         int lastCol = m_exportCoordinates ? (TxTableModel::LastColumn) : (TxTableModel::LastColumnWithoutCoordinates);
 
         // Body
+        int activeRows = 0;
         for (int row = 0; row < m_model->rowCount(); ++row)
         {
+            if (m_model->data(m_model->index(row, TxTableModel::ColLevel), TxTableModel::IsActiveRole).toBool() == false)
+            {  // inactive transmitters are not logged
+                continue;
+            }
+
+            activeRows += 1;
             for (int col = 0; col < lastCol; ++col)
             {
                 if (col != TxTableModel::ColNumServices)
@@ -106,6 +113,71 @@ void TIIBackend::logTiiData() const
                 }
             }
             out << m_model->data(m_model->index(row, lastCol), m_exportRole).toString() << Qt::endl;
+        }
+
+        if (activeRows == 0 && m_exportNoTii)
+        {  // no active rows ==>  monitor at least signal quality
+            for (int col = 0; col <= lastCol; ++col)
+            {
+                QString dataToWrite = "";
+                switch (static_cast<TxTableModel::TxTableCols>(col))
+                {
+                    case TxTableModel::ColTime:
+                        if (m_exportUTC)
+                        {
+                            dataToWrite = QDateTime::currentDateTime().toUTC().toString("yyyy-MM-dd hh:mm:ss");
+                        }
+                        else
+                        {
+                            dataToWrite = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+                        }
+                        break;
+                    case TxTableModel::ColChannel:
+                        dataToWrite = DabTables::channelList.value(m_currentEnsemble.frequency, 0);
+                        break;
+                    case TxTableModel::ColFreq:
+                        dataToWrite = QString::number(m_currentEnsemble.frequency);
+                        break;
+                    case TxTableModel::ColEnsId:
+                        dataToWrite = QString("%1").arg(m_currentEnsemble.ueid, 6, 16, QChar(' ')).toUpper();
+                        break;
+                    case TxTableModel::ColEnsLabel:
+                        dataToWrite = m_currentEnsemble.label;
+                        break;
+                    case TxTableModel::ColSnr:
+                        dataToWrite = QString("%1").arg(static_cast<double>(m_snr), 0, 'f', 1);
+                        break;
+                    case TxTableModel::ColMainId:
+                    case TxTableModel::ColSubId:
+                    case TxTableModel::ColLevel:
+                    case TxTableModel::ColLocation:
+                    case TxTableModel::ColPower:
+                    case TxTableModel::ColDist:
+                    case TxTableModel::ColAzimuth:
+                    case TxTableModel::ColTxCoordinatesLat:
+                    case TxTableModel::ColTxCoordinatesLon:
+                        // empty
+                        break;
+                    case TxTableModel::ColRxCoordinatesLat:
+                        dataToWrite = QString("%1").arg(static_cast<double>(m_currentPosition.latitude()), 0, 'f');
+                        break;
+                    case TxTableModel::ColRxCoordinatesLon:
+                        dataToWrite = QString("%1").arg(static_cast<double>(m_currentPosition.longitude()), 0, 'f');
+                        break;
+                    default:
+                        // skip
+                        continue;
+                }
+                out << dataToWrite;
+                if (col < lastCol)
+                {
+                    out << ";";
+                }
+                else
+                {
+                    out << Qt::endl;
+                }
+            }
         }
         out.flush();
     }
@@ -261,6 +333,8 @@ void TIIBackend::startStopLog()
 
             // need to keep local copy to avoid changing this settings during logging
             m_exportCoordinates = m_settings->tii.saveCoordinates;
+            m_exportNoTii = m_settings->tii.saveNoTii;
+            m_exportUTC = m_settings->tii.timestampInUTC;
             m_exportRole =
                 m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
 
