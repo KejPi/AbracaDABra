@@ -611,10 +611,10 @@ void RtlTcpInput::setPPM(int ppm)
         sendCommand(RtlTcpCommand::SET_FREQ_CORR, ppm);
         qCInfo(rtlTcpInput) << "Frequency correction PPM:" << ppm;
         m_ppm = ppm;
-        if (m_frequency != 0)
-        {
-            tune(m_frequency);
-        }
+        // if (m_frequency != 0)
+        // {
+        //     tune(m_frequency);
+        // }
     }
 }
 

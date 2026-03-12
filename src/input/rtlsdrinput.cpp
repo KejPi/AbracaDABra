@@ -737,10 +737,10 @@ void RtlSdrInput::setPPM(int ppm)
         {
             qCInfo(rtlsdrInput) << "Frequency correction PPM:" << ppm;
             m_ppm = ppm;
-            if (m_frequency != 0)
-            {
-                tune(m_frequency);
-            }
+            // if (m_frequency != 0)
+            // {
+            //     tune(m_frequency);
+            // }
         }
     }
 }

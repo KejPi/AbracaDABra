@@ -568,10 +568,6 @@ void SoapySdrInput::setPPM(int ppm)
 
         qCInfo(soapySdrInput) << "Frequency correction PPM:" << ppm;
         m_ppm = ppm;
-        if (m_frequency != 0)
-        {
-            tune(m_frequency);
-        }
     }
 }
 
