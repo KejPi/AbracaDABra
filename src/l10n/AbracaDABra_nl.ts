@@ -231,17 +231,17 @@
 <context>
     <name>AppLogView</name>
     <message>
-        <location filename="../qml/AppLogView.qml" line="66"/>
+        <location filename="../qml/AppLogView.qml" line="78"/>
         <source>Save to file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AppLogView.qml" line="70"/>
+        <location filename="../qml/AppLogView.qml" line="82"/>
         <source>Copy to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/AppLogView.qml" line="75"/>
+        <location filename="../qml/AppLogView.qml" line="87"/>
         <source>Clear log</source>
         <translation type="unfinished"></translation>
     </message>
@@ -311,7 +311,7 @@
     </message>
     <message>
         <location filename="../application.cpp" line="1025"/>
-        <location filename="../application.cpp" line="4122"/>
+        <location filename="../application.cpp" line="4132"/>
         <source>DAB time</source>
         <translation type="unfinished"></translation>
     </message>
@@ -610,32 +610,32 @@ Decoded %1 / %2 MOT objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4228"/>
+        <location filename="../application.cpp" line="4238"/>
         <source>Service list exported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4232"/>
+        <location filename="../application.cpp" line="4242"/>
         <source>Failed to export service list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4239"/>
+        <location filename="../application.cpp" line="4249"/>
         <source>Clear service list?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4239"/>
+        <location filename="../application.cpp" line="4249"/>
         <source>Current service list including favorites will be deleted. This action is irreversible.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4253"/>
+        <location filename="../application.cpp" line="4263"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4254"/>
+        <location filename="../application.cpp" line="4264"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4781,7 +4781,7 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="469"/>
+        <location filename="../qml/tii/ScannerView.qml" line="481"/>
         <source>CSV files</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4882,24 +4882,24 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="378"/>
-        <location filename="../qml/ServiceList.qml" line="553"/>
+        <location filename="../qml/ServiceList.qml" line="405"/>
+        <location filename="../qml/ServiceList.qml" line="581"/>
         <source>Remove service from favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="379"/>
-        <location filename="../qml/ServiceList.qml" line="554"/>
+        <location filename="../qml/ServiceList.qml" line="406"/>
+        <location filename="../qml/ServiceList.qml" line="582"/>
         <source>Add service to favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="691"/>
+        <location filename="../qml/ServiceList.qml" line="719"/>
         <source>Services</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="694"/>
+        <location filename="../qml/ServiceList.qml" line="722"/>
         <source>Ensembles</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5095,7 +5095,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settingsbackend.h" line="407"/>
+        <location filename="../settingsbackend.h" line="408"/>
         <source>No file selected</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5279,42 +5279,42 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
 <context>
     <name>TIIBackend</name>
     <message>
-        <location filename="../tii/tiibackend.cpp" line="213"/>
+        <location filename="../tii/tiibackend.cpp" line="285"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/tiibackend.cpp" line="202"/>
+        <location filename="../tii/tiibackend.cpp" line="274"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/tiibackend.cpp" line="209"/>
+        <location filename="../tii/tiibackend.cpp" line="281"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/tiibackend.cpp" line="232"/>
+        <location filename="../tii/tiibackend.cpp" line="304"/>
         <source>Failed to create TII log directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/tiibackend.cpp" line="240"/>
+        <location filename="../tii/tiibackend.cpp" line="312"/>
         <source>No permission to write log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/tiibackend.cpp" line="255"/>
+        <location filename="../tii/tiibackend.cpp" line="327"/>
         <source>TII log started</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/tiibackend.cpp" line="281"/>
+        <location filename="../tii/tiibackend.cpp" line="355"/>
         <source>Failed to write TII log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/tiibackend.cpp" line="318"/>
+        <location filename="../tii/tiibackend.cpp" line="392"/>
         <source>Carrier pairs</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5322,12 +5322,12 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
 <context>
     <name>TIIMap</name>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="418"/>
+        <location filename="../qml/tii/TIIMap.qml" line="428"/>
         <source>Stop logging</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="418"/>
+        <location filename="../qml/tii/TIIMap.qml" line="428"/>
         <source>Record CSV log</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5390,52 +5390,57 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="280"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="281"/>
         <source>Timestamp in UTC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="291"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="292"/>
         <source>GPS coordinates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="311"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="303"/>
+        <source>No TII (signal monitoring)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/TiiSettings.qml" line="323"/>
         <source>Detector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="317"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="329"/>
         <source>Reliable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="333"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="345"/>
         <source>Sensitive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="345"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="357"/>
         <source>User interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="358"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="370"/>
         <source>Show spectrum plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="370"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="382"/>
         <source>Keep no longer detected transmitters on map (grey marker)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="388"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="400"/>
         <source>Remove after:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="421"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="433"/>
         <source>Transmitter table columns</source>
         <translation type="unfinished"></translation>
     </message>
