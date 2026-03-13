@@ -4,9 +4,6 @@ Abraca DAB radio is a DAB and DAB+ Software Defined Radio (SDR) application. It 
 The application is based on the Qt6 cross-platform software development framework and can run on any platform supported by Qt6 _(Qt version 6.7 or higher is required for full functionality)_. 
 Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon), Android (API 30, ARM64) and Linux x86-64 and AARCH64 (AppImage). The AARCH64 AppImage is built to run on Raspberry Pi 4/5 with a 64 bit OS.
 Arch Linux users can install AbracaDABra from the <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
-<p align="center" width="100%">
-    <img width="889" alt="AbracaDABra application window" src="https://github.com/KejPi/AbracaDABra/assets/6438380/717ed65e-314b-4307-9e32-968c5582eeda"> 
-</p>
 
 ## Features
 * The following [input devices](#input-devices) are supported:
@@ -440,9 +437,6 @@ AbracaDABra is available for Android since version 4.0.0. It is provided as APK 
 
 <p align="center" width="100%">
     <img width="400" alt="Screenshot (Mar 13, 2026 9_15_20 PM)" src="https://github.com/user-attachments/assets/1eb42913-b0c4-45c7-9c6a-808f3dc0792b" />
-</p>
-<p align="center" width="100%">
-    ![Screenshot_20260313_211249](https://github.com/user-attachments/assets/fe5a1e17-073b-4839-95e7-0d4ca35ef3e3)
 </p>
 
 Android version of the application has the same features as desktop versions with following limitations:
