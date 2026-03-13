@@ -451,9 +451,24 @@ void TxTableColumnProxyModel::onSourceModelReset()
 void TxTableColumnProxyModel::onSourceLayoutAboutToBeChanged()
 {
     emit layoutAboutToBeChanged();
+
+    const auto proxyPersistentIndexes = persistentIndexList();
+    m_savedProxyIndexes.clear();
+    m_savedMappedSourceIndexes.clear();
+    for (const auto &proxyIdx : proxyPersistentIndexes)
+    {
+        m_savedProxyIndexes.append(proxyIdx);
+        m_savedMappedSourceIndexes.append(mapToSource(proxyIdx));
+    }
 }
 
 void TxTableColumnProxyModel::onSourceLayoutChanged()
 {
+    for (int i = 0; i < m_savedProxyIndexes.size(); ++i)
+    {
+        changePersistentIndex(m_savedProxyIndexes.at(i), mapFromSource(m_savedMappedSourceIndexes.at(i)));
+    }
+    m_savedProxyIndexes.clear();
+    m_savedMappedSourceIndexes.clear();
     emit layoutChanged();
 }

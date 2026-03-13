@@ -97,6 +97,9 @@ private:
     void onSourceModelReset();
     void onSourceLayoutAboutToBeChanged();
     void onSourceLayoutChanged();
+
+    QList<QPersistentModelIndex> m_savedProxyIndexes;
+    QList<QPersistentModelIndex> m_savedMappedSourceIndexes;
 };
 
 #endif  // TXTABLEPROXYMODEL_H
