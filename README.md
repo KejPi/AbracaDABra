@@ -64,10 +64,12 @@ RTL-SDR devices support 3 to 4 gain control modes, depending on the driver the a
 * Hardware - uses the internal RTL-SDR HW gain control. RF level estimation is not available in this mode
 * Manual - manual control of the gain
 
+Option 'RF level estimation' is available only for the [RTL-SDR driver by old-dab](https://github.com/old-dab/rtlsdr). It disables estimation of RF level that causes problems on some cheap Android devices.
+
 _Note:_ The SW AGC level threshold value can be adjusted to control the maximum level threshold for automatic gain control. This control is more intended for debugging, the default value is well tuned so it does typically not needed to be altered. Please do not report any issues if you have changed the value.
 
 <p align="center" width="100%">
-    <img width="651" alt="RTL-SDR" src="https://github.com/user-attachments/assets/e76aaad8-5efa-412d-8673-dbae6f65d98e" />
+    <img width="752" height="856" alt="RTL-SDR Settings" src="https://github.com/user-attachments/assets/12b9a7de-431f-4262-bfd4-ac81f51ebd73" />
 </p>
 
 ### RTL-TCP
@@ -82,7 +84,7 @@ RTL-TCP devices support 3 gain control modes:
 _Note:_ The SW AGC level threshold value can be adjusted to control the maximum level threshold for automatic gain control. This control is more intended for debugging, the default value is well tuned so it does typically not needed to be altered. Please do not report any issues if you have changed the value.
 
 <p align="center" width="100%">
-    <img width="651" alt="RTL_TCP" src="https://github.com/user-attachments/assets/ddac7c26-e07a-461e-85c2-d835dd1c1967" />
+    <img width="752" height="746" alt="RTL_TCP Settings" src="https://github.com/user-attachments/assets/09432a8e-7d6e-4f5a-be66-0441ed85346d" />
 </p>
 
 ### Airspy
@@ -95,12 +97,15 @@ Airspy devices support 4 gain control modes:
 * Software (default) - gain is controlled by the application. So called sensitivity gain is used.
 * Hybrid - the application controls IF gain but the other two gains are controlled by driver.
 * Sensitivity - manual control of sensitivity gain. Physical gain controls in the device are set by the driver according to the sensitivity gain index.
-* Manual - full manual control of all the available gains. It is possible to enable AGC for specific gain controls in this mode. 
+* Manual - full manual control of all the available gains. It is possible to enable AGC for specific gain controls in this mode.
+
+Option 'Prefer 4096kHz' is to switch between input stram running on 4096kHz (on, default) or 3072kHz (off). While 4096kHz rate needs more USB badwidth, 3072kHz rate on the other hand uses more CPU for processing. 
+This option was introduced mostly for Android, try to change this settings if you face problems with signal drops using Airspy device. Option can be changed when Airspy device is not connected.
 
 _Note:_ RF level estimation is not available for Airspy devices.
 
 <p align="center" width="100%">
-    <img width="651" alt="Airspy" src="https://github.com/user-attachments/assets/32ba4fb1-793e-4c8c-9ce8-c710b1cb3fbb" />
+    <img width="752" height="786" alt="Airspy Settings" src="https://github.com/user-attachments/assets/9bc2c4b1-91e2-4ec8-ab7a-3997ad472cee" />
 </p>
 
 ### SDRplay
@@ -116,7 +121,7 @@ SDRplay devices support 2 gain modes:
 * Manual - both RF ad IF gain is manual, however you can enable AGC for IF gain. In this case IF gain will be controlled by the application. 
 
 <p align="center" width="100%">
-    <img width="651" alt="SDRplay" src="https://github.com/user-attachments/assets/fce9cd85-4bec-4bae-b5e4-243397372b53" />
+    <img width="752" height="786" alt="SDRplay Settings" src="https://github.com/user-attachments/assets/d50f5d00-8c19-4ac7-a44a-6ece8825dbf6" />    
 </p>
 
 ### SoapySDR
@@ -130,7 +135,7 @@ SoapySDR devices support 2 gain modes:
 _Note:_ RF level estimation is not available for SoapySDR devices.
 
 <p align="center" width="100%">
-    <img width="651" alt="SoapySDR" src="https://github.com/user-attachments/assets/afde7352-4964-45d5-a678-8c8571bc5b97" />
+    <img width="752" height="786" alt="SoapySDR Settings" src="https://github.com/user-attachments/assets/ec8f88b9-1eec-4111-acc6-3b50118850be" />
 </p>
 
 ### Raw file
@@ -138,15 +143,16 @@ _Note:_ RF level estimation is not available for SoapySDR devices.
 Raw file is a virtual device that is used to play files with a raw IQ signal recording. You can create compatible recordings from the [Ensemble information](#ensemble-information) view. These files are particularly useful for debugging. The application supports files with 8 bit unsigned or 16 bit signed integer samples and a sampling rate of 2048kHz. It is possible to play the file in an endless loop and seek within the file using the controls in the settings. 
 
 <p align="center" width="100%">
-    <img width="651" alt="RawFile" src="https://github.com/user-attachments/assets/ae7e2a17-36b9-4279-b9d1-2e22770b8913" />
+    <img width="752" height="620" alt="RawFile Settings" src="https://github.com/user-attachments/assets/0f934dc2-b8b7-439a-bfec-4f04ac430e13" />
 </p>
+
 
 ## Ensemble Information
 
 AbracaDABra shows technical information about the ensemble in the Ensemble Information view. 
 
 <p align="center" width="100%">
-    <img width="1112" alt="Ensemble information" src="https://github.com/user-attachments/assets/26e58ea9-64a0-4a7d-bad1-86c972a7f84e" />
+    <img width="1142" height="884" alt="Ensemble information" src="https://github.com/user-attachments/assets/d8fe1060-692d-402c-9c7e-797193cfa7c6" />
 </p>
 
 The following information is available in the view:
@@ -176,7 +182,7 @@ The option "Bring window to foreground" tries to focus the application window wh
 Alarm announcements carry emergency warning information that is of utmost importance to all radio listeners and they have the highest priority 
 (according to <a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>) in the sense that alarm announcement cannot be disabled and it can interrupt any ongoing regular announcement.
 
-<img width="1279" alt="Snímek obrazovky 2023-01-12 v 22 07 17" src="https://user-images.githubusercontent.com/6438380/212181613-a7e163e2-d6e1-46cc-bf3d-6dfce276a8ae.png">
+<img width="1335" height="643" alt="Alarm test" src="https://github.com/user-attachments/assets/56d9e15f-2995-43fe-8122-ace00edd937a" />
 
 Announcements from other services display a thematic placeholder. <a href="https://www.flaticon.com/authors/basic-miscellany/lineal-color" title="linear color">The artwork of placeholders are created by Smashicons - Flaticon</a>
 
@@ -188,14 +194,14 @@ In general, the SPI application is very slow and it takes several minutes to acq
 You can disable progress indication from Settings.
 
 <p align="center" width="100%">
-    <img width="892" alt="Snímek obrazovky 2025-03-09 v 21 57 58" src="https://github.com/user-attachments/assets/48ddbecb-1ffc-4e98-9681-d503da1b6eee" />
+    <img width="1024" height="740" alt="SPI progres" src="https://github.com/user-attachments/assets/73d072c3-f961-495c-a8a4-37bd2057aa4b" />
 </p>
 
 AbracaDABra can use an internet connection to download service logos and to retrieve service information using RadioDNS if it is supported by the broadcaster of the selected service. 
 Both the internet connection and RadioDNS features are optional, but are enabled by default.
 
 <p align="center" width="100%">
-    <img width="692" alt="uaSettings_2025-03-27" src="https://github.com/user-attachments/assets/725e4c59-1c64-4581-9dfb-19a7e0790d66" />
+    <img width="752" height="827" alt="UA Settings" src="https://github.com/user-attachments/assets/d7d47f15-c405-4c1b-a127-bac34bdb54d2" />
 </p>
 
 Service logos, XML files and the internet download cache are stored in a dedicated directory on disk. The location of the cache is OS dependent:
@@ -206,7 +212,7 @@ Service logos, XML files and the internet download cache are stored in a dedicat
 AbracaDABra can visualize the Electronic Program Guide (EPG) if it is provided by the broadcaster in the SPI application and/or over RadioDNS. In such case the "EPG" menu item becomes active and the user can browse through the service's schedule in an interactive user interface.
 
 <p align="center" width="100%">
-<img width="1112" alt="EPG_20240209" src="https://github.com/KejPi/AbracaDABra/assets/6438380/fc2712e8-2b9d-483e-b089-169a77efa98f">
+    <img width="1095" height="858" alt="EPG" src="https://github.com/user-attachments/assets/3a68cca1-dc4d-4344-8082-db7b74f3ff97" />
 <p align="center" width="100%">
 
 The EPG view supports dragging or scrolling by mouse, and specific program details can be displayed by clicking on an item. An audio service can be selected by clicking on the service name on the left side. 
@@ -216,7 +222,7 @@ AbracaDABra can be configured to store all incoming data from the slideshow (SLS
 but subfolders can be configured by a template for each application individually. Storage of data can be enabled for each application individually.
 
 <p align="center" width="100%">
-    <img width="692" alt="uaSettings_2025-03-27" src="https://github.com/user-attachments/assets/725e4c59-1c64-4581-9dfb-19a7e0790d66" />
+    <img width="752" height="827" alt="UA Settings" src="https://github.com/user-attachments/assets/d7d47f15-c405-4c1b-a127-bac34bdb54d2" />
 </p>
 
 The overwrite switch enables overwriting of the files with the same name. If it is not enabled (default), new files with existing name will be ignored and not stored.
@@ -256,14 +262,14 @@ AbracaDABra features audio recording. Two options are available:
 Audio recording can be started and stopped from the application menu. It can be also stopped from the status bar. The recording files are stored automatically in a [data storage](#data-storage) folder. The application can optionally store a plain text file containg Dynamic label messages (DL) with timestamps. 
 
 <p align="center" width="100%">
-<img width="1385" alt="AudiRec" src="https://github.com/user-attachments/assets/9e74d151-4983-4d37-ae90-ba9affaef8fc" />
+    <img width="1660" height="656" alt="AudioRec" src="https://github.com/user-attachments/assets/421ce393-5442-4921-92d7-66ffe189d939" />
 </p>
 
 _Note:_  Audio recording stops when an ensemble reconfigures or when any tuning operation is performed. 
 
 ### Audio recording schedule
 Audio recording can be also scheduled in advance. Scheduled recordings are defined by:
-* Name
+* Name (Service name is used as default name)
 * Start time
 * Duration (End time is calculated from duration)
 * Service to be recorded
@@ -276,13 +282,13 @@ _Notes:_
 * When a scheduled recording is about to start, a dialog with a warning to the user pops up (30 seconds before scheduled time) and then the service to be recorded is selected about 10 seconds before the scheduled time.
 * The application must be running in order for a scheduled recording to happen. In other words, the application does not automatically start when an audio recording is scheduled.
 * An ongoing recording will prevent a scheduled recording from starting.
-* The application does not stop the user defining overlapping scheduled recordings. If the user adds schedule items that are overlapping, the conflict is indicated by a red triangle icon in the audio recording schedule table ("Schedule #3" in the screenshot below). When there are conflicting schedules, the first scheduled item is completed as defined ("Schedule #2" in screenshot) after which the second conflicting item will start recording as soon as the first finishes. Recording is always performed in the order shown in the table.
+* The application does not stop the user defining overlapping scheduled recordings. If the user adds schedule items that are overlapping, the conflict is indicated by a red triangle icon in the audio recording schedule table ("CAS ROCK" in the screenshot below). When there are conflicting schedules, the first scheduled item is completed as defined ("ROCK RADIO" in screenshot) after which the second conflicting item will start recording as soon as the first finishes. Recording is always performed in the order shown in the table.
 * An ongoing scheduled audio recording can be stopped anytime from the application menu or from the status bar like any other audio recording.
 * If the service to be recorded is available from more than one ensemble, the last used ensemble is used for recording (like when the user selects services from the service list).
 * The audio recording schedule is stored in the `AudioRecordingSchedule.json` file in the configuration INI file. More information [here](#settings).
 
 <p align="center" width="100%">
-<img width="738" alt="audioRecordingSchedule" src="https://github.com/KejPi/AbracaDABra/assets/6438380/7aa07e1f-ee41-44b2-bdb6-41e65d46261e">
+    <img width="1110" height="752" alt="Audio recording schedule" src="https://github.com/user-attachments/assets/848fdc33-cab5-4a45-a4ca-93685efb6834" />
 </p>
 
 ## FMLIST upload
@@ -309,7 +315,7 @@ This feature can be disabled in settings but please consider keeping this option
 Before using TII decoding, the feature needs to be configured in the application settings:
 
 <p align="center" width="100%">
-    <img width="692" alt="TII settings" src="https://github.com/user-attachments/assets/84d122d9-c021-455e-98ae-e451049ed2d1" />
+    <img width="752" height="1299" alt="TII settings" src="https://github.com/user-attachments/assets/7fc9d84c-5b2e-4a08-855a-062e42931b05" />
 </p>
 
 First, update the DAB transmitter database kindly provided by [FMLIST](https://www.fmlist.org). _Note:_ you might need to configure a network proxy in Others tab. 
@@ -336,7 +342,7 @@ There is also a possibility to configure TII table columns displayed on the map.
 The plot can be zoomed in both axes by mouse wheel or in one axis by clicking on the axis and zooming with the mouse wheel.
 
 <p align="center" width="100%">
-    <img width="1172" alt="TII decoding" src="https://github.com/user-attachments/assets/18a48563-cdde-4883-aa3c-7c71a6a208f8" />
+    <img width="1299" height="1057" alt="TII decoding" src="https://github.com/user-attachments/assets/6c555344-2c6f-4462-9195-7ef47e7d8b0d" />
 </p>
 
 The TII Decoder view shows an interactive map provided by [OpenStreetMap](https://www.openstreetmap.org/copyright), a table of detected transmitter codes and ensemble information. The blue dot shows the location configured in Settings or current receiver location when real-time GPS position is available.
@@ -348,7 +354,7 @@ It is also possible to record a CSV log with received codes using the "recording
 AbracaDABra offers the possibility to run an unattended DAB band scan and to store all received transmitters. This is an advanced DX feature. [TII decoding](#tii-decoding) configuration is required for the tool to function correctly. 
 
 <p align="center" width="100%">
-<img width="1312" alt="Scanning tool" src="https://github.com/user-attachments/assets/43e2a746-73f8-4e47-9665-b3d9ee62fc1d" />
+    <img width="1029" height="998" alt="Scanning tool" src="https://github.com/user-attachments/assets/4b863271-a836-4c30-a80f-ce8a6768131f" />
 </p>
 
 The scanning tool can be configured to run in one of 3 different modes: 
@@ -376,7 +382,7 @@ The spectrum plot can be zoomed in both axes with the mouse wheel or in one axis
 _Note:_ Spectrum calculation and visualization leads to higher CPU use by the application. 
 
 <p align="center" width="100%">
-<img width="941" alt="DAB Signal Overview" src="https://github.com/user-attachments/assets/01b29563-ec8c-475d-86ad-5c8b6e5c358a" />
+    <img width="1023" height="752" alt="DAB Signal Overview" src="https://github.com/user-attachments/assets/b85e71b2-c708-4023-9618-01e727b7a3d0" />
 </p>
 
 ## Data storage
@@ -431,6 +437,13 @@ Arch Linux users can install AbracaDABra from the <a href="https://aur.archlinux
 ### Android
 
 AbracaDABra is available for Android since version 4.0.0. It is provided as APK for ARM64 platform and Android 11 or newer (API 30 or newer). Both mobile phone and tablet UI is supported. Applications was tested on Google Pixel 3a and Samsung Galaxy Tab A11 devices and due to Android fragmentation, these are the only devices where the functionality is guaranteed. 
+
+<p align="center" width="100%">
+    <img width="400" alt="Screenshot (Mar 13, 2026 9_15_20 PM)" src="https://github.com/user-attachments/assets/1eb42913-b0c4-45c7-9c6a-808f3dc0792b" />
+</p>
+<p align="center" width="100%">
+    ![Screenshot_20260313_211249](https://github.com/user-attachments/assets/fe5a1e17-073b-4839-95e7-0d4ca35ef3e3)
+</p>
 
 Android version of the application has the same features as desktop versions with following limitations:
 * SDRplay and SoapySDR devices are not available
