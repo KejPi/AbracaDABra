@@ -970,12 +970,14 @@ Tight punctuation (end): see example.com.
 Tight punctuation (start): (example.com) should still link.
 Underscore in user john_doe@example.com should link.
 Username+tag tag+1@mail.example should link.
+Abbreviation D.C. should not link.
+This string T.Rex should not link    
 Dot before space example.com... then words (only domain should link, not the dots).)";
 #endif
 
     // Regular expression to match URLs and email addresses but not plain ellipses like "..."
     static const QRegularExpression urlRegex(
-        R"((^|(?<!\.)(?:[\s(\[{<]))((?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{1,}(?:\/\S*)?|\b[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{1,}))");
+        R"((^|(?<!\.)(?:[\s(\[{<]))((?!(?:[A-Z]\.[A-Z][A-Za-z]*\.?)(?=$|[\s)\]}>.,!?;:]))(?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{1,}(?:\/\S*)?|\b[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{1,}))");
 
     // Replacing URLs with HTML links
     dlText.replace(urlRegex, "\\1<a href=\"\\2\">\\2</a>");
