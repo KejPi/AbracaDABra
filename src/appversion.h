@@ -62,7 +62,7 @@ private:
     uint m_minor = 0;
     uint m_patch = 0;
     uint m_git = 0;
-    uint64_t toUInt64() const { return uint64_t((m_major << 30) + (m_minor << 20) + (m_patch << 10) + m_git); }
+    uint64_t toUInt64() const { return uint64_t((uint64_t(m_major) << 30) + (uint64_t(m_minor) << 20) + (uint64_t(m_patch) << 10) + m_git); }
 };
 
 #endif  // APPVERSION_H
