@@ -2219,7 +2219,8 @@ void Application::checkForUpdate()
                     if (ver.isValid())
                     {
                         m_settings->updateCheckTime = QDateTime::currentDateTime();
-                        if (ver > AppVersion(PROJECT_VER))
+                        auto currentVer = AppVersion(PROJECT_VER);
+                        if (ver > currentVer)
                         {
                             qCInfo(application, "New application version found: %s", updateChecker->version().toUtf8().data());
                             m_ui->updateVersionInfo({PROJECT_VER, updateChecker->version(), "**Changelog:**\n\n" + updateChecker->releaseNotes()});
