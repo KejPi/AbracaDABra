@@ -5,6 +5,10 @@ The application is based on the Qt6 cross-platform software development framewor
 Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon), Android (API 30, ARM64) and Linux x86-64 and AARCH64 (AppImage). The AARCH64 AppImage is built to run on Raspberry Pi 4/5 with a 64 bit OS.
 Arch Linux users can install AbracaDABra from the <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 
+<p align="center" width="100%">
+    <img width="1024" height="740" alt="SPI progres" src="https://github.com/user-attachments/assets/73d072c3-f961-495c-a8a4-37bd2057aa4b" />
+</p>
+
 ## Features
 * The following [input devices](#input-devices) are supported:
   * RTL-SDR (default device)
