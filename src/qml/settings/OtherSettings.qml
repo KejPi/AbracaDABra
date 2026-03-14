@@ -145,6 +145,7 @@ Item {
                                             settingsBackend.compactUi = checked
                                         }
                                     }
+                                    visible: UI.isAndroid === false
                                     wrapMode: Text.WordWrap
                                     elideMode: Text.ElideNone
                                 }
