@@ -350,7 +350,7 @@ void AudioRecorder::start()
             {  // reserving WAV header space
                 m_file->write(QByteArray(44, '\x55'));
             }
-            emit recordingStarted(fileName);
+            emit recordingStarted(recPath, fileName);
         }
         else
         {

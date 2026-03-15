@@ -56,7 +56,7 @@ public:
     void recordData(const RadioControlAudioData *inData, const int16_t *outputData, size_t numOutputSamples);
 
 signals:
-    void recordingStarted(const QString &filename);
+    void recordingStarted(const QString &recpath, const QString &filename);
     void recordingStopped();
     void recordingProgress(size_t bytes, size_t timeSec);
 

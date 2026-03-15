@@ -28,6 +28,7 @@
 
 #include <QLoggingCategory>
 
+#include "androidfilehelper.h"
 #include "epgtime.h"
 
 Q_LOGGING_CATEGORY(audioRecMgr, "AudioRecSchedule", QtInfoMsg)
@@ -368,16 +369,16 @@ QString AudioRecManager::audioRecordingFile() const
     return m_audioRecordingFile;
 }
 
-void AudioRecManager::onAudioRecordingStarted(const QString &filename)
+void AudioRecManager::onAudioRecordingStarted(const QString &recpath, const QString &filename)
 {
     m_audioRecordingFile = filename;
     isAudioRecordingActive(true);
     if (m_settings->audioRec.dl && (nullptr == m_dlLogFile))
     {
         QFileInfo fi(filename);
-        QString dlLogFilename = fi.path() + "/" + fi.completeBaseName() + ".txt";
-        m_dlLogFile = new QFile(dlLogFilename);
-        if (m_dlLogFile->open(QIODevice::WriteOnly))
+        QString dlLogFilename = fi.completeBaseName() + ".txt";
+        m_dlLogFile = AndroidFileHelper::openFileForWriting(recpath, dlLogFilename, "text/plain");
+        if (m_dlLogFile)
         {
             QTextStream out(m_dlLogFile);
             if (!m_dlText.isEmpty())

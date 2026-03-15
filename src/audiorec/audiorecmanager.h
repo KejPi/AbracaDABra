@@ -128,7 +128,7 @@ private:
     void updateScheduledRecording();
     void onModelReset();
     void onModelRowsRemoved(const QModelIndex &, int first, int last);
-    void onAudioRecordingStarted(const QString &filename);
+    void onAudioRecordingStarted(const QString &recpath, const QString &filename);
     void onAudioRecordingProgress(size_t bytes, size_t timeSec);
     void onAudioRecordingStopped();
     void stopCurrentSchedule();
