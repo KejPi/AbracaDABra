@@ -28,7 +28,7 @@
                 "APPLE_APP_BUNDLE": "ON",
                 "USE_PORTAUDIO": "ON",
                 "AIRSPY": "OFF",
-                "SOAPYSDR": "OFF",
+                "SOAPYSDR": "ON",
                 "RARTTCP": "OFF"
             },
             "environment": {
@@ -48,7 +48,7 @@
                 "APPLE_APP_BUNDLE": "ON",
                 "USE_PORTAUDIO": "ON",
                 "AIRSPY": "OFF",
-                "SOAPYSDR": "OFF",
+                "SOAPYSDR": "ON",
                 "RARTTCP": "OFF"
             },
             "environment": {

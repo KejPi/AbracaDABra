@@ -371,6 +371,7 @@ void SoapySdrInput::stop()
 
         // wait until thread finishes
         m_worker->wait(QDeadlineTimer(2000));
+        int cntr = 0;
         while (!m_worker->isFinished())
         {
             qCWarning(soapySdrInput) << "Worker thread not finished after timeout - this should not happen :-(";
@@ -381,6 +382,12 @@ void SoapySdrInput::stop()
             pthread_cond_signal(&inputBuffer.countCondition);
             pthread_mutex_unlock(&inputBuffer.countMutex);
             m_worker->wait(2000);
+
+            if (cntr++ > 5)
+            {
+                qCCritical(soapySdrInput) << "Worker thread not finished after multiple timeouts - giving up.";
+                m_worker->terminate();
+            }
         }
     }
     else if (0 == m_frequency)
