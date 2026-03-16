@@ -39,7 +39,7 @@ Label {
 
     signal rightClick()
 
-    color: enabled ? role === UI.LabelRole.Secondary ? UI.colors.textSecondary : UI.colors.textPrimary
+    color: enabled ? (role === UI.LabelRole.Secondary ? UI.colors.textSecondary : UI.colors.textPrimary)
                   : UI.colors.textDisabled
     linkColor: enabled ? UI.colors.link : UI.colors.textDisabled
     onLinkActivated: (link)=>{

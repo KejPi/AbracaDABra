@@ -179,7 +179,7 @@ Item {
         clip: true
         enabled: appUI.serviceSelectionEnabled
         model: slModel
-        // onEnabledChanged: console.log("serviceList enabled changed: " + enabled)
+        opacity: enabled ? 1.0 : 0.6
 
         signal restartHighlightAnimation()
 
@@ -448,6 +448,7 @@ Item {
 
             clip: true
             enabled: appUI.serviceSelectionEnabled
+            opacity: enabled ? 1.0 : 0.6
             model: slTreeModel
             selectionModel: slTreeSelectionModel
             // selectionMode: TableView.SingleSelection
@@ -560,8 +561,8 @@ Item {
                         anchors.verticalCenter: tContentItem.verticalCenter
                         text: serviceName
                         //font.bold: highlighted
-                        font.weight: highlighted ? Font.Bold : (depth === 0 ? Font.Medium : Font.Normal)
-                        color: (highlighted && depth > 0) ? UI.colors.listItemSelected : UI.colors.textPrimary
+                        font.weight: enabled ? (highlighted ? Font.Bold : (depth === 0 ? Font.Medium : Font.Normal)) : Font.Normal
+                        color: enabled ? ((highlighted && depth > 0) ? UI.colors.listItemSelected : UI.colors.textPrimary) : UI.colors.textPrimary
                         // color: highlighted ? UI.colors.accent : UI.colors.textPrimary
                     }
                     AbracaImgButton {
@@ -627,7 +628,7 @@ Item {
                 background: Rectangle {
                     anchors.fill: treeViewDelegate
                     radius: UI.controlRadius
-                    color: treeViewDelegate.highlighted ? UI.colors.highlight : treeViewDelegate.hovered ? UI.colors.listItemHovered : "transparent"
+                    color: treeViewDelegate.enabled ? (treeViewDelegate.highlighted ? UI.colors.highlight : treeViewDelegate.hovered ? UI.colors.listItemHovered : "transparent") : "transparent"
                     anchors.leftMargin: treeViewDelegate.depth * treeViewDelegate.indentation
                 }
             }
