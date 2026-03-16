@@ -28,6 +28,7 @@
 
 #include "config.h"
 #include "dabsdr.h"
+#include "rtl-sdr.h"
 
 AboutUI::AboutUI(QObject *parent) : QObject(parent)
 {
