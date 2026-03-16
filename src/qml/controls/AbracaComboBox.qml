@@ -90,11 +90,11 @@ ComboBox {
         }
         AbracaLabel {
             id: visibleLabel
-            color: UI.colors.textPrimary
+            color: control.enabled ? UI.colors.textPrimary : UI.colors.textDisabled
             anchors.left: parent.left
             anchors.leftMargin: contentInput.leftPadding
             anchors.verticalCenter: parent.verticalCenter
-            text: metrics.elidedText
+            text: metrics.elidedText            
         }
     }
     background: Rectangle {
