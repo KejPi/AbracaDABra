@@ -958,9 +958,9 @@ Mid-sentence ellipsis … also shouldn’t link.
 Bare domain text.cz should link.
 Subdomain aaa.xxx.eu should link.
 Email x@y.z should link.
-HTTP http://x.y.z should link.
-HTTPS https://x.y.z should link.
-HTTPS no path https://x.y should link.
+HTTP http://x.y.zz should link.
+HTTPS https://x.y.zzz should link.
+HTTPS no path https://x.yy should link.
 No protocol www.example.org/path should link.
 Mixed case Www.Example.CoM should link.
 Hyphenated host my-site.example.co.uk should link.
@@ -972,12 +972,17 @@ Underscore in user john_doe@example.com should link.
 Username+tag tag+1@mail.example should link.
 Abbreviation D.C. should not link.
 This string T.Rex should not link    
+ANS.TONIJA VERDERBERJA should not link.
+example.com ... should link
+example.cz ... should link
+example.test ... should not link
+example.c ... should not link
 Dot before space example.com... then words (only domain should link, not the dots).)";
 #endif
 
     // Regular expression to match URLs and email addresses but not plain ellipses like "..."
     static const QRegularExpression urlRegex(
-        R"((^|(?<!\.)(?:[\s(\[{<]))((?!(?:[A-Z]\.[A-Z][A-Za-z]*\.?)(?=$|[\s)\]}>.,!?;:]))(?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{1,}(?:\/\S*)?|\b[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{1,}))");
+        R"((^|(?<=\n)|(?<!\.)(?:[\s(\[{<]))((?!(?:[A-Z]\.[A-Z][A-Za-z]*\.?)(?=$|[\s)\]}>.,!?;:]))(?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,3}(?:\/\S*)?(?![a-zA-Z0-9])|\b[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{1,}))");
 
     // Replacing URLs with HTML links
     dlText.replace(urlRegex, "\\1<a href=\"\\2\">\\2</a>");
