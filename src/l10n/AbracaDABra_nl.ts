@@ -4,67 +4,67 @@
 <context>
     <name>AboutUI</name>
     <message>
-        <location filename="../aboutui.cpp" line="40"/>
+        <location filename="../aboutui.cpp" line="41"/>
         <source>Based on Qt %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="41"/>
+        <location filename="../aboutui.cpp" line="42"/>
         <source>DAB SDR version %1.%2.%3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="42"/>
+        <location filename="../aboutui.cpp" line="43"/>
         <source>Developed by</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="43"/>
+        <location filename="../aboutui.cpp" line="44"/>
         <source>If you like the application you can</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="43"/>
+        <location filename="../aboutui.cpp" line="44"/>
         <source>buy me a beer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="45"/>
+        <location filename="../aboutui.cpp" line="46"/>
         <source>AbracaDABra &amp; DAB SDR library use following libraries (special thanks to):</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="76"/>
+        <location filename="../aboutui.cpp" line="77"/>
         <source>Contributors to the translation:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="79"/>
+        <location filename="../aboutui.cpp" line="80"/>
         <source>Czech</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="82"/>
+        <location filename="../aboutui.cpp" line="83"/>
         <source>German</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="85"/>
+        <location filename="../aboutui.cpp" line="86"/>
         <source>Polish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="88"/>
+        <location filename="../aboutui.cpp" line="89"/>
         <source>AbracaDABra uses some artwork created by</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="90"/>
+        <location filename="../aboutui.cpp" line="91"/>
         <source>DAB transmitter database provided by</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="91"/>
+        <location filename="../aboutui.cpp" line="92"/>
         <source>and country flags provided by</source>
         <translation type="unfinished"></translation>
     </message>
@@ -305,337 +305,337 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1015"/>
+        <location filename="../application.cpp" line="1022"/>
         <source>System time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1025"/>
-        <location filename="../application.cpp" line="4132"/>
+        <location filename="../application.cpp" line="1032"/>
+        <location filename="../application.cpp" line="4139"/>
         <source>DAB time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1035"/>
+        <location filename="../application.cpp" line="1042"/>
         <source>&lt;b&gt;DAB audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1035"/>
+        <location filename="../application.cpp" line="1042"/>
         <source>MPEG-1 layer 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1039"/>
-        <location filename="../application.cpp" line="1043"/>
-        <location filename="../application.cpp" line="1047"/>
+        <location filename="../application.cpp" line="1046"/>
+        <location filename="../application.cpp" line="1050"/>
+        <location filename="../application.cpp" line="1054"/>
         <source>&lt;b&gt;DAB+ audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1039"/>
+        <location filename="../application.cpp" line="1046"/>
         <source>MPEG-4 Low Complexity AAC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1043"/>
+        <location filename="../application.cpp" line="1050"/>
         <source>MPEG-4 High Efficiency AAC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1047"/>
+        <location filename="../application.cpp" line="1054"/>
         <source>MPEG-4 High Efficiency AAC v2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1064"/>
+        <location filename="../application.cpp" line="1071"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Sample rate: %2 kHz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1068"/>
+        <location filename="../application.cpp" line="1075"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Sample rate: %2 kHz (SBR %3)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1069"/>
-        <location filename="../application.cpp" line="1071"/>
+        <location filename="../application.cpp" line="1076"/>
+        <location filename="../application.cpp" line="1078"/>
         <source>on</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1069"/>
-        <location filename="../application.cpp" line="1071"/>
+        <location filename="../application.cpp" line="1076"/>
+        <location filename="../application.cpp" line="1078"/>
         <source>off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1079"/>
+        <location filename="../application.cpp" line="1086"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1084"/>
+        <location filename="../application.cpp" line="1091"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz (SBR: %2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1105"/>
+        <location filename="../application.cpp" line="1112"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1 (dynamic)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1112"/>
+        <location filename="../application.cpp" line="1119"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1132"/>
+        <location filename="../application.cpp" line="1139"/>
         <source>Tuning...  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1197"/>
-        <location filename="../application.cpp" line="1209"/>
+        <location filename="../application.cpp" line="1204"/>
+        <location filename="../application.cpp" line="1216"/>
         <source>Tune to %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1296"/>
+        <location filename="../application.cpp" line="1303"/>
         <source>End of file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1297"/>
+        <location filename="../application.cpp" line="1304"/>
         <source>Select any service to restart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1311"/>
+        <location filename="../application.cpp" line="1318"/>
         <source>Input device error: Device disconnected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1312"/>
-        <location filename="../application.cpp" line="1324"/>
+        <location filename="../application.cpp" line="1319"/>
+        <location filename="../application.cpp" line="1331"/>
         <source>Try to reconnect the device or choose another device in Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1323"/>
+        <location filename="../application.cpp" line="1330"/>
         <source>Input device error: No data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1347"/>
+        <location filename="../application.cpp" line="1354"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you change DAB channel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1350"/>
+        <location filename="../application.cpp" line="1357"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you switch current service.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1355"/>
+        <location filename="../application.cpp" line="1362"/>
         <source>Stop audio recording?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1372"/>
+        <location filename="../application.cpp" line="1379"/>
         <source>Keep recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1373"/>
+        <location filename="../application.cpp" line="1380"/>
         <source>Stop recording and do not ask again</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1374"/>
+        <location filename="../application.cpp" line="1381"/>
         <source>Stop recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1613"/>
+        <location filename="../application.cpp" line="1620"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1669"/>
+        <location filename="../application.cpp" line="1676"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Capacity units: %4 CU</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1680"/>
+        <location filename="../application.cpp" line="1687"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Protection level: %2&lt;br&gt;Capacity units: %3 CU</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1690"/>
+        <location filename="../application.cpp" line="1697"/>
         <source>%1 kbps</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1692"/>
+        <location filename="../application.cpp" line="1699"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1718"/>
+        <location filename="../application.cpp" line="1725"/>
         <source>Service currently unavailable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1719"/>
+        <location filename="../application.cpp" line="1726"/>
         <source>Service was removed from ensemble</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1751"/>
+        <location filename="../application.cpp" line="1758"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;on current service</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1765"/>
+        <location filename="../application.cpp" line="1772"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1782"/>
+        <location filename="../application.cpp" line="1789"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1827"/>
+        <location filename="../application.cpp" line="1834"/>
         <source>Default audio device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1904"/>
+        <location filename="../application.cpp" line="1911"/>
         <source>Stop audio recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1910"/>
+        <location filename="../application.cpp" line="1917"/>
         <source>Start audio recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1920"/>
+        <location filename="../application.cpp" line="1927"/>
         <source>Audio recording ongoing (%2 kBytes recorded)
 File: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1928"/>
+        <location filename="../application.cpp" line="1935"/>
         <source>Scheduled audio recording is getting ready</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1940"/>
+        <location filename="../application.cpp" line="1947"/>
         <source>Scheduled recording should start in %1 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1943"/>
+        <location filename="../application.cpp" line="1950"/>
         <source>Ongoing recording now prevents the start of a scheduled recording. The schedule will be cancelled if you do not choose otherwise. If you select to keep the schedule, the service might be switched.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1956"/>
+        <location filename="../application.cpp" line="1963"/>
         <source>Keep current recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1957"/>
+        <location filename="../application.cpp" line="1964"/>
         <source>Keep schedule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1966"/>
+        <location filename="../application.cpp" line="1973"/>
         <source>Scheduled recording starts in %1 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1969"/>
+        <location filename="../application.cpp" line="1976"/>
         <source>Recording is going to start according to the schedule. The service might be switched if it differs from the current one.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1980"/>
+        <location filename="../application.cpp" line="1987"/>
         <source>Continue as planned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1981"/>
+        <location filename="../application.cpp" line="1988"/>
         <source>Cancel plan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2135"/>
+        <location filename="../application.cpp" line="2142"/>
         <source>SPI MOT directory not complete
 Decoded %1 / %2 MOT objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2139"/>
+        <location filename="../application.cpp" line="2146"/>
         <source>SPI MOT directory complete
 %1 MOT objects decoded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2144"/>
+        <location filename="../application.cpp" line="2151"/>
         <source>SPI MOT directory decoding started</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2353"/>
+        <location filename="../application.cpp" line="2360"/>
         <source>No ensemble</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2354"/>
+        <location filename="../application.cpp" line="2361"/>
         <source>No ensemble tuned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2365"/>
+        <location filename="../application.cpp" line="2372"/>
         <source>No service</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2371"/>
+        <location filename="../application.cpp" line="2378"/>
         <source>No service playing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4238"/>
+        <location filename="../application.cpp" line="4245"/>
         <source>Service list exported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4242"/>
+        <location filename="../application.cpp" line="4249"/>
         <source>Failed to export service list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4249"/>
+        <location filename="../application.cpp" line="4256"/>
         <source>Clear service list?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4249"/>
+        <location filename="../application.cpp" line="4256"/>
         <source>Current service list including favorites will be deleted. This action is irreversible.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4263"/>
+        <location filename="../application.cpp" line="4270"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4264"/>
+        <location filename="../application.cpp" line="4271"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1804,168 +1804,168 @@ Click &apos;Add&apos; to create a new recording.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="153"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="154"/>
         <source>Dynamic Label Plus (DL+)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="165"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="166"/>
         <source>Show tray icon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="177"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="178"/>
         <source>Show system time when DAB time is not available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="189"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="190"/>
         <source>Show ensemble country flag (internet connection required)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="201"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="202"/>
         <source>Show service country flag (internet connection required)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="218"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="219"/>
         <source>Slideshow background:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="240"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="241"/>
         <source>Language:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="262"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="263"/>
         <source>Restart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="270"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="271"/>
         <source>Language change will take effect after application restart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="286"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="287"/>
         <source>Data storage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="303"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="304"/>
         <source>Folder:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="314"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="315"/>
         <source>Data storage folder...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="324"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="325"/>
         <source>Application uses this folder to store all data like audio recording, IQ recording and logs, etc.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="338"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="339"/>
         <source>Network proxy configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="350"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="351"/>
         <source>Proxy type:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="366"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="367"/>
         <source>Apply</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="375"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="376"/>
         <source>Server:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="391"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="392"/>
         <source>Port:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="412"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="413"/>
         <source>Username:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="428"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="429"/>
         <source>Password:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="454"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="455"/>
         <source>FMLIST</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="465"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="466"/>
         <source>Upload ensemble information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="480"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="481"/>
         <source>Ensemble information is a small CSV file with list of services in the ensemble,
 it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="487"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="488"/>
         <source>Application automatically uploads ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="488"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="489"/>
         <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="496"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="497"/>
         <source>Thank you for supporting the community!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="497"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="498"/>
         <source>Please consider enabling this option to help the community.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="511"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="512"/>
         <source>Restore application windows on start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="524"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="525"/>
         <source>Check for application update on start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="537"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="538"/>
         <source>Include XML header in raw data recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="549"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="550"/>
         <source>DAB cable channels (16A - 17D)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="585"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="586"/>
         <source>Select SLS Background Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="599"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="600"/>
         <source>Data storage folder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4883,23 +4883,23 @@ it is anonymous and contains no personal data.</source>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="405"/>
-        <location filename="../qml/ServiceList.qml" line="581"/>
+        <location filename="../qml/ServiceList.qml" line="582"/>
         <source>Remove service from favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="406"/>
-        <location filename="../qml/ServiceList.qml" line="582"/>
+        <location filename="../qml/ServiceList.qml" line="583"/>
         <source>Add service to favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="719"/>
+        <location filename="../qml/ServiceList.qml" line="720"/>
         <source>Services</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="722"/>
+        <location filename="../qml/ServiceList.qml" line="723"/>
         <source>Ensembles</source>
         <translation type="unfinished"></translation>
     </message>
