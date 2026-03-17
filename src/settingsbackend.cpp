@@ -1552,12 +1552,12 @@ void SettingsBackend::reloadDeviceList(const InputDevice::Id inputDeviceId, Item
         }
         else
         {
-            model->setCurrentIndex(0);
+            model->setCurrentIndex(model->rowCount() > 0 ? 0 : -1);
         }
     }
     else
     {
-        model->setCurrentIndex(0);
+        model->setCurrentIndex(model->rowCount() > 0 ? 0 : -1);
     }
 
     if (inputDeviceId == InputDevice::Id::SDRPLAY)
@@ -2127,7 +2127,7 @@ void SettingsBackend::onSdrplayDeviceChanged()
     m_sdrplayChannelModel->clear();
     if (m_sdrplayDevicesModel->currentIndex() >= 0)
     {  // timer is needed to avoid GUI blocking
-        QTimer::singleShot(100, this,
+        QTimer::singleShot(10, this,
                            [this]()
                            {
                                int numCh = SdrPlayInput::getNumRxChannels(m_sdrplayDevicesModel->currentData());
@@ -2158,7 +2158,7 @@ void SettingsBackend::onSdrplayChannelChanged()
     m_sdrplayAntennaModel->clear();
     if (m_sdrplayChannelModel->currentIndex() >= 0)
     {  // timer is needed to avoid GUI blocking
-        QTimer::singleShot(100, this,
+        QTimer::singleShot(10, this,
                            [this]()
                            {
                                QStringList ant =
