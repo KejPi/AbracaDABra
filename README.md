@@ -2,13 +2,14 @@
 
 Abraca DAB radio is a DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks, but also with Airspy devices, SDRplay devices and with devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
 
-The application is based on the Qt6 cross-platform software development framework and can run on any platform supported by Qt6 _(Qt version 6.7 or higher is required for full functionality)_. 
+The application is based on the Qt6 cross-platform software development framework and can run on any platform supported by Qt6 _(Qt version 6.7 or higher is required)_. 
 Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon), Android (API 30, ARM64) and Linux x86-64 and AARCH64 (AppImage). The AARCH64 AppImage is built to run on Raspberry Pi 4/5 with a 64 bit OS.
 Arch Linux users can install AbracaDABra from the <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 
 <p align="center" width="100%">
-    <img width="1024" height="740" alt="SPI progres" src="https://github.com/user-attachments/assets/73d072c3-f961-495c-a8a4-37bd2057aa4b" />
+    <img width="1023" height="740" alt="AbracaDABra" src="https://github.com/user-attachments/assets/42682583-54a5-4fe4-899c-27c2667a3100" />
 </p>
+
 
 ## Features
 
@@ -47,6 +48,10 @@ However, if you like it, you can [buy me a beer](https://www.buymeacoffee.com/ke
 ## Application interface
 
 Application provides an easy-to-use user interface that is focused on radio listening. Just run automatic band scan to search for available services, select your favorite service from the service list and enjoy the music with slideshow and DL(+). Services can be easily added to the favorites list by clicking "star" icon. Most of the elements in UI have a tool tip with more information. 
+
+<p align="center" width="100%">
+    <img width="787" height="740" alt="AbracaDABra" src="https://github.com/user-attachments/assets/ac18592b-4cdb-4a20-ad5d-0a6dca38f9d9" />
+</p>
 
 There are also many features for advanced users, like the structure of services in an ensemble tree as well as additional details about the currently tuned service. Additionally, application supports dedicated DX functionality like [TII decoding](#tii-decoding) and monitoring, [continuous scanning](#scanning-tool) of the band, data dumping, logging and many more.
 
