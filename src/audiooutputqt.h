@@ -61,7 +61,7 @@ private:
     AudioIODevice *m_ioDevice;
     QAudioSink *m_audioSink;
     float m_linearVolume;
-    
+
     // Restart tracking to prevent loops
     int m_consecutiveRestarts = 0;
     QElapsedTimer m_lastRestartTimer;

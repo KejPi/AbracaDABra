@@ -118,6 +118,12 @@ void AudioOutputQt::start(audioFifo_t *buffer)
     m_ioDevice->start();
     m_audioSink->start(m_ioDevice);
 
+#ifdef Q_OS_ANDROID
+    // Acquire wake lock to ensure background audio playback
+    acquireAndroidWakeLock();
+    updateAndroidNotification("AbracaDABra", tr("DAB radio"));
+#endif
+
     // Reset restart counter on successful start
     resetRestartCounter();
 }
@@ -237,6 +243,7 @@ void AudioOutputQt::doStop()
 #ifdef Q_OS_ANDROID
     // Release wake lock when audio stops on Android
     releaseAndroidWakeLock();
+    updateAndroidNotification("AbracaDABra", "");
 #endif
 }
 
@@ -746,6 +753,7 @@ void AudioOutputQt::updateAndroidNotification(const QString &title, const QStrin
         qCWarning(audioOutput) << "Exception while updating Android notification";
     }
 }
+
 #endif
 
 qint64 AudioIODevice::bytesAvailable() const

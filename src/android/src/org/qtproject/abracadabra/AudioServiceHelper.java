@@ -741,7 +741,7 @@ public class AudioServiceHelper {
             Notification notification = builder.build();
             notificationManager.notify(NOTIFICATION_ID, notification);
             
-            Log.d(TAG, "Notification shown: " + title + " - " + text);
+            // Log.d(TAG, "Notification shown: " + title + " - " + text);
             
         } catch (Exception e) {
             Log.e(TAG, "Failed to show notification: " + e.getMessage(), e);

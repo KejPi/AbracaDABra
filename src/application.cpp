@@ -587,6 +587,9 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     // audio output is controlled by signals from decoder
     connect(m_radioControl, &RadioControl::stopAudio, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::startAudio, m_audioOutput, &AudioOutput::start, Qt::QueuedConnection);
+#ifdef Q_OS_ANDROID
+    connect(m_audioDecoder, &AudioDecoder::startAudio, this, [this]() { updateAndroidNotification(m_ui->serviceLabel(), ""); }, Qt::QueuedConnection);
+#endif
     connect(m_audioDecoder, &AudioDecoder::switchAudio, m_audioOutput, &AudioOutput::restart, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::stopAudio, m_audioOutput, &AudioOutput::stop, Qt::QueuedConnection);
 
@@ -940,11 +943,17 @@ void Application::onServiceListEntry(const RadioControlEnsemble &ens, const Radi
 void Application::onDLComplete_Service(const QString &dl)
 {
     m_ui->dlService(adjustDLString(dl));
+#ifdef Q_OS_ANDROID
+    updateAndroidNotification(m_ui->serviceLabel(), dl);
+#endif
 }
 
 void Application::onDLComplete_Announcement(const QString &dl)
 {
     m_ui->dlAnnouncement(adjustDLString(dl));
+#ifdef Q_OS_ANDROID
+    updateAndroidNotification(m_ui->serviceLabel(), dl);
+#endif
 }
 
 QString Application::adjustDLString(const QString &dl)
@@ -3974,7 +3983,30 @@ void Application::setAndroidKeepScreenOn(bool enable)
     }
     catch (const std::exception &e)
     {
-        qWarning() << "Exception setting Android keep screen on:" << QString::fromStdString(e.what());
+        qWarning(application) << "Exception setting Android keep screen on:" << QString::fromStdString(e.what());
+    }
+#endif
+}
+
+void Application::updateAndroidNotification(const QString &title, const QString &text)
+{
+#ifdef Q_OS_ANDROID
+    try
+    {
+        QJniObject context = QNativeInterface::QAndroidApplication::context();
+        if (context.isValid())
+        {
+            QJniObject jTitle = QJniObject::fromString(title);
+            QJniObject jText = QJniObject::fromString(text);
+
+            QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "updateNotification",
+                                               "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V", context.object<jobject>(),
+                                               jTitle.object<jstring>(), jText.object<jstring>());
+        }
+    }
+    catch (...)
+    {
+        qCWarning(application) << "Exception while updating Android notification";
     }
 #endif
 }

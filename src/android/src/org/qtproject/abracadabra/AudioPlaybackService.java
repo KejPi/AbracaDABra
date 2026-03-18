@@ -223,7 +223,7 @@ public class AudioPlaybackService extends Service {
                 "DAB Radio Playback",
                 NotificationManager.IMPORTANCE_LOW
             );
-            channel.setDescription("Shows when DAB radio is playing in background");
+            channel.setDescription("Shows when DAB radio is playing");
             channel.setShowBadge(false);
             channel.setSound(null, null);  // No sound for this notification
             channel.enableVibration(false);
@@ -251,7 +251,7 @@ public class AudioPlaybackService extends Service {
         }
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, flags);
 
-        // Build notification with MediaStyle for proper media app recognition
+        // Build a custom service-style notification without transport controls.
         Notification.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder = new Notification.Builder(this, CHANNEL_ID);
@@ -260,24 +260,15 @@ public class AudioPlaybackService extends Service {
         }
 
         builder.setContentTitle("AbracaDABra")
-               .setContentText("DAB radio is playing in background")
+               .setContentText("DAB radio")
                .setSmallIcon(android.R.drawable.ic_media_play)
                .setContentIntent(pendingIntent)
                .setOngoing(true)
                .setShowWhen(false)
                .setVisibility(Notification.VISIBILITY_PUBLIC);
 
-        // Use MediaStyle to signal this is a media playback notification
-        // This is critical for Android to recognize us as a media app
-        if (mediaSession != null) {
-            Notification.MediaStyle mediaStyle = new Notification.MediaStyle()
-                    .setMediaSession(mediaSession.getSessionToken());
-            builder.setStyle(mediaStyle);
-            Log.d(TAG, "Notification using MediaStyle with MediaSession");
-        }
-
-        // Set category to transport for media
-        builder.setCategory(Notification.CATEGORY_TRANSPORT);
+        // Keep a consistent non-media look with no play/pause controls.
+        builder.setCategory(Notification.CATEGORY_SERVICE);
         
         // For Android 10+, set foreground service behavior
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -316,9 +307,7 @@ public class AudioPlaybackService extends Service {
                    .setShowWhen(false)
                    .setVisibility(Notification.VISIBILITY_PUBLIC);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                builder.setCategory(Notification.CATEGORY_SERVICE);
-            }
+            builder.setCategory(Notification.CATEGORY_SERVICE);
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             if (notificationManager != null) {
