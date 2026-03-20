@@ -232,6 +232,7 @@ qt_add_qml_module(${TARGET}
         qml/images/icon-drag.svg
         qml/images/icon-loop-file.svg
         qml/images/placeholder-undocked.svg
+        qml/images/icon-sidebar-left.svg
 
         resources/appIcon.png
     QML_FILES
@@ -357,6 +358,7 @@ qt_add_qml_module(${TARGET}
         # TII decoder
         tii/txmapbackend.h tii/txmapbackend.cpp
         tii/tiibackend.cpp tii/tiibackend.h
+        tii/tiitablecolssettingsmodel.h tii/tiitablecolssettingsmodel.cpp
 
         # Scanner tool
         tii/scannerbackend.cpp tii/scannerbackend.h
@@ -408,7 +410,6 @@ qt_add_qml_module(${TARGET}
         ensembleinfobackend.h ensembleinfobackend.cpp
         ensemblesubchmodel.h ensemblesubchmodel.cpp
         androidfilehelper.h androidfilehelper.cpp
-        SOURCES tii/tiitablecolssettingsmodel.h tii/tiitablecolssettingsmodel.cpp
 )
 
 # add_subdirectory(qml)
