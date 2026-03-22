@@ -648,7 +648,7 @@ Dekódováno %1 / %2 MOT objektů</translation>
     <message>
         <location filename="../audiooutputqt.cpp" line="124"/>
         <source>DAB radio</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB radio</translation>
     </message>
 </context>
 <context>
