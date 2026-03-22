@@ -213,6 +213,8 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
     QFile file(fileName);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
+        m_model->beginLoadingFromFile();
+
         QTextStream in(&file);
         bool timeIsUTC = in.readLine().contains("(UTC)");
         int lineNum = 2;
@@ -220,7 +222,6 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
         while (!in.atEnd())
         {
             QString line = in.readLine();
-            // qDebug() << line;
 
             QStringList qsl = line.split(';');
             if (qsl.size() == TxTableModel::NumColsWithoutCoordinates)
