@@ -572,10 +572,13 @@ void RtlTcpInput::setGainMode(RtlGainMode gainMode, int gainIdx)
 
     if (RtlGainMode::Manual == m_gainMode)
     {
-        setGain(gainIdx);
+        setGain(gainIdx);  // this limits gain index to valid range and sets m_gainIdx
 
         // always emit gain when switching mode to manual
-        emit agcGain(m_gainList->at(gainIdx) * 0.1);
+        if (m_gainIdx >= 0)
+        {
+            emit agcGain(m_gainList->at(m_gainIdx) * 0.1);
+        }
     }
 
     if (RtlGainMode::Hardware == m_gainMode)
