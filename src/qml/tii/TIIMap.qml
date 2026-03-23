@@ -162,7 +162,7 @@ Item {
                 id: infoHoverHandler
             }
 
-            color: "white"
+            color: UI.colors.background
             opacity: infoHoverHandler.hovered ? 1.0 : 0.75
             width: infoLayout.width + 10
             height: infoLayout.height + 10
@@ -172,16 +172,6 @@ Item {
             anchors.bottomMargin: UI.isMobile ? 25 : 10
             visible: backend.ensembleInfo[0] !== ""
             z: 3
-            // Behavior on width {
-            //     SmoothedAnimation {
-            //         velocity: 1000
-            //     }
-            // }
-            // Behavior on height {
-            //     SmoothedAnimation {
-            //         velocity: 1000
-            //     }
-            // }
             Behavior on opacity {
                 SmoothedAnimation {
                     velocity: 20
@@ -196,17 +186,19 @@ Item {
                         Layout.fillWidth: true
                         text: modelData
                         visible: backend.txInfo.length === 0 || (mainItem.height > 400 && !UI.isMobile)
+                        color: UI.colors.textPrimary
                     }
                 }
                 Rectangle {
                     height: 1;
-                    color: "#c0c0c0";
+                    color: UI.colors.textSecondary
                     Layout.fillWidth: true;
                     visible: backend.txInfo.length > 0 && (mainItem.height > 400  && !UI.isMobile)
                 }
                 Repeater {
                     model: backend.txInfo
                     delegate: Text {
+                        color: UI.colors.textPrimary
                         Layout.fillWidth: true
                         text: modelData
                     }
@@ -277,7 +269,7 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     radius: UI.controlRadius
-                    color: "white"
+                    color: UI.colors.background
                     opacity: centerPosMouseArea.containsMouse ? 1.0 : 0.75
                 }
 
@@ -292,7 +284,7 @@ Item {
                     radius: width /2
                     color: "transparent"
                     border.width: centerPosition.w
-                    border.color: centerPosMouseArea.containsMouse ? "black" : "#707070"
+                    border.color: centerPosMouseArea.containsMouse ? UI.colors.textPrimary : UI.colors.textSecondary
                 }
                 Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
@@ -300,7 +292,7 @@ Item {
                     anchors.leftMargin: centerPosition.m
                     width: centerPosition.l
                     height: centerPosition.w
-                    color: centerPosMouseArea.containsMouse ? "black" : "#707070"
+                    color: centerPosMouseArea.containsMouse ? UI.colors.textPrimary : UI.colors.textSecondary
                 }
                 Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
@@ -308,7 +300,7 @@ Item {
                     anchors.rightMargin: centerPosition.m
                     width: centerPosition.l
                     height: centerPosition.w
-                    color: centerPosMouseArea.containsMouse ? "black" : "#707070"
+                    color: centerPosMouseArea.containsMouse ? UI.colors.textPrimary : UI.colors.textSecondary
                 }
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -316,7 +308,7 @@ Item {
                     anchors.topMargin: centerPosition.m
                     width: centerPosition.w
                     height: centerPosition.l
-                    color: centerPosMouseArea.containsMouse ? "black" : "#707070"
+                    color: centerPosMouseArea.containsMouse ? UI.colors.textPrimary : UI.colors.textSecondary
                 }
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -324,7 +316,7 @@ Item {
                     anchors.bottomMargin: centerPosition.m
                     width: centerPosition.w
                     height: centerPosition.l
-                    color: centerPosMouseArea.containsMouse ? "black" : "#707070"
+                    color: centerPosMouseArea.containsMouse ? UI.colors.textPrimary : UI.colors.textSecondary
                 }
 
                 Rectangle {
@@ -332,7 +324,7 @@ Item {
                     width: 8
                     height: width
                     radius: width /2
-                    color: centerPosMouseArea.containsMouse ? "black" : "#707070"
+                    color: centerPosMouseArea.containsMouse ? UI.colors.textPrimary : UI.colors.textSecondary
                     visible: backend.centerToCurrentPosition
                 }
                 MouseArea {
@@ -353,19 +345,19 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     radius: UI.controlRadius
-                    color: "white"
+                    color: UI.colors.background
                     opacity: plusMouseArea.containsMouse ? 1.0 : 0.75
                 }
                 Rectangle {
                     width: 14
                     height: 4
-                    color: plusMouseArea.containsMouse ? "black" : "#707070"
+                    color: plusMouseArea.containsMouse ? UI.colors.textPrimary : UI.colors.textSecondary
                     anchors.centerIn: parent
                 }
                 Rectangle {
                     width: 4
                     height: 14
-                    color: plusMouseArea.containsMouse ? "black" : "#707070"
+                    color: plusMouseArea.containsMouse ? UI.colors.textPrimary : UI.colors.textSecondary
                     anchors.centerIn: parent
                 }
                 MouseArea {
@@ -385,13 +377,13 @@ Item {
                 Rectangle {
                     radius: UI.controlRadius
                     anchors.fill: parent
-                    color: "white"
+                    color: UI.colors.background
                     opacity: minusMouseArea.containsMouse ? 1.0 : 0.75
                 }
                 Rectangle {
                     width: 14
                     height: 4
-                    color: minusMouseArea.containsMouse ? "black" : "#707070"
+                    color: minusMouseArea.containsMouse ? UI.colors.textPrimary : UI.colors.textSecondary
                     anchors.centerIn: parent
                 }
                 MouseArea {
@@ -413,7 +405,7 @@ Item {
                     id: logButton
                     anchors.fill: parent
                     radius: UI.controlRadius
-                    color: "white"
+                    color: UI.colors.background
                     opacity: logMouseArea.containsMouse ? 1.0 : 0.75
                     Behavior on opacity {
                         SmoothedAnimation {
@@ -431,7 +423,7 @@ Item {
                 }
                 Rectangle {
                     id: recSymbol
-                    color: backend.isRecordingLog ? "#ff4b4b" : logMouseArea.containsMouse ? "black" : "#707070"
+                    color: backend.isRecordingLog ? "#ff4b4b" : logMouseArea.containsMouse ? UI.colors.textPrimary : UI.colors.textSecondary
                     height: mainItem.buttonsSize / 2
                     width: height
                     radius: 50
