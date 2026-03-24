@@ -455,7 +455,7 @@ void ScannerBackend::startAutoSaveCsv()
         }
     }
 
-    m_autoSaveFile = AndroidFileHelper::openFileForWriting(basePath, fileName);
+    m_autoSaveFile = AndroidFileHelper::openFileForWriting(basePath, fileName, "text/csv");
     if (m_autoSaveFile == nullptr)
     {
         qCWarning(scanner) << "Failed to open auto-save file:" << AndroidFileHelper::lastError();
