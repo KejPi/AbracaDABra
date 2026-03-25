@@ -3926,6 +3926,7 @@ void Application::onApplicationStateChanged(Qt::ApplicationState state)
     else if (state == Qt::ApplicationActive)
     {
         qCInfo(application, "Application active - audio continues playing");
+        emit requestActivate();
     }
 #else
     // On desktop platforms, we rely on the close() method being called when

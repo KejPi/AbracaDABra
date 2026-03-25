@@ -327,6 +327,7 @@ signals:
     void catSlsBackendChanged();
     void applicationQuitEvent();
     void showInfoMessage(const QString &message, int type);
+    void requestActivate();
 
 private:
     enum Instance

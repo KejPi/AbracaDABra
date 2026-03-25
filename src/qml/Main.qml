@@ -313,6 +313,9 @@ ApplicationWindow {
         function onApplicationQuitEvent() {
             quitApplication();
         }
+        function onRequestActivate() {
+            applicationWindow.requestActivate()
+        }
     }
 
     function startBandScan() {
