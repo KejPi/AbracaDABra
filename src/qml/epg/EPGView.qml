@@ -572,9 +572,8 @@ Rectangle {
                 anchors.leftMargin: UI.standardMargin
                 anchors.rightMargin: UI.standardMargin
                 spacing: 5
-                GridLayout {
+                RowLayout {
                     Layout.fillWidth: true
-                    columns: UI.isMobile ? 1 : 2
                     ColumnLayout {
                         Layout.fillWidth: true
                         Text {
@@ -596,9 +595,9 @@ Rectangle {
                     }
                     AbracaButton {
                         id: scheduleRecButton
-                        Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
+                        Layout.alignment: Qt.AlignTop
                         text: qsTr("Schedule audio recording")
-                        visible: programStartToEndTime !== "" && scheduleRecEnable
+                        visible: UI.isAndroid === false && programStartToEndTime !== "" && scheduleRecEnable
                         onClicked: epgBackend.scheduleRecording()
                     }
                 }
