@@ -344,9 +344,6 @@ private:
     };
 
     static const QString appName;
-    static const char *syncLevelLabels[];
-    static const char *syncLevelTooltip[];
-    static const QStringList snrProgressStylesheet;
     static const QString slsDumpPatern;
     static const QString spiDumpPatern;
 

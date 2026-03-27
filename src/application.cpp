@@ -118,14 +118,6 @@
 Q_LOGGING_CATEGORY(application, "Application", QtInfoMsg)
 
 const QString Application::appName("AbracaDABra");
-const char *Application::syncLevelLabels[] = {QT_TR_NOOP("No signal"), QT_TR_NOOP("Signal found"), QT_TR_NOOP("Sync")};
-const char *Application::syncLevelTooltip[] = {QT_TR_NOOP("DAB signal not detected<br>Looking for signal..."),
-                                               QT_TR_NOOP("Found DAB signal,<br>trying to synchronize..."), QT_TR_NOOP("Synchronized to DAB signal")};
-const QStringList Application::snrProgressStylesheet = {
-    QString::fromUtf8("QProgressBar::chunk {background-color: #ff4b4b; }"),  // red
-    QString::fromUtf8("QProgressBar::chunk {background-color: #ffb527; }"),  // yellow
-    QString::fromUtf8("QProgressBar::chunk {background-color: #5bc214; }")   // green
-};
 const QString Application::slsDumpPatern("SLS/{serviceId}/{contentNameWithExt}");
 const QString Application::spiDumpPatern("SPI/{ensId}/{scId}_{directoryId}/{contentName}");
 
