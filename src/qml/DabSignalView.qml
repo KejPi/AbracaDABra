@@ -289,10 +289,10 @@ Rectangle {
                     return result + padding * 2;
                 }
                 AbracaMenuItem {
-                    text: qsTr("Frequency offset correction")
+                    text: qsTr("Show NULL spectrum")
                     checkable: true
-                    onTriggered: signalBackend.spectrumMode = checked ? 2 : 1
-                    Component.onCompleted: checked = (signalBackend.spectrumMode === 2)
+                    checked: signalBackend.showNULL
+                    onTriggered: signalBackend.showNULL = checked
                 }
                 AbracaMenuSeparator {}
                 AbracaMenuItem {
@@ -302,19 +302,19 @@ Rectangle {
                     onTriggered: signalBackend.spectrumUpdate = SignalBackend.SpectrumUpdateSlow
                 }
                 AbracaMenuItem {
-                    text: qsTr("Normal update (500 msec)")
+                    text: qsTr("Normal update (600 msec)")
                     checkable: true
                     checked: signalBackend.spectrumUpdate === SignalBackend.SpectrumUpdateNormal
                     onTriggered: signalBackend.spectrumUpdate = SignalBackend.SpectrumUpdateNormal
                 }
                 AbracaMenuItem {
-                    text: qsTr("Fast update (300 msec)")
+                    text: qsTr("Fast update (400 msec)")
                     checkable: true
                     checked: signalBackend.spectrumUpdate === SignalBackend.SpectrumUpdateFast
                     onTriggered: signalBackend.spectrumUpdate = SignalBackend.SpectrumUpdateFast
                 }
                 AbracaMenuItem {
-                    text: qsTr("Very fast update (100 msec)")
+                    text: qsTr("Very fast update (200 msec)")
                     checkable: true
                     checked: signalBackend.spectrumUpdate === SignalBackend.SpectrumUpdateVeryFast
                     onTriggered: signalBackend.spectrumUpdate = SignalBackend.SpectrumUpdateVeryFast

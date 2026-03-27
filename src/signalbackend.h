@@ -47,9 +47,9 @@ class SignalBackend : public UIControlProvider
     UI_PROPERTY(QString, rfLevelLabel)
     UI_PROPERTY(QString, gainLabel)
     UI_PROPERTY(QString, snrValue)
-    UI_PROPERTY_SETTINGS(int, spectrumMode, m_settings->signal.spectrumMode)
     UI_PROPERTY_SETTINGS(int, spectrumUpdate, m_settings->signal.spectrumUpdate)
     UI_PROPERTY_SETTINGS(bool, showSNR, m_settings->signal.showSNR)
+    UI_PROPERTY_SETTINGS(bool, showNULL, m_settings->signal.showNULL)
     UI_PROPERTY_SETTINGS(QVariant, splitterState, m_settings->signal.splitterState)
 
 public:
@@ -66,10 +66,10 @@ public:
     void onTuneDone(uint32_t freq);
     void updateRfLevel(float rfLevel, float gain);
     void updateFreqOffset(float offset);
-    void onSignalSpectrum(std::shared_ptr<std::vector<float>> data);
+    void onSignalSpectrum(std::shared_ptr<std::vector<float>> data, bool isSignal);
 
 signals:
-    void setSignalSpectrum(int mode);
+    void startSignalSpectrum(bool ena);
     void isUndockedChanged();
 
 protected:
@@ -99,13 +99,15 @@ private:
 
     LineChartItem *m_spectrumPlot = nullptr;
     LineChartItem *m_snrPlot = nullptr;
-    int m_spectSeriesId = -1;
+    int m_signalSpectSeriesId = -1;
+    int m_nullSpectSeriesId = -1;
     int m_spectLeftMarginId = -1;
     int m_spectRightMarginId = -1;
     int m_spectCenterId = -1;
     int m_snrSeriesId = -1;
 
-    std::vector<float> m_spectrumBuffer;
+    std::vector<float> m_signalSpectrumBuffer;
+    std::vector<float> m_nullSpectrumBuffer;
     int m_frequency = 0;
     float m_rfLevel = NAN;
     float m_tunerGain = NAN;
@@ -116,7 +118,7 @@ private:
     float m_spectYViewMax;
     float m_spectYViewMin;
     bool m_isUserView;
-    int m_avrgCntr = 0;
+    int m_signalAvrgCntr = 0;
     int m_numAvrg = 10;
     float m_avrgFactor_dB = -10.0;
 

@@ -3127,9 +3127,9 @@ void Application::loadSettings()
 
     m_settings->signal.splitterState = settings->value("SignalDialog/layout");
     m_settings->signal.restore = settings->value("SignalDialog/restore", false).toBool();
-    m_settings->signal.spectrumMode = settings->value("SignalDialog/spectrumMode", 1).toInt();
     m_settings->signal.spectrumUpdate = settings->value("SignalDialog/spectrumUpdate", 1).toInt();
     m_settings->signal.showSNR = settings->value("SignalDialog/showSNR", 0).toBool();
+    m_settings->signal.showNULL = settings->value("SignalDialog/showNULL", 0).toBool();
 
     m_settings->ensembleInfo.restore = settings->value("EnsembleInfo/restore", false).toBool();
     m_settings->ensembleInfo.recordingTimeoutEna = settings->value("EnsembleInfo/recordingTimeoutEna", false).toBool();
@@ -3459,9 +3459,9 @@ void Application::saveSettings()
 
     settings->setValue("SignalDialog/layout", m_settings->signal.splitterState);
     settings->setValue("SignalDialog/restore", m_settings->signal.restore);
-    settings->setValue("SignalDialog/spectrumMode", m_settings->signal.spectrumMode);
     settings->setValue("SignalDialog/spectrumUpdate", m_settings->signal.spectrumUpdate);
     settings->setValue("SignalDialog/showSNR", m_settings->signal.showSNR);
+    settings->setValue("SignalDialog/showNULL", m_settings->signal.showNULL);
 
     settings->setValue("UA-STORAGE/overwriteEna", m_settings->uaDump.overwriteEna);
     settings->setValue("UA-STORAGE/slsEna", m_settings->uaDump.slsEna);
@@ -4034,7 +4034,7 @@ QObject *Application::createSignalBackend()
     if (m_signalBackend == nullptr)
     {
         m_signalBackend = new SignalBackend(m_settings, m_frequency);
-        connect(m_signalBackend, &SignalBackend::setSignalSpectrum, m_radioControl, &RadioControl::setSignalSpectrum, Qt::QueuedConnection);
+        connect(m_signalBackend, &SignalBackend::startSignalSpectrum, m_radioControl, &RadioControl::startSignalSpectrum, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tuneDone, m_signalBackend, &SignalBackend::onTuneDone, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::freqOffset, m_signalBackend, &SignalBackend::updateFreqOffset, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::signalSpectrum, m_signalBackend, &SignalBackend::onSignalSpectrum, Qt::QueuedConnection);

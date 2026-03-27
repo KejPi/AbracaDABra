@@ -395,7 +395,7 @@ public:
     void onSpiApplicationEnabled(bool enabled);
     void startTii(bool ena);
     void setTii(int mode);
-    void setSignalSpectrum(int mode);
+    void startSignalSpectrum(bool ena);
 
 signals:
     void dabEvent(RadioControlEvent *pEvent);
@@ -414,7 +414,7 @@ signals:
     void audioServiceSelection(const RadioControlServiceComponent &s);
     void audioServiceReconfiguration(const RadioControlServiceComponent &s);
     void audioData(RadioControlAudioData *pData);
-    void signalSpectrum(std::shared_ptr<std::vector<float>> data);
+    void signalSpectrum(std::shared_ptr<std::vector<float>> data, bool isSignalSpectrum);
     void dabTime(const QDateTime &dateAndTime);
     void ensembleInformation(const RadioControlEnsemble &ens);
     void ensembleConfiguration(const QString &);
@@ -549,13 +549,13 @@ private:
         dabsdrRequest_XPadAppStart(m_dabsdrHandle, appType, start, decoderId);
     }
     void dabSetTii(bool ena, dabsdrTiiMode_t mode) { dabsdrRequest_SetTII(m_dabsdrHandle, ena, mode); }
-    void dabEnableSignalSpectrum(dabsdrSpectrumMode_t mode) { dabsdrRequest_SignalSpectrum(m_dabsdrHandle, mode); }
+    void dabEnableSignalSpectrum(bool ena) { dabsdrRequest_SignalSpectrum(m_dabsdrHandle, ena); }
 
     // wrappers used in callback functions (emit requires class instance)
     void emit_dabEvent(RadioControlEvent *pEvent) { emit dabEvent(pEvent); }
     void emit_audioData(RadioControlAudioData *pData) { emit audioData(pData); }
     void emit_announcementAudioAvailable() { emit announcementAudioAvailable(); }
-    void emit_spectrum(std::shared_ptr<std::vector<float>> data) { emit signalSpectrum(data); }
+    void emit_spectrum(std::shared_ptr<std::vector<float>> data, bool isSignal) { emit signalSpectrum(data, isSignal); }
 
     // static methods used as dabsdr library callbacks
     static void dabNotificationCb(dabsdrNotificationCBData_t *p, void *ctx);
@@ -563,6 +563,7 @@ private:
     static void dataGroupCb(dabsdrDataGroupCBData_t *p, void *ctx);
     static void audioDataCb(dabsdrAudioCBData_t *p, void *ctx);
     static void signalSpectrumCb(const float *p, void *ctx);
+    static void nullSpectrumCb(const float *p, void *ctx);
 private slots:
     void onDabEvent(RadioControlEvent *pEvent);
 };

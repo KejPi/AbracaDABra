@@ -259,7 +259,7 @@ public:
         QVariant splitterState;
         bool restore;
         bool showSNR;
-        int spectrumMode;
+        bool showNULL;
         int spectrumUpdate;
     } signal;
     struct EPGSettings
