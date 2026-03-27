@@ -900,11 +900,11 @@ void Application::onSignalState(uint8_t sync, float snr)
     if (sync > static_cast<int>(DabSyncLevel::NoSync))
     {
         syncSnrLevel = 3;
-        if (snr < static_cast<float>(DabSnrThreshold::LowSNR))
+        if (snr < (static_cast<float>(DabSnrThreshold::LowSNR) + m_snrQualOffset))
         {
             syncSnrLevel = 1;
         }
-        else if (snr < static_cast<float>(DabSnrThreshold::GoodSNR))
+        else if (snr < (static_cast<float>(DabSnrThreshold::GoodSNR) + m_snrQualOffset))
         {
             syncSnrLevel = 2;
         }
@@ -1140,6 +1140,7 @@ void Application::channelSelected()
     m_ui->frequencyLabel(tr("Tuning...  "));
 
     onSignalState(uint8_t(DabSyncLevel::NoSync), 0.0);
+    setSnrQualOffset(DabProtectionLevel::PROTECTION_LEVEL_UNDEFINED);
     if (m_tiiBackend != nullptr)
     {
         m_tiiBackend->onChannelSelection();
@@ -1630,6 +1631,7 @@ void Application::onAudioServiceSelection(const RadioControlServiceComponent &s)
 
         onProgrammeTypeChanged(s.SId, s.pty);
         displaySubchParams(s);
+        setSnrQualOffset(s.protection.level);
         m_ui->infoLabelIndex(0);
 
         m_ui->serviceId(ServiceListId(s.SId.value(), s.SCIdS).value());
@@ -1702,6 +1704,30 @@ void Application::displaySubchParams(const RadioControlServiceComponent &s)
     else
     { /* this should not happen */
     }
+}
+
+void Application::setSnrQualOffset(DabProtectionLevel protectionLevel)
+{  // https://televizniweb.mediar.cz/wp-content/uploads/2019/05/08-Urovne-ochrany-DAB.jpg
+    // https://tech.ebu.ch/files/live/sites/tech/files/shared/tech/tech3391.pdf
+    static const float offsets[] = {
+        0.0,   // PROTECTION_LEVEL_UNDEFINED,
+        1.0,   // UEP_1:
+        2.0,   // UEP_2:
+        3.0,   // UEP_3:
+        4.0,   // UEP_4:
+        5.5,   // UEP_5:
+        -0.8,  // EEP_1A:
+        0.0,   // EEP_2A:
+        1.2,   // EEP_3A:
+        4.0,   // EEP_4A:
+        0.4,   // EEP_1B:
+        1.9,   // EEP_2B:
+        2.7,   // EEP_3B:
+        4.6,   // EEP_4B:
+    };
+    m_snrQualOffset = offsets[static_cast<int>(protectionLevel)];
+
+    // qDebug() << "Set SNR/quality offset to" << m_snrQualOffset;
 }
 
 void Application::onAudioServiceReconfiguration(const RadioControlServiceComponent &s)

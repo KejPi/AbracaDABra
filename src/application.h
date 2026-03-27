@@ -419,6 +419,7 @@ private:
     bool m_hasListViewFocus;
     bool m_hasTreeViewFocus;
     bool m_isScannerRunning = false;
+    float m_snrQualOffset = 0;
 
     // Time
     QDateTime m_dabTime;
@@ -463,6 +464,7 @@ private:
     void serviceListViewUpdateSelection();
     void changeInputDevice(const InputDevice::Id &d, const QVariant &id);
     void displaySubchParams(const RadioControlServiceComponent &s);
+    void setSnrQualOffset(DabProtectionLevel protectionLevel);
     void toggleDLPlus(bool toggle);
     void checkAudioRecording(AudioRecMsg msgId, std::function<void(bool)> callback);
     void selectService(const ServiceListId &serviceId);
