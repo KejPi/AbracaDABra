@@ -376,6 +376,7 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_serviceList, &ServiceList::serviceUpdatedInEnsemble, m_slTreeModel, &SLTreeModel::updateEnsembleService);
     connect(m_serviceList, &ServiceList::serviceRemovedFromEnsemble, m_slTreeModel, &SLTreeModel::removeEnsembleService);
     connect(m_serviceList, &ServiceList::ensembleRemoved, m_slTreeModel, &SLTreeModel::removeEnsemble);
+    connect(m_serviceList, &ServiceList::ensembleRemoved, this, &Application::populateServiceSourcesMenu);
 
     connect(m_slTreeSelectionModel, &QItemSelectionModel::selectionChanged, this, &Application::onServiceListTreeSelection);
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
@@ -3239,7 +3240,6 @@ void Application::loadSettings()
     m_settings->sdrplay.gain.ifAgcEna = settings->value("SDRPLAY/ifAgcEna", true).toBool();
     m_settings->sdrplay.ppm = settings->value("SDRPLAY/ppm", 0).toInt();
     m_settings->sdrplay.biasT = settings->value("SDRPLAY/bias-T", false).toBool();
-
 #endif
     m_settings->rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
     m_settings->rawfile.format = RawFileInputFormat(settings->value("RAW-FILE/format", 0).toInt());
@@ -4005,6 +4005,32 @@ void Application::setAndroidKeepScreenOn(bool enable)
         qWarning(application) << "Exception setting Android keep screen on:" << QString::fromStdString(e.what());
     }
 #endif
+}
+
+void Application::deleteEnsembleFromServiceList(int id, const QString &channelName)
+{
+    qDebug() << "Deleting ensemble from service list id:" << QString("%1").arg(id, 0, 16) << channelName;
+    uint32_t freq = 0;
+    // find frequency in channel list DabTables::channelList hash
+    for (auto it = DabTables::channelList.cbegin(); it != DabTables::channelList.cend(); ++it)
+    {
+        if (it.value() == channelName)
+        {
+            freq = it.key();
+            break;
+        }
+    }
+    if (freq != 0)
+    {
+        RadioControlEnsemble e;
+        e.frequency = freq;
+        e.ueid = id;
+        m_serviceList->removeEnsemble(e);
+    }
+    else
+    {
+        qWarning() << "Failed to find frequency for channel name:" << channelName;
+    }
 }
 
 void Application::updateAndroidNotification(const QString &title, const QString &text)

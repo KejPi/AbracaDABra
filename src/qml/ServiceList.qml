@@ -445,6 +445,7 @@ Item {
             leftMargin: 0
 
             signal restartTreeHighlightAnimation()
+            signal closeSwipeForRow(int exceptRow)
 
             clip: true
             enabled: appUI.serviceSelectionEnabled
@@ -459,6 +460,7 @@ Item {
 
             property int previousCurrentRow: -1
             property bool shouldAnimate: false
+            property int swipedRow: -1
 
             function showCurrent(currentIdx) {
                 if (currentIdx.valid) {
@@ -473,6 +475,10 @@ Item {
                 target: slTreeSelectionModel
                 function onCurrentChanged(current, previous) {
                     serviceTree.showCurrent(current);
+                    if (serviceTree.swipedRow >= 0) {
+                        serviceTree.closeSwipeForRow(-1);
+                        serviceTree.swipedRow = -1;
+                    }
                 }
             }
 
@@ -528,6 +534,7 @@ Item {
                 required property string serviceName
                 required property bool isFavorite
                 required property string channel
+                required property int serviceId
 
                 implicitWidth: serviceTree.width - UI.standardMargin
                 implicitHeight: UI.controlHeight
@@ -543,8 +550,58 @@ Item {
                 spacing: 0
                 leftMargin: 0
                 indentation: UI.controlHeight - 10
+                clip: true
+
+                property real swipeOffset: 0        // drives content + button during drag
+                property real contentOffset: 0       // content slide (animates back after reveal)
+                property real buttonOffset: 0        // button position (stays after reveal)
+                property real swipeStartOffset: 0
+                readonly property real deleteButtonWidth: UI.controlHeight - 4
+                readonly property bool swipeEnabled: depth === 0
+                property bool animateSwipe: false
+                property bool buttonRevealed: false
+
+                Connections {
+                    target: serviceTree
+                    function onCloseSwipeForRow(exceptRow) {
+                        if (treeViewDelegate.row !== exceptRow && treeViewDelegate.buttonRevealed) {
+                            treeViewDelegate.animateSwipe = true;
+                            treeViewDelegate.swipeOffset = 0;
+                            treeViewDelegate.contentOffset = 0;
+                            treeViewDelegate.buttonOffset = 0;
+                            treeViewDelegate.buttonRevealed = false;
+                        }
+                    }
+                }
+
+                onRowChanged: {
+                    swipeOffset = 0; contentOffset = 0; buttonOffset = 0;
+                    animateSwipe = false; buttonRevealed = false;
+                }
+
+                Behavior on swipeOffset {
+                    enabled: treeViewDelegate.animateSwipe
+                    NumberAnimation { duration: 150; easing.type: Easing.OutQuad }
+                }
+                Behavior on contentOffset {
+                    enabled: treeViewDelegate.animateSwipe
+                    NumberAnimation { duration: 200; easing.type: Easing.OutQuad }
+                }
+                Behavior on buttonOffset {
+                    enabled: treeViewDelegate.animateSwipe
+                    NumberAnimation { duration: 150; easing.type: Easing.OutQuad }
+                }
 
                 onClicked: {
+                    if (buttonRevealed || swipeOffset > 0) {
+                        animateSwipe = true;
+                        swipeOffset = 0;
+                        contentOffset = 0;
+                        buttonOffset = 0;
+                        buttonRevealed = false;
+                        serviceTree.swipedRow = -1;
+                        return;
+                    }
                     let index = serviceTree.index(row, column);
                     serviceTree.selectionModel.setCurrentIndex(index, ItemSelectionModel.ClearAndSelect);
                     serviceTree.forceActiveFocus();
@@ -552,57 +609,146 @@ Item {
                     serviceTree.restartTreeHighlightAnimation();
                     //serviceList.currentIndex = index
                 }
+
                 contentItem: Item {
                     id: tContentItem
                     width: parent.width
                     height: parent.height
+                    clip: true
 
-                    AbracaLabel {
-                        anchors.verticalCenter: tContentItem.verticalCenter
-                        text: serviceName
-                        //font.bold: highlighted
-                        font.weight: enabled ? (highlighted ? Font.Bold : (depth === 0 ? Font.Medium : Font.Normal)) : Font.Normal
-                        color: enabled ? ((highlighted && depth > 0) ? UI.colors.listItemSelected : UI.colors.textPrimary) : UI.colors.textPrimary
-                        // color: highlighted ? UI.colors.accent : UI.colors.textPrimary
-                    }
-                    AbracaImgButton {
-                        id: tFavoriteIcon
-                        visible: depth > 0
-                        anchors.verticalCenter: tContentItem.verticalCenter
-                        anchors.right: tContentItem.right
+                    Item {
+                        id: slideableContent
+                        x: -treeViewDelegate.contentOffset
+                        width: parent.width
+                        height: parent.height
 
-                        colorizationEnabled: checked === false || treeViewDelegate.highlighted
-                        colorizationColor: treeViewDelegate.highlighted && isFavorite ? UI.colors.accent : UI.colors.inactive
-                        icon.height: UI.iconSizeSmall
-                        icon.width: UI.iconSizeSmall
-                        checkable: true
-                        checked: isFavorite
-                        sourceChecked: UI.imagesUrl + "star.svg"
-                        sourceUnchecked: UI.imagesUrl + "starEmpty.svg"
-                        toolTipChecked: qsTr("Remove service from favorites")
-                        toolTipUnchecked: qsTr("Add service to favorites")
-                        onToggled: {
-                            let modelIndex = serviceTree.index(row, column);
-                            //console.log("Favorite toggled: " + checked + " for service index: " + index, modelIndex, row, column)
-                            application.setServiceFavorite(modelIndex, checked);
+                        AbracaLabel {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: serviceName
+                            //font.bold: highlighted
+                            font.weight: enabled ? (highlighted ? Font.Bold : (depth === 0 ? Font.Medium : Font.Normal)) : Font.Normal
+                            color: enabled ? ((highlighted && depth > 0) ? UI.colors.listItemSelected : UI.colors.textPrimary) : UI.colors.textPrimary
+                            // color: highlighted ? UI.colors.accent : UI.colors.textPrimary
+                        }
+                        AbracaImgButton {
+                            id: tFavoriteIcon
+                            visible: depth > 0
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: parent.right
+
+                            colorizationEnabled: checked === false || treeViewDelegate.highlighted
+                            colorizationColor: treeViewDelegate.highlighted && isFavorite ? UI.colors.accent : UI.colors.inactive
+                            icon.height: UI.iconSizeSmall
+                            icon.width: UI.iconSizeSmall
+                            checkable: true
+                            checked: isFavorite
+                            sourceChecked: UI.imagesUrl + "star.svg"
+                            sourceUnchecked: UI.imagesUrl + "starEmpty.svg"
+                            toolTipChecked: qsTr("Remove service from favorites")
+                            toolTipUnchecked: qsTr("Add service to favorites")
+                            onToggled: {
+                                let modelIndex = serviceTree.index(row, column);
+                                //console.log("Favorite toggled: " + checked + " for service index: " + index, modelIndex, row, column)
+                                application.setServiceFavorite(modelIndex, checked);
+                            }
+                        }
+                        AbracaLabel {
+                            width: tFavoriteIcon.width
+                            horizontalAlignment: Text.AlignHCenter
+                            visible: depth === 0
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: parent.right
+                            text: channel
+                            role: UI.LabelRole.Secondary
+                            font.italic: true
                         }
                     }
-                    AbracaLabel {
-                        width: tFavoriteIcon.width
-                        horizontalAlignment: Text.AlignHCenter
-                        visible: depth === 0
-                        anchors.verticalCenter: tContentItem.verticalCenter
-                        anchors.right: tContentItem.right
-                        text: channel
-                        role: UI.LabelRole.Secondary
-                        font.italic: true
+
+                    Rectangle {
+                        id: deleteAction
+                        visible: treeViewDelegate.swipeEnabled
+                        width: treeViewDelegate.deleteButtonWidth
+                        height: tContentItem.height - 4
+                        y: 2
+                        x: tContentItem.width - treeViewDelegate.buttonOffset - 2
+                        color: "red"
+                        radius: UI.controlRadius
+                        opacity: Math.min(1.0, treeViewDelegate.buttonOffset / treeViewDelegate.deleteButtonWidth)
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "\u2715"
+                            color: "white"
+                            font.bold: true
+                            font.pointSize: UI.largeFontPointSize
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                console.log("Delete action triggered for: " + treeViewDelegate.serviceName + " " + serviceId);
+                                //application.deleteEnsembleFromServiceList(serviceTree.index(row, column));
+                                application.deleteEnsembleFromServiceList(serviceId, channel);
+                                treeViewDelegate.animateSwipe = true;
+                                treeViewDelegate.swipeOffset = 0;
+                                treeViewDelegate.contentOffset = 0;
+                                treeViewDelegate.buttonOffset = 0;
+                                treeViewDelegate.buttonRevealed = false;
+                                serviceTree.swipedRow = -1;
+                            }
+                        }
+                    }
+
+                    DragHandler {
+                        id: swipeDragHandler
+                        enabled: treeViewDelegate.swipeEnabled
+                        target: null
+                        xAxis.enabled: true
+                        yAxis.enabled: false
+
+                        onActiveChanged: {
+                            if (active) {
+                                // Close any other swiped row
+                                serviceTree.closeSwipeForRow(treeViewDelegate.row);
+                                serviceTree.swipedRow = treeViewDelegate.row;
+                                treeViewDelegate.animateSwipe = false;
+                                treeViewDelegate.swipeStartOffset = treeViewDelegate.swipeOffset;
+                            } else {
+                                treeViewDelegate.animateSwipe = true;
+                                let revealed = treeViewDelegate.swipeOffset > treeViewDelegate.deleteButtonWidth / 2;
+                                if (revealed) {
+                                    // Button stays, content slides back
+                                    treeViewDelegate.buttonOffset = treeViewDelegate.deleteButtonWidth;
+                                    treeViewDelegate.contentOffset = 0;
+                                    treeViewDelegate.buttonRevealed = true;
+                                    serviceTree.swipedRow = treeViewDelegate.row;
+                                } else {
+                                    // Everything goes back
+                                    treeViewDelegate.swipeOffset = 0;
+                                    treeViewDelegate.contentOffset = 0;
+                                    treeViewDelegate.buttonOffset = 0;
+                                    treeViewDelegate.buttonRevealed = false;
+                                    serviceTree.swipedRow = -1;
+                                }
+                            }
+                        }
+
+                        onActiveTranslationChanged: {
+                            if (active) {
+                                let newOffset = treeViewDelegate.swipeStartOffset - activeTranslation.x;
+                                newOffset = Math.max(0, Math.min(treeViewDelegate.deleteButtonWidth, newOffset));
+                                treeViewDelegate.swipeOffset = newOffset;
+                                treeViewDelegate.contentOffset = newOffset;
+                                treeViewDelegate.buttonOffset = newOffset;
+                            }
+                        }
                     }
                 }
                 indicator: Item {
                     id: indicatorItem
                     width: UI.controlHeight
                     height: UI.controlHeight
-                    x: leftMargin + (treeViewDelegate.depth * treeViewDelegate.indentation)
+                    x: leftMargin + (treeViewDelegate.depth * treeViewDelegate.indentation) - treeViewDelegate.contentOffset
                     AbracaColorizedImage {
                         id: indicatorImage
                         anchors.centerIn: indicatorItem
@@ -629,7 +775,8 @@ Item {
                     anchors.fill: treeViewDelegate
                     radius: UI.controlRadius
                     color: treeViewDelegate.enabled ? (treeViewDelegate.highlighted ? UI.colors.highlight : treeViewDelegate.hovered ? UI.colors.listItemHovered : "transparent") : "transparent"
-                    anchors.leftMargin: treeViewDelegate.depth * treeViewDelegate.indentation
+                    anchors.leftMargin: treeViewDelegate.depth * treeViewDelegate.indentation - treeViewDelegate.contentOffset
+                    anchors.rightMargin: treeViewDelegate.contentOffset
                 }
             }
             ScrollIndicator.vertical: AbracaScrollIndicator {}
