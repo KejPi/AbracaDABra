@@ -272,7 +272,7 @@ public:
 
     void setInputDevice(InputDevice::Id id, InputDevice *device);
     void resetInputDevice();
-    void setSettings(Settings *settings);
+    void init(Settings *settings);
     void setRawFileLength(int msec);
     int rawFileProgressValue() const;
     void setRawFileProgressValue(int msec);

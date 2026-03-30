@@ -3245,7 +3245,7 @@ void Application::loadSettings()
     m_settings->rawfile.format = RawFileInputFormat(settings->value("RAW-FILE/format", 0).toInt());
     m_settings->rawfile.loopEna = settings->value("RAW-FILE/loop", false).toBool();
 
-    m_settingsBackend->setSettings(m_settings);
+    m_settingsBackend->init(m_settings);
 
     // set DAB time locale
     m_timeLocale = QLocale(m_settingsBackend->applicationLanguage());
