@@ -420,12 +420,19 @@ void TIIBackend::registerTiiSpectrumPlot(QQuickItem *item)
 
 void TIIBackend::setIsActive(bool isActive)
 {
-    TxMapBackend::setIsActive(isActive);
-    if (isActive)
+    if (isRecordingLog() == false)
     {
-        reset();
+        TxMapBackend::setIsActive(isActive);
+        if (isActive)
+        {
+            reset();
+        }
+        emit setTii(isActive);
     }
-    emit setTii(isActive);
+    else
+    {
+        // do nothing, recording is ongoing
+    }
 }
 
 void TIIBackend::addToPlot(const RadioControlTIIData &data)
