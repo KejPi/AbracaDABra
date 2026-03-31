@@ -325,6 +325,28 @@ Item {
                                     text: qsTr("Application uses this folder to store all data like audio recording, IQ recording and logs, etc.")
                                     wrapMode: Text.WordWrap
                                 }
+                                RowLayout {
+                                    Layout.topMargin: 2*UI.standardMargin
+                                    spacing: UI.standardMargin
+                                    AbracaButton {
+                                        text: qsTr("Backup settings")
+                                        onClicked: application.backupSettings()
+                                    }
+                                    AbracaButton {
+                                        text: qsTr("Restore settings...")
+                                        onClicked:  {
+                                            fileDialogLoader.filename = "";
+                                            fileDialogLoader.filepath = settingsBackend.dataStoragePathUrl();
+                                            fileDialogLoader.active = true;
+                                        }
+                                    }
+                                }
+                                AbracaLabel {
+                                    Layout.fillWidth: true
+                                    font.italic: true
+                                    text: qsTr("Backup includes application settings, service list and audio recording schedule. Backup file is stored in data storage folder.")
+                                    wrapMode: Text.WordWrap
+                                }
                             }
                         }
                     }
@@ -606,6 +628,31 @@ Item {
             }
             onRejected: {
                 dirDialogLoader.active = false
+            }
+        }
+    }
+    Loader {
+        id: fileDialogLoader
+        property string filepath: ""
+        property string filename: ""
+        asynchronous: true
+        active: false
+        onLoaded: item.open()
+        sourceComponent: FileDialog {
+            id: fileDialog
+            fileMode: FileDialog.OpenFile
+            // On Android, avoid using nameFilters as they don't work reliably with extensions
+            // Leave empty on Android to allow all files to be selectable
+            nameFilters: UI.isAndroid ? [] : [qsTr("JSON files") + " (*.json)"]
+            options: UI.isAndroid ? FileDialog.DontResolveSymlinks : 0
+            // currentFolder doesn't work well on Android with content:// URIs
+            currentFolder: UI.isAndroid ? "" : fileDialogLoader.filepath
+            onAccepted: {
+                application.restoreSettings(selectedFile);
+                fileDialogLoader.active = false;
+            }
+            onRejected: {
+                fileDialogLoader.active = false;
             }
         }
     }

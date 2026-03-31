@@ -32,6 +32,9 @@
 #include <QDesktopServices>
 #include <QDir>
 #include <QGuiApplication>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLoggingCategory>
 #include <QMap>
 #include <QNetworkProxy>
@@ -3882,7 +3885,10 @@ void Application::close()
     {  // in idle
         emit exit();
 
-        saveSettings();
+        if (!m_skipSaveSettings)
+        {
+            saveSettings();
+        }
 
         m_allowQuitEvent = true;  // allow the quit event to proceed if we intercepted it
 
@@ -3930,7 +3936,10 @@ void Application::onApplicationStateChanged(Qt::ApplicationState state)
     if (state == Qt::ApplicationSuspended)
     {
         qCInfo(application, "Application suspended - saving settings");
-        saveSettings();
+        if (!m_skipSaveSettings)
+        {
+            saveSettings();
+        }
         // Note: Audio playback continues in background via wake lock and audio focus.
         // The decoder will naturally buffer audio as needed.
         // Audio will only stop when the app is terminated by the system.
@@ -4348,6 +4357,237 @@ void Application::clearServiceList()
             {MessageBoxBackend::StandardButton::No, tr("Cancel"), MessageBoxBackend::ButtonRole::Neutral},
         },
         MessageBoxBackend::StandardButton::Yes  // default button
+    );
+}
+
+void Application::backupSettings()
+{
+    // save current state first
+    saveSettings();
+
+    // read INI file
+    QSettings *settings;
+    if (m_iniFilename.isEmpty())
+    {
+        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+    }
+    else
+    {
+        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+    }
+    QString iniFilePath = settings->fileName();
+    delete settings;
+
+    QJsonObject backup;
+    backup["backupVersion"] = 1;
+    backup["appVersion"] = QString(PROJECT_VER);
+    backup["timestamp"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+
+    // read INI file content
+    QFile iniFile(iniFilePath);
+    if (iniFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        backup["settings"] = QString::fromUtf8(iniFile.readAll());
+        iniFile.close();
+    }
+    else
+    {
+        qCWarning(application, "Backup: failed to read settings file");
+        emit showInfoMessage(tr("Failed to create backup"), -1);
+        return;
+    }
+
+    // read service list
+    if (!m_serviceListFilename.isEmpty())
+    {
+        QFile slFile(m_serviceListFilename);
+        if (slFile.open(QIODevice::ReadOnly))
+        {
+            QJsonDocument slDoc = QJsonDocument::fromJson(slFile.readAll());
+            slFile.close();
+            if (!slDoc.isNull())
+            {
+                backup["serviceList"] = slDoc.isArray() ? QJsonValue(slDoc.array()) : QJsonValue(slDoc.object());
+            }
+        }
+    }
+
+    // read audio recording schedule
+    if (!m_audioRecScheduleFilename.isEmpty())
+    {
+        QFile arsFile(m_audioRecScheduleFilename);
+        if (arsFile.open(QIODevice::ReadOnly))
+        {
+            QJsonDocument arsDoc = QJsonDocument::fromJson(arsFile.readAll());
+            arsFile.close();
+            if (!arsDoc.isNull())
+            {
+                backup["audioRecSchedule"] = arsDoc.isArray() ? QJsonValue(arsDoc.array()) : QJsonValue(arsDoc.object());
+            }
+        }
+    }
+
+    // write backup file
+    QString backupFileName = QString("AbracaDABra_backup_%1.json").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
+    QString backupFilePath = m_settings->dataStoragePath + "/" + backupFileName;
+
+    QDir().mkpath(m_settings->dataStoragePath);
+    QFile backupFile(backupFilePath);
+    if (backupFile.open(QIODevice::WriteOnly))
+    {
+        backupFile.write(QJsonDocument(backup).toJson());
+        backupFile.close();
+        qCInfo(application, "Backup created: %s", qPrintable(backupFilePath));
+        emit showInfoMessage(tr("Settings backup created successfully"), 1);
+    }
+    else
+    {
+        qCWarning(application, "Backup: failed to write backup file %s", qPrintable(backupFilePath));
+        emit showInfoMessage(tr("Failed to create backup"), -1);
+    }
+}
+
+void Application::restoreSettings(const QUrl &fileUrl)
+{
+    // find the most recent backup file in data storage path
+    QString fileName;
+#ifdef Q_OS_ANDROID
+    if (fileUrl.scheme() == "content" || fileUrl.isLocalFile())
+    {
+        fileName = fileUrl.toString();
+    }
+    else
+    {
+        return;
+    }
+#else
+    if (!fileUrl.isLocalFile())
+    {
+        return;
+    }
+    fileName = fileUrl.toLocalFile();
+#endif
+
+    m_messageBoxBackend->showQuestion(
+        tr("Restore settings?"), tr("Settings will be restored from backup.\nApplication will restart after restore."),
+        [this, fileName](MessageBoxBackend::StandardButton result)
+        {
+            if (result != MessageBoxBackend::StandardButton::Yes)
+            {
+                return;
+            }
+
+            // read backup file
+            QFile backupFile(fileName);
+            if (!backupFile.open(QIODevice::ReadOnly))
+            {
+                qCWarning(application, "Restore: failed to read backup file");
+                emit showInfoMessage(tr("Failed to restore settings"), -1);
+                return;
+            }
+
+            QJsonDocument backupDoc = QJsonDocument::fromJson(backupFile.readAll());
+            backupFile.close();
+
+            if (backupDoc.isNull() || !backupDoc.isObject())
+            {
+                qCWarning(application, "Restore: invalid backup file format");
+                emit showInfoMessage(tr("Invalid backup file"), -1);
+                return;
+            }
+
+            QJsonObject backup = backupDoc.object();
+            if (!backup.contains("backupVersion") || !backup.contains("settings"))
+            {
+                qCWarning(application, "Restore: backup file missing required fields");
+                emit showInfoMessage(tr("Invalid backup file"), -1);
+                return;
+            }
+
+            // resolve INI file path
+            QSettings *settings;
+            if (m_iniFilename.isEmpty())
+            {
+                settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+            }
+            else
+            {
+                settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+            }
+            QString iniFilePath = settings->fileName();
+            delete settings;
+
+            // write INI file
+            QFile iniFile(iniFilePath);
+            if (iniFile.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                iniFile.write(backup["settings"].toString().toUtf8());
+                iniFile.close();
+            }
+            else
+            {
+                qCWarning(application, "Restore: failed to write settings file");
+                emit showInfoMessage(tr("Failed to restore settings"), -1);
+                return;
+            }
+
+            // write service list
+            if (backup.contains("serviceList") && !m_serviceListFilename.isEmpty())
+            {
+                QFile slFile(m_serviceListFilename);
+                if (slFile.open(QIODevice::WriteOnly))
+                {
+                    QJsonDocument slDoc;
+                    if (backup["serviceList"].isArray())
+                    {
+                        slDoc = QJsonDocument(backup["serviceList"].toArray());
+                    }
+                    else
+                    {
+                        slDoc = QJsonDocument(backup["serviceList"].toObject());
+                    }
+                    slFile.write(slDoc.toJson());
+                    slFile.close();
+                }
+            }
+
+            // write audio recording schedule
+            if (backup.contains("audioRecSchedule") && !m_audioRecScheduleFilename.isEmpty())
+            {
+                QFile arsFile(m_audioRecScheduleFilename);
+                if (arsFile.open(QIODevice::WriteOnly))
+                {
+                    QJsonDocument arsDoc;
+                    if (backup["audioRecSchedule"].isArray())
+                    {
+                        arsDoc = QJsonDocument(backup["audioRecSchedule"].toArray());
+                    }
+                    else
+                    {
+                        arsDoc = QJsonDocument(backup["audioRecSchedule"].toObject());
+                    }
+                    arsFile.write(arsDoc.toJson());
+                    arsFile.close();
+                }
+            }
+
+            qCInfo(application, "Settings restored from backup, restarting...");
+            emit showInfoMessage(tr("Settings restored, restarting..."), 1);
+
+            // restart application, skip saving to avoid overwriting restored files
+            QTimer::singleShot(500, this,
+                               [this]()
+                               {
+                                   m_skipSaveSettings = true;
+                                   m_exitCode = Application::EXIT_CODE_RESTART;
+                                   close();
+                               });
+        },
+        {
+            {MessageBoxBackend::StandardButton::Yes, tr("Restore"), MessageBoxBackend::ButtonRole::Negative},
+            {MessageBoxBackend::StandardButton::No, tr("Cancel"), MessageBoxBackend::ButtonRole::Neutral},
+        },
+        MessageBoxBackend::StandardButton::No  // default to cancel for safety
     );
 }
 

@@ -282,6 +282,8 @@ public:
     Q_INVOKABLE void audioRecordingToggle();
     Q_INVOKABLE void exportServiceList();
     Q_INVOKABLE void clearServiceList();
+    Q_INVOKABLE void backupSettings();
+    Q_INVOKABLE void restoreSettings(const QUrl &fileUrl);
     Q_INVOKABLE QObject *createBackend(int id);
     Q_INVOKABLE void close();
     Q_INVOKABLE void saveWindowGeometry(int x, int y, int width, int height) const;
@@ -409,6 +411,7 @@ private:
     bool m_isPlaying = false;
     bool m_deviceChangeRequested = false;
     bool m_exitRequested = false;
+    bool m_skipSaveSettings = false;
     int m_exitCode = 0;
     bool m_quitEventIntercepted = false;
     bool m_allowQuitEvent = false;
