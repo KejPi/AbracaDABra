@@ -233,6 +233,7 @@ qt_add_qml_module(${TARGET}
         qml/images/icon-loop-file.svg
         qml/images/placeholder-undocked.svg
         qml/images/icon-sidebar-left.svg
+        qml/images/icon-cross.svg
 
         resources/appIcon.png
     QML_FILES

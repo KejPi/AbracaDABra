@@ -675,12 +675,13 @@ Item {
                         radius: UI.controlRadius
                         opacity: Math.min(1.0, treeViewDelegate.buttonOffset / treeViewDelegate.deleteButtonWidth)
 
-                        Text {
+                        Image {
                             anchors.centerIn: parent
-                            text: "\u2715"
-                            color: "white"
-                            font.bold: true
-                            font.pointSize: UI.largeFontPointSize
+                            id: image
+                            source: UI.imagesUrl + "icon-cross.svg"
+                            cache: false
+                            width: UI.iconSizeSmall
+                            height: UI.iconSizeSmall
                         }
 
                         MouseArea {
