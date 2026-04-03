@@ -703,8 +703,8 @@ void RtlTcpInput::onReadThreadStopped()
     m_sock = INVALID_SOCKET;
     m_watchdogTimer.stop();
 
-    // fill buffer (artificially to avoid blocking of the DAB processing thread)
-    inputBuffer.fillDummy();
+    // flush buffer to avoid blocking of the DAB processing thread
+    inputBuffer.flush();
 
     emit error(InputDevice::ErrorCode::DeviceDisconnected);
 }
@@ -716,7 +716,7 @@ void RtlTcpInput::onWatchdogTimeout()
         if (!m_worker->isRunning())
         {  // some problem in data input
             qCCritical(rtlTcpInput) << "Watchdog timeout";
-            inputBuffer.fillDummy();
+            inputBuffer.flush();
             emit error(InputDevice::ErrorCode::NoDataAvailable);
         }
     }

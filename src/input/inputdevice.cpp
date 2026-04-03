@@ -36,16 +36,16 @@ void ComplexFifo::reset()
     count = 0;
     head = 0;
     tail = 0;
+    flushFlag = false;
 
     pthread_mutex_unlock(&countMutex);
 }
 
-void ComplexFifo::fillDummy()
+void ComplexFifo::flush()
 {
     pthread_mutex_lock(&countMutex);
-
+    flushFlag = true;
     count = INPUT_FIFO_SIZE;
-
     pthread_cond_signal(&countCondition);
     pthread_mutex_unlock(&countMutex);
 }
@@ -56,6 +56,7 @@ InputDevice::InputDevice(QObject *parent) : QObject(parent)
     inputBuffer.count = 0;
     inputBuffer.head = 0;
     inputBuffer.tail = 0;
+    inputBuffer.flushFlag = false;
     pthread_mutex_init(&inputBuffer.countMutex, NULL);
     pthread_cond_init(&inputBuffer.countCondition, NULL);
 }
@@ -68,14 +69,19 @@ InputDevice::~InputDevice()
 
 void getSamples(float buffer[], uint16_t numSamples)
 {
+    uint_fast32_t numIQ = numSamples * 2;
+
     // input read -> lets store it to FIFO
     pthread_mutex_lock(&inputBuffer.countMutex);
-    uint64_t count = inputBuffer.count;
-    uint_fast32_t numIQ = numSamples * 2;
-    while (count < numIQ * sizeof(float))
+    while (inputBuffer.count < numIQ * sizeof(float) && !inputBuffer.flushFlag)
     {
         pthread_cond_wait(&inputBuffer.countCondition, &inputBuffer.countMutex);
-        count = inputBuffer.count;
+    }
+    if (inputBuffer.flushFlag)
+    {
+        pthread_mutex_unlock(&inputBuffer.countMutex);
+        memset(buffer, 0, numIQ * sizeof(float));
+        return;
     }
     pthread_mutex_unlock(&inputBuffer.countMutex);
 
@@ -107,11 +113,14 @@ void skipSamples(float buffer[], uint16_t numSamples)
 
     // input read -> lets store it to FIFO
     pthread_mutex_lock(&inputBuffer.countMutex);
-    uint64_t count = inputBuffer.count;
-    while (count < numSamples * 2 * sizeof(float))
+    while (inputBuffer.count < numSamples * 2 * sizeof(float) && !inputBuffer.flushFlag)
     {
         pthread_cond_wait(&inputBuffer.countCondition, &inputBuffer.countMutex);
-        count = inputBuffer.count;
+    }
+    if (inputBuffer.flushFlag)
+    {
+        pthread_mutex_unlock(&inputBuffer.countMutex);
+        return;
     }
 
     inputBuffer.tail = (inputBuffer.tail + numSamples * 2 * sizeof(float)) % INPUT_FIFO_SIZE;

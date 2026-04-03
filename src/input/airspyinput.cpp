@@ -542,7 +542,7 @@ void AirspyInput::onWatchdogTimeout()
     if (AIRSPY_TRUE != airspy_is_streaming(m_device))
     {
         qCCritical(airspyInput) << "watchdog timeout";
-        inputBuffer.fillDummy();
+        inputBuffer.flush();
         emit error(InputDevice::ErrorCode::NoDataAvailable);
     }
 }

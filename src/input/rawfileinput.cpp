@@ -286,7 +286,7 @@ void RawFileInput::onWatchdogTimeout()
                 m_worker->wait(2000);
             }
 
-            inputBuffer.fillDummy();
+            inputBuffer.flush();
             emit error(InputDevice::ErrorCode::NoDataAvailable);
         }
     }
@@ -740,7 +740,7 @@ void RawFileWorker::run()
             emit bytesRead(m_bytesRead);
             if (!status)
             {
-                inputBuffer.fillDummy();
+                inputBuffer.flush();
             }
         }
     }
