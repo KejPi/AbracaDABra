@@ -224,7 +224,7 @@ Item {
                 AbracaButton {
                     id: startStopButton
                     text: scannerBackend.isScanning ? qsTr("Stop") : qsTr("Start")
-                    enabled: scannerBackend.isStartStopEnabled
+                    enabled: scannerBackend.isStartStopEnabled && scannerBackend.isScanningEnabled
                     onClicked: scannerBackend.startStopAction()
                     buttonRole: UI.ButtonRole.Primary
                 }

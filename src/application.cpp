@@ -2460,7 +2460,10 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
 
     // disable band scan and scanner - will be enable when it makes sense
     m_navigationModel->setEnabled(NavigationModel::BandScan, false);
-    m_navigationModel->setEnabled(NavigationModel::Scanner, false);
+    if (m_scannerBackend)
+    {
+        m_scannerBackend->isScanningEnabled(false);
+    }
 
     // disable file recording
     m_ensembleInfoBackend->enableRecording(false);
@@ -2851,7 +2854,10 @@ void Application::configureForInputDevice()
 
         // enable band scan
         m_navigationModel->setEnabled(NavigationModel::BandScan, isLive);
-        m_navigationModel->setEnabled(NavigationModel::Scanner, isLive);
+        if (m_scannerBackend)
+        {
+            m_scannerBackend->isScanningEnabled(isLive);
+        }
 
         // enable service list
         m_ui->serviceSelectionEnabled(true);
@@ -4159,6 +4165,7 @@ QObject *Application::createScannerBackend()
         {
             connect(m_inputDevice, &InputDevice::error, m_scannerBackend, &ScannerBackend::onInputDeviceError, Qt::QueuedConnection);
         }
+        m_scannerBackend->isScanningEnabled(m_inputDevice && (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream));
         m_scannerBackend->setIsActive(m_navigationModel->isActive(NavigationModel::Scanner));
     }
 

@@ -48,6 +48,7 @@ class ScannerBackend : public TxMapBackend
 
     UI_PROPERTY_DEFAULT(bool, isScanning, false)
     UI_PROPERTY_DEFAULT(bool, isStartStopEnabled, true)
+    UI_PROPERTY_DEFAULT(bool, isScanningEnabled, true)
     UI_PROPERTY(QString, scanningLabel)
     UI_PROPERTY(QString, progressChannel)
     UI_PROPERTY_DEFAULT(int, progressValue, 0)
