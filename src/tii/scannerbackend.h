@@ -91,8 +91,8 @@ public:
     void onEnsembleConfigurationAndCSV(const QString &config, const QString &csvString);
     void onInputDeviceError(const InputDevice::ErrorCode);
     // void setSelectedRow(int modelRow) override;
-    void setServiceToRestore(const DabSId &sid, uint8_t scids) { serviceToRestore = ServiceListId(sid.value(), scids); }
-    ServiceListId getServiceToRestore() const { return serviceToRestore; };
+    void setServiceToRestore(const DabSId &sid, uint8_t scids) { m_serviceToRestore = ServiceListId(sid.value(), scids); }
+    ServiceListId getServiceToRestore() const { return m_serviceToRestore; };
     void loadSettings();
 
     ChannelSelectionModel *channelSelectionModel() const { return m_channelSelectionModel; }
@@ -142,7 +142,6 @@ private:
     MessageBoxBackend *m_messageBoxBackend = nullptr;
 
     bool m_isTiiActive = false;
-    bool m_exitRequested = false;
     int m_scanCycleCntr;
     ScannerState m_state = ScannerState::Idle;
 
@@ -160,7 +159,7 @@ private:
     bool m_isPreciseMode = false;
     RadioControlTIIData m_tiiData;
 
-    ServiceListId serviceToRestore;
+    ServiceListId m_serviceToRestore;
 
     void startScan();
     void scanStep();

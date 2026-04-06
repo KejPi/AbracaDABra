@@ -85,7 +85,7 @@ Item {
         AbracaButton {
             id: connectButton
             text: settingsBackend.isConnectButton ? qsTr("Connect") : qsTr("Disconnect")
-            enabled: settingsBackend.isConnectButtonEnabled
+            enabled: settingsBackend.isConnectButtonEnabled && settingsBackend.isInputDeviceSelectionEnabled
             onClicked: settingsBackend.requestConnectDisconnectDevice()
             buttonRole: UI.ButtonRole.Primary
         }

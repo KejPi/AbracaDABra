@@ -131,11 +131,6 @@ void ScannerBackend::stopScan()
 
     stopAutoSaveCsv();
 
-    if (m_exitRequested)
-    {
-        //         close();
-    }
-
     // restore UI
     isScanning(false);
     scanningLabel(tr("Scanning finished"));
@@ -906,6 +901,7 @@ void ScannerBackend::onInputDeviceError(const InputDevice::ErrorCode)
         isStartStopEnabled(false);
         isScanning(false);
         m_ensemble.reset();
+        m_serviceToRestore = ServiceListId();  // resetting to default invalid value
 
         // the state machine has 4 possible states
         // 1. wait for tune (event)
@@ -938,11 +934,6 @@ void ScannerBackend::loadSettings()
     }
 
     m_sortedFilteredModel->setLocalTxFilter(m_settings->scanner.hideLocalTx);
-
-    // if (!m_settings->scanner.geometry.isEmpty())
-    // {
-    //     restoreGeometry(m_settings->scanner.geometry);
-    // }
 }
 
 void ScannerBackend::onSelectedRowChanged()
