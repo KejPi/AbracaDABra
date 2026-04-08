@@ -89,7 +89,6 @@ bool RadioControl::init()
         dabsdrRegisterDataGroupCb(m_dabsdrHandle, dataGroupCb, (void *)this);
         dabsdrRegisterAudioCb(m_dabsdrHandle, audioDataCb, this);
         dabsdrRegisterSignalSpectrumCb(m_dabsdrHandle, signalSpectrumCb, this);
-        dabsdrRegisterNullSpectrumCb(m_dabsdrHandle, nullSpectrumCb, this);
         // this starts dab processing thread and retunrs
         dabsdr(m_dabsdrHandle);
     }
@@ -2602,16 +2601,9 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t *p, void *ctx)
     }
 }
 
-void RadioControl::signalSpectrumCb(const float *p, void *ctx)
+void RadioControl::signalSpectrumCb(const float *p, int_fast8_t isNull, void *ctx)
 {
     RadioControl *radioCtrl = static_cast<RadioControl *>(ctx);
     auto data = std::shared_ptr<std::vector<float>>(new std::vector<float>(p, p + 2048));
-    radioCtrl->emit_spectrum(data, true);
-}
-
-void RadioControl::nullSpectrumCb(const float *p, void *ctx)
-{
-    RadioControl *radioCtrl = static_cast<RadioControl *>(ctx);
-    auto data = std::shared_ptr<std::vector<float>>(new std::vector<float>(p, p + 2048));
-    radioCtrl->emit_spectrum(data, false);
+    radioCtrl->emit_spectrum(data, isNull == 0);
 }

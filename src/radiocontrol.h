@@ -562,8 +562,7 @@ private:
     static void dynamicLabelCb(dabsdrDynamicLabelCBData_t *p, void *ctx);
     static void dataGroupCb(dabsdrDataGroupCBData_t *p, void *ctx);
     static void audioDataCb(dabsdrAudioCBData_t *p, void *ctx);
-    static void signalSpectrumCb(const float *p, void *ctx);
-    static void nullSpectrumCb(const float *p, void *ctx);
+    static void signalSpectrumCb(const float *p, int_fast8_t isNull, void *ctx);
 private slots:
     void onDabEvent(RadioControlEvent *pEvent);
 };
