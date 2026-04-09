@@ -55,6 +55,7 @@ SignalBackend::SignalBackend(Settings *settings, int freq, QObject *parent) : UI
                     m_spectrumPlot->clear(m_nullSpectSeriesId);
                 }
             });
+    setSpectrumUpdate();
 }
 
 SignalBackend::~SignalBackend()
@@ -293,21 +294,21 @@ void SignalBackend::setSpectrumUpdate()
 {
     switch (m_settings->signal.spectrumUpdate)
     {
-        case SpectrumUpdateSlow:  // 1 sec ==> 10
+        case SpectrumUpdateSlow:  // 1.4 sec ==> 14
+            m_numAvrg = 14;
+            m_avrgFactor_dB = -11.461;  // 10 *log10(1/14)
+            break;
+        case SpectrumUpdateFast:  // 600 ms ==> 6
+            m_numAvrg = 6;
+            m_avrgFactor_dB = -7.7815;  // 10 *log10(1/6)
+            break;
+        case SpectrumUpdateVeryFast:  // 400 ms ==> 4
+            m_numAvrg = 4;
+            m_avrgFactor_dB = -6.0206;  // 10 *log10(1/4)
+            break;
+        default:  // 1000 ms ==> 10
             m_numAvrg = 10;
             m_avrgFactor_dB = -10;  // 10 *log10(1/10)
-            break;
-        case SpectrumUpdateFast:  // 400 ms ==> 4
-            m_numAvrg = 4;
-            m_avrgFactor_dB = -6.0205999;  // 10 *log10(1/4)
-            break;
-        case SpectrumUpdateVeryFast:  // 200 ms ==> 2
-            m_numAvrg = 2;
-            m_avrgFactor_dB = -3.0103;  // 10 *log10(1/2)
-            break;
-        default:  // 600 ms ==> 6
-            m_numAvrg = 6;
-            m_avrgFactor_dB = -7.7815125;  // 10 *log10(1/6)
             break;
     }
 }

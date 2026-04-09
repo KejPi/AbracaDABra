@@ -296,25 +296,25 @@ Rectangle {
                 }
                 AbracaMenuSeparator {}
                 AbracaMenuItem {
-                    text: qsTr("Slow update (1 sec)")
+                    text: qsTr("Slow update (1.4 sec)")
                     checkable: true
                     checked: signalBackend.spectrumUpdate === SignalBackend.SpectrumUpdateSlow
                     onTriggered: signalBackend.spectrumUpdate = SignalBackend.SpectrumUpdateSlow
                 }
                 AbracaMenuItem {
-                    text: qsTr("Normal update (600 msec)")
+                    text: qsTr("Normal update (1 sec)")
                     checkable: true
                     checked: signalBackend.spectrumUpdate === SignalBackend.SpectrumUpdateNormal
                     onTriggered: signalBackend.spectrumUpdate = SignalBackend.SpectrumUpdateNormal
                 }
                 AbracaMenuItem {
-                    text: qsTr("Fast update (400 msec)")
+                    text: qsTr("Fast update (600 msec)")
                     checkable: true
                     checked: signalBackend.spectrumUpdate === SignalBackend.SpectrumUpdateFast
                     onTriggered: signalBackend.spectrumUpdate = SignalBackend.SpectrumUpdateFast
                 }
                 AbracaMenuItem {
-                    text: qsTr("Very fast update (200 msec)")
+                    text: qsTr("Very fast update (400 msec)")
                     checkable: true
                     checked: signalBackend.spectrumUpdate === SignalBackend.SpectrumUpdateVeryFast
                     onTriggered: signalBackend.spectrumUpdate = SignalBackend.SpectrumUpdateVeryFast
