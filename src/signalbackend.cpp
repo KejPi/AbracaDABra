@@ -96,7 +96,7 @@ void SignalBackend::registerSpectrumPlot(QQuickItem *item)
         m_signalSpectSeriesId = m_spectrumPlot->addSeries("signal", Qt::cyan, 1.0);
         m_spectrumPlot->setSeriesStyle(m_signalSpectSeriesId, (int)LineSeries::Normal);
 
-        m_nullSpectSeriesId = m_spectrumPlot->addSeries("null", QColor(0xdfc403), 1.0);
+        m_nullSpectSeriesId = m_spectrumPlot->addSeries("null", QColor(0xdfd274), 1.0);
         m_spectrumPlot->setSeriesStyle(m_nullSpectSeriesId, (int)LineSeries::Normal);
 
         // Add a vertical marker lines
