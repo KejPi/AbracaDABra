@@ -379,9 +379,9 @@ void SignalBackend::updateFreqOffset(float offset)
     frequencyOffsetLabel(QString("%1 Hz").arg(offset, 0, 'f', 1));
 }
 
-void SignalBackend::onSignalSpectrum(std::shared_ptr<std::vector<float> > data, bool isSignal)
+void SignalBackend::onSignalSpectrum(std::shared_ptr<std::vector<float>> data, int type)
 {
-    if (isSignal)
+    if (type == RadioControl::SPECT_SIGNAL)
     {
         int idx = 0;
         for (auto it = m_signalSpectrumBuffer.begin(); it != m_signalSpectrumBuffer.end(); ++it)

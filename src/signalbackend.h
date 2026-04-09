@@ -66,7 +66,7 @@ public:
     void onTuneDone(uint32_t freq);
     void updateRfLevel(float rfLevel, float gain);
     void updateFreqOffset(float offset);
-    void onSignalSpectrum(std::shared_ptr<std::vector<float>> data, bool isSignal);
+    void onSignalSpectrum(std::shared_ptr<std::vector<float>> data, int type);
 
 signals:
     void startSignalSpectrum(bool ena);

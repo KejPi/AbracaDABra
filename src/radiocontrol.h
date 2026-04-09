@@ -397,6 +397,13 @@ public:
     void setTii(int mode);
     void startSignalSpectrum(bool ena);
 
+    enum RadioControlSpectrumType
+    {
+        SPECT_SIGNAL = DABSDR_SPECT_SIGNAL,
+        SPECT_NULL = DABSDR_SPECT_NULL,
+        SPECT_TII = DABSDR_SPECT_TII
+    };
+
 signals:
     void dabEvent(RadioControlEvent *pEvent);
     void signalState(uint8_t sync, float snr);
@@ -414,7 +421,7 @@ signals:
     void audioServiceSelection(const RadioControlServiceComponent &s);
     void audioServiceReconfiguration(const RadioControlServiceComponent &s);
     void audioData(RadioControlAudioData *pData);
-    void signalSpectrum(std::shared_ptr<std::vector<float>> data, bool isSignalSpectrum);
+    void signalSpectrum(std::shared_ptr<std::vector<float>> data, RadioControl::RadioControlSpectrumType type);
     void dabTime(const QDateTime &dateAndTime);
     void ensembleInformation(const RadioControlEnsemble &ens);
     void ensembleConfiguration(const QString &);
@@ -555,14 +562,14 @@ private:
     void emit_dabEvent(RadioControlEvent *pEvent) { emit dabEvent(pEvent); }
     void emit_audioData(RadioControlAudioData *pData) { emit audioData(pData); }
     void emit_announcementAudioAvailable() { emit announcementAudioAvailable(); }
-    void emit_spectrum(std::shared_ptr<std::vector<float>> data, bool isSignal) { emit signalSpectrum(data, isSignal); }
+    void emit_spectrum(std::shared_ptr<std::vector<float>> data, RadioControlSpectrumType type) { emit signalSpectrum(data, type); }
 
     // static methods used as dabsdr library callbacks
     static void dabNotificationCb(dabsdrNotificationCBData_t *p, void *ctx);
     static void dynamicLabelCb(dabsdrDynamicLabelCBData_t *p, void *ctx);
     static void dataGroupCb(dabsdrDataGroupCBData_t *p, void *ctx);
     static void audioDataCb(dabsdrAudioCBData_t *p, void *ctx);
-    static void signalSpectrumCb(const float *p, int_fast8_t isNull, void *ctx);
+    static void signalSpectrumCb(const float *p, dabsdrSpectrum_t type, void *ctx);
 private slots:
     void onDabEvent(RadioControlEvent *pEvent);
 };

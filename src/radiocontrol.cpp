@@ -2601,9 +2601,9 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t *p, void *ctx)
     }
 }
 
-void RadioControl::signalSpectrumCb(const float *p, int_fast8_t isNull, void *ctx)
+void RadioControl::signalSpectrumCb(const float *p, dabsdrSpectrum_t type, void *ctx)
 {
     RadioControl *radioCtrl = static_cast<RadioControl *>(ctx);
     auto data = std::shared_ptr<std::vector<float>>(new std::vector<float>(p, p + 2048));
-    radioCtrl->emit_spectrum(data, isNull == 0);
+    radioCtrl->emit_spectrum(data, static_cast<RadioControlSpectrumType>(type));
 }
