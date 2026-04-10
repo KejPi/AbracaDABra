@@ -506,4 +506,20 @@ Item {
             }
         }
     }
+
+    // Busy indicator overlay shown during CSV loading
+    Rectangle {
+        anchors.fill: parent
+        color: Qt.rgba(0, 0, 0, 0.3)
+        visible: scannerBackend.isLoading
+        z: 100
+
+        AbracaBusyIndicator {
+            anchors.centerIn: parent
+            drawColor: "white"
+            running: scannerBackend.isLoading
+            width: 64
+            height: 64
+        }
+    }
 }

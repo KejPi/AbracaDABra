@@ -490,6 +490,7 @@ target_link_libraries(${TARGET} PRIVATE
     Qt${QT_VERSION_MAJOR}::QuickControls2
     Qt${QT_VERSION_MAJOR}::Positioning
     Qt${QT_VERSION_MAJOR}::Location
+    Qt${QT_VERSION_MAJOR}::Concurrent
 )
 if(HAVE_QTWIDGETS)
     target_link_libraries(${TARGET} PRIVATE

@@ -37,6 +37,7 @@
 #include <QQmlContext>
 #include <QTextStream>
 #include <QUrl>
+#include <QtConcurrent>
 
 #include "androidfilehelper.h"
 #include "dabtables.h"
@@ -70,6 +71,12 @@ ScannerBackend::ScannerBackend(Settings *settings, QObject *parent) : TxMapBacke
 ScannerBackend::~ScannerBackend()
 {
     stopAutoSaveCsv();
+
+    if (m_csvFutureWatcher != nullptr)
+    {
+        m_csvFutureWatcher->waitForFinished();
+        delete m_csvFutureWatcher;
+    }
 
     delete m_channelSelectionModel;
     delete m_messageBoxBackend;
@@ -205,192 +212,223 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
 
     qCInfo(scanner) << "Loading file:" << fileName;
 
-    QFile file(fileName);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    isLoading(true);
+
+    if (m_csvFutureWatcher == nullptr)
     {
-        m_model->beginLoadingFromFile();
+        m_csvFutureWatcher = new QFutureWatcher<CsvParseResult>(this);
+        connect(m_csvFutureWatcher, &QFutureWatcher<CsvParseResult>::finished, this, &ScannerBackend::onCsvParsed);
+    }
 
-        QTextStream in(&file);
-        bool timeIsUTC = in.readLine().contains("(UTC)");
-        int lineNum = 2;
-        bool res = true;
-        QGeoCoordinate offlineCoords;  // invalid by default
-        int numCols = 0;
-        while (!in.atEnd())
-        {
-            QString line = in.readLine();
+    m_csvFutureWatcher->setFuture(QtConcurrent::run(&ScannerBackend::parseCsvFile, fileName));
+}
 
-            QStringList qsl = line.split(';');
-            if (numCols == 0)
-            {   // detect column count from first data row
-                if (qsl.size() == TxTableModel::NumColsWithoutCoordinates)
-                {
-                    numCols = TxTableModel::NumColsWithoutCoordinates;
-                }
-                else if (qsl.size() == TxTableModel::LastColumn + 1)
-                {
-                    numCols = TxTableModel::LastColumn + 1;
-                }
-            }
-            if (qsl.size() == numCols)
+CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
+{
+    CsvParseResult result;
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        result.success = false;
+        result.errorMessage = tr("Failed to load file");
+        return result;
+    }
+
+    QTextStream in(&file);
+    bool timeIsUTC = in.readLine().contains("(UTC)");
+    int lineNum = 2;
+    int numCols = 0;
+    while (!in.atEnd())
+    {
+        QString line = in.readLine();
+
+        QStringList qsl = line.split(';');
+        if (numCols == 0)
+        {   // detect column count from first data row
+            if (qsl.size() == TxTableModel::NumColsWithoutCoordinates)
             {
+                numCols = TxTableModel::NumColsWithoutCoordinates;
+            }
+            else if (qsl.size() == TxTableModel::LastColumn + 1)
+            {
+                numCols = TxTableModel::LastColumn + 1;
+            }
+        }
+        if (qsl.size() == numCols)
+        {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
-                QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yyyy-MM-dd hh:mm:ss").addYears(100);
-                if (time.isValid() == false)
-                {  // old format
-                    time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss").addYears(100);
-                }
+            QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yyyy-MM-dd hh:mm:ss").addYears(100);
+            if (time.isValid() == false)
+            {  // old format
+                time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss").addYears(100);
+            }
 
 #else
-                QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yyyy-MM-dd hh:mm:ss", 2000);
-                if (time.isValid() == false)
-                {  // old format
-                    time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss", 2000);
-                }
+            QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yyyy-MM-dd hh:mm:ss", 2000);
+            if (time.isValid() == false)
+            {  // old format
+                time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss", 2000);
+            }
 #endif
-                if (!time.isValid())
-                {
-                    qCWarning(scanner) << "Invalid time value" << qsl.at(TxTableModel::ColTime) << "line #" << lineNum;
+            if (!time.isValid())
+            {
+                qCWarning(scanner) << "Invalid time value" << qsl.at(TxTableModel::ColTime) << "line #" << lineNum;
+                result.success = false;
+                result.errorMessage = tr("Failed to load file");
+                return result;
+            }
 
-                    infoMessageType(-1);  // negative
-                    emit showInfoMessage(tr("Failed to load file"), -1);
-
-                    res = false;
-                    break;
-                }
-
-                if (timeIsUTC)
-                {
+            if (timeIsUTC)
+            {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-                    time.setTimeZone(QTimeZone(QTimeZone::UTC));
+                time.setTimeZone(QTimeZone(QTimeZone::UTC));
 #else
-                    time.setTimeSpec(Qt::TimeSpec::UTC);
+                time.setTimeSpec(Qt::TimeSpec::UTC);
 #endif
-                }
-                else
-                {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-                    time.setTimeZone(QTimeZone(QTimeZone::LocalTime));
-#else
-                    time.setTimeSpec(Qt::TimeSpec::LocalTime);
-#endif
-                }
-
-                bool isOk = false;
-                uint32_t freq = qsl.at(TxTableModel::ColFreq).toUInt(&isOk);
-                if (!isOk)
-                {
-                    qCWarning(scanner) << "Invalid frequency value" << qsl.at(TxTableModel::ColFreq) << "line #" << lineNum;
-
-                    emit showInfoMessage(tr("Failed to load file"), -1);
-                    res = false;
-                    break;
-                }
-
-                uint32_t ueid = qsl.at(TxTableModel::ColEnsId).toUInt(&isOk, 16);
-                if (!isOk)
-                {
-                    qCWarning(scanner) << "Invalid UEID value" << qsl.at(TxTableModel::ColEnsId) << "line #" << lineNum;
-                    emit showInfoMessage(tr("Failed to load file"), -1);
-                    res = false;
-                    break;
-                }
-                int numServices = qsl.at(TxTableModel::ColNumServices).toInt(&isOk);
-                if (!isOk)
-                {
-                    qCWarning(scanner) << "Invalid number of services value" << qsl.at(TxTableModel::ColNumServices) << "line #" << lineNum;
-
-                    emit showInfoMessage(tr("Failed to load file"), -1);
-                    res = false;
-                    break;
-                }
-
-                float snr = qsl.at(TxTableModel::ColSnr).toFloat(&isOk);
-                if (!isOk)
-                {
-                    qCWarning(scanner) << "Invalid SNR value" << qsl.at(TxTableModel::ColSnr) << "line #" << lineNum;
-                    emit showInfoMessage(tr("Failed to load file"), -1);
-                    res = false;
-                    break;
-                }
-                QList<dabsdrTii_t> tiiList;
-                if (!qsl.at(TxTableModel::ColMainId).isEmpty())
-                {
-                    uint8_t main = qsl.at(TxTableModel::ColMainId).toUInt(&isOk);
-                    if (!isOk)
-                    {
-                        qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColMainId) << "line #" << lineNum;
-                        emit showInfoMessage(tr("Failed to load file"), -1);
-                        res = false;
-                        break;
-                    }
-                    uint8_t sub = qsl.at(TxTableModel::ColSubId).toUInt(&isOk);
-                    if (!isOk)
-                    {
-                        qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColSubId) << "line #" << lineNum;
-                        emit showInfoMessage(tr("Failed to load file"), -1);
-                        res = false;
-                        break;
-                    }
-                    float level = qsl.at(TxTableModel::ColLevel).toFloat(&isOk);
-                    if (!isOk)
-                    {
-                        qCWarning(scanner) << "Invalid TX level value" << qsl.at(TxTableModel::ColLevel) << "line #" << lineNum;
-                        emit showInfoMessage(tr("Failed to load file"), -1);
-                        res = false;
-                        break;
-                    }
-                    dabsdrTii_t tiiItem({.main = main, .sub = sub, .level = level});
-                    tiiList.append(tiiItem);
-                }
-
-                m_model->appendEnsData(time.toLocalTime(), tiiList, ServiceListId(freq, ueid), qsl.at(TxTableModel::ColEnsLabel), "", "", numServices,
-                                       snr);
-
-                // Parse RX coordinates from first row with coordinate columns
-                if (!offlineCoords.isValid() && numCols == TxTableModel::LastColumn + 1)
-                {
-                    bool latOk = false, lonOk = false;
-                    double lat = qsl.at(TxTableModel::ColRxCoordinatesLat).toDouble(&latOk);
-                    double lon = qsl.at(TxTableModel::ColRxCoordinatesLon).toDouble(&lonOk);
-                    if (latOk && lonOk)
-                    {
-                        QGeoCoordinate candidate(lat, lon);
-                        if (candidate.isValid())
-                        {
-                            offlineCoords = candidate;
-                        }
-                    }
-                }
             }
             else
             {
-                qCWarning(scanner) << "Unexpected number of cols, line #" << lineNum;
-                emit showInfoMessage(tr("Failed to load file"), -1);
-                res = false;
-                break;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+                time.setTimeZone(QTimeZone(QTimeZone::LocalTime));
+#else
+                time.setTimeSpec(Qt::TimeSpec::LocalTime);
+#endif
             }
-            lineNum += 1;
-        }
-        file.close();
 
-        m_model->endLoadingFromFile();
+            bool isOk = false;
+            uint32_t freq = qsl.at(TxTableModel::ColFreq).toUInt(&isOk);
+            if (!isOk)
+            {
+                qCWarning(scanner) << "Invalid frequency value" << qsl.at(TxTableModel::ColFreq) << "line #" << lineNum;
+                result.success = false;
+                result.errorMessage = tr("Failed to load file");
+                return result;
+            }
 
-        if (res == false)
-        {
-            qCWarning(scanner) << "Failed to load file:" << fileName;
-            reset();
+            uint32_t ueid = qsl.at(TxTableModel::ColEnsId).toUInt(&isOk, 16);
+            if (!isOk)
+            {
+                qCWarning(scanner) << "Invalid UEID value" << qsl.at(TxTableModel::ColEnsId) << "line #" << lineNum;
+                result.success = false;
+                result.errorMessage = tr("Failed to load file");
+                return result;
+            }
+            int numServices = qsl.at(TxTableModel::ColNumServices).toInt(&isOk);
+            if (!isOk)
+            {
+                qCWarning(scanner) << "Invalid number of services value" << qsl.at(TxTableModel::ColNumServices) << "line #" << lineNum;
+                result.success = false;
+                result.errorMessage = tr("Failed to load file");
+                return result;
+            }
+
+            float snr = qsl.at(TxTableModel::ColSnr).toFloat(&isOk);
+            if (!isOk)
+            {
+                qCWarning(scanner) << "Invalid SNR value" << qsl.at(TxTableModel::ColSnr) << "line #" << lineNum;
+                result.success = false;
+                result.errorMessage = tr("Failed to load file");
+                return result;
+            }
+            QList<dabsdrTii_t> tiiList;
+            if (!qsl.at(TxTableModel::ColMainId).isEmpty())
+            {
+                uint8_t main = qsl.at(TxTableModel::ColMainId).toUInt(&isOk);
+                if (!isOk)
+                {
+                    qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColMainId) << "line #" << lineNum;
+                    result.success = false;
+                    result.errorMessage = tr("Failed to load file");
+                    return result;
+                }
+                uint8_t sub = qsl.at(TxTableModel::ColSubId).toUInt(&isOk);
+                if (!isOk)
+                {
+                    qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColSubId) << "line #" << lineNum;
+                    result.success = false;
+                    result.errorMessage = tr("Failed to load file");
+                    return result;
+                }
+                float level = qsl.at(TxTableModel::ColLevel).toFloat(&isOk);
+                if (!isOk)
+                {
+                    qCWarning(scanner) << "Invalid TX level value" << qsl.at(TxTableModel::ColLevel) << "line #" << lineNum;
+                    result.success = false;
+                    result.errorMessage = tr("Failed to load file");
+                    return result;
+                }
+                dabsdrTii_t tiiItem({.main = main, .sub = sub, .level = level});
+                tiiList.append(tiiItem);
+            }
+
+            CsvRowData rowData;
+            rowData.time = time.toLocalTime();
+            rowData.tiiList = tiiList;
+            rowData.ensId = ServiceListId(freq, ueid);
+            rowData.ensLabel = qsl.at(TxTableModel::ColEnsLabel);
+            rowData.numServices = numServices;
+            rowData.snr = snr;
+            result.rows.append(rowData);
+
+            // Parse RX coordinates from first row with coordinate columns
+            if (!result.offlineCoords.isValid() && numCols == TxTableModel::LastColumn + 1)
+            {
+                bool latOk = false, lonOk = false;
+                double lat = qsl.at(TxTableModel::ColRxCoordinatesLat).toDouble(&latOk);
+                double lon = qsl.at(TxTableModel::ColRxCoordinatesLon).toDouble(&lonOk);
+                if (latOk && lonOk)
+                {
+                    QGeoCoordinate candidate(lat, lon);
+                    if (candidate.isValid())
+                    {
+                        result.offlineCoords = candidate;
+                    }
+                }
+            }
         }
         else
         {
-            // Try to extract RX coordinates from CSV columns (new format with 18 columns)
-            if (offlineCoords.isValid())
-            {
-                qCInfo(scanner) << "Using offline coordinates from CSV: lat" << offlineCoords.latitude() << "lon" << offlineCoords.longitude();
-                setOfflinePosition(offlineCoords);
-            }
+            qCWarning(scanner) << "Unexpected number of cols, line #" << lineNum;
+            result.success = false;
+            result.errorMessage = tr("Failed to load file");
+            return result;
+        }
+        lineNum += 1;
+    }
+    file.close();
+
+    result.success = true;
+    return result;
+}
+
+void ScannerBackend::onCsvParsed()
+{
+    CsvParseResult result = m_csvFutureWatcher->result();
+
+    if (result.success)
+    {
+        m_model->beginLoadingFromFile();
+        for (const auto &row : result.rows)
+        {
+            m_model->appendEnsData(row.time, row.tiiList, row.ensId, row.ensLabel, "", "", row.numServices, row.snr);
+        }
+        m_model->endLoadingFromFile();
+
+        if (result.offlineCoords.isValid())
+        {
+            qCInfo(scanner) << "Using offline coordinates from CSV: lat" << result.offlineCoords.latitude() << "lon" << result.offlineCoords.longitude();
+            setOfflinePosition(result.offlineCoords);
         }
     }
+    else
+    {
+        qCWarning(scanner) << "Failed to load CSV file";
+        emit showInfoMessage(result.errorMessage, -1);
+        reset();
+    }
+
+    isLoading(false);
 }
 
 void ScannerBackend::saveCSV()

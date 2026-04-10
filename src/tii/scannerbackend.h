@@ -27,6 +27,7 @@
 #ifndef SCANNERBACKEND_H
 #define SCANNERBACKEND_H
 
+#include <QFutureWatcher>
 #include <QGeoPositionInfoSource>
 #include <QItemSelectionModel>
 #include <QQmlApplicationEngine>
@@ -35,6 +36,24 @@
 #include "radiocontrol.h"
 #include "txmapbackend.h"
 #include "uicontrolprovider.h"
+
+struct CsvRowData
+{
+    QDateTime time;
+    QList<dabsdrTii_t> tiiList;
+    ServiceListId ensId;
+    QString ensLabel;
+    int numServices;
+    float snr;
+};
+
+struct CsvParseResult
+{
+    QList<CsvRowData> rows;
+    QGeoCoordinate offlineCoords;
+    bool success = false;
+    QString errorMessage;
+};
 
 class Settings;
 class ChannelSelectionModel;
@@ -46,6 +65,7 @@ class ScannerBackend : public TxMapBackend
     QML_ELEMENT
     QML_UNCREATABLE("ScannerBackend cannot be instantiated")
 
+    UI_PROPERTY_DEFAULT(bool, isLoading, false)
     UI_PROPERTY_DEFAULT(bool, isScanning, false)
     UI_PROPERTY_DEFAULT(bool, isStartStopEnabled, true)
     UI_PROPERTY_DEFAULT(bool, isScanningEnabled, true)
@@ -178,6 +198,11 @@ private:
     void startAutoSaveCsv();
     void appendAutoSaveRows(int firstRow, int lastRow);
     void stopAutoSaveCsv();
+
+    // Async CSV loading
+    QFutureWatcher<CsvParseResult> *m_csvFutureWatcher = nullptr;
+    static CsvParseResult parseCsvFile(const QString &fileName);
+    void onCsvParsed();
 };
 
 class ChannelSelectionModel : public QAbstractListModel
