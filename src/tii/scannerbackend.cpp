@@ -33,6 +33,8 @@
 #endif
 #include <QCoreApplication>
 #include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLoggingCategory>
 #include <QQmlContext>
 #include <QTextStream>
@@ -352,6 +354,10 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
             qCWarning(scanner) << "Failed to load file:" << fileName;
             reset();
         }
+        else
+        {
+            loadMetaJson(fileName);
+        }
     }
 }
 
@@ -412,6 +418,16 @@ void ScannerBackend::saveToFile(const QString &fileName)
         }
     }
 
+    if (m_settings->tii.saveCoordinates)
+    {  // save coordinates as metadata
+        if (!saveCsvMetadata(basePath))
+        {
+            qCWarning(scanner) << "Failed to save CSV metadata";
+            emit showInfoMessage(tr("Failed to save log metadata"), -1);
+            return;
+        }
+    }
+
     if (AndroidFileHelper::writeTextFile(targetBase, fileName, csvContent, "text/csv"))
     {
         qCInfo(scanner) << "Log CSV saved to:" << QString("%1/%2").arg(targetBase, fileName);
@@ -446,6 +462,16 @@ void ScannerBackend::startAutoSaveCsv()
         {
             qCWarning(scanner) << "No permission to write to:" << basePath;
             emit showInfoMessage(tr("No permission to write log"), -1);
+            return;
+        }
+    }
+
+    if (m_settings->tii.saveCoordinates)
+    {  // save coordinates as metadata
+        if (!saveCsvMetadata(basePath))
+        {
+            qCWarning(scanner) << "Failed to save CSV metadata";
+            emit showInfoMessage(tr("Failed to save log metadata"), -1);
             return;
         }
     }
@@ -519,15 +545,99 @@ void ScannerBackend::stopAutoSaveCsv()
     }
 }
 
+bool ScannerBackend::saveCsvMetadata(const QString &basePath)
+{
+    const QString metaFileName = QString("%1.meta.json").arg(m_scanStartTime.toString("yyyy-MM-dd_hhmmss"));
+    auto metaFile = AndroidFileHelper::openFileForWriting(basePath, metaFileName, "text/json");
+    if (metaFile == nullptr)
+    {
+        qCWarning(scanner) << "Failed to open auto-save file:" << AndroidFileHelper::lastError();
+        emit showInfoMessage(tr("Failed to save log"), -1);
+        return false;
+    }
+    // Write header with coordinates
+    QTextStream metaOut(metaFile);
+    metaOut << "{\n";
+    metaOut << "  \"appVersion\": \"" << QCoreApplication::applicationVersion() << "\",\n";
+    metaOut << "  \"timestamp\": \"" << m_scanStartTime.toString(Qt::ISODate) << "\",\n";
+    metaOut << "  \"coordinates\": {\n";
+    metaOut << "    \"latitude\": " << QString::number(m_scanStartLocation.latitude(), 'f', 15) << ",\n";
+    metaOut << "    \"longitude\": " << QString::number(m_scanStartLocation.longitude(), 'f', 15) << "\n";
+    metaOut << "  }\n";
+    metaOut << "}\n";
+    metaOut.flush();
+    metaFile->flush();
+    metaFile->close();
+    delete metaFile;
+    return true;
+}
+
+void ScannerBackend::loadMetaJson(const QString &csvFileName)
+{
+    // Derive meta.json path from CSV path — both files must be in the same directory
+    // CSV: path/to/2024-01-15_120000.csv
+    // Meta: path/to/2024-01-15_120000.meta.json
+    QString metaFilePath = csvFileName;
+    if (metaFilePath.endsWith(".csv", Qt::CaseInsensitive))
+    {
+        metaFilePath.chop(4);
+    }
+    metaFilePath.append(".meta.json");
+
+    // Use AndroidFileHelper to handle content:// URIs on Android
+    QFile *metaFile = AndroidFileHelper::openFileForReading(metaFilePath);
+    if (metaFile == nullptr)
+    {
+        qCInfo(scanner) << "No meta.json found for" << csvFileName;
+        clearOfflineMode();
+        return;
+    }
+
+    QJsonParseError parseError;
+    QJsonDocument doc = QJsonDocument::fromJson(metaFile->readAll(), &parseError);
+    metaFile->close();
+    delete metaFile;
+
+    if (doc.isNull() || !doc.isObject())
+    {
+        qCWarning(scanner) << "Invalid meta.json:" << metaFilePath << parseError.errorString();
+        return;
+    }
+
+    QJsonObject coords = doc.object().value("coordinates").toObject();
+    if (coords.isEmpty())
+    {
+        qCWarning(scanner) << "No coordinates in meta.json:" << metaFilePath;
+        return;
+    }
+
+    double lat = coords.value("latitude").toDouble(qQNaN());
+    double lon = coords.value("longitude").toDouble(qQNaN());
+
+    QGeoCoordinate offlinePos(lat, lon);
+    if (!offlinePos.isValid())
+    {
+        qCWarning(scanner) << "Invalid coordinates in meta.json:" << metaFilePath;
+        clearOfflineMode();
+        return;
+    }
+
+    qCInfo(scanner) << "Using offline coordinates from meta.json: lat" << lat << "lon" << lon;
+    setOfflinePosition(offlinePos);
+}
+
 void ScannerBackend::startScan()
 {
     isScanning(true);
+
+    clearOfflineMode();
 
     if (m_settings->scanner.clearOnStart)
     {
         reset();
     }
     m_scanStartTime = QDateTime::currentDateTime();
+    m_scanStartLocation = m_currentPosition;
     scanningLabel(tr("Channel:"));
 
     //    m_signalStateLabel->reset();

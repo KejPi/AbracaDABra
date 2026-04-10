@@ -145,28 +145,33 @@ public class FileHelper {
     }
 
     /**
-     * Extract the document ID from a tree URI string.
+     * Extract the document ID from a tree or document URI string.
      * 
-     * @param uriString The tree URI string
+     * @param uriString The URI string (may contain /tree/ or /document/ path)
      * @return The decoded document ID, or null if extraction failed
      */
     private static String extractDocumentId(String uriString) {
         try {
+            String idPart = null;
             int treeIdx = uriString.indexOf("/tree/");
-            if (treeIdx < 0) {
+            int docIdx = uriString.indexOf("/document/");
+            if (treeIdx >= 0) {
+                idPart = uriString.substring(treeIdx + 6);
+            } else if (docIdx >= 0) {
+                idPart = uriString.substring(docIdx + 10);
+            } else {
                 return null;
             }
-            String treeIdPart = uriString.substring(treeIdx + 6);
             // Remove any query parameters or fragments
-            int queryIdx = treeIdPart.indexOf('?');
+            int queryIdx = idPart.indexOf('?');
             if (queryIdx >= 0) {
-                treeIdPart = treeIdPart.substring(0, queryIdx);
+                idPart = idPart.substring(0, queryIdx);
             }
-            int fragIdx = treeIdPart.indexOf('#');
+            int fragIdx = idPart.indexOf('#');
             if (fragIdx >= 0) {
-                treeIdPart = treeIdPart.substring(0, fragIdx);
+                idPart = idPart.substring(0, fragIdx);
             }
-            return URLDecoder.decode(treeIdPart, "UTF-8");
+            return URLDecoder.decode(idPart, "UTF-8");
         } catch (Exception e) {
             Log.e(TAG, "Error extracting document ID from: " + uriString, e);
             return null;
@@ -711,5 +716,94 @@ public class FileHelper {
             Log.d(TAG, "Error finding child file: " + fileName, e);
         }
         return null;
+    }
+
+    /**
+     * Open an existing file for reading using SAF.
+     * The document URI is parsed to find the parent directory and filename,
+     * then a matching persisted tree permission is used to open the file.
+     *
+     * @param context The application context
+     * @param documentUriString The document content:// URI to open for reading
+     * @return Native file descriptor (int), or -1 on failure
+     */
+    public static int openFileForReading(Context context, String documentUriString) {
+        if (context == null || documentUriString == null || documentUriString.isEmpty()) {
+            Log.e(TAG, "Invalid parameters for openFileForReading");
+            return -1;
+        }
+
+        if (!documentUriString.startsWith("content://")) {
+            Log.d(TAG, "Not a content URI, skipping SAF handling: " + documentUriString);
+            return -1;
+        }
+
+        try {
+            ContentResolver resolver = context.getContentResolver();
+
+            // Extract the document ID and split into parent path + filename
+            String docId = extractDocumentId(documentUriString);
+            if (docId == null) {
+                Log.e(TAG, "Could not extract document ID from: " + documentUriString);
+                return -1;
+            }
+
+            int lastSlash = docId.lastIndexOf('/');
+            if (lastSlash < 0) {
+                Log.e(TAG, "Document ID has no parent directory: " + docId);
+                return -1;
+            }
+
+            String parentDocId = docId.substring(0, lastSlash);
+            String fileName = docId.substring(lastSlash + 1);
+
+            // Build a constructed tree URI for the parent directory to find matching permission
+            // Use the same authority as the document URI
+            Uri docUri = Uri.parse(documentUriString);
+            String authority = docUri.getAuthority();
+            String parentTreeUri = "content://" + authority + "/tree/" +
+                    Uri.encode(parentDocId, "/:@!$&'()*+,;=-._~");
+
+            Log.d(TAG, "Looking for tree permission covering: " + parentDocId);
+
+            // Find matching persisted tree permission
+            ParsedUri parsed = findGrantedBaseUri(resolver, parentTreeUri);
+            if (parsed == null || parsed.baseTreeUri == null) {
+                Log.e(TAG, "No persisted tree permission found for: " + parentTreeUri);
+                return -1;
+            }
+
+            // Navigate to the parent directory
+            Uri parentUri = navigateToSubdirectory(resolver, parsed.baseTreeUri, parsed.baseDocId, parsed.subdirs);
+            if (parentUri == null) {
+                Log.e(TAG, "Failed to navigate to parent directory");
+                return -1;
+            }
+
+            // Find the file in the parent directory
+            Uri fileUri = findChildFile(resolver, parsed.baseTreeUri, parentUri, fileName);
+            if (fileUri == null) {
+                Log.d(TAG, "File not found: " + fileName + " in " + parentDocId);
+                return -1;
+            }
+
+            // Open file descriptor for reading
+            android.os.ParcelFileDescriptor pfd = resolver.openFileDescriptor(fileUri, "r");
+            if (pfd == null) {
+                Log.e(TAG, "Failed to open file descriptor for reading: " + fileUri);
+                return -1;
+            }
+
+            int fd = pfd.detachFd();
+            Log.i(TAG, "Opened file for reading with fd=" + fd + ": " + fileUri);
+            return fd;
+
+        } catch (SecurityException e) {
+            Log.e(TAG, "SecurityException - permission denied for reading: " + documentUriString, e);
+            return -1;
+        } catch (Exception e) {
+            Log.e(TAG, "Error opening file for reading: " + documentUriString, e);
+            return -1;
+        }
     }
 }

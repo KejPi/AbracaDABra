@@ -394,6 +394,55 @@ QString AndroidFileHelper::lastError()
     return s_lastError;
 }
 
+QFile *AndroidFileHelper::openFileForReading(const QString &filePath)
+{
+    s_lastError.clear();
+
+#ifdef Q_OS_ANDROID
+    if (isContentUri(filePath))
+    {
+        QJniObject jFilePath = QJniObject::fromString(filePath);
+        QJniObject context = QNativeInterface::QAndroidApplication::context();
+
+        jint fd = QJniObject::callStaticMethod<jint>("org/qtproject/abracadabra/FileHelper", "openFileForReading",
+                                                     "(Landroid/content/Context;Ljava/lang/String;)I", context.object<jobject>(),
+                                                     jFilePath.object<jstring>());
+
+        if (fd < 0)
+        {
+            s_lastError = QString("Failed to open file for reading via SAF: %1").arg(filePath);
+            qCInfo(fileHelper) << s_lastError;
+            return nullptr;
+        }
+
+        QFile *file = new QFile();
+        if (!file->open(fd, QIODevice::ReadOnly, QFileDevice::AutoCloseHandle))
+        {
+            s_lastError = QString("Failed to wrap file descriptor for reading: %1").arg(file->errorString());
+            qCWarning(fileHelper) << s_lastError;
+            ::close(fd);
+            delete file;
+            return nullptr;
+        }
+
+        qCInfo(fileHelper) << "Opened file for reading via SAF:" << filePath;
+        return file;
+    }
+#endif
+
+    QFile *file = new QFile(filePath);
+    if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        s_lastError = QString("Failed to open file for reading: %1").arg(filePath);
+        qCInfo(fileHelper) << s_lastError;
+        delete file;
+        return nullptr;
+    }
+
+    qCInfo(fileHelper) << "Opened file for reading:" << filePath;
+    return file;
+}
+
 #ifdef Q_OS_ANDROID
 bool AndroidFileHelper::writeUsingSAF(const QString &treeUri, const QString &fileName, const QString &content, const QString &mimeType,
                                       bool overwriteExisting)

@@ -170,6 +170,21 @@ public:
     static FILE *openFileForWritingRaw(const QString &basePath, const QString &fileName, const QString &mimeType = "application/octet-stream");
 
     /**
+     * @brief Open an existing file for reading.
+     *
+     * On Android with content:// URIs, this uses SAF APIs to find the file
+     * using persisted tree permissions and returns a QFile opened for reading.
+     * On desktop or with regular file paths, it uses standard Qt file operations.
+     *
+     * The caller takes ownership of the returned QFile and is responsible for
+     * closing and deleting it when done.
+     *
+     * @param filePath The file path or content:// document URI to open
+     * @return QFile pointer opened for reading, or nullptr on failure
+     */
+    static QFile *openFileForReading(const QString &filePath);
+
+    /**
      * @brief Get a human-readable error message for the last failed operation.
      * @return Error message string, or empty string if no error occurred
      */

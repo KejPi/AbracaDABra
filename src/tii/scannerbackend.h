@@ -155,6 +155,7 @@ private:
     float m_snr;
     uint m_snrCntr;
     QDateTime m_scanStartTime;
+    QGeoCoordinate m_scanStartLocation;
 
     // this is used in precise mode
     bool m_isPreciseMode = false;
@@ -168,6 +169,7 @@ private:
     void saveToFile(const QString &fileName);
     void storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf);
     void handleContextMenuAction(int actionId, const QVariant &data);
+    void loadMetaJson(const QString &csvFileName);
     ContextMenuModel *m_contextMenuModel = nullptr;
 
     // Real-time CSV auto-save
@@ -176,6 +178,7 @@ private:
     void startAutoSaveCsv();
     void appendAutoSaveRows(int firstRow, int lastRow);
     void stopAutoSaveCsv();
+    bool saveCsvMetadata(const QString &basePath);
 };
 
 class ChannelSelectionModel : public QAbstractListModel

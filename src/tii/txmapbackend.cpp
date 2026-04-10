@@ -77,6 +77,11 @@ QModelIndex TxMapBackend::mapToSourceModel(const QModelIndex &proxyIndex) const
 
 void TxMapBackend::positionUpdated(const QGeoPositionInfo &position)
 {
+    if (m_offlineMode)
+    {
+        m_currentPositionBackup = position.coordinate();  // update backup position so when going back online, position is updated to the latest one
+        return;                                           // Ignore GPS updates in offline mode
+    }
     setCurrentPosition(position.coordinate());
     m_model->setCoordinates(m_currentPosition);
     setPositionValid(true);
@@ -105,10 +110,32 @@ void TxMapBackend::setSelectedRow(int newSelectedRow)
 
 void TxMapBackend::reset()
 {
+    clearOfflineMode();
     m_model->clear();
     m_tableSelectionModel->clear();
     m_txInfo.clear();
     emit txInfoChanged();
+}
+
+void TxMapBackend::setOfflinePosition(const QGeoCoordinate &position)
+{
+    if (m_offlineMode == false)
+    {
+        m_currentPositionBackup = m_currentPosition;  // backup current position to restore it when going back online
+    }
+    m_offlineMode = true;
+    setCurrentPosition(position);
+    m_model->setCoordinates(position);
+    setPositionValid(true);
+}
+
+void TxMapBackend::clearOfflineMode()
+{
+    m_offlineMode = false;
+    if (m_currentPositionBackup.isValid())
+    {
+        setCurrentPosition(m_currentPositionBackup);
+    }
 }
 
 void TxMapBackend::doLocationUpdate(bool ena)
