@@ -33,8 +33,6 @@
 #endif
 #include <QCoreApplication>
 #include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QLoggingCategory>
 #include <QQmlContext>
 #include <QTextStream>
@@ -216,12 +214,25 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
         bool timeIsUTC = in.readLine().contains("(UTC)");
         int lineNum = 2;
         bool res = true;
+        QGeoCoordinate offlineCoords;  // invalid by default
+        int numCols = 0;
         while (!in.atEnd())
         {
             QString line = in.readLine();
 
             QStringList qsl = line.split(';');
-            if (qsl.size() == TxTableModel::NumColsWithoutCoordinates)
+            if (numCols == 0)
+            {   // detect column count from first data row
+                if (qsl.size() == TxTableModel::NumColsWithoutCoordinates)
+                {
+                    numCols = TxTableModel::NumColsWithoutCoordinates;
+                }
+                else if (qsl.size() == TxTableModel::LastColumn + 1)
+                {
+                    numCols = TxTableModel::LastColumn + 1;
+                }
+            }
+            if (qsl.size() == numCols)
             {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
                 QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yyyy-MM-dd hh:mm:ss").addYears(100);
@@ -335,6 +346,22 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
 
                 m_model->appendEnsData(time.toLocalTime(), tiiList, ServiceListId(freq, ueid), qsl.at(TxTableModel::ColEnsLabel), "", "", numServices,
                                        snr);
+
+                // Parse RX coordinates from first row with coordinate columns
+                if (!offlineCoords.isValid() && numCols == TxTableModel::LastColumn + 1)
+                {
+                    bool latOk = false, lonOk = false;
+                    double lat = qsl.at(TxTableModel::ColRxCoordinatesLat).toDouble(&latOk);
+                    double lon = qsl.at(TxTableModel::ColRxCoordinatesLon).toDouble(&lonOk);
+                    if (latOk && lonOk)
+                    {
+                        QGeoCoordinate candidate(lat, lon);
+                        if (candidate.isValid())
+                        {
+                            offlineCoords = candidate;
+                        }
+                    }
+                }
             }
             else
             {
@@ -356,7 +383,12 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
         }
         else
         {
-            loadMetaJson(fileName);
+            // Try to extract RX coordinates from CSV columns (new format with 18 columns)
+            if (offlineCoords.isValid())
+            {
+                qCInfo(scanner) << "Using offline coordinates from CSV: lat" << offlineCoords.latitude() << "lon" << offlineCoords.longitude();
+                setOfflinePosition(offlineCoords);
+            }
         }
     }
 }
@@ -374,13 +406,14 @@ void ScannerBackend::saveToFile(const QString &fileName)
     QTextStream out(&csvContent);
 
     auto exportRole = m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
+    int lastCol = m_settings->tii.saveCoordinates ? TxTableModel::LastColumn : TxTableModel::LastColumnWithoutCoordinates;
 
     // Header
-    for (int col = 0; col < TxTableModel::LastColumnWithoutCoordinates; ++col)
+    for (int col = 0; col < lastCol; ++col)
     {
         out << m_model->headerData(col, Qt::Horizontal, exportRole).toString() << ";";
     }
-    out << m_model->headerData(TxTableModel::LastColumnWithoutCoordinates, Qt::Horizontal, exportRole).toString() << Qt::endl;
+    out << m_model->headerData(lastCol, Qt::Horizontal, exportRole).toString() << Qt::endl;
 
     // Body
     for (int row = 0; row < m_model->rowCount(); ++row)
@@ -390,11 +423,11 @@ void ScannerBackend::saveToFile(const QString &fileName)
             continue;
         }
 
-        for (int col = 0; col < TxTableModel::LastColumnWithoutCoordinates; ++col)
+        for (int col = 0; col < lastCol; ++col)
         {
             out << m_model->data(m_model->index(row, col), exportRole).toString() << ";";
         }
-        out << m_model->data(m_model->index(row, TxTableModel::LastColumnWithoutCoordinates), exportRole).toString() << Qt::endl;
+        out << m_model->data(m_model->index(row, lastCol), exportRole).toString() << Qt::endl;
     }
     out.flush();
 
@@ -414,16 +447,6 @@ void ScannerBackend::saveToFile(const QString &fileName)
         if (!AndroidFileHelper::hasWritePermission(basePath))
         {
             qCWarning(scanner) << "No permission to write to:" << basePath;
-            return;
-        }
-    }
-
-    if (m_settings->tii.saveCoordinates)
-    {  // save coordinates as metadata
-        if (!saveCsvMetadata(basePath))
-        {
-            qCWarning(scanner) << "Failed to save CSV metadata";
-            emit showInfoMessage(tr("Failed to save log metadata"), -1);
             return;
         }
     }
@@ -466,16 +489,6 @@ void ScannerBackend::startAutoSaveCsv()
         }
     }
 
-    if (m_settings->tii.saveCoordinates)
-    {  // save coordinates as metadata
-        if (!saveCsvMetadata(basePath))
-        {
-            qCWarning(scanner) << "Failed to save CSV metadata";
-            emit showInfoMessage(tr("Failed to save log metadata"), -1);
-            return;
-        }
-    }
-
     m_autoSaveFile = AndroidFileHelper::openFileForWriting(basePath, fileName, "text/csv");
     if (m_autoSaveFile == nullptr)
     {
@@ -486,14 +499,15 @@ void ScannerBackend::startAutoSaveCsv()
 
     m_autoSaveExportRole =
         m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
+    m_autoSaveLastCol = m_settings->tii.saveCoordinates ? TxTableModel::LastColumn : TxTableModel::LastColumnWithoutCoordinates;
 
     // Write header
     QTextStream out(m_autoSaveFile);
-    for (int col = 0; col < TxTableModel::LastColumnWithoutCoordinates; ++col)
+    for (int col = 0; col < m_autoSaveLastCol; ++col)
     {
         out << m_model->headerData(col, Qt::Horizontal, m_autoSaveExportRole).toString() << ";";
     }
-    out << m_model->headerData(TxTableModel::LastColumnWithoutCoordinates, Qt::Horizontal, m_autoSaveExportRole).toString() << Qt::endl;
+    out << m_model->headerData(m_autoSaveLastCol, Qt::Horizontal, m_autoSaveExportRole).toString() << Qt::endl;
     out.flush();
     m_autoSaveFile->flush();
 
@@ -522,11 +536,11 @@ void ScannerBackend::appendAutoSaveRows(int firstRow, int lastRow)
             continue;
         }
 
-        for (int col = 0; col < TxTableModel::LastColumnWithoutCoordinates; ++col)
+        for (int col = 0; col < m_autoSaveLastCol; ++col)
         {
             out << m_model->data(m_model->index(row, col), m_autoSaveExportRole).toString() << ";";
         }
-        out << m_model->data(m_model->index(row, TxTableModel::LastColumnWithoutCoordinates), m_autoSaveExportRole).toString() << Qt::endl;
+        out << m_model->data(m_model->index(row, m_autoSaveLastCol), m_autoSaveExportRole).toString() << Qt::endl;
     }
     out.flush();
     m_autoSaveFile->flush();
@@ -543,87 +557,6 @@ void ScannerBackend::stopAutoSaveCsv()
         delete m_autoSaveFile;
         m_autoSaveFile = nullptr;
     }
-}
-
-bool ScannerBackend::saveCsvMetadata(const QString &basePath)
-{
-    const QString metaFileName = QString("%1.meta.json").arg(m_scanStartTime.toString("yyyy-MM-dd_hhmmss"));
-    auto metaFile = AndroidFileHelper::openFileForWriting(basePath, metaFileName, "text/json");
-    if (metaFile == nullptr)
-    {
-        qCWarning(scanner) << "Failed to open auto-save file:" << AndroidFileHelper::lastError();
-        emit showInfoMessage(tr("Failed to save log"), -1);
-        return false;
-    }
-    // Write header with coordinates
-    QTextStream metaOut(metaFile);
-    metaOut << "{\n";
-    metaOut << "  \"appVersion\": \"" << QCoreApplication::applicationVersion() << "\",\n";
-    metaOut << "  \"timestamp\": \"" << m_scanStartTime.toString(Qt::ISODate) << "\",\n";
-    metaOut << "  \"coordinates\": {\n";
-    metaOut << "    \"latitude\": " << QString::number(m_scanStartLocation.latitude(), 'f', 15) << ",\n";
-    metaOut << "    \"longitude\": " << QString::number(m_scanStartLocation.longitude(), 'f', 15) << "\n";
-    metaOut << "  }\n";
-    metaOut << "}\n";
-    metaOut.flush();
-    metaFile->flush();
-    metaFile->close();
-    delete metaFile;
-    return true;
-}
-
-void ScannerBackend::loadMetaJson(const QString &csvFileName)
-{
-    // Derive meta.json path from CSV path — both files must be in the same directory
-    // CSV: path/to/2024-01-15_120000.csv
-    // Meta: path/to/2024-01-15_120000.meta.json
-    QString metaFilePath = csvFileName;
-    if (metaFilePath.endsWith(".csv", Qt::CaseInsensitive))
-    {
-        metaFilePath.chop(4);
-    }
-    metaFilePath.append(".meta.json");
-
-    // Use AndroidFileHelper to handle content:// URIs on Android
-    QFile *metaFile = AndroidFileHelper::openFileForReading(metaFilePath);
-    if (metaFile == nullptr)
-    {
-        qCInfo(scanner) << "No meta.json found for" << csvFileName;
-        clearOfflineMode();
-        return;
-    }
-
-    QJsonParseError parseError;
-    QJsonDocument doc = QJsonDocument::fromJson(metaFile->readAll(), &parseError);
-    metaFile->close();
-    delete metaFile;
-
-    if (doc.isNull() || !doc.isObject())
-    {
-        qCWarning(scanner) << "Invalid meta.json:" << metaFilePath << parseError.errorString();
-        return;
-    }
-
-    QJsonObject coords = doc.object().value("coordinates").toObject();
-    if (coords.isEmpty())
-    {
-        qCWarning(scanner) << "No coordinates in meta.json:" << metaFilePath;
-        return;
-    }
-
-    double lat = coords.value("latitude").toDouble(qQNaN());
-    double lon = coords.value("longitude").toDouble(qQNaN());
-
-    QGeoCoordinate offlinePos(lat, lon);
-    if (!offlinePos.isValid())
-    {
-        qCWarning(scanner) << "Invalid coordinates in meta.json:" << metaFilePath;
-        clearOfflineMode();
-        return;
-    }
-
-    qCInfo(scanner) << "Using offline coordinates from meta.json: lat" << lat << "lon" << lon;
-    setOfflinePosition(offlinePos);
 }
 
 void ScannerBackend::startScan()

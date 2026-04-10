@@ -135,6 +135,7 @@ void TxMapBackend::clearOfflineMode()
     if (m_currentPositionBackup.isValid())
     {
         setCurrentPosition(m_currentPositionBackup);
+        m_model->setCoordinates(m_currentPositionBackup);
     }
 }
 

@@ -169,16 +169,15 @@ private:
     void saveToFile(const QString &fileName);
     void storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf);
     void handleContextMenuAction(int actionId, const QVariant &data);
-    void loadMetaJson(const QString &csvFileName);
     ContextMenuModel *m_contextMenuModel = nullptr;
 
     // Real-time CSV auto-save
     QFile *m_autoSaveFile = nullptr;
     int m_autoSaveExportRole = 0;
+    int m_autoSaveLastCol = 0;
     void startAutoSaveCsv();
     void appendAutoSaveRows(int firstRow, int lastRow);
     void stopAutoSaveCsv();
-    bool saveCsvMetadata(const QString &basePath);
 };
 
 class ChannelSelectionModel : public QAbstractListModel
