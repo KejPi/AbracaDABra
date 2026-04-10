@@ -224,22 +224,34 @@ AbracaDrawer {
                 }
                 AbracaMenuItem {
                     text: qsTr("Save as CSV")
-                    onTriggered: scannerBackend.saveCSV()
+                    onTriggered: {
+                        scannerBackend.saveCSV()
+                        drawer.close()
+                    }
                     enabled: scannerBackend.tableModel.rowCount > 0
                 }
                 AbracaMenuItem {
                     text: qsTr("Load from CSV")
                     enabled: !scannerBackend.isScanning
-                    onTriggered: scannerBackend.importAction()
+                    onTriggered: {
+                        scannerBackend.importAction()
+                        drawer.close()
+                    }
                 }
                 AbracaMenuItem {
                     text: qsTr("Clear scan results")
-                    onTriggered: scannerBackend.clearTableAction()
-                    enabled: scannerBackend.tableModel.rowCount > 0
+                    onTriggered: {
+                        scannerBackend.clearTableAction()
+                        drawer.close()
+                    }
+                    enabled: scannerBackend.tableModel.rowCount > 0                    
                 }
                 AbracaMenuItem {
                     text: qsTr("Clear local (known) transmitter database")
-                    onTriggered: scannerBackend.clearLocalTxAction()
+                    onTriggered: {
+                        scannerBackend.clearLocalTxAction()
+                        drawer.close()
+                    }
                 }
             }
             AbracaImgButton {
