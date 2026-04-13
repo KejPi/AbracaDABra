@@ -3182,7 +3182,12 @@ void Application::loadSettings()
     m_settings->rtlsdr.bandwidth = settings->value("RTL-SDR/bandwidth", 0).toUInt();
     m_settings->rtlsdr.biasT = settings->value("RTL-SDR/bias-T", false).toBool();
     m_settings->rtlsdr.agcLevelMax = settings->value("RTL-SDR/agcLevelMax", 0).toInt();
-    m_settings->rtlsdr.ppm = settings->value("RTL-SDR/ppm", 0).toInt();
+    settings->beginGroup("RTL-SDR/ppmMap");
+    for (const auto &key : settings->childKeys())
+    {
+        m_settings->rtlsdr.ppmMap[key] = settings->value(key).toInt();
+    }
+    settings->endGroup();
     m_settings->rtlsdr.rfLevelEna = settings->value("RTL-SDR/rfLevelEna", true).toBool();
     m_settings->rtlsdr.rfLevelOffset = settings->value("RTL-SDR/rfLevelOffset", 0.0).toFloat();
 
@@ -3247,7 +3252,12 @@ void Application::loadSettings()
     m_settings->sdrplay.gain.rfGain = settings->value("SDRPLAY/rfGain", -1).toInt();
     m_settings->sdrplay.gain.ifGain = settings->value("SDRPLAY/ifGain", 0).toInt();
     m_settings->sdrplay.gain.ifAgcEna = settings->value("SDRPLAY/ifAgcEna", true).toBool();
-    m_settings->sdrplay.ppm = settings->value("SDRPLAY/ppm", 0).toInt();
+    settings->beginGroup("SDRPLAY/ppmMap");
+    for (const auto &key : settings->childKeys())
+    {
+        m_settings->sdrplay.ppmMap[key] = settings->value(key).toInt();
+    }
+    settings->endGroup();
     m_settings->sdrplay.biasT = settings->value("SDRPLAY/bias-T", false).toBool();
 #endif
     m_settings->rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
@@ -3503,7 +3513,12 @@ void Application::saveSettings()
     settings->setValue("RTL-SDR/bandwidth", m_settings->rtlsdr.bandwidth);
     settings->setValue("RTL-SDR/bias-T", m_settings->rtlsdr.biasT);
     settings->setValue("RTL-SDR/agcLevelMax", m_settings->rtlsdr.agcLevelMax);
-    settings->setValue("RTL-SDR/ppm", m_settings->rtlsdr.ppm);
+    settings->beginGroup("RTL-SDR/ppmMap");
+    for (auto it = m_settings->rtlsdr.ppmMap.cbegin(); it != m_settings->rtlsdr.ppmMap.cend(); ++it)
+    {
+        settings->setValue(it.key(), it.value());
+    }
+    settings->endGroup();
     settings->setValue("RTL-SDR/rfLevelEna", m_settings->rtlsdr.rfLevelEna);
     settings->setValue("RTL-SDR/rfLevelOffset", m_settings->rtlsdr.rfLevelOffset);
 
@@ -3550,7 +3565,12 @@ void Application::saveSettings()
     settings->setValue("SDRPLAY/rfGain", m_settings->sdrplay.gain.rfGain);
     settings->setValue("SDRPLAY/ifGain", m_settings->sdrplay.gain.ifGain);
     settings->setValue("SDRPLAY/ifAgcEna", m_settings->sdrplay.gain.ifAgcEna);
-    settings->setValue("SDRPLAY/ppm", m_settings->sdrplay.ppm);
+    settings->beginGroup("SDRPLAY/ppmMap");
+    for (auto it = m_settings->sdrplay.ppmMap.cbegin(); it != m_settings->sdrplay.ppmMap.cend(); ++it)
+    {
+        settings->setValue(it.key(), it.value());
+    }
+    settings->endGroup();
     settings->setValue("SDRPLAY/bias-T", m_settings->sdrplay.biasT);
 #endif
 
