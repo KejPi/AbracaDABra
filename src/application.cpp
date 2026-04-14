@@ -365,6 +365,8 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
 
     m_slModel = new SLModel(m_serviceList, m_metadataManager, this);
     m_slSelectionModel = new QItemSelectionModel(m_slModel, this);
+    m_slProxyModel = new SLProxyModel(this);
+    m_slProxyModel->setSourceModel(m_slModel);
 
     connect(m_serviceList, &ServiceList::serviceAdded, m_slModel, &SLModel::addService);
     connect(m_serviceList, &ServiceList::serviceUpdated, m_slModel, &SLModel::updateService);
@@ -801,7 +803,7 @@ void Application::setContextProperties()
     context->setContextProperty("application", this);
     context->setContextProperty("appUI", m_ui);
     context->setContextProperty("navigationModel", m_navigationModel);
-    context->setContextProperty("slModel", m_slModel);
+    context->setContextProperty("slModel", m_slProxyModel);
     context->setContextProperty("slTreeModel", m_slTreeModel);
     context->setContextProperty("channelListModel", m_channelListModel);
     context->setContextProperty("slSelectionModel", m_slSelectionModel);
@@ -3648,9 +3650,9 @@ void Application::setServiceFavorite(const QModelIndex &index, bool checked)
     ServiceListId currentId = m_slModel->id(currentIdx);
     ServiceListId id;
 
-    if (dynamic_cast<const SLModel *>(index.model()))
-    {  // index belongs to service list model
-        id = m_slModel->id(index);
+    if (dynamic_cast<const SLProxyModel *>(index.model()))
+    {  // index belongs to service list proxy model
+        id = m_slProxyModel->id(index);
         m_serviceList->setServiceFavorite(id, checked);
     }
 

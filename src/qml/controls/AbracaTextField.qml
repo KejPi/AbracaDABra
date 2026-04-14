@@ -33,6 +33,8 @@ import abracaComponents
 TextField {
     id: control
 
+    signal cleared()
+
     property string defaultText: ""
 
     selectByMouse: true
@@ -82,7 +84,7 @@ TextField {
             else {
                 control.clear()
                 editingFinished();
-                control.forceActiveFocus()
+                control.cleared()
             }
         }
     }

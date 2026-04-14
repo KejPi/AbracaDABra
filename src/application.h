@@ -435,7 +435,9 @@ private:
     // service list
     ServiceList *m_serviceList;
     SLModel *m_slModel;
+    SLProxyModel *m_slProxyModel;
     SLTreeModel *m_slTreeModel;
+    QItemSelection m_savedSourceSelection;
 
     // user applications
     DLDecoder *m_dlDecoder[Instance::NumInstances];

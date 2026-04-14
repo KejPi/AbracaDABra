@@ -174,265 +174,363 @@ Item {
         }
     }
 
-    ListView {
-        id: serviceList
-        clip: true
-        enabled: appUI.serviceSelectionEnabled
-        model: slModel
-        opacity: enabled ? 1.0 : 0.6
+    Item {
+        id: serviceListItem
+        property bool filterVisible: false
 
-        signal restartHighlightAnimation()
-
-        property int selectedItemIndex: -1
-        property int previousCurrentIndex: -1
-        property bool shouldAnimate: false
-
-        topMargin: UI.standardMargin
-        bottomMargin: UI.standardMargin
-
-        currentIndex: -1
-        highlightFollowsCurrentItem: false
-        highlightRangeMode: ListView.ApplyRange
-        preferredHighlightBegin: itemHeight
-        preferredHighlightEnd: serviceList.height - itemHeight
-        highlight: Rectangle {
-            id: keyboardHighlight
-            visible: serviceList.activeFocus
-            onVisibleChanged: {
-                if (visible) {
-                    // Reset opacity highlight appears
-                    keyboardHighlight.opacity = 1.0;
-                    highlightFadeAnim.restart();
-                }
-            }
-            Connections {
-                target: serviceList
-                function onRestartHighlightAnimation() {
-                    keyboardHighlight.opacity = 1.0;
-                    highlightFadeAnim.restart();
-                }
-            }
-            z: 100 // serviceList.currentIndex === serviceList.selectedItemIndex ? 0 : 100
-            color: "transparent"
-            radius: UI.controlRadius
-            y: serviceList.currentItem ? serviceList.currentItem.y : 0
-            height: serviceList.currentItem ? serviceList.currentItem.height : 0
-            width: serviceList.width - UI.standardMargin
-            border.color: UI.colors.accent
-            border.width: 1 // serviceList.currentIndex === serviceList.selectedItemIndex ? 0 : 1
-            Behavior on y {
-                enabled: serviceList.shouldAnimate
-                SmoothedAnimation {
-                    velocity: 200
-                }
-            }
-            opacity: 1.0
-            onYChanged: {
-                // Reset opacity when moving highlight
-                keyboardHighlight.opacity = 1.0;
-                highlightFadeAnim.restart();
-            }
-            SequentialAnimation on opacity {
-                id: highlightFadeAnim
-                running: serviceList.activeFocus
-                loops: 1
-                PauseAnimation {
-                    duration: 2000
-                }
-                NumberAnimation {
-                    to: 0.2
-                    duration: 300
-                }
+        function showFilter() {
+            filterVisible = true;
+            if (!UI.isAndroid) {
+                serviceFilter.forceActiveFocus();
             }
         }
 
-        onCurrentIndexChanged: {
-            // Animate only if moving by exactly 1 position (up or down)
-            let diff = Math.abs(currentIndex - previousCurrentIndex);
-            shouldAnimate = (diff === 1);
-            previousCurrentIndex = currentIndex;
-        }
-
-        // connection to selection model
-        Connections {
-            target: slSelectionModel
-            function onCurrentChanged(current, previous) {
-                if (serviceList.currentIndex !== current.row) {
-                    serviceList.currentIndex = current.row;
-                }
-                serviceList.selectedItemIndex = current.row;
+        function hideFilter() {
+            serviceFilter.text = "";
+            if (filterVisible) {
+                serviceList.shouldAnimate = false;
+                serviceList.enableAnimate = false;
             }
-        }
-        // initial index
-        Component.onCompleted: {
-            currentIndex = slSelectionModel.currentIndex.row;
-            selectedItemIndex = slSelectionModel.currentIndex.row;
-            Qt.callLater(function () {
-                // Manually position to respect highlight range since highlightFollowsCurrentItem is false
-                let targetY = currentIndex * itemHeight;
-                let viewportTop = contentY;
-                let viewportBottom = contentY + height;
-                let preferredTop = preferredHighlightBegin;
-                let preferredBottom = height - preferredHighlightEnd;
-
-                // Position so item is within preferred highlight range
-                if (targetY < viewportTop + preferredTop) {
-                    contentY = Math.max(0, targetY - preferredTop);
-                } else if (targetY + itemHeight > viewportBottom - preferredBottom) {
-                    contentY = Math.min(contentHeight - height, targetY + itemHeight - height + preferredBottom);
+            filterVisible = false;
+            Qt.callLater(function() {
+                if (serviceList.currentIndex >= 0) {
+                    serviceList.positionViewAtIndex(serviceList.currentIndex, ListView.Contain);
                 }
-            });
-        }
-
-        Keys.onPressed: (event) => {
-            if (event.text.length === 1) {
-                let letter = event.text.toUpperCase();
-                let count = slModel.rowCount();
-                if (count === 0) return;
-
-                let targetIndex = count - 1; // default: last item
-                for (let i = 0; i < count; i++) {
-                    let isFavorite = slModel.data(slModel.index(i, 0), Qt.UserRole + 5); // isFavorite role
-                    let name = slModel.data(slModel.index(i, 0), Qt.DisplayRole);
-                    if (isFavorite) {
-                        continue; // skip favorites when searching by letter
-                    }
-                    let firstChar = name.charAt(0).toUpperCase();
-                    if (firstChar.localeCompare(letter) >= 0) {
-                        targetIndex = i;
-                        break;
-                    }
-                }
-
-                serviceList.currentIndex = targetIndex;
-                serviceList.positionViewAtIndex(targetIndex, ListView.Contain);
-                serviceList.restartHighlightAnimation();
-                event.accepted = true;
-            }
-        }
-
-        delegate: AbracaItemDelegate {
-            required property string serviceName
-            required property int index
-            required property string sidHex
-            required property bool isFavorite
-            required property string smallLogoId
-
-            readonly property bool isSelectedItem: index === serviceList.selectedItemIndex
-
-            height: itemHeight
-            width: serviceList.width - UI.standardMargin
-
-            highlighted: isSelectedItem // ListView.isCurrentItem
-            onClicked: {
-                // slSelectionModel.select(serviceList.model.index(index, 0), ItemSelectionModel.ClearAndSelect);
-                slSelectionModel.setCurrentIndex(serviceList.model.index(index, 0), ItemSelectionModel.ClearAndSelect);
                 serviceList.forceActiveFocus();
-                serviceList.restartHighlightAnimation();
-                serviceList.currentIndex = index
-            }
+            });
 
-            text: serviceName
-
-            topPadding: appUI.isCompact ? 0 : (itemHeight - 32) / 2
-            leftPadding: topPadding
-            rightPadding: 0 // topPadding
-            bottomPadding: topPadding
-
-            contentItem: Item {
-                id: contentItem
-                width: parent.width - leftPadding - rightPadding
-                height: parent.height - topPadding - bottomPadding
-                // Normal view
-                Item {
-                    id: normalViewItem
-                    visible: !appUI.isCompact
-                    anchors.fill: parent
-
-                    AbracaColorizedImage {
-                        id: logoImage
-                        width: 32
-                        height: 32
-                        anchors.verticalCenter: normalViewItem.verticalCenter
-                        source: smallLogoId !== "" ? "image://metadata/logo/" + smallLogoId : UI.imagesUrl + "icon-service.svg"
-                        cache: false
-                        colorizationEnabled: smallLogoId === ""
-                        colorizationColor: UI.colors.disabled
-                    }
-                    Column {
-                        anchors.verticalCenter: normalViewItem.verticalCenter
-                        // anchors.left: favoriteIcon.right
-                        anchors.left: logoImage.right
-                        anchors.leftMargin: UI.standardMargin
-                        spacing: 2
-                        AbracaLabel {
-                            text: serviceName
-                            font.bold: isSelectedItem
-                            color: isSelectedItem ? UI.colors.listItemSelected : UI.colors.textPrimary
-                        }
-                        AbracaLabel {
-                            text: "SID: " + sidHex
-                            role: UI.LabelRole.Secondary
-                        }
-                    }
-                }
-                // Slim view
-                AbracaLabel {
-                    id: slimLabel
-                    visible: appUI.isCompact
-                    anchors.verticalCenter: contentItem.verticalCenter
-                    anchors.left: contentItem.left
-                    anchors.leftMargin: UI.standardMargin
-                    text: serviceName
-                    font.bold: isSelectedItem
-                    color: isSelectedItem ? UI.colors.listItemSelected : UI.colors.textPrimary
-                }
-
-                // Shared favorite button (used by both views)
-                AbracaImgButton {
-                    id: favoriteIcon
-                    anchors.verticalCenter: contentItem.verticalCenter
-                    anchors.right: contentItem.right
-
-                    colorizationEnabled: checked === false || isSelectedItem
-                    colorizationColor: isSelectedItem && isFavorite ? UI.colors.accent : UI.colors.inactive
-                    icon.height: UI.iconSizeSmall
-                    icon.width: UI.iconSizeSmall
-                    checkable: true
-                    checked: isFavorite
-                    sourceChecked: UI.imagesUrl + "star.svg"
-                    sourceUnchecked: UI.imagesUrl + "starEmpty.svg"
-                    toolTipChecked: qsTr("Remove service from favorites")
-                    toolTipUnchecked: qsTr("Add service to favorites")
-                    onToggled: {
-                        let modelIndex = serviceList.model.index(index, 0);
-                        // console.log("Favorite toggled: " + checked + " for service index: " + index, modelIndex)
-                        application.setServiceFavorite(modelIndex, checked);
-                    }
-                }
-            }
         }
-        ScrollIndicator.vertical: AbracaScrollIndicator {}
-        AbracaHorizontalShadow {
-            anchors.horizontalCenter: parent.horizontalCenter
+        Shortcut {
+            sequence: StandardKey.Find
+            onActivated: serviceListItem.showFilter()
+        }
+
+        AbracaTextField {
+            id: serviceFilter
             anchors.top: parent.top
-            width: parent.width
-            topDownDirection: true
-            shadowDistance: serviceList.contentY
+            anchors.topMargin: UI.standardMargin
+            anchors.left: parent.left
+            anchors.leftMargin: isPortrait ? UI.standardMargin : 0
+            anchors.right: parent.right
+            anchors.rightMargin: UI.standardMargin
+            //anchors.leftMargin: UI.standardMargin
+            placeholderText: qsTr("Filter services...")
+            text: slModel.serviceNameFilter
+            onTextChanged: slModel.serviceNameFilter = text
+            visible: serviceListItem.filterVisible
+            height: serviceListItem.filterVisible ? implicitHeight : 0
+            opacity: serviceListItem.filterVisible ? 1.0 : 0.0
+
+            Behavior on height {
+                NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+            }
+            Behavior on opacity {
+                NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+            }
+
+            Keys.onEscapePressed: serviceListItem.hideFilter()
+            Keys.onDownPressed: {
+                serviceList.forceActiveFocus();
+                if (serviceList.currentIndex < 0 && serviceList.count > 0) {
+                    serviceList.currentIndex = 0;
+                }
+            }
+            onCleared: serviceListItem.hideFilter()
         }
-        AbracaHorizontalShadow {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: parent.bottom
-            width: parent.width
-            topDownDirection: false
-            shadowDistance: serviceList.contentHeight - serviceList.height - serviceList.contentY
+        ListView {
+            id: serviceList
+            anchors.fill: parent
+            anchors.leftMargin: isPortrait ? UI.standardMargin : 0
+            anchors.topMargin: serviceListItem.filterVisible ? serviceFilter.implicitHeight + 2*UI.standardMargin : 0
+            Behavior on anchors.topMargin {
+                NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+            }
+            clip: true
+            enabled: appUI.serviceSelectionEnabled
+            model: slModel
+            opacity: enabled ? 1.0 : 0.6
+
+            signal restartHighlightAnimation()
+
+            function syncSelectionFromSourceModel() {
+                let sourceCurrent = slSelectionModel.currentIndex;
+                let mappedCurrent = serviceList.model.mapFromSource(sourceCurrent);
+                let row = (mappedCurrent && mappedCurrent.valid) ? mappedCurrent.row : -1;
+
+                if (serviceList.currentIndex !== row) {
+                    serviceList.currentIndex = row;
+                }
+                serviceList.selectedItemIndex = row;
+            }
+
+            property int selectedItemIndex: -1
+            property int previousCurrentIndex: -1
+            property bool shouldAnimate: false
+            property bool enableAnimate: true
+
+            topMargin: UI.standardMargin
+            bottomMargin: UI.standardMargin
+
+            // Android: pull down past the top of the list to reveal the filter field
+            onVerticalOvershootChanged: {
+                if (UI.isAndroid && !serviceListItem.filterVisible && verticalOvershoot < -UI.controlHeight / 2) {
+                    serviceListItem.showFilter();
+                }
+            }
+
+            currentIndex: -1
+            highlightFollowsCurrentItem: false
+            highlightRangeMode: ListView.ApplyRange
+            preferredHighlightBegin: itemHeight
+            preferredHighlightEnd: serviceList.height - itemHeight
+            highlight: Rectangle {
+                id: keyboardHighlight
+                visible: serviceList.activeFocus
+                onVisibleChanged: {
+                    if (visible) {
+                        // Reset opacity highlight appears
+                        keyboardHighlight.opacity = 1.0;
+                        highlightFadeAnim.restart();
+                    }
+                }
+                Connections {
+                    target: serviceList
+                    function onRestartHighlightAnimation() {
+                        keyboardHighlight.opacity = 1.0;
+                        highlightFadeAnim.restart();
+                    }
+                }
+                z: 100 // serviceList.currentIndex === serviceList.selectedItemIndex ? 0 : 100
+                color: "transparent"
+                radius: UI.controlRadius
+                y: serviceList.currentItem ? serviceList.currentItem.y : 0
+                height: serviceList.currentItem ? serviceList.currentItem.height : 0
+                width: serviceList.width - UI.standardMargin
+                border.color: UI.colors.accent
+                border.width: 1 // serviceList.currentIndex === serviceList.selectedItemIndex ? 0 : 1
+                Behavior on y {
+                    enabled: serviceList.shouldAnimate
+                    SmoothedAnimation {
+                        velocity: 200
+                    }
+                }
+                opacity: 1.0
+                onYChanged: {
+                    // Reset opacity when moving highlight
+                    keyboardHighlight.opacity = 1.0;
+                    highlightFadeAnim.restart();
+                }
+                SequentialAnimation on opacity {
+                    id: highlightFadeAnim
+                    running: serviceList.activeFocus
+                    loops: 1
+                    PauseAnimation {
+                        duration: 2000
+                    }
+                    NumberAnimation {
+                        to: 0.2
+                        duration: 300
+                    }
+                }
+            }
+
+            onCurrentIndexChanged: {
+                // Animate only if moving by exactly 1 position (up or down)
+                let diff = Math.abs(currentIndex - previousCurrentIndex);
+                serviceList.shouldAnimate = serviceList.enableAnimate && (diff === 1);
+                serviceList.enableAnimate = true;
+                serviceList.previousCurrentIndex = serviceList.currentIndex;
+            }
+
+            // connection to selection model
+            Connections {
+                target: slSelectionModel
+                function onCurrentChanged(current, previous) {
+                    serviceList.syncSelectionFromSourceModel();
+                }
+            }
+
+            // Keep selection in sync when proxy model changes because of filtering
+            Connections {
+                target: slModel
+                function onServiceNameFilterChanged() {
+                    Qt.callLater(function () {
+                        serviceList.syncSelectionFromSourceModel();
+                    });
+                }
+                function onRowsInserted(parent, first, last) {
+                    Qt.callLater(function () {
+                        serviceList.syncSelectionFromSourceModel();
+                    });
+                }
+                function onRowsRemoved(parent, first, last) {
+                    Qt.callLater(function () {
+                        serviceList.syncSelectionFromSourceModel();
+                    });
+                }
+                function onModelReset() {
+                    Qt.callLater(function () {
+                        serviceList.syncSelectionFromSourceModel();
+                    });
+                }
+                function onLayoutChanged(parents, hint) {
+                    Qt.callLater(function () {
+                        serviceList.syncSelectionFromSourceModel();
+                    });
+                }
+            }
+            // initial index
+            Component.onCompleted: {
+                let currentIdx = slSelectionModel.currentIndex;
+                currentIndex = slModel.mapFromSource(currentIdx).row;
+                selectedItemIndex = slModel.mapFromSource(currentIdx).row;
+                Qt.callLater(function () {
+                    // Manually position to respect highlight range since highlightFollowsCurrentItem is false
+                    let targetY = currentIndex * itemHeight;
+                    let viewportTop = contentY;
+                    let viewportBottom = contentY + height;
+                    let preferredTop = preferredHighlightBegin;
+                    let preferredBottom = height - preferredHighlightEnd;
+
+                    // Position so item is within preferred highlight range
+                    if (targetY < viewportTop + preferredTop) {
+                        contentY = Math.max(0, targetY - preferredTop);
+                    } else if (targetY + itemHeight > viewportBottom - preferredBottom) {
+                        contentY = Math.min(contentHeight - height, targetY + itemHeight - height + preferredBottom);
+                    }
+                });
+            }
+
+            Keys.onPressed: (event) => {
+                if (event.text.length === 1 && event.text.match(/\S/)) {
+                    serviceListItem.showFilter();
+                    serviceFilter.text = event.text;
+                    event.accepted = true;
+                }
+            }
+
+            delegate: AbracaItemDelegate {
+                required property string serviceName
+                required property int index
+                required property string sidHex
+                required property bool isFavorite
+                required property string smallLogoId
+
+                readonly property bool isSelectedItem: index === serviceList.selectedItemIndex
+
+                height: itemHeight
+                width: serviceList.width - UI.standardMargin
+
+                highlighted: isSelectedItem // ListView.isCurrentItem
+                onClicked: {
+                    slSelectionModel.setCurrentIndex(serviceList.model.mapToSource(serviceList.model.index(index, 0)), ItemSelectionModel.ClearAndSelect);
+                    serviceListItem.hideFilter();
+                    serviceList.restartHighlightAnimation();
+                    serviceList.currentIndex = index
+                }
+
+                text: serviceName
+
+                topPadding: appUI.isCompact ? 0 : (itemHeight - 32) / 2
+                leftPadding: topPadding
+                rightPadding: 0 // topPadding
+                bottomPadding: topPadding
+
+                contentItem: Item {
+                    id: contentItem
+                    width: parent.width - leftPadding - rightPadding
+                    height: parent.height - topPadding - bottomPadding
+                    // Normal view
+                    Item {
+                        id: normalViewItem
+                        visible: !appUI.isCompact
+                        anchors.fill: parent
+
+                        AbracaColorizedImage {
+                            id: logoImage
+                            width: 32
+                            height: 32
+                            anchors.verticalCenter: normalViewItem.verticalCenter
+                            source: smallLogoId !== "" ? "image://metadata/logo/" + smallLogoId : UI.imagesUrl + "icon-service.svg"
+                            cache: false
+                            colorizationEnabled: smallLogoId === ""
+                            colorizationColor: UI.colors.disabled
+                        }
+                        Column {
+                            anchors.verticalCenter: normalViewItem.verticalCenter
+                            // anchors.left: favoriteIcon.right
+                            anchors.left: logoImage.right
+                            anchors.leftMargin: UI.standardMargin
+                            spacing: 2
+                            AbracaLabel {
+                                text: serviceName
+                                font.bold: isSelectedItem
+                                color: isSelectedItem ? UI.colors.listItemSelected : UI.colors.textPrimary
+                            }
+                            AbracaLabel {
+                                text: "SID: " + sidHex
+                                role: UI.LabelRole.Secondary
+                            }
+                        }
+                    }
+                    // Slim view
+                    AbracaLabel {
+                        id: slimLabel
+                        visible: appUI.isCompact
+                        anchors.verticalCenter: contentItem.verticalCenter
+                        anchors.left: contentItem.left
+                        anchors.leftMargin: UI.standardMargin
+                        text: serviceName
+                        font.bold: isSelectedItem
+                        color: isSelectedItem ? UI.colors.listItemSelected : UI.colors.textPrimary
+                    }
+
+                    // Shared favorite button (used by both views)
+                    AbracaImgButton {
+                        id: favoriteIcon
+                        anchors.verticalCenter: contentItem.verticalCenter
+                        anchors.right: contentItem.right
+
+                        colorizationEnabled: checked === false || isSelectedItem
+                        colorizationColor: isSelectedItem && isFavorite ? UI.colors.accent : UI.colors.inactive
+                        icon.height: UI.iconSizeSmall
+                        icon.width: UI.iconSizeSmall
+                        checkable: true
+                        checked: isFavorite
+                        sourceChecked: UI.imagesUrl + "star.svg"
+                        sourceUnchecked: UI.imagesUrl + "starEmpty.svg"
+                        toolTipChecked: qsTr("Remove service from favorites")
+                        toolTipUnchecked: qsTr("Add service to favorites")
+                        onToggled: {
+                            let modelIndex = serviceList.model.index(index, 0);
+                            // console.log("Favorite toggled: " + checked + " for service index: " + index, modelIndex)
+                            application.setServiceFavorite(modelIndex, checked);
+                        }
+                    }
+                }
+            }
+            ScrollIndicator.vertical: AbracaScrollIndicator {}
+            AbracaHorizontalShadow {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+                width: parent.width
+                topDownDirection: true
+                shadowDistance: serviceList.contentY
+            }
+            AbracaHorizontalShadow {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                width: parent.width
+                topDownDirection: false
+                shadowDistance: serviceList.contentHeight - serviceList.height - serviceList.contentY
+            }
+            // Rectangle {
+            //     anchors.fill: parent
+            //     color: "transparent"
+            //     border.color: UI.colors.divider
+            //     border.width: serviceList.activeFocus ? 1 : 0
+            // }
         }
-        // Rectangle {
-        //     anchors.fill: parent
-        //     color: "transparent"
-        //     border.color: UI.colors.divider
-        //     border.width: serviceList.activeFocus ? 1 : 0
-        // }
     }
 
     Item {
@@ -440,6 +538,7 @@ Item {
         TreeView {
             id: serviceTree
             anchors.fill: serviceTreeItem
+            anchors.leftMargin: isPortrait ? UI.standardMargin : 0
             topMargin: UI.standardMargin
             bottomMargin: UI.standardMargin
             leftMargin: 0
@@ -877,7 +976,7 @@ Item {
                 Layout.fillHeight: true
                 currentIndex: bar.currentIndex
                 LayoutItemProxy {
-                    target: serviceList
+                    target: serviceListItem
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     Layout.minimumWidth: listWidth
@@ -890,7 +989,7 @@ Item {
                 }
             }
             LayoutItemProxy {
-                target: serviceList
+                target: serviceListItem
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.topMargin: slStacked.visible ? 0 : UI.standardMargin
