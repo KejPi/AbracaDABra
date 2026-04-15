@@ -66,13 +66,13 @@ Item {
         anchors.top: parent.top
         width: parent.width
         topDownDirection: true
-        shadowDistance: flickable.contentY
+        shadowDistance: flickable.contentY - flickable.originY
     }
     AbracaHorizontalShadow {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         width: parent.width
         topDownDirection: false
-        shadowDistance: flickable.contentHeight - flickable.height - flickable.contentY
+        shadowDistance: flickable.contentHeight - flickable.height - (flickable.contentY - flickable.originY)
     }
 }

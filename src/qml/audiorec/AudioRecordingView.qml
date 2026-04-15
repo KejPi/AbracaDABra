@@ -128,14 +128,14 @@ Item {
                 anchors.top: parent.top
                 width: parent.width
                 topDownDirection: true
-                shadowDistance: scheduleList.contentY
+                shadowDistance: scheduleList.contentY - scheduleList.originY
             }
             AbracaHorizontalShadow {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 width: parent.width
                 topDownDirection: false
-                shadowDistance: scheduleList.contentHeight - scheduleList.height - scheduleList.contentY
+                shadowDistance: scheduleList.contentHeight - scheduleList.height - (scheduleList.contentY - scheduleList.originY)
             }
         }
         RowLayout {

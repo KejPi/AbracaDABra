@@ -515,14 +515,14 @@ Item {
                 anchors.top: parent.top
                 width: parent.width
                 topDownDirection: true
-                shadowDistance: serviceList.contentY
+                shadowDistance: serviceList.contentY - serviceList.originY
             }
             AbracaHorizontalShadow {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 width: parent.width
                 topDownDirection: false
-                shadowDistance: serviceList.contentHeight - serviceList.height - serviceList.contentY
+                shadowDistance: serviceList.contentHeight - serviceList.height - (serviceList.contentY - serviceList.originY)
             }
             // Rectangle {
             //     anchors.fill: parent

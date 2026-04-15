@@ -549,14 +549,14 @@ Rectangle {
                     anchors.top: parent.top
                     width: parent.width
                     topDownDirection: true
-                    shadowDistance: mainView.contentY
+                    shadowDistance: mainView.contentY - mainView.originY
                 }
                 AbracaHorizontalShadow {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.bottom: parent.bottom
                     width: parent.width
                     topDownDirection: false
-                    shadowDistance: mainView.contentHeight - mainView.height - mainView.contentY
+                    shadowDistance: mainView.contentHeight - mainView.height - (mainView.contentY - mainView.originY)
                 }
             }
         }
