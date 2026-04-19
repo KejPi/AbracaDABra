@@ -501,6 +501,7 @@ set(TSFILES
     l10n/${TARGET}_de.ts
     l10n/${TARGET}_pl.ts
     l10n/${TARGET}_nl.ts
+    l10n/${TARGET}_it.ts
 )
 qt_add_translations(${TARGET} TS_FILES ${TSFILES}
     LUPDATE_OPTIONS "-noobsolete"

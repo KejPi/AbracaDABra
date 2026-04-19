@@ -311,7 +311,7 @@
     </message>
     <message>
         <location filename="../application.cpp" line="1041"/>
-        <location filename="../application.cpp" line="4171"/>
+        <location filename="../application.cpp" line="4172"/>
         <source>DAB time</source>
         <translation>Čas z DAB vysílání</translation>
     </message>
@@ -613,32 +613,32 @@ Dekódováno %1 / %2 MOT objektů</translation>
         <translation>Nepřehrává žádnou stanici</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4277"/>
+        <location filename="../application.cpp" line="4278"/>
         <source>Service list exported</source>
         <translation>Seznam stanic vyexportován</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4281"/>
+        <location filename="../application.cpp" line="4282"/>
         <source>Failed to export service list</source>
         <translation>Export seznamu stanic selhal</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4288"/>
+        <location filename="../application.cpp" line="4289"/>
         <source>Clear service list?</source>
         <translation>Vymazat seznam stanic?</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4288"/>
+        <location filename="../application.cpp" line="4289"/>
         <source>Current service list including favorites will be deleted. This action is irreversible.</source>
         <translation>Současný seznam stanic včetně oblíbených bude vymazán. Tato akce je nevratná.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4302"/>
+        <location filename="../application.cpp" line="4303"/>
         <source>Clear</source>
         <translation>Vymazat</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4303"/>
+        <location filename="../application.cpp" line="4304"/>
         <source>Cancel</source>
         <translation>Zrušit</translation>
     </message>
@@ -1048,7 +1048,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
         <translation>Program není k dispozici</translation>
     </message>
     <message>
-        <location filename="../qml/epg/EPGView.qml" line="600"/>
+        <location filename="../qml/epg/EPGView.qml" line="599"/>
         <source>Schedule audio recording</source>
         <translation>Naplánovat nahrávání zvuku</translation>
     </message>
@@ -5343,12 +5343,12 @@ a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&
 <context>
     <name>TIIMap</name>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="428"/>
+        <location filename="../qml/tii/TIIMap.qml" line="420"/>
         <source>Stop logging</source>
         <translation>Zastavit logování</translation>
     </message>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="428"/>
+        <location filename="../qml/tii/TIIMap.qml" line="420"/>
         <source>Record CSV log</source>
         <translation>Zaznamenat CSV log</translation>
     </message>

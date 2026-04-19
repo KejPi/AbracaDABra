@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="nl_NL">
+<TS version="2.1" sourcelanguage="en">
 <context>
     <name>AboutUI</name>
     <message>
@@ -1998,64 +1998,8 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dlplusmodel.cpp" line="208"/>
-        <location filename="../dlplusmodel.cpp" line="214"/>
-        <source>Open link</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="286"/>
-        <source>Title</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="289"/>
-        <source>Album</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="292"/>
-        <source>Track Number</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="295"/>
-        <source>Artist</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="298"/>
-        <source>Composition</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="301"/>
-        <source>Movement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="304"/>
-        <source>Conductor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="307"/>
-        <source>Composer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="310"/>
-        <source>Band</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="313"/>
-        <source>Comment</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="316"/>
-        <source>Genre</source>
+        <location filename="../dabtables.cpp" line="164"/>
+        <source>No programme type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2066,220 +2010,6 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dlplusmodel.cpp" line="322"/>
-        <source>News (local)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="325"/>
-        <source>Stock Market</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dabtables.cpp" line="172"/>
-        <location filename="../dlplusmodel.cpp" line="328"/>
-        <source>Sport</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="331"/>
-        <source>Lottery</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="334"/>
-        <source>Horoscope</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="337"/>
-        <source>Daily Diversion</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="340"/>
-        <source>Health</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dabtables.cpp" line="2205"/>
-        <location filename="../dlplusmodel.cpp" line="343"/>
-        <source>Event</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="346"/>
-        <source>Scene</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="349"/>
-        <source>Cinema</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="352"/>
-        <source>TV</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dabtables.cpp" line="2203"/>
-        <location filename="../dlplusmodel.cpp" line="358"/>
-        <source>Weather</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="361"/>
-        <source>Traffic</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dabtables.cpp" line="2193"/>
-        <location filename="../dlplusmodel.cpp" line="364"/>
-        <source>Alarm</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="367"/>
-        <source>Advertisment</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="370"/>
-        <source>URL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="373"/>
-        <source>Other</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="376"/>
-        <source>Station (short)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="379"/>
-        <source>Station</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="382"/>
-        <source>Now</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="385"/>
-        <source>Next</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="388"/>
-        <source>Programme Part</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="391"/>
-        <source>Host</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="394"/>
-        <source>Editorial</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="400"/>
-        <source>Homepage</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="406"/>
-        <source>Phone (Hotline)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="409"/>
-        <source>Phone (Studio)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="412"/>
-        <source>Phone (Other)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="415"/>
-        <source>SMS (Studio)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="418"/>
-        <source>SMS (Other)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="421"/>
-        <source>E-mail (Hotline)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="424"/>
-        <source>E-mail (Studio)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="427"/>
-        <source>E-mail (Other)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="430"/>
-        <source>MMS</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="433"/>
-        <source>Chat Message</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="436"/>
-        <source>Chat</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="439"/>
-        <source>Vote Question</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="442"/>
-        <source>Vote Here</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="447"/>
-        <source>Private 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="450"/>
-        <source>Private 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dlplusmodel.cpp" line="453"/>
-        <source>Private 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../dabtables.cpp" line="164"/>
-        <source>No programme type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../dabtables.cpp" line="168"/>
         <source>Current Affairs</source>
         <translation type="unfinished"></translation>
@@ -2287,6 +2017,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../dabtables.cpp" line="170"/>
         <source>Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dabtables.cpp" line="172"/>
+        <location filename="../dlplusmodel.cpp" line="328"/>
+        <source>Sport</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4030,6 +3766,12 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../dabtables.cpp" line="2193"/>
+        <location filename="../dlplusmodel.cpp" line="364"/>
+        <source>Alarm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../dabtables.cpp" line="2195"/>
         <source>Traffic News</source>
         <translation type="unfinished"></translation>
@@ -4042,6 +3784,18 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../dabtables.cpp" line="2199"/>
         <source>Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dabtables.cpp" line="2203"/>
+        <location filename="../dlplusmodel.cpp" line="358"/>
+        <source>Weather</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dabtables.cpp" line="2205"/>
+        <location filename="../dlplusmodel.cpp" line="343"/>
+        <source>Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4067,6 +3821,252 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../dabtables.cpp" line="2215"/>
         <source>Alarm Test</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="208"/>
+        <location filename="../dlplusmodel.cpp" line="214"/>
+        <source>Open link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="286"/>
+        <source>Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="289"/>
+        <source>Album</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="292"/>
+        <source>Track Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="295"/>
+        <source>Artist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="298"/>
+        <source>Composition</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="301"/>
+        <source>Movement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="304"/>
+        <source>Conductor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="307"/>
+        <source>Composer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="310"/>
+        <source>Band</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="313"/>
+        <source>Comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="316"/>
+        <source>Genre</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="322"/>
+        <source>News (local)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="325"/>
+        <source>Stock Market</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="331"/>
+        <source>Lottery</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="334"/>
+        <source>Horoscope</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="337"/>
+        <source>Daily Diversion</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="340"/>
+        <source>Health</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="346"/>
+        <source>Scene</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="349"/>
+        <source>Cinema</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="352"/>
+        <source>TV</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="361"/>
+        <source>Traffic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="367"/>
+        <source>Advertisment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="370"/>
+        <source>URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="373"/>
+        <source>Other</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="376"/>
+        <source>Station (short)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="379"/>
+        <source>Station</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="382"/>
+        <source>Now</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="385"/>
+        <source>Next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="388"/>
+        <source>Programme Part</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="391"/>
+        <source>Host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="394"/>
+        <source>Editorial</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="400"/>
+        <source>Homepage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="406"/>
+        <source>Phone (Hotline)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="409"/>
+        <source>Phone (Studio)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="412"/>
+        <source>Phone (Other)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="415"/>
+        <source>SMS (Studio)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="418"/>
+        <source>SMS (Other)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="421"/>
+        <source>E-mail (Hotline)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="424"/>
+        <source>E-mail (Studio)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="427"/>
+        <source>E-mail (Other)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="430"/>
+        <source>MMS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="433"/>
+        <source>Chat Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="436"/>
+        <source>Chat</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="439"/>
+        <source>Vote Question</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="442"/>
+        <source>Vote Here</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="447"/>
+        <source>Private 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="450"/>
+        <source>Private 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dlplusmodel.cpp" line="453"/>
+        <source>Private 3</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4541,6 +4541,11 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../tii/scannerbackend.cpp" line="964"/>
+        <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../tii/scannerbackend.cpp" line="971"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
@@ -4548,11 +4553,6 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="975"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../tii/scannerbackend.cpp" line="964"/>
-        <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4887,11 +4887,6 @@ it is anonymous and contains no personal data.</source>
 <context>
     <name>ServiceList</name>
     <message>
-        <location filename="../servicelist.cpp" line="439"/>
-        <source>Service name;Short label;SID;SCIdS;Number of ensembles</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../qml/ServiceList.qml" line="405"/>
         <location filename="../qml/ServiceList.qml" line="582"/>
         <source>Remove service from favorites</source>
@@ -4911,6 +4906,11 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/ServiceList.qml" line="723"/>
         <source>Ensembles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../servicelist.cpp" line="439"/>
+        <source>Service name;Short label;SID;SCIdS;Number of ensembles</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -5289,11 +5289,6 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
 <context>
     <name>TIIBackend</name>
     <message>
-        <location filename="../tii/tiibackend.cpp" line="285"/>
-        <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../tii/tiibackend.cpp" line="274"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
@@ -5301,6 +5296,11 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../tii/tiibackend.cpp" line="281"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/tiibackend.cpp" line="285"/>
+        <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5496,6 +5496,11 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../tii/txmapbackend.cpp" line="275"/>
+        <source>Channel: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../tii/txmapbackend.cpp" line="278"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
@@ -5503,11 +5508,6 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../tii/txmapbackend.cpp" line="286"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../tii/txmapbackend.cpp" line="275"/>
-        <source>Channel: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -5603,26 +5603,6 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="400"/>
-        <source>Latitude (TX)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../tii/txtablemodel.cpp" line="402"/>
-        <source>Longitude (TX)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../tii/txtablemodel.cpp" line="404"/>
-        <source>Latitude (RX)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../tii/txtablemodel.cpp" line="406"/>
-        <source>Longitude (RX)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../tii/txtablemodel.cpp" line="376"/>
         <source>Frequency [kHz]</source>
         <translation type="unfinished"></translation>
@@ -5650,6 +5630,26 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="398"/>
         <source>Azimuth [deg]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="400"/>
+        <source>Latitude (TX)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="402"/>
+        <source>Longitude (TX)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="404"/>
+        <source>Latitude (RX)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/txtablemodel.cpp" line="406"/>
+        <source>Longitude (RX)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

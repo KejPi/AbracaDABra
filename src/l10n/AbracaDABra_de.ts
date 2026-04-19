@@ -311,7 +311,7 @@
     </message>
     <message>
         <location filename="../application.cpp" line="1041"/>
-        <location filename="../application.cpp" line="4171"/>
+        <location filename="../application.cpp" line="4172"/>
         <source>DAB time</source>
         <translation>DAB-Zeit</translation>
     </message>
@@ -613,32 +613,32 @@ Decoded %1 / %2 MOT objects</source>
         <translation>Kein Dienst wiedergegeben</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4277"/>
+        <location filename="../application.cpp" line="4278"/>
         <source>Service list exported</source>
         <translation>Dienstliste exportiert</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4281"/>
+        <location filename="../application.cpp" line="4282"/>
         <source>Failed to export service list</source>
         <translation>Export der Dienstliste fehlgeschlagen</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4288"/>
+        <location filename="../application.cpp" line="4289"/>
         <source>Clear service list?</source>
         <translation>Dienstliste leeren?</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4288"/>
+        <location filename="../application.cpp" line="4289"/>
         <source>Current service list including favorites will be deleted. This action is irreversible.</source>
         <translation>Aktuelle Dienstliste inkl. Favoriten wird gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4302"/>
+        <location filename="../application.cpp" line="4303"/>
         <source>Clear</source>
         <translation>Leeren</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4303"/>
+        <location filename="../application.cpp" line="4304"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
@@ -1048,7 +1048,7 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
         <translation>Kein Programm verfügbar</translation>
     </message>
     <message>
-        <location filename="../qml/epg/EPGView.qml" line="600"/>
+        <location filename="../qml/epg/EPGView.qml" line="599"/>
         <source>Schedule audio recording</source>
         <translation>Audioaufnahme planen</translation>
     </message>
@@ -5342,12 +5342,12 @@ dann die Wert hier einfügen.&lt;/i&gt;&lt;/p&gt;</translation>
 <context>
     <name>TIIMap</name>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="428"/>
+        <location filename="../qml/tii/TIIMap.qml" line="420"/>
         <source>Stop logging</source>
         <translation>Loggen beenden</translation>
     </message>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="428"/>
+        <location filename="../qml/tii/TIIMap.qml" line="420"/>
         <source>Record CSV log</source>
         <translation>CSV Log aufzeichnen</translation>
     </message>
