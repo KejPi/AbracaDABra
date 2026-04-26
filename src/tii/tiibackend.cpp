@@ -125,7 +125,7 @@ void TIIBackend::logTiiData() const
                     case TxTableModel::ColTime:
                         if (m_exportUTC)
                         {
-                            dataToWrite = QDateTime::currentDateTime().toUTC().toString("yyyy-MM-dd hh:mm:ss");
+                            dataToWrite = QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss");
                         }
                         else
                         {
