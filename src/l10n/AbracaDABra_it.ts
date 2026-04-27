@@ -505,143 +505,143 @@
     <message>
         <location filename="../application.cpp" line="1798"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
-        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Unterbrochene Durchsage&lt;br&gt;Quelldienst: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Klicken, um die Durchsage fortzuführen</translation>
+        <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Annuncio sospeso&lt;br&gt;Servizio di origine: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Clicca qui per riprendere questo annuncio</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1843"/>
         <source>Default audio device</source>
-        <translation>Standard-Audiogerät</translation>
+        <translation>Dispositivo audio predefinito</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1920"/>
         <source>Stop audio recording</source>
-        <translation>Audioaufnahme beenden</translation>
+        <translation>Ferma registrazione audio</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1926"/>
         <source>Start audio recording</source>
-        <translation>Audioaufnahme starten</translation>
+        <translation>Avvia registrazione audio</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1936"/>
         <source>Audio recording ongoing (%2 kBytes recorded)
 File: %1</source>
-        <translation>Audioaufnahme läuft (%2 kBytes gespeichert)
-Datei: %1</translation>
+        <translation>Registrazione audio in corso (%2 kB registrati)
+File: %1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1944"/>
         <source>Scheduled audio recording is getting ready</source>
-        <translation>Audioaufnahmeplan ist fertig</translation>
+        <translation>La registrazione audio programmata è in fase di preparazione</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1956"/>
         <source>Scheduled recording should start in %1 seconds</source>
-        <translation>Geplante Aufnahme sollte in %1 Sekunden starten</translation>
+        <translation>La registrazione programmata dovrebbe iniziare tra %1 secondi</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1959"/>
         <source>Ongoing recording now prevents the start of a scheduled recording. The schedule will be cancelled if you do not choose otherwise. If you select to keep the schedule, the service might be switched.</source>
-        <translation>Laufende Aufnahme unterbindet jetzt den Start einer geplanten Aufnahme. Der Plan wird abgebrochen, wenn Sie sich nicht anderswertig entscheiden. Wenn Sie den Plan behalten, könnte der Dienst umgeschaltet werden.</translation>
+        <translation>Una registrazione in corso impedisce l&apos;avvio di una registrazione programmata. La programmazione verrà annullata se non si specifica diversamente. Se si sceglie di mantenere la programmazione, il servizio potrebbe subire un&apos;interruzione.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1972"/>
         <source>Keep current recording</source>
-        <translation>Behalte aktuelle Aufnahme</translation>
+        <translation>Mantieni la registrazione corrente</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1973"/>
         <source>Keep schedule</source>
-        <translation>Behalte Plan</translation>
+        <translation>Mantieni la programmazione</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1982"/>
         <source>Scheduled recording starts in %1 seconds</source>
-        <translation>Geplante Aufnahme startet in %1 Sekunden</translation>
+        <translation>La registrazione programmata inizierà tra %1 secondi</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1985"/>
         <source>Recording is going to start according to the schedule. The service might be switched if it differs from the current one.</source>
-        <translation>Aufnahme wird anhand des Plans beginnen. Der Dienst könnte umgeschaltet werden, wenn er vom aktuellen abweicht.</translation>
+        <translation>La registrazione inizierà secondo il programma. Il servizio potrebbe subire modifiche qualora differisse da quello attuale.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1996"/>
         <source>Continue as planned</source>
-        <translation>Fortsetzen wie geplant</translation>
+        <translation>Continua come pianificato</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1997"/>
         <source>Cancel plan</source>
-        <translation>Plan abbrechen</translation>
+        <translation>Annulla pianificazione</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2151"/>
         <source>SPI MOT directory not complete
 Decoded %1 / %2 MOT objects</source>
-        <translation>SPI MOT Verzeichnis nicht vollständig
-%1 / %2 MOT Objekte dekodiert</translation>
+        <translation>Elenco MOT SPI incompleto
+Oggetti MOT decodificati: %1 / %2</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2155"/>
         <source>SPI MOT directory complete
 %1 MOT objects decoded</source>
-        <translation>SPI MOT Verzeichnis vollständig
-%1 MOT Objekte dekodiert</translation>
+        <translation>Elenco SPI MOT completo
+%1 oggetti MOT decodificati</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2160"/>
         <source>SPI MOT directory decoding started</source>
-        <translation>Dekodierung des SPI MOT Verzeichnisses gestartet</translation>
+        <translation>Avviata la decodifica della directory SPI MOT</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2369"/>
         <source>No ensemble</source>
-        <translation>Kein Ensemble</translation>
+        <translation>Nessun Provider</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2370"/>
         <source>No ensemble tuned</source>
-        <translation>Kein Ensemble abgestimmt</translation>
+        <translation>Nessun Provider sintonizzato</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2381"/>
         <source>No service</source>
-        <translation>Kein Dienst</translation>
+        <translation>Nessun canale</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2387"/>
         <source>No service playing</source>
-        <translation>Kein Dienst wiedergegeben</translation>
+        <translation>Nessun canale in riproduzione</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4277"/>
         <source>Service list exported</source>
-        <translation>Dienstliste exportiert</translation>
+        <translation>Lista canali esportata</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4281"/>
         <source>Failed to export service list</source>
-        <translation>Export der Dienstliste fehlgeschlagen</translation>
+        <translation>Impossibile esportare l&apos;elenco dei canali</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4288"/>
         <source>Clear service list?</source>
-        <translation>Dienstliste leeren?</translation>
+        <translation>Pulire la lista canali?</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4288"/>
         <source>Current service list including favorites will be deleted. This action is irreversible.</source>
-        <translation>Aktuelle Dienstliste inkl. Favoriten wird gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
+        <translation>L&apos;elenco attuale dei canali, compresi i preferiti, verrà eliminato. Questa operazione è irreversibile.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4302"/>
         <source>Clear</source>
-        <translation>Leeren</translation>
+        <translation>Pulisci</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4303"/>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Cancella</translation>
     </message>
 </context>
 <context>
@@ -873,7 +873,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/tii/ChannelSelectionDialog.qml" line="77"/>
         <source>Unselect all</source>
-        <translation>Deselezione tutto</translation>
+        <translation>Deseleziona tutto</translation>
     </message>
     <message>
         <location filename="../qml/tii/ChannelSelectionDialog.qml" line="102"/>
@@ -5669,17 +5669,17 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="68"/>
         <source>SPI application</source>
-        <translation>SPI-Anwendung</translation>
+        <translation>Applicazione SPI</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="79"/>
         <source>Enable SPI application</source>
-        <translation>SPI-Anwendung aktivieren</translation>
+        <translation>Abilita applicazione SPI</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="92"/>
         <source>Download data from internet</source>
-        <translation>Daten aus dem Internet herunterladen</translation>
+        <translation>Scarica dati da internet</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="106"/>
@@ -5689,7 +5689,7 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="119"/>
         <source>Show decoding progress</source>
-        <translation>Dekodierungsfortschritt anzeigen</translation>
+        <translation>Mostra l&apos;avanzamento della decodifica</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="132"/>
@@ -5699,22 +5699,22 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="152"/>
         <source>Data storage</source>
-        <translation>Speicherort</translation>
+        <translation>Archiviazione dei dati</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="165"/>
         <source>Folder:</source>
-        <translation>Ordner:</translation>
+        <translation>Cartella:</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="177"/>
         <source>Overwrite existing files</source>
-        <translation>Vorhandene Dateien überschreiben</translation>
+        <translation>Sovrascrivi file esistenti</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="198"/>
         <source>Slideshow data</source>
-        <translation>Slideshowdaten</translation>
+        <translation>Dati della presentazione</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="210"/>
@@ -5724,7 +5724,7 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="221"/>
         <source>SPI data</source>
-        <translation>SPI-Daten</translation>
+        <translation>Dati SPI</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="234"/>
@@ -5739,12 +5739,12 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="249"/>
         <source>For more information see</source>
-        <translation>Für weitere Infos siehe</translation>
+        <translation>Per informazioni dettagliate vedi</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="250"/>
         <source>Documentation</source>
-        <translation>Dokumentation</translation>
+        <translation>Documentazione</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="287"/>
