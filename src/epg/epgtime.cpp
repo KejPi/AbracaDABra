@@ -45,6 +45,7 @@ EPGTime::EPGTime() : QObject(nullptr)
 {
     m_minuteTimer = new QTimer();
     m_minuteTimer->setInterval(1000 * 60);  // 1 minute
+    connect(m_minuteTimer, &QTimer::timeout, this, &EPGTime::onTimerTimeout);
     m_isLiveBroadcasting = true;
     m_secSinceEpoch = 0;
 }
