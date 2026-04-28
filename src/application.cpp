@@ -3597,18 +3597,24 @@ void Application::saveSettings()
     if ((InputDevice::Id::RAWFILE != m_inputDeviceId) && (InputDevice::Id::UNDEFINED != m_inputDeviceId))
     {  // save current service and service list
         QModelIndex current = m_slSelectionModel->currentIndex();
-        const SLModel *model = reinterpret_cast<const SLModel *>(current.model());
-        ServiceListConstIterator it = m_serviceList->findService(model->id(current));
-        if (m_serviceList->serviceListEnd() != it)
+        const QAbstractItemModel *rawModel = current.model();
+        if (rawModel != nullptr)
         {
-            m_SId = (*it)->SId();
-            m_SCIdS = (*it)->SCIdS();
-            m_frequency = (*it)->getEnsemble()->frequency();
+            const SLModel *model = reinterpret_cast<const SLModel *>(rawModel);
+            ServiceListConstIterator it = m_serviceList->findService(model->id(current));
+            if (m_serviceList->serviceListEnd() != it)
+            {
+                m_SId = (*it)->SId();
+                m_SCIdS = (*it)->SCIdS();
+                m_frequency = (*it)->getEnsemble()->frequency();
 
-            settings->setValue("SID", m_SId.value());
-            settings->setValue("SCIdS", m_SCIdS);
-            settings->setValue("Frequency", m_frequency);
+                settings->setValue("SID", m_SId.value());
+                settings->setValue("SCIdS", m_SCIdS);
+                settings->setValue("Frequency", m_frequency);
+            }
         }
+        // Service list was already saved in close() if exit was requested while playing.
+        // Save here covers the idle-exit path and ensures the file is always up to date.
         m_serviceList->save(m_serviceListFilename);
 
         // save audio schedule
@@ -3929,6 +3935,15 @@ void Application::close()
 
         m_exitRequested = true;
         emit resetUserApps();
+
+        // Save service list NOW, before serviceRequest(0,0,0) triggers onEnsembleRemoved()
+        // which would strip the current ensemble from memory before saveSettings() runs.
+        if ((InputDevice::Id::RAWFILE != m_inputDeviceId) && (InputDevice::Id::UNDEFINED != m_inputDeviceId))
+        {
+            m_serviceList->save(m_serviceListFilename);
+            m_audioRecScheduleModel->save(m_audioRecScheduleFilename);
+        }
+
         emit serviceRequest(0, 0, 0);
     }
 }
