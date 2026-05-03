@@ -139,6 +139,7 @@ public:
     {
         LiveStream = (1 << 0),
         Recording = (1 << 1),
+        RfLevel = (1 << 2),
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 

@@ -2883,10 +2883,16 @@ void Application::configureForInputDevice()
         }
         m_ensembleInfoBackend->enableRecording(hasRecording);
 
-        if (isLive && m_scannerBackend != nullptr)
+        if (m_scannerBackend != nullptr)
         {
-            // Scanner
-            connect(m_inputDevice, &InputDevice::error, m_scannerBackend, &ScannerBackend::onInputDeviceError, Qt::QueuedConnection);
+            if (isLive)
+            {
+                // Scanner
+                connect(m_inputDevice, &InputDevice::error, m_scannerBackend, &ScannerBackend::onInputDeviceError, Qt::QueuedConnection);
+                connect(m_inputDevice, &InputDevice::rfLevel, m_scannerBackend, &ScannerBackend::onRfLevel);
+            }
+
+            m_scannerBackend->setDeviceHasRfLevel(m_inputDevice->capabilities() & InputDevice::Capability::RfLevel);
         }
 
         // metadata & EPG
@@ -4200,8 +4206,10 @@ QObject *Application::createScannerBackend()
                 });
         if (m_inputDevice)
         {
+            connect(m_inputDevice, &InputDevice::rfLevel, m_scannerBackend, &ScannerBackend::onRfLevel);
             connect(m_inputDevice, &InputDevice::error, m_scannerBackend, &ScannerBackend::onInputDeviceError, Qt::QueuedConnection);
         }
+        m_scannerBackend->setDeviceHasRfLevel(m_inputDevice && (m_inputDevice->capabilities() & InputDevice::Capability::RfLevel));
         m_scannerBackend->isScanningEnabled(m_inputDevice && (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream));
         m_scannerBackend->setIsActive(m_navigationModel->isActive(NavigationModel::Scanner));
     }

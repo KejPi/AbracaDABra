@@ -310,7 +310,10 @@ Item {
 
                 model: scannerBackend.tableModel
                 selectionModel: scannerBackend.tableSelectionModel
-                shrinkColumnIndex: TxTableModel.ColLocation
+                shrinkColumnIndex: model.rfLevelFilter ? TxTableModel.ColLocation-1 : TxTableModel.ColLocation
+                onShrinkColumnIndexChanged: {
+                    autoAdjustColumns();
+                }
                 contextMenuModel: scannerBackend.contextMenuModel
                 sortingEnabled: true
                 onDoubleClickedRow: function(row) {

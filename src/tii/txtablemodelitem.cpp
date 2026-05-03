@@ -229,6 +229,16 @@ void TxTableModelItem::setInactive()
     m_level = -1000;
 }
 
+float TxTableModelItem::rfLevel() const
+{
+    return m_rfLevel;
+}
+
+void TxTableModelItem::setRfLevel(float newRfLevel)
+{
+    m_rfLevel = newRfLevel;
+}
+
 float TxTableModelItem::snr() const
 {
     return m_snr;

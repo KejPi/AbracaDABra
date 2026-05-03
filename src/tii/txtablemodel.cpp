@@ -29,6 +29,7 @@
 #include <QColor>
 #include <QFile>
 #include <QFont>
+#include <cmath>
 #if defined(Q_OS_WIN) && defined(main)
 // QFont includes definition of main under windows
 #undef main
@@ -116,6 +117,12 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
                     return item.numServices();
                 case ColSnr:
                     return QString("%1 dB").arg(static_cast<double>(item.snr()), 0, 'f', 1);
+                case ColRfLevel:
+                    if (std::isnan(item.rfLevel()))
+                    {
+                        return QVariant("");
+                    }
+                    return QString("%1 dBm").arg(static_cast<double>(item.rfLevel()), 0, 'f', 1);
                 case ColMainId:
                     return (item.mainId() != -1) ? QString::number(item.mainId()) : "";
                 case ColSubId:
@@ -212,6 +219,12 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
                     return item.numServices();
                 case ColSnr:
                     return QString("%1").arg(static_cast<double>(item.snr()), 0, 'f', 1);
+                case ColRfLevel:
+                    if (std::isnan(item.rfLevel()))
+                    {
+                        return QVariant("");
+                    }
+                    return QString("%1").arg(static_cast<double>(item.rfLevel()), 0, 'f', 1);
                 case ColMainId:
                     return (item.mainId() != -1) ? QString::number(item.mainId()) : "";
                 case ColSubId:
@@ -335,6 +348,8 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
                     return tr("Services");
                 case ColSnr:
                     return tr("SNR");
+                case ColRfLevel:
+                    return tr("RF Level");
                 case ColMainId:
                     return tr("Main");
                 case ColSubId:
@@ -382,6 +397,8 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
                     return tr("Services");
                 case ColSnr:
                     return tr("SNR [dB]");
+                case ColRfLevel:
+                    return tr("RF Level [dBm]");
                 case ColMainId:
                     return tr("Main");
                 case ColSubId:
@@ -568,7 +585,7 @@ void TxTableModel::removeInactive(qint64 timeoutSec)
 }
 
 void TxTableModel::appendEnsData(const QDateTime &time, const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel,
-                                 const QString &ensConfig, const QString &ensCSV, int numServices, float snr)
+                                 const QString &ensConfig, const QString &ensCSV, int numServices, float snr, float rfLevel)
 {
     if (!data.empty())
     {
@@ -578,6 +595,7 @@ void TxTableModel::appendEnsData(const QDateTime &time, const QList<dabsdrTii_t>
             TxTableModelItem item(it->main, it->sub, it->level, m_coordinates, m_txList.values(ensId));
             item.setEnsData(ensId, ensLabel, numServices, snr);
             item.setEnsConfig(ensConfig, ensCSV);
+            item.setRfLevel(rfLevel);
             item.setRxTime(time);
             if (m_loadingFromFile)
             {
@@ -597,6 +615,7 @@ void TxTableModel::appendEnsData(const QDateTime &time, const QList<dabsdrTii_t>
         TxTableModelItem item(-1, -1, 0, m_coordinates, m_txList.values(ensId));
         item.setEnsData(ensId, ensLabel, numServices, snr);
         item.setEnsConfig(ensConfig, ensCSV);
+        item.setRfLevel(rfLevel);
         item.setRxTime(time);
         if (m_loadingFromFile)
         {

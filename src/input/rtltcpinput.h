@@ -147,7 +147,7 @@ public:
     ~RtlTcpInput();
     bool openDevice(const QVariant &hwId = QVariant(), bool fallbackConnection = true) override;
     void tune(uint32_t frequency) override;
-    InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
+    InputDevice::Capabilities capabilities() const override { return LiveStream | Recording | RfLevel; }
     void setTcpIp(const QString &address, int port, bool controlSockEna);
     void setGainMode(RtlGainMode gainMode, int gainIdx = 0);
     void setAgcLevelMax(float agcLevelMax);

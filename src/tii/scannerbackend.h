@@ -32,6 +32,7 @@
 #include <QItemSelectionModel>
 #include <QQmlApplicationEngine>
 #include <QQuickView>
+#include <cmath>
 
 #include "radiocontrol.h"
 #include "txmapbackend.h"
@@ -45,12 +46,14 @@ struct CsvRowData
     QString ensLabel;
     int numServices;
     float snr;
+    float rfLevel;
 };
 
 struct CsvParseResult
 {
     QList<CsvRowData> rows;
     QGeoCoordinate offlineCoords;
+    bool hasRfLevel = false;
     bool success = false;
     QString errorMessage;
 };
@@ -111,6 +114,8 @@ public:
     void onTiiData(const RadioControlTIIData &data) override;
     void onEnsembleConfigurationAndCSV(const QString &config, const QString &csvString);
     void onInputDeviceError(const InputDevice::ErrorCode);
+    void onRfLevel(float rfLevel, float gain);
+    void setDeviceHasRfLevel(bool hasRfLevel);
     // void setSelectedRow(int modelRow) override;
     void setServiceToRestore(const DabSId &sid, uint8_t scids) { m_serviceToRestore = ServiceListId(sid.value(), scids); }
     ServiceListId getServiceToRestore() const { return m_serviceToRestore; };
@@ -174,6 +179,7 @@ private:
     uint m_tiiCntr = 0;
     float m_snr;
     uint m_snrCntr;
+    float m_rfLevel = NAN;  // last received RF level [dBm] for current channel
     QDateTime m_scanStartTime;
     QGeoCoordinate m_scanStartLocation;
 
@@ -190,6 +196,7 @@ private:
     void storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf);
     void handleContextMenuAction(int actionId, const QVariant &data);
     ContextMenuModel *m_contextMenuModel = nullptr;
+    bool m_deviceHasRfLevel = false;
 
     // Real-time CSV auto-save
     QFile *m_autoSaveFile = nullptr;

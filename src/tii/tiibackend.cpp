@@ -107,8 +107,8 @@ void TIIBackend::logTiiData() const
             activeRows += 1;
             for (int col = 0; col < lastCol; ++col)
             {
-                if (col != TxTableModel::ColNumServices)
-                {  // num services
+                if (col != TxTableModel::ColNumServices && col != TxTableModel::ColRfLevel)
+                {  // num services and RF level are not logged in TII mode
                     out << m_model->data(m_model->index(row, col), m_exportRole).toString() << ";";
                 }
             }
@@ -147,6 +147,9 @@ void TIIBackend::logTiiData() const
                     case TxTableModel::ColSnr:
                         dataToWrite = QString("%1").arg(static_cast<double>(m_snr), 0, 'f', 1);
                         break;
+                    case TxTableModel::ColRfLevel:
+                        // RF level is not available in TII mode, skip
+                        continue;
                     case TxTableModel::ColMainId:
                     case TxTableModel::ColSubId:
                     case TxTableModel::ColLevel:
@@ -342,8 +345,8 @@ void TIIBackend::startStopLog()
             int lastCol = m_exportCoordinates ? (TxTableModel::LastColumn) : (TxTableModel::LastColumnWithoutCoordinates);
             for (int col = 0; col < lastCol; ++col)
             {
-                if (col != TxTableModel::ColNumServices)
-                {  // num services
+                if (col != TxTableModel::ColNumServices && col != TxTableModel::ColRfLevel)
+                {  // num services and RF level are not logged in TII mode
                     out << m_model->headerData(col, Qt::Horizontal, m_exportRole).toString() << ";";
                 }
             }
