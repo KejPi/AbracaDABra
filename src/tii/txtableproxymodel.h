@@ -40,19 +40,26 @@ class TxTableProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
     Q_PROPERTY(int rowCount READ rowCount NOTIFY rowCountChanged)
+    Q_PROPERTY(bool rfLevelFilter READ rfLevelFilter WRITE setRfLevelFilter NOTIFY rfLevelFilterChanged FINAL)
+
 public:
     TxTableProxyModel(QObject *parent = nullptr);
     void setColumnsFilter(bool filterCols);
     void setInactiveTxFilter(bool filterInactiveTx);
     void setLocalTxFilter(bool filterLocalTx);
+    void setRfLevelFilter(bool filterRfLevel);
+    bool rfLevelFilter() const { return m_filterRfLevel; }
 
 signals:
     void rowCountChanged();
+
+    void rfLevelFilterChanged();
 
 protected:
     bool m_filterCols = true;
     bool m_filterInactiveTx = true;
     bool m_filterLocalTx = false;
+    bool m_filterRfLevel = false;
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
     bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const override;
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;

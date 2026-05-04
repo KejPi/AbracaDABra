@@ -282,6 +282,8 @@ public:
     Q_INVOKABLE void audioRecordingToggle();
     Q_INVOKABLE void exportServiceList();
     Q_INVOKABLE void clearServiceList();
+    Q_INVOKABLE void backupSettings();
+    Q_INVOKABLE void restoreSettings(const QUrl &fileUrl);
     Q_INVOKABLE QObject *createBackend(int id);
     Q_INVOKABLE void close();
     Q_INVOKABLE void saveWindowGeometry(int x, int y, int width, int height) const;
@@ -289,6 +291,7 @@ public:
     Q_INVOKABLE void saveUndockedWindows() const;
     Q_INVOKABLE void setAndroidNavigationBar();
     Q_INVOKABLE void setAndroidKeepScreenOn(bool enable);
+    Q_INVOKABLE void deleteEnsembleFromServiceList(int id, const QString &channelName);
 
     bool eventFilter(QObject *obj, QEvent *event) override;
 
@@ -344,9 +347,6 @@ private:
     };
 
     static const QString appName;
-    static const char *syncLevelLabels[];
-    static const char *syncLevelTooltip[];
-    static const QStringList snrProgressStylesheet;
     static const QString slsDumpPatern;
     static const QString spiDumpPatern;
 
@@ -411,6 +411,7 @@ private:
     bool m_isPlaying = false;
     bool m_deviceChangeRequested = false;
     bool m_exitRequested = false;
+    bool m_skipSaveSettings = false;
     int m_exitCode = 0;
     bool m_quitEventIntercepted = false;
     bool m_allowQuitEvent = false;
@@ -422,6 +423,7 @@ private:
     bool m_hasListViewFocus;
     bool m_hasTreeViewFocus;
     bool m_isScannerRunning = false;
+    float m_snrQualOffset = 0;
 
     // Time
     QDateTime m_dabTime;
@@ -433,7 +435,9 @@ private:
     // service list
     ServiceList *m_serviceList;
     SLModel *m_slModel;
+    SLProxyModel *m_slProxyModel;
     SLTreeModel *m_slTreeModel;
+    QItemSelection m_savedSourceSelection;
 
     // user applications
     DLDecoder *m_dlDecoder[Instance::NumInstances];
@@ -466,6 +470,7 @@ private:
     void serviceListViewUpdateSelection();
     void changeInputDevice(const InputDevice::Id &d, const QVariant &id);
     void displaySubchParams(const RadioControlServiceComponent &s);
+    void setSnrQualOffset(DabProtectionLevel protectionLevel);
     void toggleDLPlus(bool toggle);
     void checkAudioRecording(AudioRecMsg msgId, std::function<void(bool)> callback);
     void selectService(const ServiceListId &serviceId);

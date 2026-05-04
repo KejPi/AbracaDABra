@@ -39,7 +39,7 @@
 #define INPUT_CHUNK_IQ_SAMPLES (2048 * INPUT_CHUNK_MS)
 
 // Input FIFO size in bytes - FIFO contains float _Complex samples => [float float]
-// total capacity is 16 input chunks = 32x50 ms = 1600 msec of input stream at 2048 kHz
+// total capacity is 32 input chunks = 32x50 ms = 1600 msec of input stream at 2048 kHz
 #define INPUT_FIFO_SIZE (INPUT_CHUNK_IQ_SAMPLES * (2 * sizeof(float)) * 32)
 
 #define INPUTDEVICE_WDOG_TIMEOUT_SEC 3  // watchdog timeout in seconds (if implemented and enabled)
@@ -52,12 +52,13 @@ struct ComplexFifo
     uint64_t head;
     uint64_t tail;
     uint8_t buffer[INPUT_FIFO_SIZE];
+    bool flushFlag;
 
     pthread_mutex_t countMutex;
     pthread_cond_t countCondition;
 
     void reset();
-    void fillDummy();
+    void flush();
 };
 typedef struct ComplexFifo fifo_t;
 
@@ -138,6 +139,7 @@ public:
     {
         LiveStream = (1 << 0),
         Recording = (1 << 1),
+        RfLevel = (1 << 2),
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 

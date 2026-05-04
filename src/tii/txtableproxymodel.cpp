@@ -90,6 +90,24 @@ void TxTableProxyModel::setLocalTxFilter(bool filterLocalTx)
     }
 }
 
+void TxTableProxyModel::setRfLevelFilter(bool filterRfLevel)
+{
+    if (filterRfLevel != m_filterRfLevel)
+    {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+        beginFilterChange();
+#endif
+        m_filterRfLevel = filterRfLevel;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+        endFilterChange(QSortFilterProxyModel::Direction::Columns);
+#else
+        invalidateColumnsFilter();
+#endif
+        emit rfLevelFilterChanged();
+    }
+}
+
 bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
     int sourceCol = left.column();
@@ -197,6 +215,10 @@ bool TxTableProxyModel::filterAcceptsColumn(int source_column, const QModelIndex
     if (!m_filterCols)
     {  // we do not display coordinates, these are only used for export to CSV
         // we do not display code in scanner mode
+        if (m_filterRfLevel && source_column == TxTableModel::ColRfLevel)
+        {
+            return false;
+        }
         return source_column <= TxTableModel::LastColumnWithoutCoordinates;
     }
 

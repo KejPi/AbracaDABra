@@ -490,8 +490,8 @@ void RtlSdrInput::onReadThreadStopped()
     {  // if device should be running then it means reading error thus device is disconnected
         qCCritical(rtlsdrInput) << "Device unplugged.";
 
-        // fill buffer (artificially to avoid blocking of the DAB processing thread)
-        inputBuffer.fillDummy();
+        // flush buffer to avoid blocking of the DAB processing thread
+        inputBuffer.flush();
 
         m_frequency = 0;
 
@@ -642,7 +642,7 @@ void RtlSdrInput::onWatchdogTimeout()
         if (!m_worker->isRunning())
         {  // some problem in data input
             qCCritical(rtlsdrInput) << "Watchdog timeout";
-            inputBuffer.fillDummy();
+            inputBuffer.flush();
             emit error(InputDevice::ErrorCode::NoDataAvailable);
         }
     }

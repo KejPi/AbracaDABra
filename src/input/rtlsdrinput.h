@@ -97,7 +97,7 @@ public:
     ~RtlSdrInput();
     bool openDevice(const QVariant &hwId, bool fallbackConnection = true) override;
     void tune(uint32_t frequency) override;
-    InputDevice::Capabilities capabilities() const override { return LiveStream | Recording; }
+    InputDevice::Capabilities capabilities() const override { return LiveStream | Recording | RfLevel; }
     void setGainMode(RtlGainMode gainMode, int gainIdx = 0);
     void startStopRecording(bool start) override;
     void setBW(uint32_t bw) override;

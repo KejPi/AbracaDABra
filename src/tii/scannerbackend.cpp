@@ -37,6 +37,7 @@
 #include <QQmlContext>
 #include <QTextStream>
 #include <QUrl>
+#include <QtConcurrent>
 
 #include "androidfilehelper.h"
 #include "dabtables.h"
@@ -70,6 +71,12 @@ ScannerBackend::ScannerBackend(Settings *settings, QObject *parent) : TxMapBacke
 ScannerBackend::~ScannerBackend()
 {
     stopAutoSaveCsv();
+
+    if (m_csvFutureWatcher != nullptr)
+    {
+        m_csvFutureWatcher->waitForFinished();
+        delete m_csvFutureWatcher;
+    }
 
     delete m_channelSelectionModel;
     delete m_messageBoxBackend;
@@ -130,11 +137,6 @@ void ScannerBackend::stopScan()
     }
 
     stopAutoSaveCsv();
-
-    if (m_exitRequested)
-    {
-        //         close();
-    }
 
     // restore UI
     isScanning(false);
@@ -210,154 +212,263 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
 
     qCInfo(scanner) << "Loading file:" << fileName;
 
-    QFile file(fileName);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    isLoading(true);
+
+    if (m_csvFutureWatcher == nullptr)
     {
-        m_model->beginLoadingFromFile();
+        m_csvFutureWatcher = new QFutureWatcher<CsvParseResult>(this);
+        connect(m_csvFutureWatcher, &QFutureWatcher<CsvParseResult>::finished, this, &ScannerBackend::onCsvParsed);
+    }
 
-        QTextStream in(&file);
-        bool timeIsUTC = in.readLine().contains("(UTC)");
-        int lineNum = 2;
-        bool res = true;
-        while (!in.atEnd())
-        {
-            QString line = in.readLine();
+    m_csvFutureWatcher->setFuture(QtConcurrent::run(&ScannerBackend::parseCsvFile, fileName));
+}
 
-            QStringList qsl = line.split(';');
+CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
+{
+    CsvParseResult result;
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        result.success = false;
+        result.errorMessage = tr("Failed to load file");
+        return result;
+    }
+
+    QTextStream in(&file);
+    bool timeIsUTC = in.readLine().contains("(UTC)");
+    int lineNum = 2;
+    int numCols = 0;
+    bool hasRfLevel = false;  // true for new CSV format with RF Level column
+    while (!in.atEnd())
+    {
+        QString line = in.readLine();
+
+        QStringList qsl = line.split(';');
+        if (numCols == 0)
+        {  // detect column count from first data row
             if (qsl.size() == TxTableModel::NumColsWithoutCoordinates)
-            {
+            {  // new format without coordinates
+                numCols = TxTableModel::NumColsWithoutCoordinates;
+                hasRfLevel = true;
+            }
+            else if (qsl.size() == TxTableModel::LastColumn + 1)
+            {  // new format with coordinates
+                numCols = TxTableModel::LastColumn + 1;
+                hasRfLevel = true;
+            }
+            else if (qsl.size() == TxTableModel::NumColsWithoutCoordinates - 1)
+            {  // old format without coordinates (no RF Level column)
+                numCols = TxTableModel::NumColsWithoutCoordinates - 1;
+                hasRfLevel = false;
+            }
+            else if (qsl.size() == TxTableModel::LastColumn)
+            {  // old format with coordinates (no RF Level column)
+                numCols = TxTableModel::LastColumn;
+                hasRfLevel = false;
+            }
+        }
+        // colOffset accounts for missing ColRfLevel in old CSV files
+        const int colOffset = hasRfLevel ? 0 : -1;
+        if (qsl.size() == numCols)
+        {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
-                QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yyyy-MM-dd hh:mm:ss").addYears(100);
-                if (time.isValid() == false)
-                {  // old format
-                    time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss").addYears(100);
-                }
+            QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yyyy-MM-dd hh:mm:ss").addYears(100);
+            if (time.isValid() == false)
+            {  // old format
+                time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss").addYears(100);
+            }
 
 #else
-                QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yyyy-MM-dd hh:mm:ss", 2000);
-                if (time.isValid() == false)
-                {  // old format
-                    time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss", 2000);
-                }
+            QDateTime time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yyyy-MM-dd hh:mm:ss", 2000);
+            if (time.isValid() == false)
+            {  // old format
+                time = QDateTime::fromString(qsl.at(TxTableModel::ColTime), "yy-MM-dd hh:mm:ss", 2000);
+            }
 #endif
-                if (!time.isValid())
-                {
-                    qCWarning(scanner) << "Invalid time value" << qsl.at(TxTableModel::ColTime) << "line #" << lineNum;
+            if (!time.isValid())
+            {
+                qCWarning(scanner) << "Invalid time value" << qsl.at(TxTableModel::ColTime) << "line #" << lineNum;
+                result.success = false;
+                result.errorMessage = tr("Failed to load file");
+                return result;
+            }
 
-                    infoMessageType(-1);  // negative
-                    emit showInfoMessage(tr("Failed to load file"), -1);
-
-                    res = false;
-                    break;
-                }
-
-                if (timeIsUTC)
-                {
+            if (timeIsUTC)
+            {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-                    time.setTimeZone(QTimeZone(QTimeZone::UTC));
+                time.setTimeZone(QTimeZone(QTimeZone::UTC));
 #else
-                    time.setTimeSpec(Qt::TimeSpec::UTC);
+                time.setTimeSpec(Qt::TimeSpec::UTC);
 #endif
-                }
-                else
-                {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-                    time.setTimeZone(QTimeZone(QTimeZone::LocalTime));
-#else
-                    time.setTimeSpec(Qt::TimeSpec::LocalTime);
-#endif
-                }
-
-                bool isOk = false;
-                uint32_t freq = qsl.at(TxTableModel::ColFreq).toUInt(&isOk);
-                if (!isOk)
-                {
-                    qCWarning(scanner) << "Invalid frequency value" << qsl.at(TxTableModel::ColFreq) << "line #" << lineNum;
-
-                    emit showInfoMessage(tr("Failed to load file"), -1);
-                    res = false;
-                    break;
-                }
-
-                uint32_t ueid = qsl.at(TxTableModel::ColEnsId).toUInt(&isOk, 16);
-                if (!isOk)
-                {
-                    qCWarning(scanner) << "Invalid UEID value" << qsl.at(TxTableModel::ColEnsId) << "line #" << lineNum;
-                    emit showInfoMessage(tr("Failed to load file"), -1);
-                    res = false;
-                    break;
-                }
-                int numServices = qsl.at(TxTableModel::ColNumServices).toInt(&isOk);
-                if (!isOk)
-                {
-                    qCWarning(scanner) << "Invalid number of services value" << qsl.at(TxTableModel::ColNumServices) << "line #" << lineNum;
-
-                    emit showInfoMessage(tr("Failed to load file"), -1);
-                    res = false;
-                    break;
-                }
-
-                float snr = qsl.at(TxTableModel::ColSnr).toFloat(&isOk);
-                if (!isOk)
-                {
-                    qCWarning(scanner) << "Invalid SNR value" << qsl.at(TxTableModel::ColSnr) << "line #" << lineNum;
-                    emit showInfoMessage(tr("Failed to load file"), -1);
-                    res = false;
-                    break;
-                }
-                QList<dabsdrTii_t> tiiList;
-                if (!qsl.at(TxTableModel::ColMainId).isEmpty())
-                {
-                    uint8_t main = qsl.at(TxTableModel::ColMainId).toUInt(&isOk);
-                    if (!isOk)
-                    {
-                        qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColMainId) << "line #" << lineNum;
-                        emit showInfoMessage(tr("Failed to load file"), -1);
-                        res = false;
-                        break;
-                    }
-                    uint8_t sub = qsl.at(TxTableModel::ColSubId).toUInt(&isOk);
-                    if (!isOk)
-                    {
-                        qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColSubId) << "line #" << lineNum;
-                        emit showInfoMessage(tr("Failed to load file"), -1);
-                        res = false;
-                        break;
-                    }
-                    float level = qsl.at(TxTableModel::ColLevel).toFloat(&isOk);
-                    if (!isOk)
-                    {
-                        qCWarning(scanner) << "Invalid TX level value" << qsl.at(TxTableModel::ColLevel) << "line #" << lineNum;
-                        emit showInfoMessage(tr("Failed to load file"), -1);
-                        res = false;
-                        break;
-                    }
-                    dabsdrTii_t tiiItem({.main = main, .sub = sub, .level = level});
-                    tiiList.append(tiiItem);
-                }
-
-                m_model->appendEnsData(time.toLocalTime(), tiiList, ServiceListId(freq, ueid), qsl.at(TxTableModel::ColEnsLabel), "", "", numServices,
-                                       snr);
             }
             else
             {
-                qCWarning(scanner) << "Unexpected number of cols, line #" << lineNum;
-                emit showInfoMessage(tr("Failed to load file"), -1);
-                res = false;
-                break;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+                time.setTimeZone(QTimeZone(QTimeZone::LocalTime));
+#else
+                time.setTimeSpec(Qt::TimeSpec::LocalTime);
+#endif
             }
-            lineNum += 1;
-        }
-        file.close();
 
+            bool isOk = false;
+            uint32_t freq = qsl.at(TxTableModel::ColFreq).toUInt(&isOk);
+            if (!isOk)
+            {
+                qCWarning(scanner) << "Invalid frequency value" << qsl.at(TxTableModel::ColFreq) << "line #" << lineNum;
+                result.success = false;
+                result.errorMessage = tr("Failed to load file");
+                return result;
+            }
+
+            uint32_t ueid = qsl.at(TxTableModel::ColEnsId).toUInt(&isOk, 16);
+            if (!isOk)
+            {
+                qCWarning(scanner) << "Invalid UEID value" << qsl.at(TxTableModel::ColEnsId) << "line #" << lineNum;
+                result.success = false;
+                result.errorMessage = tr("Failed to load file");
+                return result;
+            }
+            int numServices = qsl.at(TxTableModel::ColNumServices).toInt(&isOk);
+            if (!isOk)
+            {
+                qCWarning(scanner) << "Invalid number of services value" << qsl.at(TxTableModel::ColNumServices) << "line #" << lineNum;
+                result.success = false;
+                result.errorMessage = tr("Failed to load file");
+                return result;
+            }
+
+            float snr = qsl.at(TxTableModel::ColSnr).toFloat(&isOk);
+            if (!isOk)
+            {
+                qCWarning(scanner) << "Invalid SNR value" << qsl.at(TxTableModel::ColSnr) << "line #" << lineNum;
+                result.success = false;
+                result.errorMessage = tr("Failed to load file");
+                return result;
+            }
+
+            float rfLevel = NAN;
+            if (hasRfLevel)
+            {
+                const QString &rfLevelStr = qsl.at(TxTableModel::ColRfLevel);
+                if (!rfLevelStr.isEmpty())
+                {
+                    rfLevel = rfLevelStr.toFloat(&isOk);
+                    if (!isOk)
+                    {
+                        qCWarning(scanner) << "Invalid RF level value" << rfLevelStr << "line #" << lineNum;
+                        result.success = false;
+                        result.errorMessage = tr("Failed to load file");
+                        return result;
+                    }
+                }
+            }
+
+            QList<dabsdrTii_t> tiiList;
+            if (!qsl.at(TxTableModel::ColMainId + colOffset).isEmpty())
+            {
+                uint8_t main = qsl.at(TxTableModel::ColMainId + colOffset).toUInt(&isOk);
+                if (!isOk)
+                {
+                    qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColMainId + colOffset) << "line #" << lineNum;
+                    result.success = false;
+                    result.errorMessage = tr("Failed to load file");
+                    return result;
+                }
+                uint8_t sub = qsl.at(TxTableModel::ColSubId + colOffset).toUInt(&isOk);
+                if (!isOk)
+                {
+                    qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColSubId + colOffset) << "line #" << lineNum;
+                    result.success = false;
+                    result.errorMessage = tr("Failed to load file");
+                    return result;
+                }
+                float level = qsl.at(TxTableModel::ColLevel + colOffset).toFloat(&isOk);
+                if (!isOk)
+                {
+                    qCWarning(scanner) << "Invalid TX level value" << qsl.at(TxTableModel::ColLevel + colOffset) << "line #" << lineNum;
+                    result.success = false;
+                    result.errorMessage = tr("Failed to load file");
+                    return result;
+                }
+                dabsdrTii_t tiiItem({.main = main, .sub = sub, .level = level});
+                tiiList.append(tiiItem);
+            }
+
+            CsvRowData rowData;
+            rowData.time = time.toLocalTime();
+            rowData.tiiList = tiiList;
+            rowData.ensId = ServiceListId(freq, ueid);
+            rowData.ensLabel = qsl.at(TxTableModel::ColEnsLabel);
+            rowData.numServices = numServices;
+            rowData.snr = snr;
+            rowData.rfLevel = rfLevel;
+            result.rows.append(rowData);
+
+            // Parse RX coordinates from first row with coordinate columns
+            const bool hasCoordsCols = (numCols == TxTableModel::LastColumn + 1) || (numCols == TxTableModel::LastColumn);
+            if (!result.offlineCoords.isValid() && hasCoordsCols)
+            {
+                bool latOk = false, lonOk = false;
+                double lat = qsl.at(TxTableModel::ColRxCoordinatesLat + colOffset).toDouble(&latOk);
+                double lon = qsl.at(TxTableModel::ColRxCoordinatesLon + colOffset).toDouble(&lonOk);
+                if (latOk && lonOk)
+                {
+                    QGeoCoordinate candidate(lat, lon);
+                    if (candidate.isValid())
+                    {
+                        result.offlineCoords = candidate;
+                    }
+                }
+            }
+        }
+        else
+        {
+            qCWarning(scanner) << "Unexpected number of cols, line #" << lineNum;
+            result.success = false;
+            result.errorMessage = tr("Failed to load file");
+            return result;
+        }
+        lineNum += 1;
+    }
+    file.close();
+
+    result.hasRfLevel = hasRfLevel;
+    result.success = true;
+    return result;
+}
+
+void ScannerBackend::onCsvParsed()
+{
+    CsvParseResult result = m_csvFutureWatcher->result();
+
+    if (result.success)
+    {
+        m_model->beginLoadingFromFile();
+        for (const auto &row : result.rows)
+        {
+            m_model->appendEnsData(row.time, row.tiiList, row.ensId, row.ensLabel, "", "", row.numServices, row.snr, row.rfLevel);
+        }
         m_model->endLoadingFromFile();
 
-        if (res == false)
+        m_sortedFilteredModel->setRfLevelFilter(!result.hasRfLevel);
+
+        if (result.offlineCoords.isValid())
         {
-            qCWarning(scanner) << "Failed to load file:" << fileName;
-            reset();
+            qCInfo(scanner) << "Using offline coordinates from CSV: lat" << result.offlineCoords.latitude() << "lon"
+                            << result.offlineCoords.longitude();
+            setOfflinePosition(result.offlineCoords);
         }
     }
+    else
+    {
+        qCWarning(scanner) << "Failed to load CSV file";
+        emit showInfoMessage(result.errorMessage, -1);
+        reset();
+        m_sortedFilteredModel->setRfLevelFilter(m_deviceHasRfLevel == false);
+    }
+
+    isLoading(false);
 }
 
 void ScannerBackend::saveCSV()
@@ -373,13 +484,24 @@ void ScannerBackend::saveToFile(const QString &fileName)
     QTextStream out(&csvContent);
 
     auto exportRole = m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
+    int lastCol = m_settings->tii.saveCoordinates ? TxTableModel::LastColumn : TxTableModel::LastColumnWithoutCoordinates;
 
     // Header
-    for (int col = 0; col < TxTableModel::LastColumnWithoutCoordinates; ++col)
+    bool firstCol = true;
+    for (int col = 0; col <= lastCol; ++col)
     {
-        out << m_model->headerData(col, Qt::Horizontal, exportRole).toString() << ";";
+        if (m_sortedFilteredModel->rfLevelFilter() && col == TxTableModel::ColRfLevel)
+        {
+            continue;
+        }
+        if (!firstCol)
+        {
+            out << ";";
+        }
+        firstCol = false;
+        out << m_model->headerData(col, Qt::Horizontal, exportRole).toString();
     }
-    out << m_model->headerData(TxTableModel::LastColumnWithoutCoordinates, Qt::Horizontal, exportRole).toString() << Qt::endl;
+    out << Qt::endl;
 
     // Body
     for (int row = 0; row < m_model->rowCount(); ++row)
@@ -389,11 +511,21 @@ void ScannerBackend::saveToFile(const QString &fileName)
             continue;
         }
 
-        for (int col = 0; col < TxTableModel::LastColumnWithoutCoordinates; ++col)
+        bool firstBodyCol = true;
+        for (int col = 0; col <= lastCol; ++col)
         {
-            out << m_model->data(m_model->index(row, col), exportRole).toString() << ";";
+            if (m_sortedFilteredModel->rfLevelFilter() && col == TxTableModel::ColRfLevel)
+            {
+                continue;
+            }
+            if (!firstBodyCol)
+            {
+                out << ";";
+            }
+            firstBodyCol = false;
+            out << m_model->data(m_model->index(row, col), exportRole).toString();
         }
-        out << m_model->data(m_model->index(row, TxTableModel::LastColumnWithoutCoordinates), exportRole).toString() << Qt::endl;
+        out << Qt::endl;
     }
     out.flush();
 
@@ -465,14 +597,25 @@ void ScannerBackend::startAutoSaveCsv()
 
     m_autoSaveExportRole =
         m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
+    m_autoSaveLastCol = m_settings->tii.saveCoordinates ? TxTableModel::LastColumn : TxTableModel::LastColumnWithoutCoordinates;
 
     // Write header
     QTextStream out(m_autoSaveFile);
-    for (int col = 0; col < TxTableModel::LastColumnWithoutCoordinates; ++col)
+    bool firstCol = true;
+    for (int col = 0; col <= m_autoSaveLastCol; ++col)
     {
-        out << m_model->headerData(col, Qt::Horizontal, m_autoSaveExportRole).toString() << ";";
+        if (m_sortedFilteredModel->rfLevelFilter() && col == TxTableModel::ColRfLevel)
+        {
+            continue;
+        }
+        if (!firstCol)
+        {
+            out << ";";
+        }
+        firstCol = false;
+        out << m_model->headerData(col, Qt::Horizontal, m_autoSaveExportRole).toString();
     }
-    out << m_model->headerData(TxTableModel::LastColumnWithoutCoordinates, Qt::Horizontal, m_autoSaveExportRole).toString() << Qt::endl;
+    out << Qt::endl;
     out.flush();
     m_autoSaveFile->flush();
 
@@ -501,11 +644,21 @@ void ScannerBackend::appendAutoSaveRows(int firstRow, int lastRow)
             continue;
         }
 
-        for (int col = 0; col < TxTableModel::LastColumnWithoutCoordinates; ++col)
+        bool firstCol = true;
+        for (int col = 0; col <= m_autoSaveLastCol; ++col)
         {
-            out << m_model->data(m_model->index(row, col), m_autoSaveExportRole).toString() << ";";
+            if (m_sortedFilteredModel->rfLevelFilter() && col == TxTableModel::ColRfLevel)
+            {
+                continue;
+            }
+            if (!firstCol)
+            {
+                out << ";";
+            }
+            firstCol = false;
+            out << m_model->data(m_model->index(row, col), m_autoSaveExportRole).toString();
         }
-        out << m_model->data(m_model->index(row, TxTableModel::LastColumnWithoutCoordinates), m_autoSaveExportRole).toString() << Qt::endl;
+        out << Qt::endl;
     }
     out.flush();
     m_autoSaveFile->flush();
@@ -528,11 +681,15 @@ void ScannerBackend::startScan()
 {
     isScanning(true);
 
+    clearOfflineMode();
+
     if (m_settings->scanner.clearOnStart)
     {
         reset();
+        m_sortedFilteredModel->setRfLevelFilter(m_deviceHasRfLevel == false);
     }
     m_scanStartTime = QDateTime::currentDateTime();
+    m_scanStartLocation = m_currentPosition;
     scanningLabel(tr("Channel:"));
 
     //    m_signalStateLabel->reset();
@@ -618,6 +775,7 @@ void ScannerBackend::scanStep()
     {
         m_frequency = m_channelIt.key();
         m_numServicesFound = 0;
+        m_rfLevel = NAN;
         m_ensemble.reset();
         m_state = ScannerState::WaitForTune;
         qCInfo(scanner) << "Tune:" << m_frequency;
@@ -719,6 +877,20 @@ void ScannerBackend::onServiceListEntry(const RadioControlEnsemble &, const Radi
     }
 }
 
+void ScannerBackend::onRfLevel(float rfLevel, float /* gain */)
+{
+    m_rfLevel = rfLevel;
+}
+
+void ScannerBackend::setDeviceHasRfLevel(bool hasRfLevel)
+{
+    m_deviceHasRfLevel = hasRfLevel;
+    if (m_model->rowCount() == 0)
+    {
+        m_sortedFilteredModel->setRfLevelFilter(m_deviceHasRfLevel == false);
+    }
+}
+
 void ScannerBackend::onTiiData(const RadioControlTIIData &data)
 {
     if ((ScannerState::WaitForTII == m_state) && m_ensemble.isValid())
@@ -752,7 +924,7 @@ void ScannerBackend::storeEnsembleData(const RadioControlTIIData &tiiData, const
     int firstNewRow = m_model->rowCount();
 
     m_model->appendEnsData(QDateTime::currentDateTime(), tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf,
-                           m_numServicesFound, m_snr / m_snrCntr);
+                           m_numServicesFound, m_snr / m_snrCntr, m_rfLevel);
 
     int lastNewRow = m_model->rowCount() - 1;
     if (m_autoSaveFile != nullptr && lastNewRow >= firstNewRow)
@@ -906,6 +1078,7 @@ void ScannerBackend::onInputDeviceError(const InputDevice::ErrorCode)
         isStartStopEnabled(false);
         isScanning(false);
         m_ensemble.reset();
+        m_serviceToRestore = ServiceListId();  // resetting to default invalid value
 
         // the state machine has 4 possible states
         // 1. wait for tune (event)
@@ -938,11 +1111,6 @@ void ScannerBackend::loadSettings()
     }
 
     m_sortedFilteredModel->setLocalTxFilter(m_settings->scanner.hideLocalTx);
-
-    // if (!m_settings->scanner.geometry.isEmpty())
-    // {
-    //     restoreGeometry(m_settings->scanner.geometry);
-    // }
 }
 
 void ScannerBackend::onSelectedRowChanged()
@@ -994,7 +1162,12 @@ void ScannerBackend::clearTableAction()
         {
             if (result == MessageBoxBackend::StandardButton::Yes)
             {
-                QTimer::singleShot(10, this, [this]() { reset(); });
+                QTimer::singleShot(10, this,
+                                   [this]()
+                                   {
+                                       reset();
+                                       m_sortedFilteredModel->setRfLevelFilter(m_deviceHasRfLevel == false);
+                                   });
             }
             else
             {  // do nothing

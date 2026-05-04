@@ -445,8 +445,8 @@ void SoapySdrInput::onReadThreadStopped()
         m_deviceUnpluggedFlag = true;
         m_deviceRunningFlag = false;
 
-        // fill buffer (artificially to avoid blocking of the DAB processing thread)
-        inputBuffer.fillDummy();
+        // flush buffer to avoid blocking of the DAB processing thread
+        inputBuffer.flush();
 
         emit error(InputDevice::ErrorCode::DeviceDisconnected);
     }
@@ -465,7 +465,7 @@ void SoapySdrInput::onWatchdogTimeout()
         if (!isRunning)
         {  // some problem in data input
             qCCritical(soapySdrInput) << "Watchdog timeout";
-            inputBuffer.fillDummy();
+            inputBuffer.flush();
             emit error(InputDevice::ErrorCode::NoDataAvailable);
         }
     }

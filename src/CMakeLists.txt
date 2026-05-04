@@ -233,6 +233,7 @@ qt_add_qml_module(${TARGET}
         qml/images/icon-loop-file.svg
         qml/images/placeholder-undocked.svg
         qml/images/icon-sidebar-left.svg
+        qml/images/icon-cross.svg
 
         resources/appIcon.png
     QML_FILES
@@ -489,6 +490,7 @@ target_link_libraries(${TARGET} PRIVATE
     Qt${QT_VERSION_MAJOR}::QuickControls2
     Qt${QT_VERSION_MAJOR}::Positioning
     Qt${QT_VERSION_MAJOR}::Location
+    Qt${QT_VERSION_MAJOR}::Concurrent
 )
 if(HAVE_QTWIDGETS)
     target_link_libraries(${TARGET} PRIVATE

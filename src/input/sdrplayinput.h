@@ -68,6 +68,7 @@ public:
     void setDevArgs(const QString &devArgs) = delete;
     virtual QVariant hwId() const override { return m_hwId; }
     QList<float> getRFGainList() const { return m_rfGainList; }
+    InputDevice::Capabilities capabilities() const override { return LiveStream | Recording | RfLevel; }
 
 signals:
     void ifGain(int ifGain);

@@ -44,6 +44,11 @@ bool SLProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourcePare
         QList<int> ensList = sourceModel()->data(index, SLModelRole::EnsembleListRole).value<QList<int>>();
         ret = ret && ensList.contains(m_ueidFilter);
     }
+    if (!m_serviceNameFilter.isEmpty())
+    {
+        QString serviceName = sourceModel()->data(index, Qt::DisplayRole).toString();
+        ret = ret && serviceName.contains(m_serviceNameFilter, Qt::CaseInsensitive);
+    }
 
     return ret;
 }
@@ -99,4 +104,51 @@ void SLProxyModel::setUeidFilter(int newUeidFilter)
 #endif
 
     emit ueidFilterChanged();
+}
+
+QString SLProxyModel::serviceNameFilter() const
+{
+    return m_serviceNameFilter;
+}
+
+void SLProxyModel::setServiceNameFilter(const QString &newServiceNameFilter)
+{
+    if (m_serviceNameFilter == newServiceNameFilter)
+    {
+        return;
+    }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+#endif
+
+    m_serviceNameFilter = newServiceNameFilter;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    endFilterChange();
+#else
+    invalidateFilter();
+#endif
+
+    emit serviceNameFilterChanged();
+}
+
+ServiceListId SLProxyModel::id(const QModelIndex &index) const
+{
+    auto srcModel = qobject_cast<SLModel *>(sourceModel());
+    if (srcModel)
+    {
+        return srcModel->id(mapToSource(index));
+    }
+    return ServiceListId();
+}
+
+bool SLProxyModel::isFavoriteService(const QModelIndex &index) const
+{
+    auto srcModel = qobject_cast<SLModel *>(sourceModel());
+    if (srcModel)
+    {
+        return srcModel->isFavoriteService(mapToSource(index));
+    }
+    return false;
 }

@@ -129,6 +129,8 @@ protected:
     QAbstractItemModel *m_tableModel = nullptr;  // exposed model (m_sortedFilteredModel or column proxy on top)
     QItemSelectionModel *m_tableSelectionModel = nullptr;
     QGeoCoordinate m_currentPosition;
+    QGeoCoordinate m_currentPositionBackup;  // used to store current position when switching to offline mode
+                                             // so it can be restored when going back online
 
     // UI
     RadioControlEnsemble m_currentEnsemble;
@@ -140,6 +142,10 @@ protected:
     void doLocationUpdate(bool en);
     QModelIndex mapToSourceModel(const QModelIndex &proxyIndex) const;
     void setupSelectionModel();
+
+    void setOfflinePosition(const QGeoCoordinate &position);
+    void clearOfflineMode();
+    bool m_offlineMode = false;
 
 private:
     QGeoPositionInfoSource *m_geopositionSource = nullptr;

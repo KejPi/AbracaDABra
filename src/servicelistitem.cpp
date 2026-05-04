@@ -72,8 +72,13 @@ bool ServiceListItem::removeEnsemble(EnsembleListItem *ensPtr)
     QList<EnsembleListItem *>::const_iterator it = findEnsemble(ensPtr->id());
     if (m_ensembleList.cend() != it)
     {  // found ensemble
+        int idx = std::distance(m_ensembleList.cbegin(), it);
         m_ensembleList.erase(it);
         m_isObsolete = false;
+        if (m_ensembleList.isEmpty() == false && idx <= m_currentEnsemble)
+        {
+            m_currentEnsemble = (m_currentEnsemble - 1) % m_ensembleList.size();
+        }
         return (0 != m_ensembleList.size());
     }
     return true;

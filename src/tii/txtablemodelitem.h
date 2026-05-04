@@ -27,6 +27,7 @@
 #ifndef TXTABLEMODELITEM_H
 #define TXTABLEMODELITEM_H
 
+#include <cmath>
 #include <stdint.h>
 #include <txdataitem.h>
 
@@ -71,6 +72,9 @@ public:
     QString ensConfig() const;
     QString ensConfigCSV() const;
 
+    float rfLevel() const;
+    void setRfLevel(float newRfLevel);
+
     bool isActive() const;
     void setInactive();
 
@@ -91,6 +95,7 @@ private:
     int m_numServices = 0;   // number of services in ensemble
     QDateTime m_rxTime;      // reception time
     float m_snr = 0.0;       // ensemble SNR
+    float m_rfLevel = NAN;   // RF level [dBm]
 };
 
 #endif  // TXTABLEMODELITEM_H

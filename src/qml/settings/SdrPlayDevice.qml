@@ -125,6 +125,11 @@ Item {
                 enabled: settingsBackend.isSdrplayDeviceSelectionEnabled
                 checked: settingsBackend.isSdrplayFallbackChecked
                 wrapMode: Text.WordWrap
+                onCheckedChanged: {
+                    if (checked !== settingsBackend.isSdrplayFallbackChecked) {
+                        settingsBackend.isSdrplayFallbackChecked = checked;
+                    }
+                }
             }
         }
         Item {

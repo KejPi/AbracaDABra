@@ -145,28 +145,33 @@ public class FileHelper {
     }
 
     /**
-     * Extract the document ID from a tree URI string.
+     * Extract the document ID from a tree or document URI string.
      * 
-     * @param uriString The tree URI string
+     * @param uriString The URI string (may contain /tree/ or /document/ path)
      * @return The decoded document ID, or null if extraction failed
      */
     private static String extractDocumentId(String uriString) {
         try {
+            String idPart = null;
             int treeIdx = uriString.indexOf("/tree/");
-            if (treeIdx < 0) {
+            int docIdx = uriString.indexOf("/document/");
+            if (treeIdx >= 0) {
+                idPart = uriString.substring(treeIdx + 6);
+            } else if (docIdx >= 0) {
+                idPart = uriString.substring(docIdx + 10);
+            } else {
                 return null;
             }
-            String treeIdPart = uriString.substring(treeIdx + 6);
             // Remove any query parameters or fragments
-            int queryIdx = treeIdPart.indexOf('?');
+            int queryIdx = idPart.indexOf('?');
             if (queryIdx >= 0) {
-                treeIdPart = treeIdPart.substring(0, queryIdx);
+                idPart = idPart.substring(0, queryIdx);
             }
-            int fragIdx = treeIdPart.indexOf('#');
+            int fragIdx = idPart.indexOf('#');
             if (fragIdx >= 0) {
-                treeIdPart = treeIdPart.substring(0, fragIdx);
+                idPart = idPart.substring(0, fragIdx);
             }
-            return URLDecoder.decode(treeIdPart, "UTF-8");
+            return URLDecoder.decode(idPart, "UTF-8");
         } catch (Exception e) {
             Log.e(TAG, "Error extracting document ID from: " + uriString, e);
             return null;
@@ -712,4 +717,5 @@ public class FileHelper {
         }
         return null;
     }
+
 }

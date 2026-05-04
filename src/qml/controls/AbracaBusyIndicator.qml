@@ -24,9 +24,16 @@
  * SOFTWARE.
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls.Basic
 
+import abracaComponents
+
 BusyIndicator {
     id: control
+    property color drawColor: UI.colors.textPrimary
+
+    palette.dark: drawColor
 }

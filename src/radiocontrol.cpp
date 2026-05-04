@@ -763,9 +763,9 @@ void RadioControl::setTii(int mode)
     dabSetTii(m_tiiEna > 0, m_tiiMode);
 }
 
-void RadioControl::setSignalSpectrum(int mode)
+void RadioControl::startSignalSpectrum(bool ena)
 {
-    dabEnableSignalSpectrum(static_cast<dabsdrSpectrumMode_t>(mode));
+    dabEnableSignalSpectrum(ena);
 }
 
 QString RadioControl::ensembleConfigurationString() const
@@ -2601,9 +2601,9 @@ void RadioControl::audioDataCb(dabsdrAudioCBData_t *p, void *ctx)
     }
 }
 
-void RadioControl::signalSpectrumCb(const float *p, void *ctx)
+void RadioControl::signalSpectrumCb(const float *p, dabsdrSpectrum_t type, void *ctx)
 {
     RadioControl *radioCtrl = static_cast<RadioControl *>(ctx);
     auto data = std::shared_ptr<std::vector<float>>(new std::vector<float>(p, p + 2048));
-    radioCtrl->emit_spectrum(data);
+    radioCtrl->emit_spectrum(data, static_cast<RadioControlSpectrumType>(type));
 }

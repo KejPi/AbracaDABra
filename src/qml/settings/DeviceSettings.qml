@@ -85,7 +85,7 @@ Item {
         AbracaButton {
             id: connectButton
             text: settingsBackend.isConnectButton ? qsTr("Connect") : qsTr("Disconnect")
-            enabled: settingsBackend.isConnectButtonEnabled
+            enabled: settingsBackend.isConnectButtonEnabled && settingsBackend.isInputDeviceSelectionEnabled
             onClicked: settingsBackend.requestConnectDisconnectDevice()
             buttonRole: UI.ButtonRole.Primary
         }
@@ -198,13 +198,13 @@ Item {
         anchors.top: line.bottom
         width: inputDeviceSettingsLayout.width
         topDownDirection: true
-        shadowDistance: contentFlickable.contentY
+        shadowDistance: contentFlickable.contentY - contentFlickable.originY
     }
     AbracaHorizontalShadow {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         width: inputDeviceSettingsLayout.width
         topDownDirection: false
-        shadowDistance: contentFlickable.contentHeight - contentFlickable.height - contentFlickable.contentY
+        shadowDistance: contentFlickable.contentHeight - contentFlickable.height - (contentFlickable.contentY - contentFlickable.originY)
     }
 }

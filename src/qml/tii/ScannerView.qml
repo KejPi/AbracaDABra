@@ -224,7 +224,7 @@ Item {
                 AbracaButton {
                     id: startStopButton
                     text: scannerBackend.isScanning ? qsTr("Stop") : qsTr("Start")
-                    enabled: scannerBackend.isStartStopEnabled
+                    enabled: scannerBackend.isStartStopEnabled && scannerBackend.isScanningEnabled
                     onClicked: scannerBackend.startStopAction()
                     buttonRole: UI.ButtonRole.Primary
                 }
@@ -310,7 +310,10 @@ Item {
 
                 model: scannerBackend.tableModel
                 selectionModel: scannerBackend.tableSelectionModel
-                shrinkColumnIndex: TxTableModel.ColLocation
+                shrinkColumnIndex: model.rfLevelFilter ? TxTableModel.ColLocation-1 : TxTableModel.ColLocation
+                onShrinkColumnIndexChanged: {
+                    autoAdjustColumns();
+                }
                 contextMenuModel: scannerBackend.contextMenuModel
                 sortingEnabled: true
                 onDoubleClickedRow: function(row) {
@@ -504,6 +507,22 @@ Item {
                 infoMessage.messageType = type;
                 infoMessage.visible = true;
             }
+        }
+    }
+
+    // Busy indicator overlay shown during CSV loading
+    Rectangle {
+        anchors.fill: parent
+        color: Qt.rgba(0, 0, 0, 0.3)
+        visible: scannerBackend.isLoading
+        z: 100
+
+        AbracaBusyIndicator {
+            anchors.centerIn: parent
+            drawColor: "white"
+            running: scannerBackend.isLoading
+            width: 64
+            height: 64
         }
     }
 }

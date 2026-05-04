@@ -30,6 +30,7 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QSortFilterProxyModel>
+#include "servicelistid.h"
 
 class SLProxyModel : public QSortFilterProxyModel
 {
@@ -37,6 +38,7 @@ class SLProxyModel : public QSortFilterProxyModel
     QML_ELEMENT
     Q_PROPERTY(bool emptyEpgFilter READ emptyEpgFilter WRITE setEmptyEpgFilter NOTIFY emptyEpgFilterChanged FINAL)
     Q_PROPERTY(int ueidFilter READ ueidFilter WRITE setUeidFilter NOTIFY ueidFilterChanged FINAL)
+    Q_PROPERTY(QString serviceNameFilter READ serviceNameFilter WRITE setServiceNameFilter NOTIFY serviceNameFilterChanged FINAL)
 public:
     explicit SLProxyModel(QObject *parent = nullptr);
 
@@ -47,13 +49,22 @@ public:
     int ueidFilter() const;
     void setUeidFilter(int newUeidFilter);
 
+    QString serviceNameFilter() const;
+    void setServiceNameFilter(const QString &newServiceNameFilter);
+
+    ServiceListId id(const QModelIndex &index) const;
+    bool isFavoriteService(const QModelIndex &index) const;
+
 signals:
     void emptyEpgFilterChanged();
     void ueidFilterChanged();
 
+    void serviceNameFilterChanged();
+
 private:
     bool m_emptyEpgFilter;
     int m_ueidFilter;
+    QString m_serviceNameFilter;
 };
 
 #endif  // SLPROXYMODEL_H

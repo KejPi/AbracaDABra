@@ -355,7 +355,7 @@ void SettingsBackend::setGainValues(const QList<float> &gainList)
     }
 }
 
-void SettingsBackend::setSettings(Settings *settings)
+void SettingsBackend::init(Settings *settings)
 {
     m_settings = settings;
 
@@ -378,7 +378,7 @@ void SettingsBackend::setSettings(Settings *settings)
         m_rawFileFormatModel->setCurrentData(static_cast<int>(RawFileInputFormat::SAMPLE_FORMAT_U8));
     }
 
-    setRtlSdrGainIndex(m_rtlsdrGainList.isEmpty() ? 0 : m_settings->rtlsdr.gainIdx);
+    setRtlSdrGainIndex(m_settings->rtlsdr.gainIdx);
     updateRtlSdrGainLabel();
     switch (m_settings->rtlsdr.gainMode)
     {
@@ -406,14 +406,14 @@ void SettingsBackend::setSettings(Settings *settings)
     }
     rtlSdrBandWidth(m_settings->rtlsdr.bandwidth / 1000);
     setRtlSdrAgcLevelThr(m_settings->rtlsdr.agcLevelMax);
-    rtlSdrFreqCorrection(m_settings->rtlsdr.ppm);
+    rtlSdrFreqCorrection(0);
     rtlSdrRfLevelCorrection(m_settings->rtlsdr.rfLevelOffset);
     rtlSdrBiasT(m_settings->rtlsdr.biasT);
 
     rtlTcpIpAddress(m_settings->rtltcp.tcpAddress);
     rtlTcpPort(m_settings->rtltcp.tcpPort);
     isRtlTcpControlSocketChecked(m_settings->rtltcp.controlSocketEna);
-    setRtlTcpGainIndex(m_rtltcpGainList.isEmpty() ? 0 : m_settings->rtltcp.gainIdx);
+    setRtlTcpGainIndex(m_settings->rtltcp.gainIdx);
     updateRtlTcpGainLabel();
     switch (m_settings->rtltcp.gainMode)
     {
@@ -496,9 +496,9 @@ void SettingsBackend::setSettings(Settings *settings)
             break;
     }
 
-    setSdrplayRfGainIndex(m_sdrplayGainList.isEmpty() ? 0 : m_settings->sdrplay.gain.rfGain);
+    setSdrplayRfGainIndex(m_settings->sdrplay.gain.rfGain);
     updateSdrplayRfGainLabel();
-    sdrplayFreqCorrection(m_settings->sdrplay.ppm);
+    sdrplayFreqCorrection(0);
     sdrplayBiasT(m_settings->sdrplay.biasT);
 #endif
 #if HAVE_RARTTCP
@@ -716,10 +716,10 @@ void SettingsBackend::onFrequencyCorrectionChanged()
     switch (m_inputDeviceId)
     {
         case InputDevice::Id::RTLSDR:
-            m_settings->rtlsdr.ppm = m_rtlSdrFreqCorrection;
+            m_settings->rtlsdr.ppmMap[m_settings->rtlsdr.hwId.toString()] = m_rtlSdrFreqCorrection;
             if (m_device)
             {
-                m_device->setPPM(m_settings->rtlsdr.ppm);
+                m_device->setPPM(m_rtlSdrFreqCorrection);
             }
             break;
         case InputDevice::Id::RTLTCP:
@@ -740,10 +740,10 @@ void SettingsBackend::onFrequencyCorrectionChanged()
             break;
         case InputDevice::Id::SDRPLAY:
 #if HAVE_SOAPYSDR
-            m_settings->sdrplay.ppm = m_sdrplayFreqCorrection;
+            m_settings->sdrplay.ppmMap[m_settings->sdrplay.hwId.toString()] = m_sdrplayFreqCorrection;
             if (m_device)
             {
-                m_device->setPPM(m_settings->sdrplay.ppm);
+                m_device->setPPM(m_sdrplayFreqCorrection);
             }
 #endif
             break;
@@ -1070,12 +1070,16 @@ void SettingsBackend::setInputDevice(InputDevice::Id id, InputDevice *device)
             setGainValues(dynamic_cast<RtlSdrInput *>(m_device)->getGainList());
             m_device->setBW(m_settings->rtlsdr.bandwidth);
             m_device->setBiasT(m_settings->rtlsdr.biasT);
-            m_device->setPPM(m_settings->rtlsdr.ppm);
+            m_settings->rtlsdr.hwId = m_device->hwId();
+            {
+                int ppm = m_settings->rtlsdr.ppmMap.value(m_settings->rtlsdr.hwId.toString(), 0);
+                rtlSdrFreqCorrection(ppm);
+                m_device->setPPM(ppm);
+            }
             m_device->setRfLevelOffset(m_settings->rtlsdr.rfLevelOffset);
             dynamic_cast<RtlSdrInput *>(m_device)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
             dynamic_cast<RtlSdrInput *>(m_device)->setAgcLevelMax(m_settings->rtlsdr.agcLevelMax);
             dynamic_cast<RtlSdrInput *>(m_device)->setRfLevelEna(m_settings->rtlsdr.rfLevelEna);
-            m_settings->rtlsdr.hwId = m_device->hwId();
             connect(m_device, &InputDevice::gainIdx, this, &SettingsBackend::setRtlSdrGainIndex);
             activateRtlSdrControls(true);
             break;
@@ -1128,7 +1132,11 @@ void SettingsBackend::setInputDevice(InputDevice::Id id, InputDevice *device)
             setGainValues(dynamic_cast<SdrPlayInput *>(m_device)->getRFGainList());
             m_settings->sdrplay.hwId = m_device->hwId();
             dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain);
-            m_device->setPPM(m_settings->sdrplay.ppm);
+            {
+                int ppm = m_settings->sdrplay.ppmMap.value(m_settings->sdrplay.hwId.toString(), 0);
+                sdrplayFreqCorrection(ppm);
+                m_device->setPPM(ppm);
+            }
             m_device->setBiasT(m_settings->sdrplay.biasT);
             connect(m_device, &InputDevice::gainIdx, this, &SettingsBackend::setSdrplayRfGainIndex);
             connect(dynamic_cast<SdrPlayInput *>(m_device), &SdrPlayInput::ifGain, this, &SettingsBackend::setSdrplayIfGain);
@@ -1811,7 +1819,7 @@ void SettingsBackend::setRtlSdrGainIndex(int rtlSdrGainIndex)
 
     if (!m_rtlsdrGainList.empty())
     {
-        m_settings->rtlsdr.gainIdx = rtlSdrGainIndex;
+        m_settings->rtlsdr.gainIdx = rtlSdrGainIndex < m_rtlsdrGainList.size() ? rtlSdrGainIndex : m_rtlsdrGainList.size() - 1;
         if (m_isRtlSdrGainEnabled)
         {  // user interaction
             dynamic_cast<RtlSdrInput *>(m_device)->setGainMode(m_settings->rtlsdr.gainMode, m_settings->rtlsdr.gainIdx);
@@ -1859,8 +1867,7 @@ void SettingsBackend::setRtlTcpGainIndex(int rtlTcpGainIndex)
 
     if (!m_rtltcpGainList.empty())
     {
-        // ui->rtltcpGainValueLabel->setText(QString("%1 dB").arg(m_rtltcpGainList.at(val)));
-        m_settings->rtltcp.gainIdx = rtlTcpGainIndex;
+        m_settings->rtltcp.gainIdx = rtlTcpGainIndex < m_rtltcpGainList.size() ? rtlTcpGainIndex : m_rtltcpGainList.size() - 1;
         if (m_isRtlTcpGainEnabled)
         {  // user interaction
             dynamic_cast<RtlTcpInput *>(m_device)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
@@ -2215,10 +2222,16 @@ void SettingsBackend::setSdrplayRfGainIndex(int sdrplayRfGainIndex)
     {
         return;
     }
-    m_settings->sdrplay.gain.rfGain = sdrplayRfGainIndex;
-    if (m_settings->sdrplay.gain.mode == SdrPlayGainMode::Manual && dynamic_cast<SdrPlayInput *>(m_device))
-    {  // user interaction
-        QTimer::singleShot(1, this, [this]() { dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain); });
+    if (!m_sdrplayGainList.isEmpty())
+    {
+        m_settings->sdrplay.gain.rfGain = sdrplayRfGainIndex < m_sdrplayGainList.size() ? sdrplayRfGainIndex : m_sdrplayGainList.size() - 1;
+        if (m_settings->sdrplay.gain.mode == SdrPlayGainMode::Manual && dynamic_cast<SdrPlayInput *>(m_device))
+        {  // user interaction
+            QTimer::singleShot(1, this, [this]() { dynamic_cast<SdrPlayInput *>(m_device)->setGainMode(m_settings->sdrplay.gain); });
+        }
+    }
+    else
+    { /* empy gain list => do nothing */
     }
     emit sdrplayRfGainIndexChanged();
 }

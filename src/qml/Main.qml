@@ -314,7 +314,7 @@ ApplicationWindow {
             quitApplication();
         }
         function onRequestActivate() {
-            applicationWindow.requestActivate()
+            appWindow.requestActivate()
         }
     }
 

@@ -35,7 +35,8 @@ SignalBackend::SignalBackend(Settings *settings, int freq, QObject *parent) : UI
 {
     frequencyLabel(m_frequency > 0 ? QString::number(m_frequency) + " kHz" : "");
 
-    m_spectrumBuffer.assign(2048, 0.0);
+    m_signalSpectrumBuffer.assign(2048, 0.0);
+    m_nullSpectrumBuffer.assign(2048, 0.0);
     m_spectYRangeMin = -140;
     m_spectYRangeMax = 0.0;
     m_spectYViewMin = m_spectYRangeMin;
@@ -45,8 +46,16 @@ SignalBackend::SignalBackend(Settings *settings, int freq, QObject *parent) : UI
     m_timer->setInterval(1500);
     connect(m_timer, &QTimer::timeout, this, [this]() { setSignalState(0, 0.0); });
 
-    connect(this, &SignalBackend::spectrumModeChanged, [this]() { emit setSignalSpectrum((m_settings->signal.spectrumMode)); });
     connect(this, &SignalBackend::spectrumUpdateChanged, this, &SignalBackend::setSpectrumUpdate);
+    connect(this, &SignalBackend::showNULLChanged, this,
+            [this]()
+            {
+                if (m_settings->signal.showNULL == false && m_spectrumPlot)
+                {
+                    m_spectrumPlot->clear(m_nullSpectSeriesId);
+                }
+            });
+    setSpectrumUpdate();
 }
 
 SignalBackend::~SignalBackend()
@@ -84,8 +93,11 @@ void SignalBackend::registerSpectrumPlot(QQuickItem *item)
         m_spectrumPlot->setXAxisTitle(tr("Frequency [MHz]"));
         m_spectrumPlot->setYAxisTitle(tr("dBFS"));
 
-        m_spectSeriesId = m_spectrumPlot->addSeries("spectrum", Qt::cyan, 1.0);
-        m_spectrumPlot->setSeriesStyle(m_spectSeriesId, (int)LineSeries::Normal);
+        m_signalSpectSeriesId = m_spectrumPlot->addSeries("signal", Qt::cyan, 1.0);
+        m_spectrumPlot->setSeriesStyle(m_signalSpectSeriesId, (int)LineSeries::Normal);
+
+        m_nullSpectSeriesId = m_spectrumPlot->addSeries("null", QColor(0xdfd274), 1.0);
+        m_spectrumPlot->setSeriesStyle(m_nullSpectSeriesId, (int)LineSeries::Normal);
 
         // Add a vertical marker lines
         m_spectLeftMarginId = m_spectrumPlot->addMarkerLine(true, -768e-3);
@@ -173,7 +185,7 @@ void SignalBackend::registerSnrPlot(QQuickItem *item)
 
 void SignalBackend::setIsActive(bool isActive)
 {
-    emit setSignalSpectrum(isActive ? m_settings->signal.spectrumMode : 0);
+    emit startSignalSpectrum(isActive);
 }
 
 void SignalBackend::setIsUndocked(bool isUndocked)
@@ -226,7 +238,7 @@ void SignalBackend::setInputDevice(InputDevice::Id id)
     // ui->menuLabel->setEnabled(id != InputDevice::Id::UNDEFINED);
 
     // enable spectrum
-    emit setSignalSpectrum(id == InputDevice::Id::UNDEFINED ? 0 : m_settings->signal.spectrumMode);
+    emit startSignalSpectrum(id == InputDevice::Id::UNDEFINED ? false : true);
 }
 
 void SignalBackend::setSignalState(uint8_t sync, float snr)
@@ -255,15 +267,17 @@ void SignalBackend::setFreqRange()
 
 void SignalBackend::reset()
 {
-    m_spectrumBuffer.assign(2048, 0.0);
-    m_avrgCntr = 0;
+    m_signalSpectrumBuffer.assign(2048, 0.0);
+    m_nullSpectrumBuffer.assign(2048, 0.0);
+    m_signalAvrgCntr = 0;
     m_spectYRangeMin = -140;
     m_spectYRangeMax = 0;
     m_spectYViewMin = m_spectYRangeMin;
     m_spectYViewMax = m_spectYRangeMax;
     if (m_spectrumPlot)
     {
-        m_spectrumPlot->clear(m_spectSeriesId);
+        m_spectrumPlot->clear(m_signalSpectSeriesId);
+        m_spectrumPlot->clear(m_nullSpectSeriesId);
         m_spectrumPlot->setYMin(m_spectYRangeMin);
         m_spectrumPlot->setYMax(m_spectYRangeMax);
     }
@@ -280,19 +294,19 @@ void SignalBackend::setSpectrumUpdate()
 {
     switch (m_settings->signal.spectrumUpdate)
     {
-        case SpectrumUpdateSlow:
-            m_numAvrg = 20;
-            m_avrgFactor_dB = -13.010;  // 10 *log10(1/20)
+        case SpectrumUpdateSlow:  // 1.4 sec ==> 14
+            m_numAvrg = 14;
+            m_avrgFactor_dB = -11.461;  // 10 *log10(1/14)
             break;
-        case SpectrumUpdateFast:
+        case SpectrumUpdateFast:  // 600 ms ==> 6
             m_numAvrg = 6;
             m_avrgFactor_dB = -7.7815;  // 10 *log10(1/6)
             break;
-        case SpectrumUpdateVeryFast:
-            m_numAvrg = 2;
-            m_avrgFactor_dB = -3.0103;  // 10 *log10(1/2)
+        case SpectrumUpdateVeryFast:  // 400 ms ==> 4
+            m_numAvrg = 4;
+            m_avrgFactor_dB = -6.0206;  // 10 *log10(1/4)
             break;
-        default:
+        default:  // 1000 ms ==> 10
             m_numAvrg = 10;
             m_avrgFactor_dB = -10;  // 10 *log10(1/10)
             break;
@@ -366,68 +380,154 @@ void SignalBackend::updateFreqOffset(float offset)
     frequencyOffsetLabel(QString("%1 Hz").arg(offset, 0, 'f', 1));
 }
 
-void SignalBackend::onSignalSpectrum(std::shared_ptr<std::vector<float> > data)
+void SignalBackend::onSignalSpectrum(std::shared_ptr<std::vector<float>> data, int type)
 {
-    int idx = 0;
-    for (auto it = m_spectrumBuffer.begin(); it != m_spectrumBuffer.end(); ++it)
+    if (type == RadioControl::SPECT_SIGNAL)
     {
-        *it += data->at(idx++);
+        int idx = 0;
+        for (auto it = m_signalSpectrumBuffer.begin(); it != m_signalSpectrumBuffer.end(); ++it)
+        {
+            *it += data->at(idx++);
+        }
+
+        if (++m_signalAvrgCntr >= m_numAvrg)
+        {
+            // qDebug() << *std::min_element(m_spectrumBuffer.cbegin(), m_spectrumBuffer.cend())*0.1 << *std::max_element(m_spectrumBuffer.cbegin(),
+            // m_spectrumBuffer.cend())*0.1; qDebug() << Q_FUNC_INFO;
+            m_signalAvrgCntr = 0;
+            float offset_dB = m_offset_dB + m_avrgFactor_dB;
+            if (!std::isnan(m_tunerGain))
+            {
+                offset_dB -= m_tunerGain;
+            }
+
+            QVector<QPointF> bins;
+            bins.reserve(2048);
+            bins.resize(2048);
+            auto binsIt = bins.begin() + 1024;
+            float freq = 0;
+            float minVal = 1000;
+            float maxVal = -1000;
+            for (auto it = m_signalSpectrumBuffer.begin(); it != m_signalSpectrumBuffer.end(); ++it)
+            {
+                float val = 10 * std::log10(*it) + offset_dB;
+                if (val < -200)
+                {
+                    val = -200;
+                }
+                minVal = (val < minVal) ? val : minVal;
+                maxVal = (val > maxVal) ? val : maxVal;
+
+                // bins.append(QPointF((freq + m_frequency) * 0.001, val));
+                *binsIt++ = QPointF((freq + m_frequency) * 0.001, val);
+                freq += 1.0;
+
+                if (freq == 1024.0)
+                {
+                    freq = -1024.0;
+                    binsIt = bins.begin();
+                }
+                *it = 0.0;
+            }
+
+            if (m_spectrumPlot)
+            {
+                m_spectrumPlot->replaceBuffer(m_signalSpectSeriesId, bins);
+                if ((minVal - m_spectrumPlot->yMin()) < 0 || (minVal - m_spectrumPlot->yMin()) > 20)
+                {  // set minumum to at least minVal + 10, use multiples of 10
+                    m_spectYViewMin = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, m_spectYRangeMin);
+                }
+                if ((m_spectrumPlot->yMax() - maxVal) < 0 || (m_spectrumPlot->yMax() - maxVal) > 20)
+                {
+                    m_spectYViewMax = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, m_spectYRangeMax);
+                }
+                if (m_spectrumPlot->userModifiedY() == false)
+                {
+                    m_spectrumPlot->setProgrammaticYRange(m_spectYViewMin, m_spectYViewMax);
+                }
+            }
+        }
     }
-
-    if (++m_avrgCntr >= m_numAvrg)
+    else if (m_settings->signal.showNULL)
     {
-        // qDebug() << *std::min_element(m_spectrumBuffer.cbegin(), m_spectrumBuffer.cend())*0.1 << *std::max_element(m_spectrumBuffer.cbegin(),
-        // m_spectrumBuffer.cend())*0.1; qDebug() << Q_FUNC_INFO;
-        m_avrgCntr = 0;
-        float offset_dB = m_offset_dB + m_avrgFactor_dB;
-        if (!std::isnan(m_tunerGain))
+        int idx = 0;
+        for (auto it = m_nullSpectrumBuffer.begin(); it != m_nullSpectrumBuffer.end(); ++it)
         {
-            offset_dB -= m_tunerGain;
+            *it += data->at(idx++);
         }
 
-        QVector<QPointF> bins;
-        bins.reserve(2048);
-        bins.resize(2048);
-        auto binsIt = bins.begin() + 1024;
-        float freq = 0;
-        float minVal = 1000;
-        float maxVal = -1000;
-        for (auto it = m_spectrumBuffer.begin(); it != m_spectrumBuffer.end(); ++it)
+        if (m_signalAvrgCntr == m_numAvrg - 1)
         {
-            float val = 10 * std::log10(*it) + offset_dB;
-            if (val < -200)
+            float offset_dB = m_offset_dB + m_avrgFactor_dB;
+            if (!std::isnan(m_tunerGain))
             {
-                val = -200;
+                offset_dB -= m_tunerGain;
             }
-            minVal = (val < minVal) ? val : minVal;
-            maxVal = (val > maxVal) ? val : maxVal;
 
-            // bins.append(QPointF((freq + m_frequency) * 0.001, val));
-            *binsIt++ = QPointF((freq + m_frequency) * 0.001, val);
-            freq += 1.0;
+#if 1
+            // only -768 ...768 bins are used for display
+            QVector<QPointF> bins;
+            bins.reserve(1536 + 1);
+            bins.resize(1536 + 1);
+            auto binsIt = bins.begin() + 768;
+            float freq = 0;
+            auto it = m_nullSpectrumBuffer.begin();
+            while (it != m_nullSpectrumBuffer.end())
+            {
+                float val = 10 * std::log10(*it) + offset_dB;
+                if (val < -200)
+                {
+                    val = -200;
+                }
 
-            if (freq == 1024.0)
-            {
-                freq = -1024.0;
-                binsIt = bins.begin();
-            }
-            *it = 0.0;
-        }
+                // bins.append(QPointF((freq + m_frequency) * 0.001, val));
+                *binsIt++ = QPointF((freq + m_frequency) * 0.001, val);
+                freq += 1.0;
 
-        if (m_spectrumPlot)
-        {
-            m_spectrumPlot->replaceBuffer(m_spectSeriesId, bins);
-            if ((minVal - m_spectrumPlot->yMin()) < 0 || (minVal - m_spectrumPlot->yMin()) > 20)
-            {  // set minumum to at least minVal + 10, use multiples of 10
-                m_spectYViewMin = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, m_spectYRangeMin);
+                if (freq > 768.0)
+                {
+                    freq = -768.0;
+                    binsIt = bins.begin();
+
+                    *it = 0;
+                    it += (2048 - 1536 - 1);  // skip upper part of the spectrum
+                }
+                *it++ = 0.0;
+                if (freq == 0)
+                {
+                    break;
+                }
             }
-            if ((m_spectrumPlot->yMax() - maxVal) < 0 || (m_spectrumPlot->yMax() - maxVal) > 20)
+#else
+            QVector<QPointF> bins;
+            bins.reserve(2048);
+            bins.resize(2048);
+            auto binsIt = bins.begin() + 1024;
+            float freq = 0;
+            for (auto it = m_nullSpectrumBuffer.begin(); it != m_nullSpectrumBuffer.end(); ++it)
             {
-                m_spectYViewMax = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, m_spectYRangeMax);
+                float val = 10 * std::log10(*it) + offset_dB;
+                if (val < -200)
+                {
+                    val = -200;
+                }
+
+                // bins.append(QPointF((freq + m_frequency) * 0.001, val));
+                *binsIt++ = QPointF((freq + m_frequency) * 0.001, val);
+                freq += 1.0;
+
+                if (freq == 1024.0)
+                {
+                    freq = -1024.0;
+                    binsIt = bins.begin();
+                }
+                *it = 0.0;
             }
-            if (m_spectrumPlot->userModifiedY() == false)
+#endif
+
+            if (m_spectrumPlot)
             {
-                m_spectrumPlot->setProgrammaticYRange(m_spectYViewMin, m_spectYViewMax);
+                m_spectrumPlot->replaceBuffer(m_nullSpectSeriesId, bins);
             }
         }
     }

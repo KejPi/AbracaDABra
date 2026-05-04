@@ -104,7 +104,7 @@ public:
         uint32_t bandwidth;
         bool biasT;
         int agcLevelMax;
-        int ppm;
+        QHash<QString, int> ppmMap;
         float rfLevelOffset;
         bool rfLevelEna;
     } rtlsdr;
@@ -148,7 +148,7 @@ public:
         QString antenna;
         int channel;
         bool biasT;
-        int ppm;
+        QHash<QString, int> ppmMap;
         SdrPlayGainStruct gain;
     } sdrplay;
 #endif
@@ -259,7 +259,7 @@ public:
         QVariant splitterState;
         bool restore;
         bool showSNR;
-        int spectrumMode;
+        bool showNULL;
         int spectrumUpdate;
     } signal;
     struct EPGSettings

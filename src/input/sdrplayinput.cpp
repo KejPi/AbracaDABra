@@ -205,6 +205,7 @@ void SdrPlayInput::setGainMode(const SdrPlayGainStruct &gain)
             break;
         case SdrPlayGainMode::Manual:
             m_gainMode = gain.mode;
+            m_device->setGainMode(SOAPY_SDR_RX, m_rxChannel, false);
             setRFGR(m_rfGainList.size() - 1 - gain.rfGain);
             m_ifAgcEna = gain.ifAgcEna;
             if (!m_ifAgcEna)

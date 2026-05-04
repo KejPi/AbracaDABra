@@ -32,6 +32,9 @@
 #include <QDesktopServices>
 #include <QDir>
 #include <QGuiApplication>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLoggingCategory>
 #include <QMap>
 #include <QNetworkProxy>
@@ -118,14 +121,6 @@
 Q_LOGGING_CATEGORY(application, "Application", QtInfoMsg)
 
 const QString Application::appName("AbracaDABra");
-const char *Application::syncLevelLabels[] = {QT_TR_NOOP("No signal"), QT_TR_NOOP("Signal found"), QT_TR_NOOP("Sync")};
-const char *Application::syncLevelTooltip[] = {QT_TR_NOOP("DAB signal not detected<br>Looking for signal..."),
-                                               QT_TR_NOOP("Found DAB signal,<br>trying to synchronize..."), QT_TR_NOOP("Synchronized to DAB signal")};
-const QStringList Application::snrProgressStylesheet = {
-    QString::fromUtf8("QProgressBar::chunk {background-color: #ff4b4b; }"),  // red
-    QString::fromUtf8("QProgressBar::chunk {background-color: #ffb527; }"),  // yellow
-    QString::fromUtf8("QProgressBar::chunk {background-color: #5bc214; }")   // green
-};
 const QString Application::slsDumpPatern("SLS/{serviceId}/{contentNameWithExt}");
 const QString Application::spiDumpPatern("SPI/{ensId}/{scId}_{directoryId}/{contentName}");
 
@@ -370,6 +365,8 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
 
     m_slModel = new SLModel(m_serviceList, m_metadataManager, this);
     m_slSelectionModel = new QItemSelectionModel(m_slModel, this);
+    m_slProxyModel = new SLProxyModel(this);
+    m_slProxyModel->setSourceModel(m_slModel);
 
     connect(m_serviceList, &ServiceList::serviceAdded, m_slModel, &SLModel::addService);
     connect(m_serviceList, &ServiceList::serviceUpdated, m_slModel, &SLModel::updateService);
@@ -384,6 +381,7 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_serviceList, &ServiceList::serviceUpdatedInEnsemble, m_slTreeModel, &SLTreeModel::updateEnsembleService);
     connect(m_serviceList, &ServiceList::serviceRemovedFromEnsemble, m_slTreeModel, &SLTreeModel::removeEnsembleService);
     connect(m_serviceList, &ServiceList::ensembleRemoved, m_slTreeModel, &SLTreeModel::removeEnsemble);
+    connect(m_serviceList, &ServiceList::ensembleRemoved, this, &Application::populateServiceSourcesMenu);
 
     connect(m_slTreeSelectionModel, &QItemSelectionModel::selectionChanged, this, &Application::onServiceListTreeSelection);
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
@@ -805,7 +803,7 @@ void Application::setContextProperties()
     context->setContextProperty("application", this);
     context->setContextProperty("appUI", m_ui);
     context->setContextProperty("navigationModel", m_navigationModel);
-    context->setContextProperty("slModel", m_slModel);
+    context->setContextProperty("slModel", m_slProxyModel);
     context->setContextProperty("slTreeModel", m_slTreeModel);
     context->setContextProperty("channelListModel", m_channelListModel);
     context->setContextProperty("slSelectionModel", m_slSelectionModel);
@@ -908,11 +906,11 @@ void Application::onSignalState(uint8_t sync, float snr)
     if (sync > static_cast<int>(DabSyncLevel::NoSync))
     {
         syncSnrLevel = 3;
-        if (snr < static_cast<float>(DabSnrThreshold::LowSNR))
+        if (snr < (static_cast<float>(DabSnrThreshold::LowSNR) + m_snrQualOffset))
         {
             syncSnrLevel = 1;
         }
-        else if (snr < static_cast<float>(DabSnrThreshold::GoodSNR))
+        else if (snr < (static_cast<float>(DabSnrThreshold::GoodSNR) + m_snrQualOffset))
         {
             syncSnrLevel = 2;
         }
@@ -1148,6 +1146,7 @@ void Application::channelSelected()
     m_ui->frequencyLabel(tr("Tuning...  "));
 
     onSignalState(uint8_t(DabSyncLevel::NoSync), 0.0);
+    setSnrQualOffset(DabProtectionLevel::PROTECTION_LEVEL_UNDEFINED);
     if (m_tiiBackend != nullptr)
     {
         m_tiiBackend->onChannelSelection();
@@ -1638,6 +1637,7 @@ void Application::onAudioServiceSelection(const RadioControlServiceComponent &s)
 
         onProgrammeTypeChanged(s.SId, s.pty);
         displaySubchParams(s);
+        setSnrQualOffset(s.protection.level);
         m_ui->infoLabelIndex(0);
 
         m_ui->serviceId(ServiceListId(s.SId.value(), s.SCIdS).value());
@@ -1710,6 +1710,30 @@ void Application::displaySubchParams(const RadioControlServiceComponent &s)
     else
     { /* this should not happen */
     }
+}
+
+void Application::setSnrQualOffset(DabProtectionLevel protectionLevel)
+{  // https://televizniweb.mediar.cz/wp-content/uploads/2019/05/08-Urovne-ochrany-DAB.jpg
+    // https://tech.ebu.ch/files/live/sites/tech/files/shared/tech/tech3391.pdf
+    static const float offsets[] = {
+        0.0,   // PROTECTION_LEVEL_UNDEFINED,
+        1.0,   // UEP_1:
+        2.0,   // UEP_2:
+        3.0,   // UEP_3:
+        4.0,   // UEP_4:
+        5.5,   // UEP_5:
+        -0.8,  // EEP_1A:
+        0.0,   // EEP_2A:
+        1.2,   // EEP_3A:
+        4.0,   // EEP_4A:
+        0.4,   // EEP_1B:
+        1.9,   // EEP_2B:
+        2.7,   // EEP_3B:
+        4.6,   // EEP_4B:
+    };
+    m_snrQualOffset = offsets[static_cast<int>(protectionLevel)];
+
+    // qDebug() << "Set SNR/quality offset to" << m_snrQualOffset;
 }
 
 void Application::onAudioServiceReconfiguration(const RadioControlServiceComponent &s)
@@ -2438,7 +2462,10 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
 
     // disable band scan and scanner - will be enable when it makes sense
     m_navigationModel->setEnabled(NavigationModel::BandScan, false);
-    m_navigationModel->setEnabled(NavigationModel::Scanner, false);
+    if (m_scannerBackend)
+    {
+        m_scannerBackend->isScanningEnabled(false);
+    }
 
     // disable file recording
     m_ensembleInfoBackend->enableRecording(false);
@@ -2829,7 +2856,10 @@ void Application::configureForInputDevice()
 
         // enable band scan
         m_navigationModel->setEnabled(NavigationModel::BandScan, isLive);
-        m_navigationModel->setEnabled(NavigationModel::Scanner, isLive);
+        if (m_scannerBackend)
+        {
+            m_scannerBackend->isScanningEnabled(isLive);
+        }
 
         // enable service list
         m_ui->serviceSelectionEnabled(true);
@@ -2853,10 +2883,16 @@ void Application::configureForInputDevice()
         }
         m_ensembleInfoBackend->enableRecording(hasRecording);
 
-        if (isLive && m_scannerBackend != nullptr)
+        if (m_scannerBackend != nullptr)
         {
-            // Scanner
-            connect(m_inputDevice, &InputDevice::error, m_scannerBackend, &ScannerBackend::onInputDeviceError, Qt::QueuedConnection);
+            if (isLive)
+            {
+                // Scanner
+                connect(m_inputDevice, &InputDevice::error, m_scannerBackend, &ScannerBackend::onInputDeviceError, Qt::QueuedConnection);
+                connect(m_inputDevice, &InputDevice::rfLevel, m_scannerBackend, &ScannerBackend::onRfLevel);
+            }
+
+            m_scannerBackend->setDeviceHasRfLevel(m_inputDevice->capabilities() & InputDevice::Capability::RfLevel);
         }
 
         // metadata & EPG
@@ -3127,9 +3163,9 @@ void Application::loadSettings()
 
     m_settings->signal.splitterState = settings->value("SignalDialog/layout");
     m_settings->signal.restore = settings->value("SignalDialog/restore", false).toBool();
-    m_settings->signal.spectrumMode = settings->value("SignalDialog/spectrumMode", 1).toInt();
     m_settings->signal.spectrumUpdate = settings->value("SignalDialog/spectrumUpdate", 1).toInt();
     m_settings->signal.showSNR = settings->value("SignalDialog/showSNR", 0).toBool();
+    m_settings->signal.showNULL = settings->value("SignalDialog/showNULL", 0).toBool();
 
     m_settings->ensembleInfo.restore = settings->value("EnsembleInfo/restore", false).toBool();
     m_settings->ensembleInfo.recordingTimeoutEna = settings->value("EnsembleInfo/recordingTimeoutEna", false).toBool();
@@ -3154,7 +3190,12 @@ void Application::loadSettings()
     m_settings->rtlsdr.bandwidth = settings->value("RTL-SDR/bandwidth", 0).toUInt();
     m_settings->rtlsdr.biasT = settings->value("RTL-SDR/bias-T", false).toBool();
     m_settings->rtlsdr.agcLevelMax = settings->value("RTL-SDR/agcLevelMax", 0).toInt();
-    m_settings->rtlsdr.ppm = settings->value("RTL-SDR/ppm", 0).toInt();
+    settings->beginGroup("RTL-SDR/ppmMap");
+    for (const auto &key : settings->childKeys())
+    {
+        m_settings->rtlsdr.ppmMap[key] = settings->value(key).toInt();
+    }
+    settings->endGroup();
     m_settings->rtlsdr.rfLevelEna = settings->value("RTL-SDR/rfLevelEna", true).toBool();
     m_settings->rtlsdr.rfLevelOffset = settings->value("RTL-SDR/rfLevelOffset", 0.0).toFloat();
 
@@ -3219,15 +3260,19 @@ void Application::loadSettings()
     m_settings->sdrplay.gain.rfGain = settings->value("SDRPLAY/rfGain", -1).toInt();
     m_settings->sdrplay.gain.ifGain = settings->value("SDRPLAY/ifGain", 0).toInt();
     m_settings->sdrplay.gain.ifAgcEna = settings->value("SDRPLAY/ifAgcEna", true).toBool();
-    m_settings->sdrplay.ppm = settings->value("SDRPLAY/ppm", 0).toInt();
+    settings->beginGroup("SDRPLAY/ppmMap");
+    for (const auto &key : settings->childKeys())
+    {
+        m_settings->sdrplay.ppmMap[key] = settings->value(key).toInt();
+    }
+    settings->endGroup();
     m_settings->sdrplay.biasT = settings->value("SDRPLAY/bias-T", false).toBool();
-
 #endif
     m_settings->rawfile.file = settings->value("RAW-FILE/filename", QVariant(QString(""))).toString();
     m_settings->rawfile.format = RawFileInputFormat(settings->value("RAW-FILE/format", 0).toInt());
     m_settings->rawfile.loopEna = settings->value("RAW-FILE/loop", false).toBool();
 
-    m_settingsBackend->setSettings(m_settings);
+    m_settingsBackend->init(m_settings);
 
     // set DAB time locale
     m_timeLocale = QLocale(m_settingsBackend->applicationLanguage());
@@ -3459,9 +3504,9 @@ void Application::saveSettings()
 
     settings->setValue("SignalDialog/layout", m_settings->signal.splitterState);
     settings->setValue("SignalDialog/restore", m_settings->signal.restore);
-    settings->setValue("SignalDialog/spectrumMode", m_settings->signal.spectrumMode);
     settings->setValue("SignalDialog/spectrumUpdate", m_settings->signal.spectrumUpdate);
     settings->setValue("SignalDialog/showSNR", m_settings->signal.showSNR);
+    settings->setValue("SignalDialog/showNULL", m_settings->signal.showNULL);
 
     settings->setValue("UA-STORAGE/overwriteEna", m_settings->uaDump.overwriteEna);
     settings->setValue("UA-STORAGE/slsEna", m_settings->uaDump.slsEna);
@@ -3476,7 +3521,12 @@ void Application::saveSettings()
     settings->setValue("RTL-SDR/bandwidth", m_settings->rtlsdr.bandwidth);
     settings->setValue("RTL-SDR/bias-T", m_settings->rtlsdr.biasT);
     settings->setValue("RTL-SDR/agcLevelMax", m_settings->rtlsdr.agcLevelMax);
-    settings->setValue("RTL-SDR/ppm", m_settings->rtlsdr.ppm);
+    settings->beginGroup("RTL-SDR/ppmMap");
+    for (auto it = m_settings->rtlsdr.ppmMap.cbegin(); it != m_settings->rtlsdr.ppmMap.cend(); ++it)
+    {
+        settings->setValue(it.key(), it.value());
+    }
+    settings->endGroup();
     settings->setValue("RTL-SDR/rfLevelEna", m_settings->rtlsdr.rfLevelEna);
     settings->setValue("RTL-SDR/rfLevelOffset", m_settings->rtlsdr.rfLevelOffset);
 
@@ -3523,7 +3573,12 @@ void Application::saveSettings()
     settings->setValue("SDRPLAY/rfGain", m_settings->sdrplay.gain.rfGain);
     settings->setValue("SDRPLAY/ifGain", m_settings->sdrplay.gain.ifGain);
     settings->setValue("SDRPLAY/ifAgcEna", m_settings->sdrplay.gain.ifAgcEna);
-    settings->setValue("SDRPLAY/ppm", m_settings->sdrplay.ppm);
+    settings->beginGroup("SDRPLAY/ppmMap");
+    for (auto it = m_settings->sdrplay.ppmMap.cbegin(); it != m_settings->sdrplay.ppmMap.cend(); ++it)
+    {
+        settings->setValue(it.key(), it.value());
+    }
+    settings->endGroup();
     settings->setValue("SDRPLAY/bias-T", m_settings->sdrplay.biasT);
 #endif
 
@@ -3548,18 +3603,24 @@ void Application::saveSettings()
     if ((InputDevice::Id::RAWFILE != m_inputDeviceId) && (InputDevice::Id::UNDEFINED != m_inputDeviceId))
     {  // save current service and service list
         QModelIndex current = m_slSelectionModel->currentIndex();
-        const SLModel *model = reinterpret_cast<const SLModel *>(current.model());
-        ServiceListConstIterator it = m_serviceList->findService(model->id(current));
-        if (m_serviceList->serviceListEnd() != it)
+        const QAbstractItemModel *rawModel = current.model();
+        if (rawModel != nullptr)
         {
-            m_SId = (*it)->SId();
-            m_SCIdS = (*it)->SCIdS();
-            m_frequency = (*it)->getEnsemble()->frequency();
+            const SLModel *model = reinterpret_cast<const SLModel *>(rawModel);
+            ServiceListConstIterator it = m_serviceList->findService(model->id(current));
+            if (m_serviceList->serviceListEnd() != it)
+            {
+                m_SId = (*it)->SId();
+                m_SCIdS = (*it)->SCIdS();
+                m_frequency = (*it)->getEnsemble()->frequency();
 
-            settings->setValue("SID", m_SId.value());
-            settings->setValue("SCIdS", m_SCIdS);
-            settings->setValue("Frequency", m_frequency);
+                settings->setValue("SID", m_SId.value());
+                settings->setValue("SCIdS", m_SCIdS);
+                settings->setValue("Frequency", m_frequency);
+            }
         }
+        // Service list was already saved in close() if exit was requested while playing.
+        // Save here covers the idle-exit path and ensures the file is always up to date.
         m_serviceList->save(m_serviceListFilename);
 
         // save audio schedule
@@ -3601,9 +3662,9 @@ void Application::setServiceFavorite(const QModelIndex &index, bool checked)
     ServiceListId currentId = m_slModel->id(currentIdx);
     ServiceListId id;
 
-    if (dynamic_cast<const SLModel *>(index.model()))
-    {  // index belongs to service list model
-        id = m_slModel->id(index);
+    if (dynamic_cast<const SLProxyModel *>(index.model()))
+    {  // index belongs to service list proxy model
+        id = m_slProxyModel->id(index);
         m_serviceList->setServiceFavorite(id, checked);
     }
 
@@ -3864,7 +3925,10 @@ void Application::close()
     {  // in idle
         emit exit();
 
-        saveSettings();
+        if (!m_skipSaveSettings)
+        {
+            saveSettings();
+        }
 
         m_allowQuitEvent = true;  // allow the quit event to proceed if we intercepted it
 
@@ -3877,6 +3941,15 @@ void Application::close()
 
         m_exitRequested = true;
         emit resetUserApps();
+
+        // Save service list NOW, before serviceRequest(0,0,0) triggers onEnsembleRemoved()
+        // which would strip the current ensemble from memory before saveSettings() runs.
+        if ((InputDevice::Id::RAWFILE != m_inputDeviceId) && (InputDevice::Id::UNDEFINED != m_inputDeviceId))
+        {
+            m_serviceList->save(m_serviceListFilename);
+            m_audioRecScheduleModel->save(m_audioRecScheduleFilename);
+        }
+
         emit serviceRequest(0, 0, 0);
     }
 }
@@ -3912,7 +3985,10 @@ void Application::onApplicationStateChanged(Qt::ApplicationState state)
     if (state == Qt::ApplicationSuspended)
     {
         qCInfo(application, "Application suspended - saving settings");
-        saveSettings();
+        if (!m_skipSaveSettings)
+        {
+            saveSettings();
+        }
         // Note: Audio playback continues in background via wake lock and audio focus.
         // The decoder will naturally buffer audio as needed.
         // Audio will only stop when the app is terminated by the system.
@@ -3989,6 +4065,32 @@ void Application::setAndroidKeepScreenOn(bool enable)
 #endif
 }
 
+void Application::deleteEnsembleFromServiceList(int id, const QString &channelName)
+{
+    qDebug() << "Deleting ensemble from service list id:" << QString("%1").arg(id, 0, 16) << channelName;
+    uint32_t freq = 0;
+    // find frequency in channel list DabTables::channelList hash
+    for (auto it = DabTables::channelList.cbegin(); it != DabTables::channelList.cend(); ++it)
+    {
+        if (it.value() == channelName)
+        {
+            freq = it.key();
+            break;
+        }
+    }
+    if (freq != 0)
+    {
+        RadioControlEnsemble e;
+        e.frequency = freq;
+        e.ueid = id;
+        m_serviceList->removeEnsemble(e);
+    }
+    else
+    {
+        qWarning() << "Failed to find frequency for channel name:" << channelName;
+    }
+}
+
 void Application::updateAndroidNotification(const QString &title, const QString &text)
 {
 #ifdef Q_OS_ANDROID
@@ -4034,7 +4136,7 @@ QObject *Application::createSignalBackend()
     if (m_signalBackend == nullptr)
     {
         m_signalBackend = new SignalBackend(m_settings, m_frequency);
-        connect(m_signalBackend, &SignalBackend::setSignalSpectrum, m_radioControl, &RadioControl::setSignalSpectrum, Qt::QueuedConnection);
+        connect(m_signalBackend, &SignalBackend::startSignalSpectrum, m_radioControl, &RadioControl::startSignalSpectrum, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tuneDone, m_signalBackend, &SignalBackend::onTuneDone, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::freqOffset, m_signalBackend, &SignalBackend::updateFreqOffset, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::signalSpectrum, m_signalBackend, &SignalBackend::onSignalSpectrum, Qt::QueuedConnection);
@@ -4104,8 +4206,11 @@ QObject *Application::createScannerBackend()
                 });
         if (m_inputDevice)
         {
+            connect(m_inputDevice, &InputDevice::rfLevel, m_scannerBackend, &ScannerBackend::onRfLevel);
             connect(m_inputDevice, &InputDevice::error, m_scannerBackend, &ScannerBackend::onInputDeviceError, Qt::QueuedConnection);
         }
+        m_scannerBackend->setDeviceHasRfLevel(m_inputDevice && (m_inputDevice->capabilities() & InputDevice::Capability::RfLevel));
+        m_scannerBackend->isScanningEnabled(m_inputDevice && (m_inputDevice->capabilities() & InputDevice::Capability::LiveStream));
         m_scannerBackend->setIsActive(m_navigationModel->isActive(NavigationModel::Scanner));
     }
 
@@ -4304,6 +4409,237 @@ void Application::clearServiceList()
             {MessageBoxBackend::StandardButton::No, tr("Cancel"), MessageBoxBackend::ButtonRole::Neutral},
         },
         MessageBoxBackend::StandardButton::Yes  // default button
+    );
+}
+
+void Application::backupSettings()
+{
+    // save current state first
+    saveSettings();
+
+    // read INI file
+    QSettings *settings;
+    if (m_iniFilename.isEmpty())
+    {
+        settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+    }
+    else
+    {
+        settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+    }
+    QString iniFilePath = settings->fileName();
+    delete settings;
+
+    QJsonObject backup;
+    backup["backupVersion"] = 1;
+    backup["appVersion"] = QString(PROJECT_VER);
+    backup["timestamp"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+
+    // read INI file content
+    QFile iniFile(iniFilePath);
+    if (iniFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        backup["settings"] = QString::fromUtf8(iniFile.readAll());
+        iniFile.close();
+    }
+    else
+    {
+        qCWarning(application, "Backup: failed to read settings file");
+        emit showInfoMessage(tr("Failed to create backup"), -1);
+        return;
+    }
+
+    // read service list
+    if (!m_serviceListFilename.isEmpty())
+    {
+        QFile slFile(m_serviceListFilename);
+        if (slFile.open(QIODevice::ReadOnly))
+        {
+            QJsonDocument slDoc = QJsonDocument::fromJson(slFile.readAll());
+            slFile.close();
+            if (!slDoc.isNull())
+            {
+                backup["serviceList"] = slDoc.isArray() ? QJsonValue(slDoc.array()) : QJsonValue(slDoc.object());
+            }
+        }
+    }
+
+    // read audio recording schedule
+    if (!m_audioRecScheduleFilename.isEmpty())
+    {
+        QFile arsFile(m_audioRecScheduleFilename);
+        if (arsFile.open(QIODevice::ReadOnly))
+        {
+            QJsonDocument arsDoc = QJsonDocument::fromJson(arsFile.readAll());
+            arsFile.close();
+            if (!arsDoc.isNull())
+            {
+                backup["audioRecSchedule"] = arsDoc.isArray() ? QJsonValue(arsDoc.array()) : QJsonValue(arsDoc.object());
+            }
+        }
+    }
+
+    // write backup file
+    QString backupFileName = QString("AbracaDABra_backup_%1.json").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
+    QString backupFilePath = m_settings->dataStoragePath + "/" + backupFileName;
+
+    QDir().mkpath(m_settings->dataStoragePath);
+    QFile backupFile(backupFilePath);
+    if (backupFile.open(QIODevice::WriteOnly))
+    {
+        backupFile.write(QJsonDocument(backup).toJson());
+        backupFile.close();
+        qCInfo(application, "Backup created: %s", qPrintable(backupFilePath));
+        emit showInfoMessage(tr("Settings backup created successfully"), 1);
+    }
+    else
+    {
+        qCWarning(application, "Backup: failed to write backup file %s", qPrintable(backupFilePath));
+        emit showInfoMessage(tr("Failed to create backup"), -1);
+    }
+}
+
+void Application::restoreSettings(const QUrl &fileUrl)
+{
+    // find the most recent backup file in data storage path
+    QString fileName;
+#ifdef Q_OS_ANDROID
+    if (fileUrl.scheme() == "content" || fileUrl.isLocalFile())
+    {
+        fileName = fileUrl.toString();
+    }
+    else
+    {
+        return;
+    }
+#else
+    if (!fileUrl.isLocalFile())
+    {
+        return;
+    }
+    fileName = fileUrl.toLocalFile();
+#endif
+
+    m_messageBoxBackend->showQuestion(
+        tr("Restore settings?"), tr("Settings will be restored from backup.\nApplication will restart after restore."),
+        [this, fileName](MessageBoxBackend::StandardButton result)
+        {
+            if (result != MessageBoxBackend::StandardButton::Yes)
+            {
+                return;
+            }
+
+            // read backup file
+            QFile backupFile(fileName);
+            if (!backupFile.open(QIODevice::ReadOnly))
+            {
+                qCWarning(application, "Restore: failed to read backup file");
+                emit showInfoMessage(tr("Failed to restore settings"), -1);
+                return;
+            }
+
+            QJsonDocument backupDoc = QJsonDocument::fromJson(backupFile.readAll());
+            backupFile.close();
+
+            if (backupDoc.isNull() || !backupDoc.isObject())
+            {
+                qCWarning(application, "Restore: invalid backup file format");
+                emit showInfoMessage(tr("Invalid backup file"), -1);
+                return;
+            }
+
+            QJsonObject backup = backupDoc.object();
+            if (!backup.contains("backupVersion") || !backup.contains("settings"))
+            {
+                qCWarning(application, "Restore: backup file missing required fields");
+                emit showInfoMessage(tr("Invalid backup file"), -1);
+                return;
+            }
+
+            // resolve INI file path
+            QSettings *settings;
+            if (m_iniFilename.isEmpty())
+            {
+                settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, appName, appName);
+            }
+            else
+            {
+                settings = new QSettings(m_iniFilename, QSettings::IniFormat);
+            }
+            QString iniFilePath = settings->fileName();
+            delete settings;
+
+            // write INI file
+            QFile iniFile(iniFilePath);
+            if (iniFile.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                iniFile.write(backup["settings"].toString().toUtf8());
+                iniFile.close();
+            }
+            else
+            {
+                qCWarning(application, "Restore: failed to write settings file");
+                emit showInfoMessage(tr("Failed to restore settings"), -1);
+                return;
+            }
+
+            // write service list
+            if (backup.contains("serviceList") && !m_serviceListFilename.isEmpty())
+            {
+                QFile slFile(m_serviceListFilename);
+                if (slFile.open(QIODevice::WriteOnly))
+                {
+                    QJsonDocument slDoc;
+                    if (backup["serviceList"].isArray())
+                    {
+                        slDoc = QJsonDocument(backup["serviceList"].toArray());
+                    }
+                    else
+                    {
+                        slDoc = QJsonDocument(backup["serviceList"].toObject());
+                    }
+                    slFile.write(slDoc.toJson());
+                    slFile.close();
+                }
+            }
+
+            // write audio recording schedule
+            if (backup.contains("audioRecSchedule") && !m_audioRecScheduleFilename.isEmpty())
+            {
+                QFile arsFile(m_audioRecScheduleFilename);
+                if (arsFile.open(QIODevice::WriteOnly))
+                {
+                    QJsonDocument arsDoc;
+                    if (backup["audioRecSchedule"].isArray())
+                    {
+                        arsDoc = QJsonDocument(backup["audioRecSchedule"].toArray());
+                    }
+                    else
+                    {
+                        arsDoc = QJsonDocument(backup["audioRecSchedule"].toObject());
+                    }
+                    arsFile.write(arsDoc.toJson());
+                    arsFile.close();
+                }
+            }
+
+            qCInfo(application, "Settings restored from backup, restarting...");
+            emit showInfoMessage(tr("Settings restored, restarting..."), 1);
+
+            // restart application, skip saving to avoid overwriting restored files
+            QTimer::singleShot(500, this,
+                               [this]()
+                               {
+                                   m_skipSaveSettings = true;
+                                   m_exitCode = Application::EXIT_CODE_RESTART;
+                                   close();
+                               });
+        },
+        {
+            {MessageBoxBackend::StandardButton::Yes, tr("Restore"), MessageBoxBackend::ButtonRole::Negative},
+            {MessageBoxBackend::StandardButton::No, tr("Cancel"), MessageBoxBackend::ButtonRole::Neutral},
+        },
+        MessageBoxBackend::StandardButton::No  // default to cancel for safety
     );
 }
 

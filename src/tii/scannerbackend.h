@@ -27,14 +27,36 @@
 #ifndef SCANNERBACKEND_H
 #define SCANNERBACKEND_H
 
+#include <QFutureWatcher>
 #include <QGeoPositionInfoSource>
 #include <QItemSelectionModel>
 #include <QQmlApplicationEngine>
 #include <QQuickView>
+#include <cmath>
 
 #include "radiocontrol.h"
 #include "txmapbackend.h"
 #include "uicontrolprovider.h"
+
+struct CsvRowData
+{
+    QDateTime time;
+    QList<dabsdrTii_t> tiiList;
+    ServiceListId ensId;
+    QString ensLabel;
+    int numServices;
+    float snr;
+    float rfLevel;
+};
+
+struct CsvParseResult
+{
+    QList<CsvRowData> rows;
+    QGeoCoordinate offlineCoords;
+    bool hasRfLevel = false;
+    bool success = false;
+    QString errorMessage;
+};
 
 class Settings;
 class ChannelSelectionModel;
@@ -46,8 +68,10 @@ class ScannerBackend : public TxMapBackend
     QML_ELEMENT
     QML_UNCREATABLE("ScannerBackend cannot be instantiated")
 
+    UI_PROPERTY_DEFAULT(bool, isLoading, false)
     UI_PROPERTY_DEFAULT(bool, isScanning, false)
     UI_PROPERTY_DEFAULT(bool, isStartStopEnabled, true)
+    UI_PROPERTY_DEFAULT(bool, isScanningEnabled, true)
     UI_PROPERTY(QString, scanningLabel)
     UI_PROPERTY(QString, progressChannel)
     UI_PROPERTY_DEFAULT(int, progressValue, 0)
@@ -90,9 +114,11 @@ public:
     void onTiiData(const RadioControlTIIData &data) override;
     void onEnsembleConfigurationAndCSV(const QString &config, const QString &csvString);
     void onInputDeviceError(const InputDevice::ErrorCode);
+    void onRfLevel(float rfLevel, float gain);
+    void setDeviceHasRfLevel(bool hasRfLevel);
     // void setSelectedRow(int modelRow) override;
-    void setServiceToRestore(const DabSId &sid, uint8_t scids) { serviceToRestore = ServiceListId(sid.value(), scids); }
-    ServiceListId getServiceToRestore() const { return serviceToRestore; };
+    void setServiceToRestore(const DabSId &sid, uint8_t scids) { m_serviceToRestore = ServiceListId(sid.value(), scids); }
+    ServiceListId getServiceToRestore() const { return m_serviceToRestore; };
     void loadSettings();
 
     ChannelSelectionModel *channelSelectionModel() const { return m_channelSelectionModel; }
@@ -142,7 +168,6 @@ private:
     MessageBoxBackend *m_messageBoxBackend = nullptr;
 
     bool m_isTiiActive = false;
-    bool m_exitRequested = false;
     int m_scanCycleCntr;
     ScannerState m_state = ScannerState::Idle;
 
@@ -154,13 +179,15 @@ private:
     uint m_tiiCntr = 0;
     float m_snr;
     uint m_snrCntr;
+    float m_rfLevel = NAN;  // last received RF level [dBm] for current channel
     QDateTime m_scanStartTime;
+    QGeoCoordinate m_scanStartLocation;
 
     // this is used in precise mode
     bool m_isPreciseMode = false;
     RadioControlTIIData m_tiiData;
 
-    ServiceListId serviceToRestore;
+    ServiceListId m_serviceToRestore;
 
     void startScan();
     void scanStep();
@@ -169,13 +196,20 @@ private:
     void storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf);
     void handleContextMenuAction(int actionId, const QVariant &data);
     ContextMenuModel *m_contextMenuModel = nullptr;
+    bool m_deviceHasRfLevel = false;
 
     // Real-time CSV auto-save
     QFile *m_autoSaveFile = nullptr;
     int m_autoSaveExportRole = 0;
+    int m_autoSaveLastCol = 0;
     void startAutoSaveCsv();
     void appendAutoSaveRows(int firstRow, int lastRow);
     void stopAutoSaveCsv();
+
+    // Async CSV loading
+    QFutureWatcher<CsvParseResult> *m_csvFutureWatcher = nullptr;
+    static CsvParseResult parseCsvFile(const QString &fileName);
+    void onCsvParsed();
 };
 
 class ChannelSelectionModel : public QAbstractListModel
