@@ -91,7 +91,7 @@
     <message>
         <location filename="../qml/controls/AbracaTimePicker.qml" line="38"/>
         <source>Time</source>
-        <translation>Tempo</translation>
+        <translation>Data</translation>
     </message>
     <message>
         <location filename="../qml/controls/AbracaTimePicker.qml" line="147"/>
@@ -303,18 +303,18 @@
     <message>
         <location filename="../application.cpp" line="831"/>
         <source>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %5</source>
-        <translation>&lt;b&gt;Provider:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Etichetta:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Paese:&lt;/b&gt; %5</translation>
+        <translation>&lt;b&gt;Provider:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;MUX:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Paese:&lt;/b&gt; %5</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1031"/>
         <source>System time</source>
-        <translation>Orario di sistema</translation>
+        <translation>Data/Ora sistema</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1041"/>
         <location filename="../application.cpp" line="4171"/>
         <source>DAB time</source>
-        <translation>Orario dal DAB</translation>
+        <translation>Data/Ora DAB</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1051"/>
@@ -606,17 +606,17 @@ Oggetti MOT decodificati: %1 / %2</translation>
     <message>
         <location filename="../application.cpp" line="2381"/>
         <source>No service</source>
-        <translation>Nessun canale</translation>
+        <translation>Nessun Canale</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2387"/>
         <source>No service playing</source>
-        <translation>Nessun canale in riproduzione</translation>
+        <translation>Nessun Canale in riproduzione</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4277"/>
         <source>Service list exported</source>
-        <translation>Lista canali esportata</translation>
+        <translation>Lista Canali esportata</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4281"/>
@@ -626,7 +626,7 @@ Oggetti MOT decodificati: %1 / %2</translation>
     <message>
         <location filename="../application.cpp" line="4288"/>
         <source>Clear service list?</source>
-        <translation>Pulire la lista canali?</translation>
+        <translation>Pulire la lista Canali?</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4288"/>
@@ -667,7 +667,7 @@ Oggetti MOT decodificati: %1 / %2</translation>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="110"/>
         <source>Stop time:</source>
-        <translation>Ora di arresto:</translation>
+        <translation>Ora/Data di arresto:</translation>
     </message>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="211"/>
@@ -819,7 +819,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/BandScan.qml" line="114"/>
         <source>Clear service list on start</source>
-        <translation>Cancella l&apos;elenco dei canali all&apos;avvio</translation>
+        <translation>Cancella l&apos;elenco dei Canali all&apos;avvio</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="129"/>
@@ -842,12 +842,12 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../bandscanbackend.cpp" line="61"/>
         <source>Press Start to perform band scan.</source>
-        <translation>Premere Avvio per eseguire la scansione delle bande.</translation>
+        <translation>Premere Avvio per eseguire la scansione della bande.</translation>
     </message>
     <message>
         <location filename="../bandscanbackend.cpp" line="136"/>
         <source>Scanning channel:</source>
-        <translation>Scansione canali:</translation>
+        <translation>Scansione Canali:</translation>
     </message>
 </context>
 <context>
@@ -855,7 +855,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/CatSLS.qml" line="34"/>
         <source>Categorized slideshow</source>
-        <translation>Presentazione per categorie</translation>
+        <translation>Copertine per categoria</translation>
     </message>
 </context>
 <context>
@@ -863,7 +863,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/tii/ChannelSelectionDialog.qml" line="39"/>
         <source>Channel selection</source>
-        <translation>Selezione canale</translation>
+        <translation>Selezione Canale</translation>
     </message>
     <message>
         <location filename="../qml/tii/ChannelSelectionDialog.qml" line="67"/>
@@ -1030,7 +1030,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
         <location filename="../qml/epg/EPGView.qml" line="121"/>
         <location filename="../qml/epg/EPGView.qml" line="163"/>
         <source>Hide services without schedule</source>
-        <translation>Nascondi i canali senza orario</translation>
+        <translation>Nascondi i canali senza pianificazione</translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="131"/>
@@ -1041,7 +1041,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="215"/>
         <source>Current time: </source>
-        <translation>Ora corrente: </translation>
+        <translation>Data\Ora corrente: </translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="414"/>
@@ -1447,7 +1447,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
         <location filename="../ensembleinfobackend.cpp" line="391"/>
         <location filename="../ensembleinfobackend.cpp" line="482"/>
         <source>N/A</source>
-        <translation>k.A.</translation>
+        <translation>N/A</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="556"/>
@@ -1669,12 +1669,12 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../navigationmodel.cpp" line="57"/>
         <source>CatSLS</source>
-        <translation>CatSLS</translation>
+        <translation>Copertine</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="57"/>
         <source>Categorized slideshow</source>
-        <translation>Presentazione per categorie</translation>
+        <translation>Copertine per categoria</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="63"/>
@@ -1847,7 +1847,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="219"/>
         <source>Slideshow background:</source>
-        <translation>Sfondo Presentazione:</translation>
+        <translation>Sfondo copertina:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="241"/>
@@ -4014,7 +4014,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../dabtables.cpp" line="2209"/>
         <source>Radio Info</source>
-        <translation></translation>
+        <translation>Radio Info</translation>
     </message>
     <message>
         <location filename="../dlplusmodel.cpp" line="298"/>
@@ -5136,7 +5136,7 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../signalbackend.cpp" line="145"/>
         <source>Time</source>
-        <translation>Ora</translation>
+        <translation>Data\Ora</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="146"/>
@@ -5174,7 +5174,7 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/SignalState.qml" line="91"/>
         <source>DAB signal SNR</source>
-        <translation>Rapporto segnale/rumore (SNR) del segnale DAB</translation>
+        <translation>Rapporto segnale/rumore (SNR) DAB</translation>
     </message>
 </context>
 <context>
@@ -5327,7 +5327,7 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../tii/tiibackend.cpp" line="327"/>
         <source>TII log started</source>
-        <translation>Avvio del Log TII</translation>
+        <translation>Log TII avviato</translation>
     </message>
     <message>
         <location filename="../tii/tiibackend.cpp" line="355"/>
@@ -5413,7 +5413,7 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="281"/>
         <source>Timestamp in UTC</source>
-        <translation>Data e ora in UTC</translation>
+        <translation>Data/Ora in UTC</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="292"/>
@@ -5527,14 +5527,14 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="320"/>
         <source>Time (UTC)</source>
-        <translation>Orario (UTC)</translation>
+        <translation>Data\Ora (UTC)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="324"/>
         <location filename="../tii/txtablemodel.cpp" line="367"/>
         <location filename="../tii/txtablemodel.cpp" line="371"/>
         <source>Time</source>
-        <translation>Orario</translation>
+        <translation>Data\Ora</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="327"/>
@@ -5557,13 +5557,13 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
         <location filename="../tii/txtablemodel.cpp" line="333"/>
         <location filename="../tii/txtablemodel.cpp" line="380"/>
         <source>Label</source>
-        <translation>Etichetta</translation>
+        <translation>MUX</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="335"/>
         <location filename="../tii/txtablemodel.cpp" line="382"/>
         <source>Services</source>
-        <translation>Canali</translation>
+        <translation>Emittenti</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="337"/>
@@ -5574,13 +5574,13 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
         <location filename="../tii/txtablemodel.cpp" line="339"/>
         <location filename="../tii/txtablemodel.cpp" line="386"/>
         <source>Main</source>
-        <translation>Principale</translation>
+        <translation>Stazione</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="341"/>
         <location filename="../tii/txtablemodel.cpp" line="388"/>
         <source>Sub</source>
-        <translation>Sub</translation>
+        <translation>Sottostazione</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="343"/>
@@ -5689,12 +5689,12 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="119"/>
         <source>Show decoding progress</source>
-        <translation>Mostra l&apos;avanzamento della decodifica</translation>
+        <translation>Mostra avanzamento della decodifica</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="132"/>
         <source>Hide progress when completed</source>
-        <translation>Nascondi l&apos;avanzamento al termine</translation>
+        <translation>Nascondi avanzamento al termine</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="152"/>
@@ -5714,7 +5714,7 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="198"/>
         <source>Slideshow data</source>
-        <translation>Dati della presentazione</translation>
+        <translation>Dati della copertina</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="210"/>
