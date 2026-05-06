@@ -52,7 +52,7 @@
     <message>
         <location filename="../aboutui.cpp" line="86"/>
         <source>Italian</source>
-        <translation type="unfinished">Italiano</translation>
+        <translation>Italiano</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="89"/>
@@ -623,45 +623,46 @@ Oggetti MOT decodificati: %1 / %2</translation>
         <location filename="../application.cpp" line="4448"/>
         <location filename="../application.cpp" line="4498"/>
         <source>Failed to create backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile creare il backup</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4493"/>
         <source>Settings backup created successfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Il backup delle impostazioni è stato creato con successo</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4524"/>
         <source>Restore settings?</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristinare le impostazioni?</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4524"/>
         <source>Settings will be restored from backup.
 Application will restart after restore.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le impostazioni verranno ripristinate dal backup.
+L&apos;applicazione si riavvierà al termine del ripristino.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4537"/>
         <location filename="../application.cpp" line="4582"/>
         <source>Failed to restore settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile ripristinare le impostazioni</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4547"/>
         <location filename="../application.cpp" line="4555"/>
         <source>Invalid backup file</source>
-        <translation type="unfinished"></translation>
+        <translation>File di backup non valido</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4627"/>
         <source>Settings restored, restarting...</source>
-        <translation type="unfinished"></translation>
+        <translation>Impostazioni ripristinate, riavvio in corso...</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4639"/>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristina</translation>
     </message>
 </context>
 <context>
@@ -985,27 +986,27 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/DabSignalView.qml" line="292"/>
         <source>Show NULL spectrum</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra lo spettro NULL</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="299"/>
         <source>Slow update (1.4 sec)</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiornamento lento (1,4 sec)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="305"/>
         <source>Normal update (1 sec)</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiornamento normale (1 sec)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="311"/>
         <source>Fast update (600 msec)</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiornamento veloce (600 ms)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="317"/>
         <source>Very fast update (400 msec)</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiornamento molto veloce (400 ms)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="324"/>
@@ -1907,17 +1908,17 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="332"/>
         <source>Backup settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Impostazioni di backup</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="336"/>
         <source>Restore settings...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ripristina impostazioni...</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="347"/>
         <source>Backup includes application settings, service list and audio recording schedule. Backup file is stored in data storage folder.</source>
-        <translation type="unfinished"></translation>
+        <translation>Il backup include le impostazioni dell&apos;applicazione, l&apos;elenco dei servizi e la pianificazione delle registrazioni audio. Il file di backup viene salvato nella cartella di archiviazione dati.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="361"/>
@@ -2024,7 +2025,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="646"/>
         <source>JSON files</source>
-        <translation type="unfinished"></translation>
+        <translation>File JSON</translation>
     </message>
 </context>
 <context>
@@ -4943,7 +4944,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/ServiceList.qml" line="217"/>
         <source>Filter services...</source>
-        <translation type="unfinished"></translation>
+        <translation>Servizi di filtraggio...</translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="502"/>
@@ -5620,7 +5621,7 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="352"/>
         <source>RF Level</source>
-        <translation type="unfinished"></translation>
+        <translation>Livello RF</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="354"/>
@@ -5668,7 +5669,7 @@ e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="401"/>
         <source>RF Level [dBm]</source>
-        <translation type="unfinished"></translation>
+        <translation>Livello RF [dBm]</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="417"/>
