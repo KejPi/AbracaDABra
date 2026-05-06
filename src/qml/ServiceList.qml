@@ -402,7 +402,7 @@ Item {
             }
 
             Keys.onPressed: (event) => {
-                if (event.text.length === 1 && event.text.match(/\S/)) {
+                if (event.text.length === 1 && event.text.match(/[^\x00-\x1F\x7F]/)) {
                     serviceListItem.showFilter();
                     serviceFilter.text = event.text;
                     event.accepted = true;
