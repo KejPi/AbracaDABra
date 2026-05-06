@@ -407,4 +407,149 @@ ApplicationWindow {
             }
         }
     }
+
+    // --- View navigation shortcuts: Alt+letter (mnemonic) ---
+    // Alt+L  → Service List     (L = List)
+    // Alt+I  → Info             (I = Info)
+    // Alt+C  → CatSLS           (C = CatSLS)
+    // Alt+E  → EPG              (E = EPG)
+    // Alt+S  → Signal           (S = Signal)
+    // Alt+T  → TII              (T = TII)
+    // Alt+B  → Band Scan        (B = Band)
+    // Alt+N  → Scanner          (N = scaNner)
+    // Alt+U  → Audio Recording Schedule  (U = aUdio)
+    // Ctrl+, → Settings         (standard Preferences shortcut)
+    Shortcut {
+        sequence: "Alt+L"
+        context: Qt.ApplicationShortcut
+        onActivated: {
+            if (navigationModel.getFunctionalityItemData(NavigationModel.Service).isEnabled)
+                contentView.showPage(NavigationModel.Service)
+        }
+    }
+    Shortcut {
+        sequence: "Alt+I"
+        context: Qt.ApplicationShortcut
+        onActivated: {
+            if (navigationModel.getFunctionalityItemData(NavigationModel.EnsembleInfo).isEnabled) {
+                contentView.showPage(NavigationModel.EnsembleInfo)
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Alt+E"
+        context: Qt.ApplicationShortcut
+        onActivated: {
+            if (navigationModel.getFunctionalityItemData(NavigationModel.Epg).isEnabled) {
+                contentView.showPage(NavigationModel.Epg)
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Alt+C"
+        context: Qt.ApplicationShortcut
+        onActivated: {
+            if (navigationModel.getFunctionalityItemData(NavigationModel.CatSls).isEnabled) {
+                contentView.showPage(NavigationModel.CatSls)
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Alt+S"
+        context: Qt.ApplicationShortcut
+        onActivated: {
+            if (navigationModel.getFunctionalityItemData(NavigationModel.DabSignal).isEnabled) {
+                contentView.showPage(NavigationModel.DabSignal)
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Alt+T"
+        context: Qt.ApplicationShortcut
+        onActivated: {
+            if (navigationModel.getFunctionalityItemData(NavigationModel.Tii).isEnabled) {
+                contentView.showPage(NavigationModel.Tii)
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Alt+B"
+        context: Qt.ApplicationShortcut
+        onActivated: {
+            if (navigationModel.getFunctionalityItemData(NavigationModel.BandScan).isEnabled) {
+                startBandScan()
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Alt+N"
+        context: Qt.ApplicationShortcut
+        onActivated: {
+            if (navigationModel.getFunctionalityItemData(NavigationModel.Scanner).isEnabled) {
+                contentView.showPage(NavigationModel.Scanner)
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Alt+U"
+        context: Qt.ApplicationShortcut
+        onActivated: {
+            if (navigationModel.getFunctionalityItemData(NavigationModel.AudioRecordingSchedule).isEnabled) {
+                contentView.showPage(NavigationModel.AudioRecordingSchedule)
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Ctrl+,"
+        context: Qt.ApplicationShortcut
+        onActivated: {
+            if (navigationModel.getFunctionalityItemData(NavigationModel.Settings).isEnabled) {
+                contentView.showPage(NavigationModel.Settings)
+            }
+        }
+    }
+
+    // --- Action shortcuts: Ctrl+letter / Alt+arrow ---
+    // Ctrl+M        → Toggle mute
+    // Ctrl+Up/Down  → Volume +/- 10
+    // Alt+Left/Right→ Channel down/up   (Alt avoids stealing Ctrl+arrow text navigation)
+    // Ctrl+D        → Toggle favourite  (D = bookmark convention)
+    // Ctrl+R        → Toggle recording  (R = Recording)
+    Shortcut {
+        sequence: "Ctrl+M"
+        context: Qt.ApplicationShortcut
+        onActivated: application.onMuteButtonToggled(!appUI.isMuted)
+    }
+    Shortcut {
+        sequence: "Ctrl+Up"
+        context: Qt.ApplicationShortcut
+        onActivated: appUI.audioVolume = Math.min(100, appUI.audioVolume + 10)
+    }
+    Shortcut {
+        sequence: "Ctrl+Down"
+        context: Qt.ApplicationShortcut
+        onActivated: appUI.audioVolume = Math.max(0, appUI.audioVolume - 10)
+    }
+    Shortcut {
+        sequence: "Alt+Left"
+        context: Qt.ApplicationShortcut
+        enabled: appUI.tuneEnabled
+        onActivated: application.onChannelDownClicked()
+    }
+    Shortcut {
+        sequence: "Alt+Right"
+        context: Qt.ApplicationShortcut
+        enabled: appUI.tuneEnabled
+        onActivated: application.onChannelUpClicked()
+    }
+    Shortcut {
+        sequence: "Ctrl+D"
+        context: Qt.ApplicationShortcut
+        onActivated: application.setCurrentServiceFavorite(!appUI.isServiceFavorite)
+    }
+    Shortcut {
+        sequence: "Ctrl+R"
+        context: Qt.ApplicationShortcut
+        onActivated: application.audioRecordingToggle()
+    }
 }
