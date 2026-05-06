@@ -411,6 +411,7 @@ ApplicationWindow {
     // --- View navigation shortcuts: Alt+letter (mnemonic) ---
     // Alt+L  → Service List     (L = List)
     // Alt+I  → Info             (I = Info)
+    // Alt+C  → CatSLS           (C = CatSLS)
     // Alt+E  → EPG              (E = EPG)
     // Alt+S  → Signal           (S = Signal)
     // Alt+T  → TII              (T = TII)
@@ -441,6 +442,15 @@ ApplicationWindow {
         onActivated: {
             if (navigationModel.getFunctionalityItemData(NavigationModel.Epg).isEnabled) {
                 contentView.showPage(NavigationModel.Epg)
+            }
+        }
+    }
+    Shortcut {
+        sequence: "Alt+C"
+        context: Qt.ApplicationShortcut
+        onActivated: {
+            if (navigationModel.getFunctionalityItemData(NavigationModel.CatSls).isEnabled) {
+                contentView.showPage(NavigationModel.CatSls)
             }
         }
     }
