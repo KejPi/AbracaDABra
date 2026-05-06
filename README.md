@@ -55,6 +55,33 @@ Application provides an easy-to-use user interface that is focused on radio list
 
 There are also many features for advanced users, like the structure of services in an ensemble tree as well as additional details about the currently tuned service. Additionally, application supports dedicated DX functionality like [TII decoding](#tii-decoding) and monitoring, [continuous scanning](#scanning-tool) of the band, data dumping, logging and many more.
 
+### Keyboard shortcuts
+
+Application supports following keyboard shortcuts for navigation and actions
+
+| Key  |         | Action |
+|------|---------|--------|
+| `⌥ L` | `Alt+L` | Service **L**ist |
+| `⌥ E` | `Alt+E` | **E**PG |
+| `⌥ C` | `Alt+C` | **C**atSLS |
+| `⌥ S` | `Alt+S` | **S**ignal |
+| `⌥ T` | `Alt+T` | **T**II |
+| `⌥ B` | `Alt+B` | **B**and Scan |
+| `⌥ N` | `Alt+N` | Scan**n**er |
+| `⌥ U` | `Alt+U` | A**u**dio Recording Schedule |
+| `⌘ ,` | `Ctrl+,` | Settings |
+| `⌘ M` | `Ctrl+M` | Toggle **m**ute |
+| `⌘ ⏶` | `Ctrl+Up` | Volume +10 |
+| `⌘ ⏷` | `Ctrl+Down` | Volume −10 |
+| `⌥ ⏴` | `Alt+Left` | Channel down |
+| `⌥ ⏵` | `Alt+Right` | Channel up |
+| `⌘ D` | `Ctrl+D` | Toggle favourite of current service |
+| `⌘ R` | `Ctrl+R` | Toggle **r**ecording |
+
+### Service list and tree
+
+AbracaDABra shows flat service list according to [<a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">see TS 103 176</a>. Besides that it can display also so hiearchical service tree with ensemble names, channels and audio services in the enseblembles. Please note that data services are not shown. Both views can be used to select audio  service and toggle favorite by clicking on star icon. Service list supports filtering functionality to search for service. This feture is triggered by keyboard shortcut `⌘ F` or`Ctrl+F` or by starting to type on the keyboard (type-to-search) when the service list has an active focus on desktop. On android it is triggered by dragging the list down from the top. Service tree on the other hand allows to delete ensemble with all its services from the list. This feature is triggered by dragging the ensemble name to the left or swiping left the ensemble name on Android.
+
 ## Input devices
 
 AbracaDABra supports multiple input devices, some of them are optional. Device specific settings are described in this section. 
@@ -71,6 +98,8 @@ RTL-SDR devices support 3 to 4 gain control modes, depending on the driver the a
 * Driver - available only for the [RTL-SDR driver by old-dab](https://github.com/old-dab/rtlsdr). Gain is controlled by the driver.
 * Hardware - uses the internal RTL-SDR HW gain control. RF level estimation is not available in this mode
 * Manual - manual control of the gain
+
+Application stores frequency correction for each RTL-SDR device in settings but to make this functional correctly, device ID of the devices must be different. The best way to achieve this is to set different serial number for each device that is used in application. 
 
 Option 'RF level estimation' is available only for the [RTL-SDR driver by old-dab](https://github.com/old-dab/rtlsdr). It disables estimation of RF level that causes problems on some cheap Android devices.
 
@@ -393,7 +422,7 @@ By default, all the channels in band III are scanned (5A-13F, 38 channels in tot
 
 The scanning results are displayed in the table and as red circles on the map. The blue circle is the location specified in the TII settings. You can select any row in the table by clicking on it and the corresponding transmitter is shown as a bubble on the map with detailed information shown in the bottom right corner (see screenshot above). It also works the other way around by clicking the red circle on the map. Selection of multiple rows is also supported. In this case the corresponding dots are shown on the map but no details about the transmitters are available. The table can be sorted by any column by clicking on its header. It is possible to display the ensemble structure by double clicking on the row or from the context menu shown with a right mouse click (Precise mode only).
 
-Results of scanning can be stored to a CSV file using the "Save as CSV" menu item. The scanner tool does not store the results "on the fly" during scanning by default but it can be configured to do so by enabling AutoSave option in menu. Scanning log is stored as CVS file in `scanner` directory under [data storage](#data-storage) folder. You can also load previously stored CSV files to display the results. Please note that this CSV file replaces the contents of the table and since receiver location is not stored in the file, transmitter distances will be calculated using the current location known by application. 
+Results of scanning can be stored to a CSV file using the "Save as CSV" menu item. The scanner tool does not store the results "on the fly" during scanning by default but it can be configured to do so by enabling AutoSave option in menu. Scanning log is stored as CVS file in `scanner` directory under [data storage](#data-storage) folder. Application stores GPS location of the receiver when it is enabled in TII settings. You can also load previously stored CSV files to display the results. Please note that this CSV file replaces the contents of the table. When GPS location of the receiver is found in the log, application shows the first valid location as blue dot on the map and calculated distances from this location, when GPS location is not the the log, application uses current location to calculate the distances.
 
 Individual transmitters in scanning results can be marked as local (known) transmitters using context menu (multiple transmitters can be selected and marked as local at once). These local (known) transmitters can be excluded from results view using "Hide local (known) transmitters" option in Scanner tool menu. Furthermore, when local transmitters are hidden, they are not exported to CSV. 
 
@@ -401,7 +430,7 @@ _Note:_ The application service list is preserved when the Scanning tool is runn
 
 ## DAB signal overview
 
-The DAB signal overview displays the spectrum of the input signal, a time plot of SNR and other signal parameters known by the application. The border between plots can be moved to the very top or very bottom to hide the spectrum or SNR plot respectively. It is possible to activate frequency offset correction of the spectrum in the configuration menu (select the three dots in the bottom right corner). This eliminates the frequency offset of the signal and gives a cleaner spectrum of DAB signal in general. The default refresh rate of the spectrum is 500 ms, but it can be modified in the configuration menu. 
+The DAB signal overview displays the spectrum of the input signal, a time plot of SNR and other signal parameters known by the application. The border between plots can be moved to the very top or very bottom to hide the spectrum or SNR plot respectively. It is possible to display also NULL symbol spectrum. The default refresh rate of the spectrum is 1 second, but it can be modified in the configuration menu. 
 
 The spectrum plot can be zoomed in both axes with the mouse wheel or in one axis by clicking on the axis and zooming. 
 
@@ -436,6 +465,8 @@ It is generally not advised to modify INI file manually, but if you do so, the a
 It is also possible to use a different INI file instead of the default one using the `--ini` or `-i` command line parameter. 
 
 The service list is stored in a dedicated `ServiceList.json` file since version 3.0.0. By default, the application looks for it in the same folder as the INI file but you can specify different file using the `--service-list` or `-s` command line parameter. If the file does not exist, the application creates one and uses it for storing the service list. 
+
+It is possible to backup application settings together with service list and audio recording schedule from Others settings page. Backup file can be loaded anytime later. Apllication creates backup in [data storage](#data-storage) folder.
 
 ## How to install
 
@@ -478,6 +509,7 @@ Android version of the application has the same features as desktop versions wit
 * SDRplay and SoapySDR devices are not available
 * Undocking of the windows is not supported
 * Only portrait view is supported on mobile phones
+* Audio recording schedule is not availble
 
 OTG support on the Android device and OTG cable is required for live DAB reception via USB on Android device. OTG cable shall be as short as possible to avoid power supply and transfer speed issues. Application does not require any external driver, everything is included in APK.
 
@@ -490,6 +522,8 @@ To install the application, download latest build from [the release page](https:
 5. Connect your USB device if you target live reception via USB device.
 6. Android asks you to run AbracaDABra when the attached device is connected, choose your preferred option (always or just once). 
 7. At this point you shall be able to refresh device list and to see attached device. You can connect to it and start using the application.
+
+_Note:_ When application is uninstalled, system deletes all application files. This includes settings, service list but also all files in default [data storage](#data-storage) folder. It is higly recommended to set different [data storage](#data-storage) folder and create [settings](#settings) backup before application reinstallation or update. 
 
 ## How to build
 
