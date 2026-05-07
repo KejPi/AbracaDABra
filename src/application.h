@@ -277,6 +277,7 @@ public:
     Q_INVOKABLE void setCurrentServiceFavorite(bool checked);
     Q_INVOKABLE void setServiceFavorite(const QModelIndex &index, bool checked);
     Q_INVOKABLE void onMuteButtonToggled(bool doMute);
+    Q_INVOKABLE void toggleMute();
     Q_INVOKABLE void onAnnouncementClicked();
     Q_INVOKABLE void openLink(const QString &link) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
     Q_INVOKABLE void copyDlToClipboard();

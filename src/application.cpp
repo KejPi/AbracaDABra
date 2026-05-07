@@ -723,6 +723,11 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
                                        QNativeInterface::QAndroidApplication::context());
 
 #endif
+
+#ifdef Q_OS_MACOS
+    macSetupMediaRemoteCommands(this);
+    macUpdateNowPlayingPlaybackState(true);
+#endif
 }
 
 Application::~Application()
@@ -779,6 +784,10 @@ Application::~Application()
     delete m_dlPlusModel[Instance::Service];
     delete m_dlPlusModel[Instance::Announcement];
     delete m_settings;
+
+#ifdef Q_OS_MACOS
+    macTeardownMediaRemoteCommands();
+#endif
 
 #ifdef Q_OS_ANDROID
     // Release the application-level wake lock that protected all worker threads
@@ -943,6 +952,9 @@ void Application::onDLComplete_Service(const QString &dl)
     m_ui->dlService(adjustDLString(dl));
 #ifdef Q_OS_ANDROID
     updateAndroidNotification(m_ui->serviceLabel(), dl);
+#endif
+#ifdef Q_OS_MACOS
+    macUpdateNowPlayingSubtitle(dl);
 #endif
 }
 
@@ -1694,6 +1706,9 @@ void Application::onAudioServiceSelection(const RadioControlServiceComponent &s)
             populateServiceSourcesMenu();
         }
         m_ui->serviceLabel(s.label);
+#ifdef Q_OS_MACOS
+        macUpdateNowPlayingInfo(s.label);
+#endif
         m_ui->serviceLabelToolTip(QString(tr("<b>Service:</b> %1<br>"
                                              "<b>Short label:</b> %2<br>"
                                              "<b>SId:</b> 0x%3<br>"
@@ -3781,6 +3796,14 @@ void Application::onMuteButtonToggled(bool doMute)
 {
     m_ui->isMuted(doMute);
     emit audioMute(doMute);
+#ifdef Q_OS_MACOS
+    macUpdateNowPlayingPlaybackState(!doMute);
+#endif
+}
+
+void Application::toggleMute()
+{
+    onMuteButtonToggled(!m_ui->isMuted());
 }
 
 void Application::copyDlToClipboard()
@@ -4776,6 +4799,9 @@ void Application::onDLReset_Service()
     m_ui->dlService("");
     m_dlPlusModel[Instance::Service]->reset();
     toggleDLPlus(false);
+#ifdef Q_OS_MACOS
+    macUpdateNowPlayingSubtitle("");
+#endif
 }
 
 void Application::onDLReset_Announcement()

@@ -498,6 +498,10 @@ if(HAVE_QTWIDGETS)
     )
 endif(HAVE_QTWIDGETS)
 
+if(APPLE)
+    target_link_libraries(${TARGET} PRIVATE "-framework MediaPlayer")
+endif()
+
 set(TSFILES
     l10n/${TARGET}_cs.ts
     l10n/${TARGET}_de.ts
