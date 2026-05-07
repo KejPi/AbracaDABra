@@ -552,4 +552,17 @@ ApplicationWindow {
         context: Qt.ApplicationShortcut
         onActivated: application.audioRecordingToggle()
     }
+    // Media Next/Previous → cycle through favourite services (Ctrl+N/P as fallback)
+    Shortcut {
+        sequences: ["Media Next", "Ctrl+N"]
+        context: Qt.ApplicationShortcut
+        enabled: appUI.tuneEnabled
+        onActivated: application.onNextFavoriteService()
+    }
+    Shortcut {
+        sequences: ["Media Previous", "Ctrl+P"]
+        context: Qt.ApplicationShortcut
+        enabled: appUI.tuneEnabled
+        onActivated: application.onPreviousFavoriteService()
+    }
 }

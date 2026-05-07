@@ -1259,6 +1259,75 @@ void Application::onChannelDownClicked()
     setChannelIndex(ch);
 }
 
+void Application::onNextFavoriteService()
+{
+    // SLModel sorts favourites first (alphabetical) — stop at first non-favourite
+    int numFavorites = 0;
+    for (int r = 0; r < m_slModel->rowCount(); ++r)
+    {
+        if (m_slModel->isFavoriteService(m_slModel->index(r, 0)))
+        {
+            ++numFavorites;
+        }
+        else
+        {
+            break;
+        }
+    }
+    if (numFavorites == 0)
+    {
+        return;
+    }
+
+    ServiceListId currentId(m_SId.value(), m_SCIdS);
+    int currentRow = -1;
+    for (int r = 0; r < numFavorites; ++r)
+    {
+        if (m_slModel->id(m_slModel->index(r, 0)) == currentId)
+        {
+            currentRow = r;
+            break;
+        }
+    }
+    // Non-favourite (or nothing playing) → first favourite; otherwise advance with wrap
+    int nextRow = (currentRow >= 0) ? (currentRow + 1) % numFavorites : 0;
+    selectService(m_slModel->id(m_slModel->index(nextRow, 0)));
+}
+
+void Application::onPreviousFavoriteService()
+{
+    int numFavorites = 0;
+    for (int r = 0; r < m_slModel->rowCount(); ++r)
+    {
+        if (m_slModel->isFavoriteService(m_slModel->index(r, 0)))
+        {
+            ++numFavorites;
+        }
+        else
+        {
+            break;
+        }
+    }
+    if (numFavorites == 0)
+    {
+        return;
+    }
+
+    ServiceListId currentId(m_SId.value(), m_SCIdS);
+    int currentRow = -1;
+    for (int r = 0; r < numFavorites; ++r)
+    {
+        if (m_slModel->id(m_slModel->index(r, 0)) == currentId)
+        {
+            currentRow = r;
+            break;
+        }
+    }
+    // Non-favourite → first favourite; otherwise step back with wrap
+    int prevRow = (currentRow >= 0) ? (currentRow - 1 + numFavorites) % numFavorites : 0;
+    selectService(m_slModel->id(m_slModel->index(prevRow, 0)));
+}
+
 void Application::onTuneDone(uint32_t freq)
 {  // this slot is called when tune is complete
     m_frequency = freq;

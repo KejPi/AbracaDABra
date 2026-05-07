@@ -272,6 +272,8 @@ public:
     Q_INVOKABLE void setChannelIndex(int index);
     Q_INVOKABLE void onChannelUpClicked();
     Q_INVOKABLE void onChannelDownClicked();
+    Q_INVOKABLE void onNextFavoriteService();
+    Q_INVOKABLE void onPreviousFavoriteService();
     Q_INVOKABLE void setCurrentServiceFavorite(bool checked);
     Q_INVOKABLE void setServiceFavorite(const QModelIndex &index, bool checked);
     Q_INVOKABLE void onMuteButtonToggled(bool doMute);
