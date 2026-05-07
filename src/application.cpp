@@ -53,6 +53,7 @@
 #include <android/log.h>
 #include <unistd.h>
 
+#include <QJniEnvironment>
 #include <QJniObject>
 #include <cstring>
 #endif
@@ -116,6 +117,35 @@
 
 #ifdef Q_OS_MACOS
 #include "mac.h"
+#endif
+
+#ifdef Q_OS_ANDROID
+// Static instance pointer for JNI callbacks (set in constructor, cleared in destructor)
+static Application *s_appInstance = nullptr;
+
+static void jniToggleMute(JNIEnv *, jclass)
+{
+    if (s_appInstance)
+    {
+        QMetaObject::invokeMethod(s_appInstance, "toggleMute", Qt::QueuedConnection);
+    }
+}
+
+static void jniNextFavorite(JNIEnv *, jclass)
+{
+    if (s_appInstance)
+    {
+        QMetaObject::invokeMethod(s_appInstance, "onNextFavoriteService", Qt::QueuedConnection);
+    }
+}
+
+static void jniPreviousFavorite(JNIEnv *, jclass)
+{
+    if (s_appInstance)
+    {
+        QMetaObject::invokeMethod(s_appInstance, "onPreviousFavoriteService", Qt::QueuedConnection);
+    }
+}
 #endif
 
 Q_LOGGING_CATEGORY(application, "Application", QtInfoMsg)
@@ -240,6 +270,18 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     // Initialize Android audio service helper for background playback
     QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "initializeContext", "(Landroid/content/Context;)V",
                                        QNativeInterface::QAndroidApplication::context());
+
+    // Register native methods so MediaSession.Callback can dispatch back into Qt slots
+    {
+        QJniEnvironment env;
+        static const JNINativeMethod methods[] = {
+            {"nativeToggleMute", "()V", reinterpret_cast<void *>(jniToggleMute)},
+            {"nativeNextFavorite", "()V", reinterpret_cast<void *>(jniNextFavorite)},
+            {"nativePreviousFavorite", "()V", reinterpret_cast<void *>(jniPreviousFavorite)},
+        };
+        env.registerNativeMethods("org/qtproject/abracadabra/AudioServiceHelper", methods, 3);
+    }
+    s_appInstance = this;
 #endif
 
     connect(m_ui, &ApplicationUI::isSystemDarkModeChanged, this, &Application::setColorTheme);
@@ -790,6 +832,7 @@ Application::~Application()
 #endif
 
 #ifdef Q_OS_ANDROID
+    s_appInstance = nullptr;
     // Release the application-level wake lock that protected all worker threads
     qCInfo(application) << "Android: Releasing application wake lock";
     QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "releaseAppWakeLock", "()V");
@@ -3089,8 +3132,12 @@ void Application::loadSettings()
     }
 
     m_ui->audioVolume(settings->value("volume", 100).toInt());
+#ifdef Q_OS_ANDROID
+    onMuteButtonToggled(false);
+#else
     bool mute = settings->value("mute", false).toBool();
     onMuteButtonToggled(mute);
+#endif
     emit audioOutput(settings->value("audioDevice", "").toByteArray());
     m_settings->keepServiceListOnScan = settings->value("keepServiceListOnScan", false).toBool();
 

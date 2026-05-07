@@ -39,6 +39,11 @@ public class AudioServiceHelper {
     private static final long PLAYBACK_RESUME_TIMEOUT_MS = 30000; // 30 seconds
     private static long lastPlaybackTime = 0;
 
+    // Native methods called by MediaSession.Callback — dispatched into C++ Qt slots
+    public static native void nativeToggleMute();
+    public static native void nativeNextFavorite();
+    public static native void nativePreviousFavorite();
+
     /**
      * Initialize the context when the application starts
      * This must be called early from the main application initialization

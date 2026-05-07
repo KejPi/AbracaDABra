@@ -88,7 +88,27 @@ public class AudioPlaybackService extends Service {
             
             // Activate the session
             mediaSession.setActive(true);
-            
+
+            // Register callback so media buttons (notification + Bluetooth) call into C++
+            mediaSession.setCallback(new MediaSession.Callback() {
+                @Override
+                public void onPlay() {
+                    AudioServiceHelper.nativeToggleMute();
+                }
+                @Override
+                public void onPause() {
+                    AudioServiceHelper.nativeToggleMute();
+                }
+                @Override
+                public void onSkipToNext() {
+                    AudioServiceHelper.nativeNextFavorite();
+                }
+                @Override
+                public void onSkipToPrevious() {
+                    AudioServiceHelper.nativePreviousFavorite();
+                }
+            });
+
             // Start periodic playback position updates
             // This signals to Android that we're actively playing
             startPlaybackPositionUpdates();
@@ -115,7 +135,8 @@ public class AudioPlaybackService extends Service {
                     
                     PlaybackState playbackState = new PlaybackState.Builder()
                             .setState(PlaybackState.STATE_PLAYING, position, 1.0f)
-                            .setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PAUSE | PlaybackState.ACTION_STOP)
+                            .setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PAUSE
+                                    | PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS)
                             .build();
                     mediaSession.setPlaybackState(playbackState);
                     
@@ -146,7 +167,8 @@ public class AudioPlaybackService extends Service {
         if (mediaSession != null) {
             PlaybackState playbackState = new PlaybackState.Builder()
                     .setState(state, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1.0f)
-                    .setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PAUSE | PlaybackState.ACTION_STOP)
+                    .setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PAUSE
+                            | PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS)
                     .build();
             mediaSession.setPlaybackState(playbackState);
         }
@@ -268,7 +290,11 @@ public class AudioPlaybackService extends Service {
                .setVisibility(Notification.VISIBILITY_PUBLIC);
 
         // Keep a consistent non-media look with no play/pause controls.
-        builder.setCategory(Notification.CATEGORY_SERVICE);
+        builder.setCategory(Notification.CATEGORY_TRANSPORT);
+        if (mediaSession != null) {
+            builder.setStyle(new Notification.MediaStyle()
+                    .setMediaSession(mediaSession.getSessionToken()));
+        }
         
         // For Android 10+, set foreground service behavior
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -307,7 +333,11 @@ public class AudioPlaybackService extends Service {
                    .setShowWhen(false)
                    .setVisibility(Notification.VISIBILITY_PUBLIC);
 
-            builder.setCategory(Notification.CATEGORY_SERVICE);
+            builder.setCategory(Notification.CATEGORY_TRANSPORT);
+            if (mediaSession != null) {
+                builder.setStyle(new Notification.MediaStyle()
+                        .setMediaSession(mediaSession.getSessionToken()));
+            }
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             if (notificationManager != null) {
