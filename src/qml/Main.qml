@@ -516,7 +516,7 @@ ApplicationWindow {
     // Ctrl+D        → Toggle favourite  (D = bookmark convention)
     // Ctrl+R        → Toggle recording  (R = Recording)
     Shortcut {
-        sequences: ["Ctrl+M", "Media Play"]
+        sequences: ["Ctrl+M", "Media Play", "Toggle Media Play/Pause"]
         context: Qt.ApplicationShortcut
         onActivated: application.onMuteButtonToggled(!appUI.isMuted)
     }
