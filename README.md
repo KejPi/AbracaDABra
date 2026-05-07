@@ -59,24 +59,26 @@ There are also many features for advanced users, like the structure of services 
 
 Application supports following keyboard shortcuts for navigation and actions
 
-| Key  |         | Action |
-|------|---------|--------|
-| `⌥ L` | `Alt+L` | Service **L**ist |
-| `⌥ E` | `Alt+E` | **E**PG |
-| `⌥ C` | `Alt+C` | **C**atSLS |
-| `⌥ S` | `Alt+S` | **S**ignal |
-| `⌥ T` | `Alt+T` | **T**II |
-| `⌥ B` | `Alt+B` | **B**and Scan |
-| `⌥ N` | `Alt+N` | Scan**n**er |
-| `⌥ U` | `Alt+U` | A**u**dio Recording Schedule |
-| `⌘ ,` | `Ctrl+,` | Settings |
-| `⌘ M` | `Ctrl+M` | Toggle **m**ute |
-| `⌘ ⏶` | `Ctrl+Up` | Volume +10 |
-| `⌘ ⏷` | `Ctrl+Down` | Volume −10 |
-| `⌥ ⏴` | `Alt+Left` | Channel down |
-| `⌥ ⏵` | `Alt+Right` | Channel up |
-| `⌘ D` | `Ctrl+D` | Toggle favourite of current service |
-| `⌘ R` | `Ctrl+R` | Toggle **r**ecording |
+| macOS  |  Others    |       | Action |
+|-------|-------------|-------|--------|
+| `⌥ L` | `Alt+L`     |       | Service **L**ist |
+| `⌥ E` | `Alt+E`     |       | **E**PG |
+| `⌥ C` | `Alt+C`     |       | **C**atSLS |
+| `⌥ S` | `Alt+S`     |       | **S**ignal |
+| `⌥ T` | `Alt+T`     |       | **T**II |
+| `⌥ B` | `Alt+B`     |       | **B**and Scan |
+| `⌥ N` | `Alt+N`     |       | Scan**n**er |
+| `⌥ U` | `Alt+U`     |       | A**u**dio Recording Schedule |
+| `⌘ ,` | `Ctrl+,`    |       | Settings |
+| `⌘ M` | `Ctrl+M`    |   ⏯  | Toggle **m**ute |
+| `⌘ ⏶` | `Ctrl+Up`   |       | Volume +10 |
+| `⌘ ⏷` | `Ctrl+Down` |       | Volume −10 |
+| `⌥ ⏴` | `Alt+Left`  |       | Channel down |
+| `⌥ ⏵` | `Alt+Right` |       | Channel up |
+| `⌘ D` | `Ctrl+D`    |       | Toggle favourite of current service |
+| `⌘ R` | `Ctrl+R`    |       | Toggle **r**ecording |
+| `⌘ P` | `Ctrl+P`    |   ⏮  | Switch to previous favourite service |
+| `⌘ N` | `Ctrl+N`    |   ⏭  | Switch to next favourite service |
 
 ### Service list and tree
 
