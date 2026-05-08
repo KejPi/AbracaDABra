@@ -55,9 +55,9 @@ public:
     QString shortLabel() const { return m_shortLabel; }
     int numEnsembles() const { return m_ensembleList.size(); }
     // bool isFavorite() const { return m_favorite; }
-    const EnsembleListItem *getEnsemble(int num = -1) const;           // returns ensemble idx (wraps over end of list)
-    const EnsembleListItem *switchEnsemble(const ServiceListId &id);   // switches current ensemble, returns ensemble
-    uint32_t currentEnsembleIdx() const { return m_currentEnsemble; }  // used to save service list
+    const EnsembleListItem *getEnsemble(int num = -1) const;          // returns ensemble idx (wraps over end of list)
+    const EnsembleListItem *switchEnsemble(const ServiceListId &id);  // switches current ensemble, returns ensemble
+    int currentEnsembleIdx() const { return m_currentEnsemble; }      // used to save service list
     void setCurrentEnsembleIdx(uint32_t idx) { m_currentEnsemble = idx; }
 
     bool operator==(const ServiceListItem &other) const;

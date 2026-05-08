@@ -75,9 +75,9 @@ bool ServiceListItem::removeEnsemble(EnsembleListItem *ensPtr)
         int idx = std::distance(m_ensembleList.cbegin(), it);
         m_ensembleList.erase(it);
         m_isObsolete = false;
-        if (m_ensembleList.isEmpty() == false && idx <= m_currentEnsemble)
+        if (m_ensembleList.isEmpty() == false && idx <= m_currentEnsemble && m_currentEnsemble > 0)
         {
-            m_currentEnsemble = (m_currentEnsemble - 1) % m_ensembleList.size();
+            m_currentEnsemble--;
         }
         return (0 != m_ensembleList.size());
     }
