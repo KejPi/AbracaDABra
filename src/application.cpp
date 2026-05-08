@@ -1024,7 +1024,7 @@ void Application::onDLComplete_Service(const QString &dl)
 #ifdef Q_OS_MACOS
     macUpdateNowPlayingSubtitle(dl);
 #endif
-#if defined(Q_OS_LINUX) && defined(HAVE_LINUX_DBUS)
+#if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
     linuxUpdateNowPlayingSubtitle(dl);
 #endif
 }
@@ -4883,7 +4883,7 @@ void Application::onDLReset_Service()
 #ifdef Q_OS_MACOS
     macUpdateNowPlayingSubtitle("");
 #endif
-#if defined(Q_OS_LINUX) && defined(HAVE_LINUX_DBUS)
+#if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
     linuxUpdateNowPlayingSubtitle("");
 #endif
 }
