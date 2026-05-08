@@ -611,13 +611,24 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 COMPONENTS Multimedia Svg Xml Network Quick Qml QuickControls2 Positioning Location Concurrent REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Multimedia Svg Xml Network Quick Qml QuickControls2 QmlWorkerScript Positioning Location Concurrent REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS LinguistTools)
+
+set(HAVE_LINUX_DBUS OFF)
+
+# Widgets and DBus
 if(ANDROID)
     set(HAVE_QTWIDGETS OFF)
 else()
     # this is required fro dock menu on macos
     set(HAVE_QTWIDGETS ON)
     find_package(QT NAMES Qt6 COMPONENTS Widgets REQUIRED)
-    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)    
+
+    if(UNIX AND NOT APPLE AND NOT ANDROID)
+        find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS DBus)
+        if(Qt${QT_VERSION_MAJOR}DBus_FOUND)
+            set(HAVE_LINUX_DBUS ON)
+        endif()
+    endif()    
 endif()
 
 # Android OpenSSL integration (must be after Qt packages are found)

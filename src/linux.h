@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,15 @@
  * SOFTWARE.
  */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef LINUX_H
+#define LINUX_H
 
-#define PROJECT_VER  "@PROJECT_GIT_VERSION@"
-#define PROJECT_VER_MAJOR  @VER_MAJOR@
-#define PROJECT_VER_MINOR  @VER_MINOR@
-#define PROJECT_VER_PATCH  @VER_PATCH@
-#define PROJECT_VER_GIT    @VER_GIT@
+#include <QObject>
+#include <QString>
 
-#cmakedefine01 HAVE_FAAD
-#cmakedefine01 HAVE_FDKAAC
-#cmakedefine01 HAVE_PORTAUDIO
-#cmakedefine01 HAVE_QTWIDGETS
-#cmakedefine01 HAVE_LINUX_DBUS
-#cmakedefine01 HAVE_FMLIST_INTERFACE
+void linuxSetupMediaRemoteCommands(QObject *app);
+void linuxTeardownMediaRemoteCommands();
+void linuxUpdateNowPlayingInfo(const QString &stationName);
+void linuxUpdateNowPlayingPlaybackState(bool isPlaying);
 
-
-/* Optional devices */
-#cmakedefine01 HAVE_AIRSPY
-#cmakedefine01 HAVE_SOAPYSDR
-#cmakedefine01 HAVE_RARTTCP
-
-#endif // CONFIG_H
-
-
-
-
+#endif  // LINUX_H

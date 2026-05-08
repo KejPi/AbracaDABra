@@ -123,6 +123,10 @@
 #include "win.h"
 #endif
 
+#if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
+#include "linux.h"
+#endif
+
 #ifdef Q_OS_ANDROID
 // Static instance pointer for JNI callbacks (set in constructor, cleared in destructor)
 static Application *s_appInstance = nullptr;
@@ -778,6 +782,11 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
 #ifdef Q_OS_WIN
     winSetupMediaRemoteCommands(this);
 #endif
+
+#if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
+    linuxSetupMediaRemoteCommands(this);
+    linuxUpdateNowPlayingPlaybackState(true);
+#endif
 }
 
 Application::~Application()
@@ -837,6 +846,10 @@ Application::~Application()
 
 #ifdef Q_OS_MACOS
     macTeardownMediaRemoteCommands();
+#endif
+
+#if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
+    linuxTeardownMediaRemoteCommands();
 #endif
 
 #ifdef Q_OS_WIN
@@ -1763,6 +1776,9 @@ void Application::onAudioServiceSelection(const RadioControlServiceComponent &s)
         m_ui->serviceLabel(s.label);
 #ifdef Q_OS_MACOS
         macUpdateNowPlayingInfo(s.label);
+#endif
+#if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
+        linuxUpdateNowPlayingInfo(s.label);
 #endif
         m_ui->serviceLabelToolTip(QString(tr("<b>Service:</b> %1<br>"
                                              "<b>Short label:</b> %2<br>"
@@ -3857,6 +3873,9 @@ void Application::onMuteButtonToggled(bool doMute)
     emit audioMute(doMute);
 #ifdef Q_OS_MACOS
     macUpdateNowPlayingPlaybackState(!doMute);
+#endif
+#if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
+    linuxUpdateNowPlayingPlaybackState(!doMute);
 #endif
 }
 

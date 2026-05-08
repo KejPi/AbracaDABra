@@ -35,6 +35,11 @@ if (APPLE)
         mac.h)
 endif(APPLE)
 
+# Set some Linux desktop-specific settings (D-Bus MPRIS2, not Android)
+if(UNIX AND HAVE_LINUX_DBUS)
+    set(LINUX_SOURCES linux.h linux.cpp)
+endif()
+
 configure_file (config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 if (HAVE_FAAD)
@@ -70,6 +75,7 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     ${PORTAUDIO_SOURCES}
     ${APPLE_SOURCES}
     ${WIN_SOURCES}
+    ${LINUX_SOURCES}
     ${FAAD_SOURCES}
     ${FDKAAC_SOURCES}
     main.cpp
@@ -505,6 +511,12 @@ endif(HAVE_QTWIDGETS)
 
 if(APPLE)
     target_link_libraries(${TARGET} PRIVATE "-framework MediaPlayer")
+endif()
+
+if(UNIX AND NOT APPLE AND NOT ANDROID)
+    if(Qt${QT_VERSION_MAJOR}DBus_FOUND)
+        target_link_libraries(${TARGET} PRIVATE Qt${QT_VERSION_MAJOR}::DBus)
+    endif()
 endif()
 
 set(TSFILES
