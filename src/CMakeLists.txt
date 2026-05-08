@@ -9,6 +9,10 @@ if(WIN32)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources/appIcon.rc")
     set(APP_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resources/app.rc")
     set_source_files_properties(${APP_RESOURCE_WINDOWS} PROPERTIES LANGUAGE RC)
+
+    set(WIN_SOURCES
+        win.h
+        win.cpp)
 endif(WIN32)
 
 # Set some Apple MacOS Specific settings
@@ -65,6 +69,7 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     ${CMAKE_CURRENT_BINARY_DIR}/config.h    
     ${PORTAUDIO_SOURCES}
     ${APPLE_SOURCES}
+    ${WIN_SOURCES}
     ${FAAD_SOURCES}
     ${FDKAAC_SOURCES}
     main.cpp

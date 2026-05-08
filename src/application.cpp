@@ -119,6 +119,10 @@
 #include "mac.h"
 #endif
 
+#ifdef Q_OS_WIN
+#include "win.h"
+#endif
+
 #ifdef Q_OS_ANDROID
 // Static instance pointer for JNI callbacks (set in constructor, cleared in destructor)
 static Application *s_appInstance = nullptr;
@@ -770,6 +774,10 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     macSetupMediaRemoteCommands(this);
     macUpdateNowPlayingPlaybackState(true);
 #endif
+
+#ifdef Q_OS_WIN
+    winSetupMediaRemoteCommands(this);
+#endif
 }
 
 Application::~Application()
@@ -829,6 +837,10 @@ Application::~Application()
 
 #ifdef Q_OS_MACOS
     macTeardownMediaRemoteCommands();
+#endif
+
+#ifdef Q_OS_WIN
+    winTeardownMediaRemoteCommands();
 #endif
 
 #ifdef Q_OS_ANDROID
