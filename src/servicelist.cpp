@@ -344,7 +344,7 @@ void ServiceList::load(const QString &filename)
         int currentEns = serviceMap.value("LastEns").toInt();
 
         QVariantList ensList = serviceMap.value("Ensembles").toList();
-        if (currentEns >= ensList.count())
+        if (currentEns < 0 || currentEns >= ensList.count())
         {  // protection from inconsistent JSON caused by manual editing
             currentEns = 0;
         }
