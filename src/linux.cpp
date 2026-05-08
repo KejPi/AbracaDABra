@@ -121,6 +121,18 @@ public:
         emitPropertiesChanged(changed);
     }
 
+    void setSubtitle(const QString &dl)
+    {
+        // xesam:artist is a QStringList in MPRIS2
+        if (dl.isEmpty())
+            m_metadata.remove(QStringLiteral("xesam:artist"));
+        else
+            m_metadata[QStringLiteral("xesam:artist")] = QStringList{dl};
+        QVariantMap changed;
+        changed[QStringLiteral("Metadata")] = QVariant::fromValue(m_metadata);
+        emitPropertiesChanged(changed);
+    }
+
 signals:
     void Seeked(qlonglong Position);
 
@@ -188,6 +200,12 @@ void linuxUpdateNowPlayingInfo(const QString &stationName)
 {
     if (s_playerAdaptor)
         s_playerAdaptor->setTitle(stationName);
+}
+
+void linuxUpdateNowPlayingSubtitle(const QString &dl)
+{
+    if (s_playerAdaptor)
+        s_playerAdaptor->setSubtitle(dl);
 }
 
 void linuxUpdateNowPlayingPlaybackState(bool isPlaying)
