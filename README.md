@@ -439,8 +439,9 @@ The spectrum plot can be zoomed in both axes with the mouse wheel or in one axis
 _Note:_ Spectrum calculation and visualization leads to higher CPU use by the application. 
 
 <p align="center" width="100%">
-    <img width="1023" height="752" alt="DAB Signal Overview" src="https://github.com/user-attachments/assets/b85e71b2-c708-4023-9618-01e727b7a3d0" />
+    <img width="1125" height="876" alt="DAB Signal Overview" src="https://github.com/user-attachments/assets/43d95b0d-caef-4c78-aba9-dd30a57b07f0" />
 </p>
+
 
 ## Data storage
 
