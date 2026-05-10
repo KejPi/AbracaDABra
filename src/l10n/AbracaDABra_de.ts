@@ -51,7 +51,7 @@
     <message>
         <location filename="../aboutui.cpp" line="86"/>
         <source>Italian</source>
-        <translation type="unfinished">Italienisch</translation>
+        <translation>Italienisch</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="89"/>
@@ -199,7 +199,7 @@
     <message>
         <location filename="../qml/settings/AirspyDevice.qml" line="286"/>
         <source>Prefer 4096kHz rate:</source>
-        <translation>4096kHz Takt bevorzugen</translation>
+        <translation>4096kHz Takt bevorzugen:</translation>
     </message>
 </context>
 <context>
@@ -622,45 +622,46 @@ Decoded %1 / %2 MOT objects</source>
         <location filename="../application.cpp" line="4448"/>
         <location filename="../application.cpp" line="4498"/>
         <source>Failed to create backup</source>
-        <translation type="unfinished"></translation>
+        <translation>Erstellen der Sicherung fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4493"/>
         <source>Settings backup created successfully</source>
-        <translation type="unfinished"></translation>
+        <translation>Sicherung der Einstellungen erfolgreich erstellt</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4524"/>
         <source>Restore settings?</source>
-        <translation type="unfinished"></translation>
+        <translation>Einstellungen wiederherstellen?</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4524"/>
         <source>Settings will be restored from backup.
 Application will restart after restore.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Einstellungen werden von der Sicherung wiederhergestellt.
+Nach der Wiederherstellung startet die Applikation erneut.</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4537"/>
         <location filename="../application.cpp" line="4582"/>
         <source>Failed to restore settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiederherstellen der Einstellungen fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4547"/>
         <location filename="../application.cpp" line="4555"/>
         <source>Invalid backup file</source>
-        <translation type="unfinished"></translation>
+        <translation>Ungültige Backupdatei</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4627"/>
         <source>Settings restored, restarting...</source>
-        <translation type="unfinished"></translation>
+        <translation>Einstellungen wiederhergestellt, starte erneut...</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4639"/>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Wiederherstellen</translation>
     </message>
 </context>
 <context>
@@ -668,7 +669,7 @@ Application will restart after restore.</source>
     <message>
         <location filename="../audiooutputqt.cpp" line="124"/>
         <source>DAB radio</source>
-        <translation type="unfinished"></translation>
+        <translation>DAB-Radio</translation>
     </message>
 </context>
 <context>
@@ -944,7 +945,7 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     <message>
         <location filename="../qml/DabSignalView.qml" line="205"/>
         <source>RF level </source>
-        <translation>RF Pegel</translation>
+        <translation>RF Pegel </translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="206"/>
@@ -954,7 +955,7 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     <message>
         <location filename="../qml/DabSignalView.qml" line="223"/>
         <source>Gain </source>
-        <translation>Verstärkung</translation>
+        <translation>Verstärkung </translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="224"/>
@@ -964,7 +965,7 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     <message>
         <location filename="../qml/DabSignalView.qml" line="241"/>
         <source>Frequency </source>
-        <translation>Frequenz</translation>
+        <translation>Frequenz </translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="242"/>
@@ -984,27 +985,27 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     <message>
         <location filename="../qml/DabSignalView.qml" line="292"/>
         <source>Show NULL spectrum</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeige NULL-Spektrum</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="299"/>
         <source>Slow update (1.4 sec)</source>
-        <translation type="unfinished"></translation>
+        <translation>Langsames Update (1,4 Sek.)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="305"/>
         <source>Normal update (1 sec)</source>
-        <translation type="unfinished"></translation>
+        <translation>Normales Update (1 Sek.)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="311"/>
         <source>Fast update (600 msec)</source>
-        <translation type="unfinished"></translation>
+        <translation>Schnelles Update (600 mSek.)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="317"/>
         <source>Very fast update (400 msec)</source>
-        <translation type="unfinished"></translation>
+        <translation>Sehr schnelles Update (400 mSek.)</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="324"/>
@@ -1529,7 +1530,7 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="344"/>
         <source>Timeout</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeitlimit</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="345"/>
@@ -1599,7 +1600,7 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     <message>
         <location filename="../ensemblesubchmodel.cpp" line="116"/>
         <source>%1 (+%2)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 (+%2)</translation>
     </message>
 </context>
 <context>
@@ -1607,7 +1608,7 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     <message>
         <location filename="../qml/Main.qml" line="40"/>
         <source>AbracaDABra</source>
-        <translation type="unfinished"></translation>
+        <translation>AbracaDABra</translation>
     </message>
 </context>
 <context>
@@ -1653,7 +1654,7 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     <message>
         <location filename="../navigationmodel.cpp" line="34"/>
         <source>List</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="38"/>
@@ -1811,12 +1812,12 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="80"/>
         <source>Light</source>
-        <translation type="unfinished"></translation>
+        <translation>Hell</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="80"/>
         <source>Dark</source>
-        <translation type="unfinished"></translation>
+        <translation>Dunkel</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="105"/>
@@ -1906,17 +1907,17 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="332"/>
         <source>Backup settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Einstellungen sichern</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="336"/>
         <source>Restore settings...</source>
-        <translation type="unfinished"></translation>
+        <translation>Einstellungen zurückspielen...</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="347"/>
         <source>Backup includes application settings, service list and audio recording schedule. Backup file is stored in data storage folder.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Sicherunge beinhaltet Applikationseinstellungen, Dienstliste und Audioaufnahmeplaner. Die Sicherungsdatei befindet sich im Speicherortverzeichnis.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="361"/>
@@ -1926,7 +1927,7 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="373"/>
         <source>Proxy type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Proxy-Typ:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="389"/>
@@ -2023,7 +2024,7 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="646"/>
         <source>JSON files</source>
-        <translation type="unfinished"></translation>
+        <translation>JSON-Dateien</translation>
     </message>
 </context>
 <context>
@@ -4149,7 +4150,7 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="123"/>
         <source>%1 / %2 sec</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 / %2 sec</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="138"/>
@@ -4541,7 +4542,7 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="629"/>
         <source>Auto-save CSV started</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatisches Speichern der CSV-Datei gestartet</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="693"/>
@@ -4591,7 +4592,7 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1139"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</source>
-        <translation type="unfinished">Seehöhe: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</translation>
+        <translation>Seehöhe: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1143"/>
@@ -4622,7 +4623,7 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1185"/>
         <source>Clear local (known) transmitter database?</source>
-        <translation type="unfinished"></translation>
+        <translation>Datenbank lokaler (bekannter) Sendeanlagen leeren?</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1185"/>
@@ -4942,7 +4943,7 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
     <message>
         <location filename="../qml/ServiceList.qml" line="217"/>
         <source>Filter services...</source>
-        <translation type="unfinished"></translation>
+        <translation>Dienste filtern...</translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="502"/>
@@ -4972,12 +4973,12 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
     <message>
         <location filename="../qml/ServicePanel.qml" line="117"/>
         <source>Dock page back to main window</source>
-        <translation type="unfinished"></translation>
+        <translation>Seite am Hauptfenster andocken</translation>
     </message>
     <message>
         <location filename="../qml/ServicePanel.qml" line="117"/>
         <source>Undock page to separate window</source>
-        <translation type="unfinished"></translation>
+        <translation>Seite abdocken in eigenes Fenster</translation>
     </message>
 </context>
 <context>
@@ -5177,7 +5178,7 @@ dann die Wert hier einfügen.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../signalbackend.cpp" line="94"/>
         <source>dBFS</source>
-        <translation type="unfinished"></translation>
+        <translation>dBFS</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="157"/>
@@ -5233,7 +5234,7 @@ dann die Wert hier einfügen.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="59"/>
         <source>Soapy SDR device arguments</source>
-        <translation type="unfinished"></translation>
+        <translation>Argumente des Soapy SDR-Geräts</translation>
     </message>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="68"/>
@@ -5469,7 +5470,7 @@ dann die Wert hier einfügen.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="303"/>
         <source>No TII (signal monitoring)</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein TII (Signalmonitoring)</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="323"/>
@@ -5509,7 +5510,7 @@ dann die Wert hier einfügen.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="433"/>
         <source>Transmitter table columns</source>
-        <translation type="unfinished"></translation>
+        <translation>Sendertabelle Spalten</translation>
     </message>
 </context>
 <context>
@@ -5619,7 +5620,7 @@ dann die Wert hier einfügen.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="352"/>
         <source>RF Level</source>
-        <translation type="unfinished"></translation>
+        <translation>HF Pegel</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="354"/>
@@ -5667,7 +5668,7 @@ dann die Wert hier einfügen.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="401"/>
         <source>RF Level [dBm]</source>
-        <translation type="unfinished"></translation>
+        <translation>HF Pegel [dBm]</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="417"/>
@@ -5750,7 +5751,7 @@ dann die Wert hier einfügen.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="132"/>
         <source>Hide progress when completed</source>
-        <translation type="unfinished"></translation>
+        <translation>Versteckte Fortschritt wenn beendet</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="152"/>
@@ -5775,7 +5776,7 @@ dann die Wert hier einfügen.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="210"/>
         <source>SLS folder template</source>
-        <translation type="unfinished"></translation>
+        <translation>SLS Verzeichnis Vorlage</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="221"/>
@@ -5785,12 +5786,12 @@ dann die Wert hier einfügen.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="234"/>
         <source>SPI folder template</source>
-        <translation type="unfinished"></translation>
+        <translation>SPI Verzeichnis Vorlage</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="248"/>
         <source>Data storage path pattern supports these tokens.</source>
-        <translation type="unfinished"></translation>
+        <translation>Unterstütze Kürzel fürdie Syntax im Dateispeicherpfad.</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="249"/>
@@ -5805,37 +5806,37 @@ dann die Wert hier einfügen.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="287"/>
         <source>current audio service ID (hex number)</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuelle Audiodienst-ID (Hexnummer)</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="297"/>
         <source>current ensemble ID (hex number)</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuelle Ensemble ID (Hex-Nummer)</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="307"/>
         <source>transport ID</source>
-        <translation type="unfinished"></translation>
+        <translation>Transport ID</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="317"/>
         <source>content name</source>
-        <translation type="unfinished"></translation>
+        <translation>Inhaltsname</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="327"/>
         <source>content name with extension (only SLS)</source>
-        <translation type="unfinished"></translation>
+        <translation>Inhaltsname mit Erweiterung (nur SLS)</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="337"/>
         <source>transport ID of directory (only SPI)</source>
-        <translation type="unfinished"></translation>
+        <translation>transport ID des Verzeichnisses (nur SPI)</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="347"/>
         <source>service component ID (only SPI)</source>
-        <translation type="unfinished"></translation>
+        <translation>Dienstkomponenten ID (nur SPI)</translation>
     </message>
 </context>
 <context>
@@ -5843,13 +5844,14 @@ dann die Wert hier einfügen.&lt;/i&gt;&lt;/p&gt;</translation>
     <message>
         <location filename="../qml/UndockablePage.qml" line="109"/>
         <source>Page is currently undocked</source>
-        <translation type="unfinished"></translation>
+        <translation>Seite ist derzeit abgedockt</translation>
     </message>
     <message>
         <location filename="../qml/UndockablePage.qml" line="117"/>
         <source>The content is displayed in a separate window.
 Use the &apos;Dock Page&apos; button above to bring it back.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Inhalt wird in einem eigenen Fenster dargestellt.
+Verwende die obige Schaltfläche, um es zurückzubringen.</translation>
     </message>
 </context>
 <context>
