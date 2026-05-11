@@ -4117,7 +4117,8 @@ void Application::close()
 
         // Save service list NOW, before serviceRequest(0,0,0) triggers onEnsembleRemoved()
         // which would strip the current ensemble from memory before saveSettings() runs.
-        if ((InputDevice::Id::RAWFILE != m_inputDeviceId) && (InputDevice::Id::UNDEFINED != m_inputDeviceId))
+        // Skip when restoring settings to avoid overwriting the just-restored service list file.
+        if (!m_skipSaveSettings && (InputDevice::Id::RAWFILE != m_inputDeviceId) && (InputDevice::Id::UNDEFINED != m_inputDeviceId))
         {
             m_serviceList->save(m_serviceListFilename);
             m_audioRecScheduleModel->save(m_audioRecScheduleFilename);
