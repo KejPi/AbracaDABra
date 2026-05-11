@@ -197,6 +197,12 @@ bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &rig
                 return itemL.rxTime() < itemR.rxTime();
             }
             return itemL.snr() < itemR.snr();
+        case TxTableModel::ColRfLevel:
+            if (qFuzzyCompare(itemL.rfLevel(), itemR.rfLevel()))
+            {
+                return itemL.rxTime() < itemR.rxTime();
+            }
+            return itemL.rfLevel() < itemR.rfLevel();
         case TxTableModel::ColPower:
             if (itemL.power() == itemR.power())
             {
