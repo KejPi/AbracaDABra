@@ -36,6 +36,7 @@ AbracaDialog {
     x: (appWindow.width - width) / 2
     y: (appWindow.height - height) / 2
     width: Math.min(appWindow.width - 2*UI.standardMargin, defaultWidth + 4*updateDialog.leftPadding)
+    height: Math.min(implicitHeight, parent.height * 0.9)
     canEscape: true
 
     modal: true
@@ -82,15 +83,20 @@ AbracaDialog {
                 }
             }
         }
-        AbracaTextArea {
-            id: changelogText
+        AbracaScrollView {
+            id: textEditFlickable
             Layout.fillWidth: true
-            Layout.preferredHeight: changelogText.implicitHeight + 2*UI.standardMargin
+            Layout.maximumHeight: changelogText.implicitHeight + 2*UI.standardMargin
             Layout.minimumHeight: 200
-            text: appUI.updateVersionInfo[2]
-            textFormat: TextEdit.MarkdownText
-            wrapMode: Text.WordWrap
-            readOnly: true
+            Layout.fillHeight: true
+            AbracaTextArea {
+                id: changelogText
+                anchors.fill: parent
+                text: appUI.updateVersionInfo[2]
+                textFormat: TextEdit.MarkdownText
+                wrapMode: Text.WordWrap
+                readOnly: true
+            }
         }
         GridLayout {
             id: buttonLayout
