@@ -308,6 +308,10 @@ void SettingsBackend::setGainValues(const QList<float> &gainList)
         case InputDevice::Id::RTLSDR:
             m_rtlsdrGainList.clear();
             m_rtlsdrGainList = gainList;
+
+            m_settings->rtlsdr.gainIdx = qMax(0, qMin(m_settings->rtlsdr.gainIdx, m_rtlsdrGainList.size() - 1));
+            setRtlSdrGainIndex(m_settings->rtlsdr.gainIdx);
+
             if (m_rtlsdrGainList.size() > 0)
             {
                 rtlSdrGainIndexMax(m_rtlsdrGainList.size() - 1);
@@ -318,12 +322,14 @@ void SettingsBackend::setGainValues(const QList<float> &gainList)
                 rtlSdrGainIndexMax(0);
                 isRtlSdrGainEnabled(false);
             }
-            m_settings->rtlsdr.gainIdx = qMax(0, qMin(m_settings->rtlsdr.gainIdx, m_rtlSdrGainIndexMax));
-            setRtlSdrGainIndex(m_settings->rtlsdr.gainIdx);
             break;
         case InputDevice::Id::RTLTCP:
             m_rtltcpGainList.clear();
             m_rtltcpGainList = gainList;
+
+            m_settings->rtltcp.gainIdx = qMax(0, qMin(m_settings->rtltcp.gainIdx, m_rtltcpGainList.size() - 1));
+            setRtlTcpGainIndex(m_settings->rtltcp.gainIdx);
+
             if (m_rtltcpGainList.size() > 0)
             {
                 rtlTcpGainIndexMax(m_rtltcpGainList.size() - 1);
@@ -334,8 +340,6 @@ void SettingsBackend::setGainValues(const QList<float> &gainList)
                 rtlTcpGainIndexMax(0);
                 isRtlTcpGainEnabled(false);
             }
-            m_settings->rtltcp.gainIdx = qMax(0, qMin(m_settings->rtltcp.gainIdx, m_rtlTcpGainIndexMax));
-            setRtlTcpGainIndex(m_settings->rtltcp.gainIdx);
             break;
         case InputDevice::Id::SDRPLAY:
 #if HAVE_SOAPYSDR
