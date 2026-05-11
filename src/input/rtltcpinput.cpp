@@ -202,19 +202,28 @@ bool RtlTcpInput::openDevice(const QVariant &hwId, bool fallbackConnection)
 #if (_WIN32_WINNT >= 0x0600)
         struct pollfd pfd;
         pfd.fd = sfd;
-        pfd.events = POLLIN;
-        if (WSAPoll(&pfd, 1, 2000) > 0)
+        pfd.events = POLLOUT;
+        if (WSAPoll(&pfd, 1, 5000) > 0)
         {
-            qCInfo(rtlTcpInput, "Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
-
-            flags = 0;  // If flags != 0, non-blocking mode is enabled.
-            if (NO_ERROR != ioctlsocket(sfd, FIONBIO, &flags))
+            int sockErr = 0;
+            int sockErrLen = sizeof(sockErr);
+            if (getsockopt(sfd, SOL_SOCKET, SO_ERROR, (char *)&sockErr, &sockErrLen) != 0 || sockErr != 0)
             {
-                qCWarning(rtlTcpInput) << "Failed to set blocking socket";
+                qCCritical(rtlTcpInput, "Connection failed: %d", sockErr ? sockErr : WSAGetLastError());
             }
+            else
+            {
+                qCInfo(rtlTcpInput, "Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
 
-            m_sock = sfd;
-            break; /* Success */
+                flags = 0;  // If flags != 0, non-blocking mode is enabled.
+                if (NO_ERROR != ioctlsocket(sfd, FIONBIO, &flags))
+                {
+                    qCWarning(rtlTcpInput) << "Failed to set blocking socket";
+                }
+
+                m_sock = sfd;
+                break; /* Success */
+            }
         }
         else
         {  // -1 is error, 0 is timeout
@@ -268,24 +277,33 @@ bool RtlTcpInput::openDevice(const QVariant &hwId, bool fallbackConnection)
 
         struct pollfd pfd;
         pfd.fd = sfd;
-        pfd.events = POLLIN;
-        if (poll(&pfd, 1, 2000) > 0)
+        pfd.events = POLLOUT;
+        if (poll(&pfd, 1, 5000) > 0)
         {
-            qCInfo(rtlTcpInput, "Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
-
-            // set bloking mode again
-            if ((arg = fcntl(sfd, F_GETFL, NULL)) < 0)
+            int sockErr = 0;
+            socklen_t sockErrLen = sizeof(sockErr);
+            if (getsockopt(sfd, SOL_SOCKET, SO_ERROR, &sockErr, &sockErrLen) < 0 || sockErr != 0)
             {
-                qCWarning(rtlTcpInput, "Error fcntl(..., F_GETFL) (%s)", strerror(errno));
+                qCCritical(rtlTcpInput, "Connection failed: %s", strerror(sockErr ? sockErr : errno));
             }
-            arg &= (~O_NONBLOCK);
-            if (fcntl(sfd, F_SETFL, arg) < 0)
+            else
             {
-                qCWarning(rtlTcpInput, "Error fcntl(..., F_SETFL) (%s)", strerror(errno));
-            }
+                qCInfo(rtlTcpInput, "Connected to: %s:%d", inet_ntoa(sa->sin_addr), m_port);
 
-            m_sock = sfd;
-            break; /* Success */
+                // set bloking mode again
+                if ((arg = fcntl(sfd, F_GETFL, NULL)) < 0)
+                {
+                    qCWarning(rtlTcpInput, "Error fcntl(..., F_GETFL) (%s)", strerror(errno));
+                }
+                arg &= (~O_NONBLOCK);
+                if (fcntl(sfd, F_SETFL, arg) < 0)
+                {
+                    qCWarning(rtlTcpInput, "Error fcntl(..., F_SETFL) (%s)", strerror(errno));
+                }
+
+                m_sock = sfd;
+                break; /* Success */
+            }
         }
         else
         {  // -1 is error, 0 is timeout
@@ -319,7 +337,7 @@ bool RtlTcpInput::openDevice(const QVariant &hwId, bool fallbackConnection)
     struct pollfd fd;
     fd.fd = m_sock;
     fd.events = POLLIN;
-    if (WSAPoll(&fd, 1, 2000) > 0)
+    if (WSAPoll(&fd, 1, 10000) > 0)
     {
         ::recv(m_sock, (char *)&dongleInfo, sizeof(dongleInfo), 0);
     }
@@ -352,7 +370,7 @@ bool RtlTcpInput::openDevice(const QVariant &hwId, bool fallbackConnection)
     struct pollfd fd;
     fd.fd = m_sock;
     fd.events = POLLIN;
-    if (poll(&fd, 1, 2000) > 0)
+    if (poll(&fd, 1, 10000) > 0)
     {
         if (::recv(m_sock, (char *)&dongleInfo, sizeof(dongleInfo), 0) <= 0)
         {
