@@ -31,6 +31,7 @@ import QtQuick.Controls
 import abracaComponents 1.0
 
 Item {
+    id: serviceView
     readonly property bool isPortrait: appUI.isPortraitView
     readonly property int itemsLeftMargin: isPortrait ? UI.standardMargin : 0
     readonly property int itemsRightMargin: isPortrait ? UI.standardMargin : 0
@@ -73,6 +74,7 @@ Item {
                 spacing: UI.standardMargin
 
                 AbracaLabel {
+                    id: ensembleLabel
                     text: "[ "+ appUI.ensembleLabel + " ]"
                     Layout.fillWidth: true
                     //Layout.topMargin: 5
@@ -324,6 +326,119 @@ Item {
                                         toolTipText: tooltip.length > 0 ? tooltip : qsTr("Right click to copy Dynamic label +")
                                         wrapMode: Text.WordWrap
                                         onRightClick: application.copyDlPlusToClipboard()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                ColumnLayout {
+                    id: widgetLayout
+                    visible: UI.isMobile === false && colLayout.width >= 380 && appUI.showServicePageWidget
+                    spacing: 0 // UI.standardMargin
+                    Layout.fillWidth: true
+                    // height shall be set according to available vertical space on the page
+                    Layout.preferredHeight: Math.max(320, mainLayout.height - ensembleLabel.height - titleRowLayout.height
+                                                     - infoRowLayout.height - audioParamsLayout.height
+                                                     - serviceStackLayout.height - 5*UI.standardMargin)
+
+                    AbracaLine {
+                        Layout.fillWidth: true
+                        isVertical: false
+                    }
+                    AbracaTabBar {
+                        id: bar
+                        // using map as model
+                        readonly property var tabsModel: [
+                            { "name": qsTr("TII"), "value": ApplicationUI.TII },
+                            { "name": qsTr("Signal Spectrum"), "value": ApplicationUI.Spectrum }
+                        ]
+                        showLine: false
+                        Layout.fillWidth: true
+                        Layout.bottomMargin: 4
+                        currentIndex: appUI.servicePageWidget
+                        onCurrentIndexChanged: {
+                            let currentValue = tabsModel[currentIndex].value;
+                            if (appUI.servicePageWidget !== currentValue) {
+                                appUI.servicePageWidget = currentValue;
+                            }
+                        }
+                        Repeater {
+                            model: bar.tabsModel
+                            AbracaTabButton {
+                                width: implicitWidth
+                                text: modelData.name
+                            }
+                        }
+                    }
+                    Loader {
+                        id: tiiMapLoader
+                        active: widgetLayout.visible
+
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        sourceComponent: appUI.servicePageWidget === ApplicationUI.TII ? tiiMapComponent
+                                         : (appUI.servicePageWidget === ApplicationUI.Spectrum ? signalSpectrumViewComponent
+                                                                                               : null)
+
+                        Component {
+                            id: tiiMapComponent
+                            TIIMap {
+                                id: mapView
+                                Component.onCompleted: application.tiiBackend.setIsActive(true);
+                                Component.onDestruction: application.tiiBackend.setIsActive(false);
+                                backend: application.tiiBackend
+                            }
+                        }
+                        Component {
+                            id: signalSpectrumViewComponent
+                            SpectrumWaterfallView {
+                                id: signalSpectrumView
+                                property var signalBackend: application.signalBackend
+                                onVisibleChanged: {
+                                    signalBackend.setIsActive(visible);
+                                }
+
+                                showWaterfall: signalBackend.showWaterfall
+                                splitterState: signalBackend.waterfallSplitterState
+
+                                spectrumChart.historyCapacity: 2048
+                                spectrumChart.dataMode: "replace"
+                                spectrumChart.followTail: false
+
+                                spectrumChart.majorTickStepX: 0.2
+                                spectrumChart.minorSectionsX: 4
+                                spectrumChart.majorTickStepY: 10
+                                spectrumChart.minorSectionsY: 5
+
+                                // Hard limits: 0 to -150 dB
+                                spectrumChart.chart.defaultYMin: -170
+                                spectrumChart.chart.defaultYMax: 0
+                                spectrumChart.chart.maxYSpan: 210
+                                spectrumChart.chart.minYSpan: 10
+
+                                spectrumChart.showButton: true
+
+                                Component.onCompleted: {
+                                    signalBackend.registerSpectrumPlot(signalSpectrumView.chart);
+                                    if (signalBackend.showWaterfall) {
+                                        signalBackend.registerWaterfallPlot(signalSpectrumView.waterfall);
+                                    }
+                                    signalBackend.setIsActive(true);
+                                }
+                                Component.onDestruction: {
+                                    signalBackend.unregisterSpectrumPlot(signalSpectrumView.chart);
+                                    if (signalBackend.showWaterfall) {
+                                        signalBackend.unregisterWaterfallPlot(signalSpectrumView.waterfall);
+                                    }
+                                    signalBackend.setIsActive(false);
+                                }
+                                onShowWaterfallChanged: {
+                                    if (signalBackend.showWaterfall) {
+                                        signalBackend.registerWaterfallPlot(signalSpectrumView.waterfall);
+                                    }
+                                    else {
+                                        signalBackend.unregisterWaterfallPlot(signalSpectrumView.waterfall);
                                     }
                                 }
                             }

@@ -141,6 +141,12 @@ public:
         PortraitNarrowView = 2
     };
     Q_ENUM(ViewType)
+    enum ServicePageWidget
+    {
+        TII = 0,
+        Spectrum
+    };
+    Q_ENUM(ServicePageWidget)
 
     ApplicationUI(QObject *parent = nullptr) : UIControlProvider(parent) { m_colors.resize(NumColors); }
 
@@ -216,6 +222,8 @@ public:
     UI_PROPERTY(QString, messageInfoDetails)
     UI_PROPERTY_DEFAULT(bool, isSystemDarkMode, false)
     UI_PROPERTY_DEFAULT(bool, isCompact, false)
+    UI_PROPERTY_DEFAULT(bool, showServicePageWidget, false)
+    UI_PROPERTY_DEFAULT(ServicePageWidget, servicePageWidget, ServicePageWidget::TII)
 
     QString fixedFontFamily() const { return QFontDatabase::systemFont(QFontDatabase::FixedFont).family(); }
     QList<QColor> colors() const { return m_colors; }

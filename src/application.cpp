@@ -293,7 +293,6 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
 #endif
 
     connect(m_ui, &ApplicationUI::isSystemDarkModeChanged, this, &Application::setColorTheme);
-
     connect(m_navigationModel, &NavigationModel::isUndockedChanged, this, &Application::pageUndocked);
     connect(m_navigationModel, &NavigationModel::isActiveChanged, this, &Application::pageActive);
 
@@ -312,6 +311,8 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_settingsBackend, &SettingsBackend::spiIconSettingsChanged, this, &Application::onSpiProgressSettingsChanged);
     connect(m_settingsBackend, &SettingsBackend::applicationStyleChanged, this, &Application::setColorTheme);
     connect(m_settingsBackend, &SettingsBackend::compactUiChanged, this, [this]() { m_ui->isCompact(m_settings->compactUi); });
+    connect(m_settingsBackend, &SettingsBackend::showServicePageWidgetChanged, this,
+            [this]() { m_ui->showServicePageWidget(m_settings->showServicePageWidget); });
     connect(m_settingsBackend, &SettingsBackend::restartRequested, this,
             [this]()
             {
@@ -3255,6 +3256,9 @@ void Application::loadSettings()
     m_settings->showSystemTime = settings->value("showSystemTime", false).toBool();
     m_settings->showEnsFlag = settings->value("showEnsembleCountryFlag", false).toBool();
     m_settings->showServiceFlag = settings->value("showServiceCountryFlag", false).toBool();
+    m_settings->showServicePageWidget = settings->value("showServicePageWidget", false).toBool();
+    m_ui->servicePageWidget(static_cast<ApplicationUI::ServicePageWidget>(
+        settings->value("servicePageWidget", static_cast<int>(ApplicationUI::ServicePageWidget::TII)).toInt()));
 #ifdef Q_OS_ANDROID
     m_settings->keepScreenOn = settings->value("keepScreenOn", false).toBool();
 #else
@@ -3587,6 +3591,8 @@ void Application::saveSettings()
     settings->setValue("dataStoragePath", m_settings->dataStoragePath);
     settings->setValue("compactUi", m_settings->compactUi);
     settings->setValue("cableChannelsEna", m_settings->cableChannelsEna);
+    settings->setValue("showServicePageWidget", m_settings->showServicePageWidget);
+    settings->setValue("servicePageWidget", static_cast<int>(m_ui->servicePageWidget()));
 #ifdef Q_OS_ANDROID
     settings->setValue("keepScreenOn", m_settings->keepScreenOn);
 #endif

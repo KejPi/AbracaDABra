@@ -187,6 +187,7 @@ public:
     bool compactUi;
     bool cableChannelsEna;
     QString dataStoragePath;
+    bool showServicePageWidget;
     bool keepScreenOn;  // Keep screen on (Android only)
 
     struct

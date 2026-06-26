@@ -225,6 +225,7 @@ class SettingsBackend : public UIControlProvider
     UI_PROPERTY_SETTINGS(bool, isXmlHeaderEnabled, m_settings->xmlHeaderEna)
     UI_PROPERTY_SETTINGS(QString, dataStoragePath, m_settings->dataStoragePath)
     UI_PROPERTY_SETTINGS(bool, keepScreenOn, m_settings->keepScreenOn)
+    UI_PROPERTY_SETTINGS(bool, showServicePageWidget, m_settings->showServicePageWidget)
 
 public:
     SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *parent = nullptr);
@@ -370,7 +371,6 @@ signals:
     void isSdrplayIfAgcCheckedChanged();
     void sdrplayRfGainIndexChanged();
     void sdrplayIfGainChanged();
-
     void locationCoordinatesChanged();
 
 protected:

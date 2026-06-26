@@ -61,7 +61,7 @@ public:
     void onTxTableSettingsChanged();
     Q_INVOKABLE void startStopLog() override;
     Q_INVOKABLE void registerTiiSpectrumPlot(QQuickItem *item);
-    void setIsActive(bool isActive);
+    Q_INVOKABLE void setIsActive(bool isActive);
 
 protected:
     void onSelectedRowChanged() override;

@@ -99,11 +99,18 @@ Rectangle {
                 }
             }
             Component.onDestruction: {
-                mainItem.signalBackend.registerSpectrumPlot(null);
-                mainItem.signalBackend.registerWaterfallPlot(null);
+                mainItem.signalBackend.unregisterSpectrumPlot(signalSpectrumView.chart);
+                if (signalBackend.showWaterfall) {
+                    mainItem.signalBackend.unregisterWaterfallPlot(signalSpectrumView.waterfall);
+                }
             }
             onShowWaterfallChanged: {
-                mainItem.signalBackend.registerWaterfallPlot(showWaterfall ? signalSpectrumView.waterfall : null);
+                if (signalBackend.showWaterfall) {
+                    mainItem.signalBackend.registerWaterfallPlot(signalSpectrumView.waterfall);
+                }
+                else {
+                    mainItem.signalBackend.unregisterWaterfallPlot(signalSpectrumView.waterfall);
+                }
             }
         }
 

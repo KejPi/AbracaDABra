@@ -151,6 +151,18 @@ Item {
                                 }
                                 AbracaSwitch {
                                     Layout.fillWidth: true
+                                    text: qsTr("Show tray icon")
+                                    checked: settingsBackend.showTrayIcon
+                                    onCheckedChanged: {
+                                        if (settingsBackend.showTrayIcon !== checked) {
+                                            settingsBackend.showTrayIcon = checked
+                                        }
+                                    }
+                                    wrapMode: Text.WordWrap
+                                    visible: UI.isAndroid === false
+                                }
+                                AbracaSwitch {
+                                    Layout.fillWidth: true
                                     text: qsTr("Dynamic Label Plus (DL+)")
                                     checked: settingsBackend.showDlPlus
                                     onCheckedChanged: {
@@ -163,15 +175,15 @@ Item {
                                 }
                                 AbracaSwitch {
                                     Layout.fillWidth: true
-                                    text: qsTr("Show tray icon")
-                                    checked: settingsBackend.showTrayIcon
+                                    text: qsTr("Show widget on service page")
+                                    checked: settingsBackend.showServicePageWidget
                                     onCheckedChanged: {
-                                        if (settingsBackend.showTrayIcon !== checked) {
-                                            settingsBackend.showTrayIcon = checked
+                                        if (settingsBackend.showServicePageWidget !== checked) {
+                                            settingsBackend.showServicePageWidget = checked
                                         }
                                     }
                                     wrapMode: Text.WordWrap
-                                    visible: UI.isAndroid === false
+                                    elideMode: Text.ElideNone
                                 }
                                 AbracaSwitch {
                                     Layout.fillWidth: true
@@ -209,7 +221,6 @@ Item {
                                     wrapMode: Text.WordWrap
                                     elideMode: Text.ElideNone
                                 }
-
                                 GridLayout  {
                                     Layout.fillWidth: true
                                     columns: 4
