@@ -76,6 +76,8 @@ Item {
                 SplitView.fillWidth: true
                 SplitView.fillHeight: true
                 SplitView.minimumHeight: 250
+                Component.onCompleted: tiiBackend.registerMap();
+                Component.onDestruction: tiiBackend.unregisterMap();
             }
             ChartView {
                 id: tiiSpectrumView
@@ -175,6 +177,8 @@ Item {
                     anchors.bottomMargin: 3*UI.controlRadius
                     backend: tiiBackend
                     showTable: false
+                    Component.onCompleted: tiiBackend.registerMap();
+                    Component.onDestruction: tiiBackend.unregisterMap();
                 }
             }
 

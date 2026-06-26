@@ -385,8 +385,8 @@ Item {
                             id: tiiMapComponent
                             TIIMap {
                                 id: mapView
-                                Component.onCompleted: application.tiiBackend.setIsActive(true);
-                                Component.onDestruction: application.tiiBackend.setIsActive(false);
+                                Component.onCompleted: application.tiiBackend.registerMap();
+                                Component.onDestruction: application.tiiBackend.unregisterMap();
                                 backend: application.tiiBackend
                             }
                         }
@@ -395,9 +395,6 @@ Item {
                             SpectrumWaterfallView {
                                 id: signalSpectrumView
                                 property var signalBackend: application.signalBackend
-                                onVisibleChanged: {
-                                    signalBackend.setIsActive(visible);
-                                }
 
                                 showWaterfall: signalBackend.showWaterfall
                                 splitterState: signalBackend.waterfallSplitterState
@@ -424,14 +421,12 @@ Item {
                                     if (signalBackend.showWaterfall) {
                                         signalBackend.registerWaterfallPlot(signalSpectrumView.waterfall);
                                     }
-                                    signalBackend.setIsActive(true);
                                 }
                                 Component.onDestruction: {
                                     signalBackend.unregisterSpectrumPlot(signalSpectrumView.chart);
                                     if (signalBackend.showWaterfall) {
                                         signalBackend.unregisterWaterfallPlot(signalSpectrumView.waterfall);
                                     }
-                                    signalBackend.setIsActive(false);
                                 }
                                 onShowWaterfallChanged: {
                                     if (signalBackend.showWaterfall) {

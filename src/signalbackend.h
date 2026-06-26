@@ -63,7 +63,6 @@ public:
     Q_INVOKABLE void registerSnrPlot(QQuickItem *item);
     Q_INVOKABLE void registerWaterfallPlot(QQuickItem *item);
     Q_INVOKABLE void unregisterWaterfallPlot(QQuickItem *item);
-    Q_INVOKABLE void setIsActive(bool isActive);
 
     void setIsUndocked(bool isUndocked);
     bool isUndocked() const { return m_isUndocked; }
@@ -134,7 +133,6 @@ private:
     void addToPlot(float snr);
     void setFreqRange();
     void reset();
-
     void setSpectrumUpdate();
 
     void setGainVisible(bool visible);

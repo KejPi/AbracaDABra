@@ -78,6 +78,11 @@ void SignalBackend::registerSpectrumPlot(QQuickItem *item)
     LineChartItem *spectrum = dynamic_cast<LineChartItem *>(item);
     if (spectrum && m_spectrumPlotItems.contains(spectrum) == false)
     {
+        if (m_spectrumPlotItems.isEmpty())
+        {
+            emit startSignalSpectrum(true);
+        }
+
         m_spectrumPlotItems.append(spectrum);
         spectrum->setXLabelDecimals(1);
         spectrum->setYLabelDecimals(0);
@@ -135,6 +140,10 @@ void SignalBackend::registerSpectrumPlot(QQuickItem *item)
 void SignalBackend::unregisterSpectrumPlot(QQuickItem *item)
 {
     m_spectrumPlotItems.removeAll(dynamic_cast<LineChartItem *>(item));
+    if (m_spectrumPlotItems.isEmpty())
+    {
+        emit startSignalSpectrum(false);
+    }
 }
 
 void SignalBackend::registerWaterfallPlot(QQuickItem *item)
@@ -213,11 +222,6 @@ void SignalBackend::registerSnrPlot(QQuickItem *item)
         m_startTimeMsec = 0;
         m_timer->start();
     }
-}
-
-void SignalBackend::setIsActive(bool isActive)
-{
-    emit startSignalSpectrum(isActive);
 }
 
 void SignalBackend::setIsUndocked(bool isUndocked)

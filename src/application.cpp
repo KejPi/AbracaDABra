@@ -2509,28 +2509,18 @@ void Application::pageActive(int id, bool isActive)
 {
     switch (id)
     {
-        case NavigationModel::Tii:
-            if (m_tiiBackend)
-            {
-                m_tiiBackend->setIsActive(isActive);
-            }
-            break;
         case NavigationModel::Scanner:
             if (m_scannerBackend)
             {
                 m_scannerBackend->setIsActive(isActive);
             }
             break;
+        case NavigationModel::Tii:
+
         case NavigationModel::DabSignal:
-            if (m_signalBackend)
-            {
-                m_signalBackend->setIsActive(isActive);
-            }
-            break;
         case NavigationModel::Undefined:
         case NavigationModel::Service:
         case NavigationModel::EnsembleInfo:
-
         case NavigationModel::Epg:
         case NavigationModel::ServiceList:
         case NavigationModel::Settings:
@@ -4336,7 +4326,6 @@ QObject *Application::createTiiBackend()
         connect(m_radioControl, &RadioControl::signalState, m_tiiBackend, &TIIBackend::onSignalState, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tiiData, m_tiiBackend, &TIIBackend::onTiiData, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::ensembleInformation, m_tiiBackend, &TIIBackend::onEnsembleInformation, Qt::QueuedConnection);
-        m_tiiBackend->setIsActive(m_navigationModel->isActive(NavigationModel::Tii));
         emit getEnsembleInfo();  // this triggers ensemble infomation used to configure EPG dialog
     }
     return m_tiiBackend;
@@ -4355,8 +4344,6 @@ QObject *Application::createSignalBackend()
         {
             connect(m_inputDevice, &InputDevice::rfLevel, m_signalBackend, &SignalBackend::updateRfLevel);
         }
-        m_signalBackend->setIsActive(m_navigationModel->isActive(NavigationModel::DabSignal));
-
         m_signalBackend->setInputDevice(m_inputDeviceId);
     }
     return m_signalBackend;

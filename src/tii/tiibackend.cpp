@@ -446,6 +446,24 @@ void TIIBackend::setIsActive(bool isActive)
     }
 }
 
+void TIIBackend::registerMap()
+{
+    if (m_mapCntr == 0)
+    {
+        setIsActive(true);
+    }
+    m_mapCntr += 1;
+}
+
+void TIIBackend::unregisterMap()
+{
+    m_mapCntr = qMax(0, m_mapCntr - 1);
+    if (m_mapCntr == 0)
+    {
+        setIsActive(false);
+    }
+}
+
 void TIIBackend::addToPlot(const RadioControlTIIData &data)
 {
     float norm = 1.0 / (*std::max_element(data.spectrum.begin(), data.spectrum.end()));
