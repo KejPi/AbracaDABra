@@ -6,7 +6,7 @@
     <message>
         <location filename="../aboutui.cpp" line="41"/>
         <source>Based on Qt %1</source>
-        <translation>Basé sur QT %1<</translation>
+        <translation>Basé sur QT %1</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="42"/>
