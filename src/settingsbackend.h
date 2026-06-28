@@ -407,7 +407,7 @@ private:
     };
     static const QString m_coordinatesHelp;
 
-    const QList<QLocale::Language> m_supportedLocalization = {QLocale::Czech, QLocale::German, QLocale::Italian, QLocale::Polish};
+    const QList<QLocale::Language> m_supportedLocalization = {QLocale::Czech, QLocale::German, QLocale::Italian, QLocale::French, QLocale::Polish};
     const QString m_noFileString = tr("No file selected");
 
     Settings *m_settings = nullptr;
