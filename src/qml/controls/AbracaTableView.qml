@@ -228,8 +228,8 @@ Item {
             tableItem.columnWidths[cols - 1] = avail - totalWidthScaled;
         }
 
+        Qt.callLater(tableView.forceLayout);
 
-        tableView.forceLayout();
         // compute total content width from columns and expose it so scrollbars can use it
         var totalContent = 0;
         for (var t = 0; t < tableItem.columnWidths.length; ++t) {
@@ -251,7 +251,7 @@ Item {
             var hdr = tableView.model.headerData(n, Qt.Horizontal, Qt.DisplayRole);
             tableItem.columnWidths[n] = Math.max(minColumnWidth, Math.ceil(fontMetrics.boundingRect(hdr).width) + UI.standardMargin);
         }
-        tableView.forceLayout();
+        Qt.callLater(tableView.forceLayout);
         tableItem.calculatePreferedWidth()
         // ensure sizes account for content and scrollbars
         tableItem.autoAdjustColumns();
