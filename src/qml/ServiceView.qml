@@ -296,8 +296,8 @@ Item {
                                 Layout.fillHeight: true
                                 Layout.leftMargin: itemsLeftMargin
                                 Layout.rightMargin: itemsRightMargin
-                                Layout.topMargin: itemsTopMargin
-                                Layout.bottomMargin: itemsBottomMargin
+                                Layout.topMargin: serviceDlLayout.dlPlusModel.rowCount > 0 ? itemsTopMargin : 0
+                                Layout.bottomMargin: serviceDlLayout.dlPlusModel.rowCount > 0 ? itemsBottomMargin : 0
 
                                 readonly property var dlPlusModel: index === 0 ? dlPlusModelService : dlPlusModelAnnouncement
 
@@ -334,13 +334,13 @@ Item {
                 }
                 ColumnLayout {
                     id: widgetLayout
-                    visible: UI.isMobile === false && colLayout.width >= 380 && appUI.showServicePageWidget
-                    spacing: 0 // UI.standardMargin
+                    visible: UI.isMobile === false && colLayout.width >= 400 && appUI.showServicePageWidget
+                    spacing: 0
                     Layout.fillWidth: true
                     // height shall be set according to available vertical space on the page
                     Layout.preferredHeight: Math.max(320, mainLayout.height - ensembleLabel.height - titleRowLayout.height
                                                      - infoRowLayout.height - audioParamsLayout.height
-                                                     - serviceStackLayout.height - 5*UI.standardMargin)
+                                                     - serviceStackLayout.height - (isPortrait ? 6 : 5) * UI.standardMargin)
 
                     AbracaLine {
                         Layout.fillWidth: true

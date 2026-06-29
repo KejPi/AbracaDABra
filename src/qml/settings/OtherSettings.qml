@@ -171,7 +171,7 @@ Item {
                                         }
                                     }
                                     wrapMode: Text.WordWrap
-                                    elideMode: Text.ElideNone
+                                    elideMode: Text.ElideNone                                    
                                 }
                                 AbracaSwitch {
                                     Layout.fillWidth: true
@@ -184,6 +184,7 @@ Item {
                                     }
                                     wrapMode: Text.WordWrap
                                     elideMode: Text.ElideNone
+                                    visible: UI.isMobile === false
                                 }
                                 AbracaSwitch {
                                     Layout.fillWidth: true
