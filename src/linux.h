@@ -35,5 +35,6 @@ void linuxTeardownMediaRemoteCommands();
 void linuxUpdateNowPlayingInfo(const QString &stationName);
 void linuxUpdateNowPlayingSubtitle(const QString &dl);
 void linuxUpdateNowPlayingPlaybackState(bool isPlaying);
+void linuxUpdateNowPlayingArtwork(const QString &fileUrl);
 
 #endif  // LINUX_H

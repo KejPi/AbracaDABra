@@ -1,4 +1,6 @@
 #include "mac.h"
+#include <QBuffer>
+#include <QPixmap>
 #import <Cocoa/Cocoa.h>
 #import <MediaPlayer/MediaPlayer.h>
 
@@ -179,4 +181,44 @@ void macUpdateNowPlayingPlaybackState(bool isPlaying)
         [MPNowPlayingInfoCenter defaultCenter].playbackState =
             isPlaying ? MPNowPlayingPlaybackStatePlaying : MPNowPlayingPlaybackStatePaused;
     }
+}
+
+void macUpdateNowPlayingArtwork(const QPixmap &logo)
+{
+    NSMutableDictionary *info = [[MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo mutableCopy];
+    if (!info)
+    {
+        return;
+    }
+    
+    if (logo.isNull())
+    {
+        [info removeObjectForKey:MPMediaItemPropertyArtwork];
+    }
+    else
+    {
+        // Encode QPixmap to PNG bytes
+        QByteArray bytes;
+        QBuffer buf(&bytes);
+        buf.open(QIODevice::WriteOnly);
+        logo.save(&buf, "PNG");
+        buf.close();
+        
+        NSData *pngData = [NSData dataWithBytes:bytes.constData() length:bytes.size()];
+        NSImage *image = [[NSImage alloc] initWithData:pngData];
+        
+        if (image)
+        {
+            MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithBoundsSize:image.size
+                requestHandler:^NSImage * _Nonnull(CGSize size) {
+                    return image;
+                }];
+            if (artwork)
+            {
+                info[MPMediaItemPropertyArtwork] = artwork;
+            }
+        }
+    }
+    
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = info;
 }

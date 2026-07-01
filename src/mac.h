@@ -15,5 +15,6 @@ void macTeardownMediaRemoteCommands();
 void macUpdateNowPlayingInfo(const QString &stationName);
 void macUpdateNowPlayingSubtitle(const QString &dl);
 void macUpdateNowPlayingPlaybackState(bool isPlaying);
+void macUpdateNowPlayingArtwork(const QPixmap &logo);
 
 #endif  // MAC_H

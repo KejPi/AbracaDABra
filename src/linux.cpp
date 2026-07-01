@@ -133,6 +133,18 @@ public:
         emitPropertiesChanged(changed);
     }
 
+    void setArtwork(const QString &fileUrl)
+    {
+        // fileUrl is either empty (clear artwork) or file:// URI
+        if (fileUrl.isEmpty())
+            m_metadata.remove(QStringLiteral("mpris:artUrl"));
+        else
+            m_metadata[QStringLiteral("mpris:artUrl")] = fileUrl;
+        QVariantMap changed;
+        changed[QStringLiteral("Metadata")] = QVariant::fromValue(m_metadata);
+        emitPropertiesChanged(changed);
+    }
+
 signals:
     void Seeked(qlonglong Position);
 
@@ -212,6 +224,12 @@ void linuxUpdateNowPlayingPlaybackState(bool isPlaying)
 {
     if (s_playerAdaptor)
         s_playerAdaptor->setPlaying(isPlaying);
+}
+
+void linuxUpdateNowPlayingArtwork(const QString &fileUrl)
+{
+    if (s_playerAdaptor)
+        s_playerAdaptor->setArtwork(fileUrl);
 }
 
 #include "linux.moc"

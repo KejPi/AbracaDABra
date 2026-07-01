@@ -194,8 +194,9 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
                                                             int widthVal = width.toInt();
                                                             int heightVal = height.toInt();
 
-                                                            // only SLS size or logo size is accepted
-                                                            if (((widthVal == 320) && (heightVal == 240)) || ((widthVal == 32) && (heightVal == 32)))
+                                                            // only SLS size, square 128x128 or logo size is accepted
+                                                            if (((widthVal == 320) && (heightVal == 240)) ||
+                                                                ((widthVal == 32) && (heightVal == 32)) || ((widthVal == 128) && (heightVal == 128)))
                                                             {
                                                                 for (const QString &sidStr : sidList)
                                                                 {  // ask for logo for each SId (actually there should be only one valid DAB SId)
@@ -593,6 +594,10 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
                     {
                         role = MetadataRole::SmallLogo;
                     }
+                    else if (size == "128x128")
+                    {
+                        role = MetadataRole::SquareLogo;
+                    }
                     emit dataUpdated(ServiceListId(174928, ueid), role);  // using some frequency (5A)
                 }
                 else
@@ -604,6 +609,10 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
                     if (size == "32x32")
                     {
                         role = MetadataRole::SmallLogo;
+                    }
+                    else if (size == "128x128")
+                    {
+                        role = MetadataRole::SquareLogo;
                     }
                     emit dataUpdated(ServiceListId(sid, scids), role);
                 }
@@ -634,6 +643,10 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
                 {
                     role = MetadataRole::SmallLogo;
                 }
+                else if (size == "128x128")
+                {
+                    role = MetadataRole::SquareLogo;
+                }
                 emit dataUpdated(ServiceListId(174928, ueid), role);  // using some frequency (5A)
             }
             else
@@ -646,12 +659,47 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
                 {
                     role = MetadataRole::SmallLogo;
                 }
+                else if (size == "128x128")
+                {
+                    role = MetadataRole::SquareLogo;
+                }
                 emit dataUpdated(ServiceListId(sid, scids), role);
             }
         }
     }
 }
+QString MetadataManager::squareLogoFilePath(uint32_t ueid, uint32_t sid, uint8_t SCIdS) const
+{
+    ServiceListId ensId(0, ueid);
+    ServiceListId servId(sid, SCIdS);
 
+    if (!servId.isValid() || !ensId.isValid())
+    {
+        return QString();
+    }
+
+    QString baseDir = QString("%1.%2").arg(servId.sid(), 6, 16, QChar('0')).arg(servId.scids());
+    QString subDir = QString("/%1").arg(ensId.ueid(), 6, 16, QChar('0'));
+
+    QDir dir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + baseDir);
+    if (!dir.exists())
+    {
+        return QString();
+    }
+
+    QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + baseDir + subDir + "/128x128.";
+
+    if (QFileInfo::exists(filename + "png"))
+    {
+        return filename + "png";
+    }
+    if (QFileInfo::exists(filename + "jpg"))
+    {
+        return filename + "jpg";
+    }
+
+    return QString();
+}
 QVariant MetadataManager::data(uint32_t ueid, uint32_t sid, uint8_t SCIdS, MetadataRole role) const
 {
     return data(ServiceListId(0, ueid), ServiceListId(sid, SCIdS), role);
@@ -663,6 +711,7 @@ QVariant MetadataManager::data(const ServiceListId &ensId, const ServiceListId &
     {
         case SLSLogo:
         case SmallLogo:
+        case SquareLogo:
         {
             QString baseDir;
             QString subDir;
@@ -685,6 +734,11 @@ QVariant MetadataManager::data(const ServiceListId &ensId, const ServiceListId &
             {
                 w = 320;
                 h = 240;
+            }
+            else if (role == SquareLogo)
+            {
+                w = 128;
+                h = 128;
             }
 
             QDir dir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + baseDir);

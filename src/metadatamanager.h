@@ -47,6 +47,7 @@ public:
     {
         SmallLogo = Qt::UserRole,
         SLSLogo,
+        SquareLogo,
         ShortName,
         MediumName,
         LongName,
@@ -59,6 +60,7 @@ public:
     void onFileReceived(const QByteArray &data, const QString &requestId);
     QVariant data(uint32_t ueid, uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role) const;
     QVariant data(const ServiceListId &endId, const ServiceListId &id, MetadataManager::MetadataRole role) const;
+    QString squareLogoFilePath(uint32_t ueid, uint32_t sid, uint8_t SCIdS) const;
 
     EPGModel *epgModel(const ServiceListId &id) const;
 

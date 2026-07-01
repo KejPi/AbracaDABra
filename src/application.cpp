@@ -53,6 +53,7 @@
 #include <android/log.h>
 #include <unistd.h>
 
+#include <QBuffer>
 #include <QJniEnvironment>
 #include <QJniObject>
 #include <cstring>
@@ -1861,6 +1862,17 @@ void Application::onAudioServiceSelection(const RadioControlServiceComponent &s)
         {
             m_slsBackend[Instance::Service]->showServiceLogo(logo, true);
         }
+        logo = m_metadataManager->data(m_ueid, s.SId.value(), s.SCIdS, MetadataManager::SquareLogo).value<QPixmap>();
+        if (!logo.isNull())
+        {
+#ifdef Q_OS_MACOS
+            macUpdateNowPlayingArtwork(logo);
+#endif
+#if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
+            linuxUpdateNowPlayingArtwork(m_metadataManager->squareLogoFilePath(m_ueid, s.SId.value(), s.SCIdS));
+#endif
+        }
+        updateAndroidArtwork(logo);
         onShowCountryFlagChanged();
     }
     else
@@ -2283,6 +2295,18 @@ void Application::onMetadataUpdated(const ServiceListId &id, MetadataManager::Me
                     {
                         m_ui->isServiceLogoVisible(false);
                     }
+                }
+                break;
+                case MetadataManager::MetadataRole::SquareLogo:
+                {
+                    QPixmap logo = m_metadataManager->data(ServiceListId(0, m_ueid), id, MetadataManager::SquareLogo).value<QPixmap>();
+#ifdef Q_OS_MACOS
+                    macUpdateNowPlayingArtwork(logo);
+#endif
+#if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
+                    linuxUpdateNowPlayingArtwork(m_metadataManager->squareLogoFilePath(m_ueid, s.SId.value(), s.SCIdS));
+#endif
+                    updateAndroidArtwork(logo);
                 }
                 break;
                 case MetadataManager::CountryFlag:
@@ -3900,6 +3924,16 @@ void Application::onMuteButtonToggled(bool doMute)
 #if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
     linuxUpdateNowPlayingPlaybackState(!doMute);
 #endif
+#ifdef Q_OS_ANDROID
+    try
+    {
+        QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "updateMuteState", "(Z)V", static_cast<jboolean>(doMute));
+    }
+    catch (...)
+    {
+        qCWarning(application) << "Exception while updating Android mute state";
+    }
+#endif
 }
 
 void Application::toggleMute()
@@ -4311,6 +4345,38 @@ void Application::updateAndroidNotification(const QString &title, const QString 
     catch (...)
     {
         qCWarning(application) << "Exception while updating Android notification";
+    }
+#endif
+}
+
+void Application::updateAndroidArtwork(const QPixmap &logo)
+{
+#ifdef Q_OS_ANDROID
+    try
+    {
+        QString base64;
+        QByteArray bytes;
+        QBuffer buf(&bytes);
+        buf.open(QIODevice::WriteOnly);
+        if (logo.isNull())
+        {
+            QPixmap appLogo(":/resources/appIcon-linux.png");
+            appLogo.save(&buf, "PNG");
+        }
+        else
+        {
+            logo.save(&buf, "PNG");
+        }
+        buf.close();
+        base64 = QString::fromLatin1(bytes.toBase64());
+
+        QJniObject jBase64 = QJniObject::fromString(base64);
+        QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "updateArtwork", "(Ljava/lang/String;)V",
+                                           jBase64.object<jstring>());
+    }
+    catch (...)
+    {
+        qCWarning(application) << "Exception while updating Android artwork";
     }
 #endif
 }

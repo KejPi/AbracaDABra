@@ -7,6 +7,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
@@ -680,7 +682,47 @@ public class AudioServiceHelper {
      */
     public static void updateNotification(Context context, String title, String text) {
         if (wakeLock != null && wakeLock.isHeld()) {
-            showNotification(context, title, text);
+            AudioPlaybackService service = AudioPlaybackService.getInstance();
+            if (service != null) {
+                service.updateNotification(title, text);
+            } else {
+                showNotification(context, title, text);
+            }
+        }
+    }
+
+    /**
+     * Sync the mute/unmute state from the Qt application into the MediaSession.
+     * Called from C++ via JNI whenever the user mutes or unmutes.
+     * muted=true  → STATE_PAUSED  (notification shows ▶ play button)
+     * muted=false → STATE_PLAYING (notification shows ⏸ pause button)
+     */
+    public static void updateMuteState(boolean muted) {
+        AudioPlaybackService service = AudioPlaybackService.getInstance();
+        if (service != null) {
+            service.setMuted(muted);
+        }
+    }
+
+    /**
+     * Update the artwork shown in media controls and notification.
+     * Pass an empty string to clear artwork (app icon will be used).
+     */
+    public static void updateArtwork(String base64png) {
+        AudioPlaybackService service = AudioPlaybackService.getInstance();
+        if (service == null) {
+            return;
+        }
+        try {
+            if (base64png == null || base64png.isEmpty()) {
+                service.setArtwork(null);
+            } else {
+                byte[] bytes = android.util.Base64.decode(base64png, android.util.Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                service.setArtwork(bitmap);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to update artwork: " + e.getMessage(), e);
         }
     }
 

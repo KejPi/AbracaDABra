@@ -544,6 +544,7 @@ private:
     void handleServiceSourceSelection(int actionId, bool checked, const QVariant &data);
     void onApplicationStateChanged(Qt::ApplicationState state);
     void updateAndroidNotification(const QString &title, const QString &text);
+    void updateAndroidArtwork(const QPixmap &logo);
 
     // this class serves as simple image provider for QML using MatedataManager as backend
     class LogoProvider : public QQuickImageProvider
