@@ -882,7 +882,8 @@ void Application::setContextProperties()
     context->setContextProperty("application", this);
     context->setContextProperty("appUI", m_ui);
     context->setContextProperty("navigationModel", m_navigationModel);
-    context->setContextProperty("slModel", m_slProxyModel);
+    context->setContextProperty("slModel", m_slModel);
+    context->setContextProperty("slProxyModel", m_slProxyModel);
     context->setContextProperty("slTreeModel", m_slTreeModel);
     context->setContextProperty("channelListModel", m_channelListModel);
     context->setContextProperty("slSelectionModel", m_slSelectionModel);

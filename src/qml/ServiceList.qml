@@ -215,8 +215,8 @@ Item {
             anchors.rightMargin: UI.standardMargin
             //anchors.leftMargin: UI.standardMargin
             placeholderText: qsTr("Filter services...")
-            text: slModel.serviceNameFilter
-            onTextChanged: slModel.serviceNameFilter = text
+            text: slProxyModel.serviceNameFilter
+            onTextChanged: slProxyModel.serviceNameFilter = text
             visible: serviceListItem.filterVisible
             height: serviceListItem.filterVisible ? implicitHeight : 0
             opacity: serviceListItem.filterVisible ? 1.0 : 0.0
@@ -247,7 +247,7 @@ Item {
             }
             clip: true
             enabled: appUI.serviceSelectionEnabled
-            model: slModel
+            model: slProxyModel
             opacity: enabled ? 1.0 : 0.6
 
             signal restartHighlightAnimation()
@@ -352,7 +352,7 @@ Item {
 
             // Keep selection in sync when proxy model changes because of filtering
             Connections {
-                target: slModel
+                target: slProxyModel
                 function onServiceNameFilterChanged() {
                     Qt.callLater(function () {
                         serviceList.syncSelectionFromSourceModel();
@@ -382,8 +382,8 @@ Item {
             // initial index
             Component.onCompleted: {
                 let currentIdx = slSelectionModel.currentIndex;
-                currentIndex = slModel.mapFromSource(currentIdx).row;
-                selectedItemIndex = slModel.mapFromSource(currentIdx).row;
+                currentIndex = slProxyModel.mapFromSource(currentIdx).row;
+                selectedItemIndex = slProxyModel.mapFromSource(currentIdx).row;
                 Qt.callLater(function () {
                     // Manually position to respect highlight range since highlightFollowsCurrentItem is false
                     let targetY = currentIndex * itemHeight;
