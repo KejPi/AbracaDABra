@@ -4361,7 +4361,7 @@ void Application::updateAndroidArtwork(const QPixmap &logo)
         buf.open(QIODevice::WriteOnly);
         if (logo.isNull())
         {
-            QPixmap appLogo(":/resources/appIcon-linux.png");
+            QPixmap appLogo(":/resources/appIcon-square.png");
             appLogo.save(&buf, "PNG");
         }
         else

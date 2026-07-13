@@ -17,5 +17,6 @@
         <file>resources/announcement09.png</file>
         <file>resources/announcement10.png</file>
         <file>resources/noise.bin</file>
+        <file>resources/appIcon-square.png</file>
     </qresource>
 </RCC>
