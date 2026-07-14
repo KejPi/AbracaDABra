@@ -51,6 +51,17 @@
                 android:name="android.app.lib_name"
                 android:value="AbracaDABra" />
 
+            <!-- By default Qt blocks the GUI-thread event loop while the app is
+                 ApplicationSuspended (e.g. screen locked), which stalls delivery of
+                 all cross-thread queued calls into Application - including the
+                 MediaSession play/pause/next/previous handlers routed through it.
+                 This keeps the Qt event loop pumping while backgrounded, matching
+                 the existing wake lock + foreground service background-playback
+                 design (see Application::onApplicationStateChanged). -->
+            <meta-data
+                android:name="android.app.background_running"
+                android:value="true" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
