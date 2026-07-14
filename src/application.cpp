@@ -638,7 +638,17 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_radioControl, &RadioControl::stopAudio, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::startAudio, m_audioOutput, &AudioOutput::start, Qt::QueuedConnection);
 #ifdef Q_OS_ANDROID
-    connect(m_audioDecoder, &AudioDecoder::startAudio, this, [this]() { updateAndroidNotification(m_ui->serviceLabel(), ""); }, Qt::QueuedConnection);
+    connect(
+        m_audioDecoder, &AudioDecoder::startAudio, this, [this]() { updateAndroidNotification(m_ui->serviceLabel(), "DAB radio"); },
+        Qt::QueuedConnection);
+    connect(
+        m_audioDecoder, &AudioDecoder::stopAudio, this,
+        [this]()
+        {
+            updateAndroidNotification(m_ui->serviceLabel(), "");
+            updateAndroidArtwork(QPixmap{});
+        },
+        Qt::QueuedConnection);
 #endif
     connect(m_audioDecoder, &AudioDecoder::switchAudio, m_audioOutput, &AudioOutput::restart, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::stopAudio, m_audioOutput, &AudioOutput::stop, Qt::QueuedConnection);

@@ -377,6 +377,10 @@ public class AudioPlaybackService extends Service {
      * Update the notification with new content
      */
     public void updateNotification(String title, String text) {
+        if (lastNotificationTitle.equals(title) && lastNotificationText.equals(text)) {
+            // No change, skip rebuild
+            return;
+        }
         lastNotificationTitle = title;
         lastNotificationText = text;
         rebuildNotification();
@@ -386,19 +390,25 @@ public class AudioPlaybackService extends Service {
      * Update the MediaSession artwork and refresh the notification large icon.
      * Pass null bitmap to clear artwork (fall back to app icon).
      */
-    public void setArtwork(Bitmap bitmap) {
+    public void setArtwork(Bitmap bitmap) {                
         lastArtworkBitmap = bitmap;
+        rebuildNotification();
+    }
 
-        // Update MediaSession metadata so lock-screen / assistant see the artwork
+    /**
+     * Rebuild the foreground notification with the current title, text, and artwork.
+     */
+    private void rebuildNotification() {        
+        // Update MediaSession metadata
         if (mediaSession != null) {
             try {
                 MediaMetadata.Builder metaBuilder = new MediaMetadata.Builder()
                         .putString(MediaMetadata.METADATA_KEY_TITLE, lastNotificationTitle)
                         .putString(MediaMetadata.METADATA_KEY_ARTIST, lastNotificationText)
                         .putLong(MediaMetadata.METADATA_KEY_DURATION, -1);
-                if (bitmap != null) {
-                    metaBuilder.putBitmap(MediaMetadata.METADATA_KEY_ART, bitmap);
-                    metaBuilder.putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, bitmap);
+                if (lastArtworkBitmap != null) {
+                    metaBuilder.putBitmap(MediaMetadata.METADATA_KEY_ART, lastArtworkBitmap);
+                    metaBuilder.putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, lastArtworkBitmap);
                 }
                 mediaSession.setMetadata(metaBuilder.build());
             } catch (Exception e) {
@@ -406,13 +416,6 @@ public class AudioPlaybackService extends Service {
             }
         }
 
-        rebuildNotification();
-    }
-
-    /**
-     * Rebuild the foreground notification with the current title, text, and artwork.
-     */
-    private void rebuildNotification() {
         try {
             Intent notificationIntent = new Intent(this, AbracaDABraActivity.class);
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -451,7 +454,8 @@ public class AudioPlaybackService extends Service {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             if (notificationManager != null) {
                 notificationManager.notify(NOTIFICATION_ID, builder.build());
-            }
+            }            
+
         } catch (Exception e) {
             Log.e(TAG, "Failed to rebuild notification: " + e.getMessage(), e);
         }

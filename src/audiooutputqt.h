@@ -77,7 +77,6 @@ private:
 #ifdef Q_OS_ANDROID
     void acquireAndroidWakeLock();
     void releaseAndroidWakeLock();
-    void updateAndroidNotification(const QString &title, const QString &text);
 #endif
 };
 

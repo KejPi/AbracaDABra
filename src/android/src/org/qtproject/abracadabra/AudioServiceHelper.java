@@ -510,7 +510,7 @@ public class AudioServiceHelper {
             }
             
             // Remove notification
-            hideNotification(context);
+            // hideNotification(context);
             
         } catch (Exception e) {
             Log.e(TAG, "Failed to release wake lock: " + e.getMessage(), e);
@@ -684,9 +684,7 @@ public class AudioServiceHelper {
         if (wakeLock != null && wakeLock.isHeld()) {
             AudioPlaybackService service = AudioPlaybackService.getInstance();
             if (service != null) {
-                service.updateNotification(title, text);
-            } else {
-                showNotification(context, title, text);
+                service.updateNotification(title, text);   // routes through the session-aware path
             }
         }
     }
@@ -723,91 +721,6 @@ public class AudioServiceHelper {
             }
         } catch (Exception e) {
             Log.e(TAG, "Failed to update artwork: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Show notification for background playback
-     */
-    public static void showNotification(Context context, String title, String text) {
-        try {
-            NotificationManager notificationManager = 
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            
-            if (notificationManager == null) {
-                return;
-            }
-
-            // Create notification channel for Android O and above
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Audio Playback",
-                    NotificationManager.IMPORTANCE_LOW
-                );
-                channel.setDescription("Shows when DAB radio is playing");
-                channel.setShowBadge(false);
-                notificationManager.createNotificationChannel(channel);
-            }
-
-            // Create intent to open the app when notification is tapped
-            Intent notificationIntent = new Intent(context, AbracaDABraActivity.class);
-            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            
-            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                flags |= PendingIntent.FLAG_IMMUTABLE;
-            }
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, flags);
-
-            // Build notification
-            Notification.Builder builder;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                builder = new Notification.Builder(context, CHANNEL_ID);
-            } else {
-                builder = new Notification.Builder(context);
-            }
-
-            builder.setContentTitle(title)
-                   .setContentText(text)
-                   .setSmallIcon(android.R.drawable.ic_media_play)
-                   .setContentIntent(pendingIntent)
-                   .setOngoing(true)
-                   .setShowWhen(false);
-
-            // For Android 8.0 and above, set category
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                builder.setCategory(Notification.CATEGORY_SERVICE);
-            }
-            
-            // For Android 10.0 and above, set as media style
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                builder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
-            }
-
-            Notification notification = builder.build();
-            notificationManager.notify(NOTIFICATION_ID, notification);
-            
-            // Log.d(TAG, "Notification shown: " + title + " - " + text);
-            
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to show notification: " + e.getMessage(), e);
-        }
-    }
-    /**
-     * Hide the notification
-     */
-    private static void hideNotification(Context context) {
-        try {
-            NotificationManager notificationManager = 
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            
-            if (notificationManager != null) {
-                notificationManager.cancel(NOTIFICATION_ID);
-                Log.d(TAG, "Notification hidden");
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to hide notification: " + e.getMessage(), e);
         }
     }
 }
