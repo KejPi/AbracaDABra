@@ -130,6 +130,7 @@ Item {
             opacity: 1.0
             anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height/2)
             visible: backend.positionValid
+            z: 100
         }
 
         MapItemView {
