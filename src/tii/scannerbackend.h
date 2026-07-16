@@ -195,8 +195,6 @@ private:
     QDateTime m_scanStartTime;
     QGeoCoordinate m_scanStartLocation;
 
-    // this is used in precise mode
-    bool m_isPreciseMode = false;
     RadioControlTIIData m_tiiData;
 
     ServiceListId m_serviceToRestore;

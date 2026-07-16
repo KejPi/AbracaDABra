@@ -116,7 +116,6 @@ void ScannerBackend::startStopAction()
     else
     {  // start pressed
         m_numSelectedChannels = 0;
-        m_isPreciseMode = (mode() == Mode::Mode_Precise);
         m_numSelectedChannels = m_channelSelectionModel->numChecked();
         if (numCycles() > 0)
         {
@@ -974,16 +973,10 @@ void ScannerBackend::onTiiData(const RadioControlTIIData &data)
                 m_timer->stop();
             }
 
-            if (m_isPreciseMode)
-            {  // request ensemble info
-                m_tiiData = data;
-                qCDebug(scanner) << "Requesting ensemble config @" << m_frequency;
-                emit requestEnsembleConfiguration();
-            }
-            else
-            {
-                storeEnsembleData(data, QString(), QString());
-            }
+            // request ensemble info
+            m_tiiData = data;
+            qCDebug(scanner) << "Requesting ensemble config @" << m_frequency;
+            emit requestEnsembleConfiguration();
         }
     }
 }
@@ -1098,13 +1091,13 @@ void ScannerBackend::createContextMenu(int row)
     m_contextMenuModel->addMenuItem(markAsLocalAction ? tr("Mark as local (known) transmitter") : tr("Unmark local (known) transmitter"),
                                     ContextMenuActionId::MarkLocal, QVariant(markAsLocalAction), true);
     m_contextMenuModel->addMenuItem(tr("Show ensemble information"), ContextMenuActionId::ShowEnsembleInfo, QVariant(row),
-                                    m_isPreciseMode && m_tableSelectionModel->selectedRows().count() == 1);
+                                    m_tableSelectionModel->selectedRows().count() == 1);
 }
 
 void ScannerBackend::showEnsembleConfig(int row)
 {
     auto index = m_tableModel->index(row, 0);
-    if (index.isValid() && m_isPreciseMode)
+    if (index.isValid())
     {
         QModelIndex srcIndex = mapToSourceModel(index);
         if (srcIndex.isValid())
