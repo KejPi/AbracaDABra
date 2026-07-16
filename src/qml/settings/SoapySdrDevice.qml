@@ -263,8 +263,8 @@ Item {
                 AbracaSpinBox {
                     id: freqCorrSpinBox
                     Layout.fillWidth: true
-                    from: -100
-                    to: 100
+                    from: -300
+                    to: 300
                     stepSize: 1
                     value: settingsBackend.soapySdrFreqCorrection
                     onValueChanged: if (settingsBackend.soapySdrFreqCorrection !== value) {
