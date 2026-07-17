@@ -833,7 +833,10 @@ QJsonObject TxTableModel::toJson() const
         txObj["ueid"] = QString("%1").arg(it->ensId().ueid(), 6, 16, QChar(' ')).toUpper();
         txObj["label"] = it->ensLabel();
         txObj["snr"] = qRound(it->snr() * 10) * 0.1;          // round to 1 decimal place
-        txObj["rfLevel"] = qRound(it->rfLevel() * 10) * 0.1;  // round to 1 decimal place
+        if (std::isnan(it->rfLevel()) == false)
+        {
+            txObj["rfLevel"] = qRound(it->rfLevel() * 10) * 0.1;  // round to 1 decimal place
+        }
         txObj["numServices"] = it->numServices();
         txObj["ensConfig"] = it->ensConfig();
         txObj["ensConfigCsv"] = it->ensConfigCSV();
@@ -897,7 +900,11 @@ bool TxTableModel::loadFromJson(const QJsonObject &json, bool utcTime)
         QString ensLabel = txObj["label"].toString();
         int numServices = txObj["numServices"].toInt();
         float snr = static_cast<float>(txObj["snr"].toDouble());
-        float rfLevel = static_cast<float>(txObj["rfLevel"].toDouble());
+        float rfLevel = NAN;
+        if (txObj.contains("rfLevel"))
+        {
+            rfLevel = static_cast<float>(txObj["rfLevel"].toDouble());
+        }
         QString ensConfig = txObj["ensConfig"].toString();
         QString ensCSV = txObj["ensConfigCsv"].toString();
 
