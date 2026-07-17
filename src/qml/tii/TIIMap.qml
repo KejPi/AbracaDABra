@@ -80,7 +80,8 @@ Item {
             //                        map.bearing -= delta
             //                        map.alignCoordinateToPoint(map.startCentroid, pinch.centroid.position)
             //                    }
-            grabPermissions: PointerHandler.TakeOverForbidden
+            // grabPermissions left at default (CanTakeOverFromAnything) so pinch still works
+            // when TIIMap is embedded inside an ancestor Flickable (e.g. ServiceView)
         }
         WheelHandler {
             id: wheel
