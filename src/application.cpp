@@ -915,12 +915,14 @@ void Application::onInputDeviceReady()
     switch (m_inputDeviceId)
     {
         case InputDevice::Id::AIRSPY:
+#if HAVE_AIRSPY
             // these are settings that are configures in ini file manually
             // they are only set when device is initialized
             if (dynamic_cast<AirspyInput *>(m_inputDevice))
             {
                 dynamic_cast<AirspyInput *>(m_inputDevice)->setDataPacking(m_settings->airspy.dataPacking);
             }
+#endif
             break;
         case InputDevice::Id::RAWFILE:
             if (m_inputDevice->deviceDescription().rawFile.frequency_kHz != 0)
@@ -2315,7 +2317,7 @@ void Application::onMetadataUpdated(const ServiceListId &id, MetadataManager::Me
                     macUpdateNowPlayingArtwork(logo);
 #endif
 #if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
-                    linuxUpdateNowPlayingArtwork(m_metadataManager->squareLogoFilePath(m_ueid, s.SId.value(), s.SCIdS));
+                    linuxUpdateNowPlayingArtwork(m_metadataManager->squareLogoFilePath(m_ueid, m_SId.value(), m_SCIdS));
 #endif
                     updateAndroidArtwork(logo);
                 }
