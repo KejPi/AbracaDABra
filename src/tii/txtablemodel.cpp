@@ -798,3 +798,174 @@ void TxTableModel::endLoadingFromFile()
     m_loadingFromFile = false;
     endResetModel();
 }
+
+QJsonObject TxTableModel::toJson() const
+{
+    // JSON structure is following:
+    // RX location
+    // TX [
+    //        timestamp
+    //        frequency
+    //        ensemble ID
+    //        snr
+    //        RF level
+    //        num services
+    //        ensemble CVS
+    //        tiiCodes [
+    //                    main ID
+    //                    sub ID
+    //                    level
+    //                 ]
+    // ]
+
+    QJsonObject rootObj;
+    rootObj["rx"] = QJsonObject{{"lat", m_coordinates.latitude()}, {"lon", m_coordinates.longitude()}, {"alt", m_coordinates.altitude()}};
+    QJsonArray txArray;
+
+    // go through model data and create array of TX
+    auto it = m_modelData.cbegin();
+    while (it != m_modelData.cend())
+    {
+        QJsonObject txObj;
+        auto rxTime = it->rxTime();
+        txObj["timestamp"] = m_displayTimeInUTC ? rxTime.toUTC().toString("yyyy-MM-dd hh:mm:ss") : rxTime.toString("yyyy-MM-dd hh:mm:ss");
+        txObj["frequency"] = static_cast<int>(it->ensId().freq());
+        txObj["ueid"] = QString("%1").arg(it->ensId().ueid(), 6, 16, QChar(' ')).toUpper();
+        txObj["label"] = it->ensLabel();
+        txObj["snr"] = qRound(it->snr() * 10) * 0.1;          // round to 1 decimal place
+        txObj["rfLevel"] = qRound(it->rfLevel() * 10) * 0.1;  // round to 1 decimal place
+        txObj["numServices"] = it->numServices();
+        txObj["ensConfig"] = it->ensConfig();
+        txObj["ensConfigCsv"] = it->ensConfigCSV();
+
+        // create array of TII codes
+        QJsonArray tiiArray;
+        while (it != m_modelData.cend() && it->rxTime() == rxTime)
+        {
+            QJsonObject tiiObj;
+            tiiObj["main"] = it->mainId();
+            tiiObj["sub"] = it->subId();
+            tiiObj["level"] = qRound(it->level() * 10) * 0.1;  // round to 1 decimal place
+            tiiObj["location"] = it->hasTxData() ? it->transmitterData().location() : "";
+            tiiObj["power"] = it->hasTxData() ? it->transmitterData().power() : 0.0;
+            tiiObj["txLat"] = it->hasTxData() ? it->transmitterData().coordinates().latitude() : 0.0;
+            tiiObj["txLon"] = it->hasTxData() ? it->transmitterData().coordinates().longitude() : 0.0;
+            tiiObj["txAlt"] = it->hasTxData() ? it->transmitterData().coordinates().altitude() : 0.0;
+            tiiObj["txAntHeight"] = it->hasTxData() ? it->transmitterData().antHeight() : 0.0;
+            tiiObj["distance"] = it->distance();
+            tiiObj["azimuth"] = it->azimuth();
+            tiiArray.append(tiiObj);
+            ++it;
+        }
+        txObj["tii"] = tiiArray;
+
+        // append to root object
+        txArray.append(txObj);
+    }
+    rootObj["tx"] = txArray;
+    return rootObj;
+}
+
+bool TxTableModel::loadFromJson(const QJsonObject &json, bool utcTime)
+{
+    if (!json.contains("rx") || !json.contains("tx"))
+    {
+        return false;
+    }
+
+    beginLoadingFromFile();
+
+    QJsonObject rxObj = json["rx"].toObject();
+    m_coordinates.setLatitude(rxObj["lat"].toDouble());
+    m_coordinates.setLongitude(rxObj["lon"].toDouble());
+    m_coordinates.setAltitude(rxObj["alt"].toDouble());
+
+    QJsonArray txArray = json["tx"].toArray();
+    for (const auto &txValue : std::as_const(txArray))
+    {
+        QJsonObject txObj = txValue.toObject();
+        QDateTime rxTime = QDateTime::fromString(txObj["timestamp"].toString(), "yyyy-MM-dd hh:mm:ss");
+        if (utcTime)
+        {
+            rxTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+        }
+        else
+        {
+            rxTime.setTimeZone(QTimeZone(QTimeZone::LocalTime));
+        }
+        ServiceListId ensId(txObj["frequency"].toInt(), txObj["ueid"].toString().toUInt(nullptr, 16));
+        QString ensLabel = txObj["label"].toString();
+        int numServices = txObj["numServices"].toInt();
+        float snr = static_cast<float>(txObj["snr"].toDouble());
+        float rfLevel = static_cast<float>(txObj["rfLevel"].toDouble());
+        QString ensConfig = txObj["ensConfig"].toString();
+        QString ensCSV = txObj["ensConfigCsv"].toString();
+
+        QJsonArray tiiArray = txObj["tii"].toArray();
+        QList<dabsdrTii_t> tiiData;
+        QList<TxDataItem *> txDataList;
+        for (const auto &tiiValue : std::as_const(tiiArray))
+        {
+            QJsonObject tiiObj = tiiValue.toObject();
+            dabsdrTii_t tii;
+            tii.main = static_cast<int8_t>(tiiObj["main"].toInt());
+            tii.sub = static_cast<int8_t>(tiiObj["sub"].toInt());
+            tii.level = static_cast<float>(tiiObj["level"].toDouble());
+            tiiData.append(tii);
+
+            if (tiiObj["location"].toString().isEmpty() == false)
+            {
+                TxDataItem *txDataItem = new TxDataItem;
+                txDataItem->setEnsId(ensId);
+                txDataItem->setMainId(tii.main);
+                txDataItem->setSubId(tii.sub);
+                txDataItem->setLocation(tiiObj["location"].toString());
+                txDataItem->setPower(static_cast<float>(tiiObj["power"].toDouble()));
+                txDataItem->setCoordinates(QGeoCoordinate(tiiObj["txLat"].toDouble(), tiiObj["txLon"].toDouble(), tiiObj["txAlt"].toDouble()));
+                txDataItem->setAntHeight(static_cast<float>(tiiObj["txAntHeight"].toDouble()));
+                txDataList.append(txDataItem);
+            }
+        }
+
+        // append m_txList.value(ensId) to txDataList
+        // these will be used as fallback if no TX data was stored for some TII code
+        const int numTxDataItems = txDataList.size();
+        for (TxDataItem *txDataItem : m_txList.values(ensId))
+        {
+            txDataList.append(txDataItem);
+        }
+
+        if (!tiiData.empty())
+        {
+            for (auto it = tiiData.cbegin(); it != tiiData.cend(); ++it)
+            {
+                // create new item
+                TxTableModelItem item(it->main, it->sub, it->level, m_coordinates, txDataList);
+                item.setEnsData(ensId, ensLabel, numServices, snr);
+                item.setEnsConfig(ensConfig, ensCSV);
+                item.setRfLevel(rfLevel);
+                item.setRxTime(rxTime.toLocalTime());
+                m_modelData.append(item);
+            }
+        }
+        else
+        {
+            // create new item
+            TxTableModelItem item(-1, -1, 0, m_coordinates, txDataList);
+            item.setEnsData(ensId, ensLabel, numServices, snr);
+            item.setEnsConfig(ensConfig, ensCSV);
+            item.setRfLevel(rfLevel);
+            item.setRxTime(rxTime);
+            m_modelData.append(item);
+        }
+
+        // delete txDataList items (only items created here are deleted, m_txList values are not deleted)
+        for (int n = 0; n < numTxDataItems; ++n)
+        {
+            delete txDataList[n];
+        }
+    }
+
+    endLoadingFromFile();
+    return true;
+}

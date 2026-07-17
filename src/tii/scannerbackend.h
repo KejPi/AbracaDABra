@@ -39,6 +39,8 @@
 #include "txmapmodel.h"
 #include "uicontrolprovider.h"
 
+#define SCANNER_JSON_VERSION 1
+
 struct CsvRowData
 {
     QDateTime time;
@@ -55,6 +57,13 @@ struct CsvParseResult
     QList<CsvRowData> rows;
     QGeoCoordinate offlineCoords;
     bool hasRfLevel = false;
+    bool success = false;
+    QString errorMessage;
+};
+
+struct JsonParseResult
+{
+    QJsonObject jsonObject;
     bool success = false;
     QString errorMessage;
 };
@@ -93,6 +102,7 @@ class ScannerBackend : public TxMapBackend
     UI_PROPERTY_SETTINGS(QVariant, splitterState, m_settings->scanner.splitterState)
     UI_PROPERTY_SETTINGS(bool, clearOnStart, m_settings->scanner.clearOnStart)
     UI_PROPERTY_SETTINGS(bool, autoSave, m_settings->scanner.autoSave)
+    UI_PROPERTY_SETTINGS(bool, autoSaveJSON, m_settings->scanner.autoSaveJSON)
     UI_PROPERTY_SETTINGS(bool, hideLocalTx, m_settings->scanner.hideLocalTx)
     UI_PROPERTY_SETTINGS(bool, incrementalScan, m_settings->scanner.incrementalScan)
     UI_PROPERTY_SETTINGS(int, mode, m_settings->scanner.mode)
@@ -112,7 +122,8 @@ public:
     Q_INVOKABLE void startStopAction();
     Q_INVOKABLE QUrl csvPath() const;
     Q_INVOKABLE void saveCSV();
-    Q_INVOKABLE void loadCSV(const QUrl &fileUrl);
+    Q_INVOKABLE void saveJSON();
+    Q_INVOKABLE void loadFile(const QUrl &fileUrl);
     Q_INVOKABLE void createContextMenu(int row);
     Q_INVOKABLE void showEnsembleConfig(int row);
     Q_INVOKABLE void saveEnsembleCSV(int srcModelRow);
@@ -202,7 +213,7 @@ private:
     void startScan();
     void scanStep();
     void stopScan();
-    void saveToFile(const QString &fileName);
+    void saveToFileCSV(const QString &fileName);
     void storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf);
     void handleContextMenuAction(int actionId, const QVariant &data);
     ContextMenuModel *m_contextMenuModel = nullptr;
@@ -221,6 +232,11 @@ private:
     TxMapModel *m_txMapModel = nullptr;
     static CsvParseResult parseCsvFile(const QString &fileName);
     void onCsvParsed();
+
+    // JSON loading
+    QFutureWatcher<JsonParseResult> *m_jsonFutureWatcher = nullptr;
+    static JsonParseResult parseJsonFile(const QString &fileName);
+    void onJsonParsed();
 
     // Incremental scan
     bool m_dataLoadedFromCsv = false;

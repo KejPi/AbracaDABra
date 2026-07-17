@@ -127,6 +127,8 @@ public:
     // loading from file
     void beginLoadingFromFile();
     void endLoadingFromFile();
+    QJsonObject toJson() const;
+    bool loadFromJson(const QJsonObject &json, bool utcTime);
 signals:
     void rowCountChanged();
     void selectedRowsChanged(const QSet<int> &rows);

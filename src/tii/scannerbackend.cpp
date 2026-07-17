@@ -138,6 +138,10 @@ void ScannerBackend::stopScan()
     }
 
     stopAutoSaveCsv();
+    if (autoSaveJSON())
+    {
+        saveJSON();
+    }
 
     // restore UI
     isScanning(false);
@@ -186,7 +190,7 @@ QUrl ScannerBackend::csvPath() const
     return QUrl::fromLocalFile(m_settings->dataStoragePath + '/' + SCANNER_DIR_NAME);
 }
 
-void ScannerBackend::loadCSV(const QUrl &fileUrl)
+void ScannerBackend::loadFile(const QUrl &fileUrl)
 {
     if (fileUrl.isEmpty())
     {
@@ -214,14 +218,80 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
     qCInfo(scanner) << "Loading file:" << fileName;
 
     isLoading(true);
-
-    if (m_csvFutureWatcher == nullptr)
+    if (fileName.endsWith(".json", Qt::CaseInsensitive))
     {
-        m_csvFutureWatcher = new QFutureWatcher<CsvParseResult>(this);
-        connect(m_csvFutureWatcher, &QFutureWatcher<CsvParseResult>::finished, this, &ScannerBackend::onCsvParsed);
+        if (m_jsonFutureWatcher == nullptr)
+        {
+            m_jsonFutureWatcher = new QFutureWatcher<JsonParseResult>(this);
+            connect(m_jsonFutureWatcher, &QFutureWatcher<JsonParseResult>::finished, this, &ScannerBackend::onJsonParsed);
+        }
+        m_jsonFutureWatcher->setFuture(QtConcurrent::run(&ScannerBackend::parseJsonFile, fileName));
+    }
+    else
+    {
+        if (m_csvFutureWatcher == nullptr)
+        {
+            m_csvFutureWatcher = new QFutureWatcher<CsvParseResult>(this);
+            connect(m_csvFutureWatcher, &QFutureWatcher<CsvParseResult>::finished, this, &ScannerBackend::onCsvParsed);
+        }
+        m_csvFutureWatcher->setFuture(QtConcurrent::run(&ScannerBackend::parseCsvFile, fileName));
+    }
+}
+
+void ScannerBackend::saveJSON()
+{
+    const QString fileName = QString("%1.json").arg(m_scanStartTime.isValid() ? m_scanStartTime.toString("yyyy-MM-dd_hhmmss")
+                                                                              : QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
+
+    QJsonObject root;
+    root["jsonVersion"] = SCANNER_JSON_VERSION;
+    root["application"] = QJsonObject{{"name", "AbracaDABra"}, {"version", PROJECT_VER}};
+    root["created"] = m_settings->tii.timestampInUTC ? QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss")
+                                                     : QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    if (m_scanStartTime.isValid())
+    {
+        root["scanStartTime"] = m_settings->tii.timestampInUTC ? m_scanStartTime.toUTC().toString("yyyy-MM-dd hh:mm:ss")
+                                                               : m_scanStartTime.toString("yyyy-MM-dd hh:mm:ss");
+    }
+    else
+    {
+        root["scanStartTime"] = m_settings->tii.timestampInUTC ? QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss")
+                                                               : QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    }
+    root["utc"] = m_settings->tii.timestampInUTC;
+    root["data"] = m_model->toJson();
+
+    // qDebug() << qPrintable(QJsonDocument(root).toJson(QJsonDocument::Indented));
+    // Ensure path exists and writable
+    const QString basePath = AndroidFileHelper::buildSubdirPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
+    if (!AndroidFileHelper::mkpath(basePath))
+    {
+        qCWarning(scanner) << "Failed to create export directory:" << AndroidFileHelper::lastError();
+        emit showInfoMessage(tr("Failed to save JSON"), -1);
+        return;
     }
 
-    m_csvFutureWatcher->setFuture(QtConcurrent::run(&ScannerBackend::parseCsvFile, fileName));
+    QString targetBase = basePath;
+    if (AndroidFileHelper::isContentUri(basePath))
+    {
+        // No additional subdir, just ensure trailing encoding handled
+        if (!AndroidFileHelper::hasWritePermission(basePath))
+        {
+            qCWarning(scanner) << "No permission to write to:" << basePath;
+            return;
+        }
+    }
+
+    if (AndroidFileHelper::writeTextFile(targetBase, fileName, QJsonDocument(root).toJson(QJsonDocument::Indented), "text/json"))
+    {
+        qCInfo(scanner) << "JSON saved to:" << QString("%1/%2").arg(targetBase, fileName);
+        emit showInfoMessage(tr("Data saved to JSON file"), 1);
+    }
+    else
+    {
+        qCWarning(scanner) << "Failed to save scanner JSON:" << AndroidFileHelper::lastError();
+        emit showInfoMessage(tr("Failed to save scanner JSON"), -1);
+    }
 }
 
 CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
@@ -232,7 +302,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         result.success = false;
-        result.errorMessage = tr("Failed to load file");
+        result.errorMessage = tr("Failed to load CSV file");
         return result;
     }
 
@@ -522,13 +592,90 @@ void ScannerBackend::onCsvParsed()
     isLoading(false);
 }
 
-void ScannerBackend::saveCSV()
+JsonParseResult ScannerBackend::parseJsonFile(const QString &fileName)
 {
-    const QString fileName = QString("%1.csv").arg(m_scanStartTime.toString("yyyy-MM-dd_hhmmss"));
-    saveToFile(fileName);
+    JsonParseResult result;
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        result.success = false;
+        result.errorMessage = tr("Failed to load JSON file");
+        return result;
+    }
+
+    QByteArray data = file.readAll();
+    file.close();
+
+    QJsonParseError parseError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &parseError);
+    if (parseError.error != QJsonParseError::NoError)
+    {
+        qCWarning(scanner) << "Failed to parse JSON file:" << parseError.errorString();
+        result.success = false;
+        result.errorMessage = tr("Failed to parse JSON file");
+        return result;
+    }
+
+    if (!jsonDoc.isObject())
+    {
+        qCWarning(scanner) << "Invalid JSON structure: root is not an object";
+        result.success = false;
+        result.errorMessage = tr("Invalid JSON structure");
+        return result;
+    }
+
+    result.jsonObject = jsonDoc.object();
+    result.success = true;
+    return result;
 }
 
-void ScannerBackend::saveToFile(const QString &fileName)
+void ScannerBackend::onJsonParsed()
+{
+    JsonParseResult result = m_jsonFutureWatcher->result();
+    bool success = false;
+    bool utcTime = false;
+    if (result.success && result.jsonObject.contains("utc"))
+    {
+        utcTime = result.jsonObject.value("utc").toBool();
+    }
+    if (result.success && result.jsonObject.contains("data") && result.jsonObject["data"].isObject())
+    {  // we may have something that is valid
+        QJsonObject dataObj = result.jsonObject["data"].toObject();
+        success = m_model->loadFromJson(dataObj, utcTime);
+    }
+
+    if (success)
+    {
+        QDateTime scanStartTime = QDateTime::fromString(result.jsonObject.value("scanStartTime").toString(), "yyyy-MM-dd hh:mm:ss");
+        if (utcTime)
+        {
+            scanStartTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+        }
+        else
+        {
+            scanStartTime.setTimeZone(QTimeZone(QTimeZone::LocalTime));
+        }
+        m_scanStartTime = scanStartTime.toLocalTime();
+    }
+    else
+    {
+        qCWarning(scanner) << "Failed to load JSON file";
+        emit showInfoMessage(result.errorMessage, -1);
+        reset();
+        m_sortedFilteredModel->setRfLevelFilter(m_deviceHasRfLevel == false);
+    }
+    isLoading(false);
+}
+
+void ScannerBackend::saveCSV()
+{
+    const QString fileName = QString("%1.csv").arg(m_scanStartTime.isValid() ? m_scanStartTime.toString("yyyy-MM-dd_hhmmss")
+                                                                             : QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
+    saveToFileCSV(fileName);
+}
+
+void ScannerBackend::saveToFileCSV(const QString &fileName)
 {
     // Build CSV content
     QString csvContent;
@@ -622,7 +769,8 @@ void ScannerBackend::startAutoSaveCsv()
 {
     stopAutoSaveCsv();  // close any previously open file
 
-    const QString fileName = QString("%1.csv").arg(m_scanStartTime.toString("yyyy-MM-dd_hhmmss"));
+    const QString fileName = QString("%1.csv").arg(m_scanStartTime.isValid() ? m_scanStartTime.toString("yyyy-MM-dd_hhmmss")
+                                                                             : QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
 
     // Ensure path exists and writable
     const QString basePath = AndroidFileHelper::buildSubdirPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
@@ -754,11 +902,15 @@ void ScannerBackend::startScan()
     if (forceClear)
     {
         reset();
+        m_scanStartTime = QDateTime{};  // invalid data time
         m_sortedFilteredModel->setRfLevelFilter(m_deviceHasRfLevel == false);
         m_incrementalBaseline.clear();
     }
 
-    m_scanStartTime = QDateTime::currentDateTime();
+    if (m_scanStartTime.isValid() == false)
+    {
+        m_scanStartTime = QDateTime::currentDateTime();
+    }
     m_scanStartLocation = m_currentPosition;
     scanningLabel(tr("Channel:"));
 

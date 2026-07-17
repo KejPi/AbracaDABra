@@ -315,6 +315,7 @@ public:
         bool clearOnStart;
         bool hideLocalTx;
         bool autoSave;
+        bool autoSaveJSON;
         bool incrementalScan;
         bool centerMapToCurrentPosition;
         QGeoCoordinate mapCenter;

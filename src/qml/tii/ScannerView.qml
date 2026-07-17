@@ -273,6 +273,13 @@ Item {
                             Component.onCompleted: checked = scannerBackend.hideLocalTx
                         }
                         AbracaMenuItem {
+                            text: qsTr("AutoSave JSON")
+                            checkable: true
+                            onTriggered: scannerBackend.autoSaveJSON = checked
+                            enabled: !scannerBackend.isScanning
+                            Component.onCompleted: checked = scannerBackend.autoSaveJSON
+                        }
+                        AbracaMenuItem {
                             text: qsTr("AutoSave CSV")
                             checkable: true
                             onTriggered: scannerBackend.autoSave = checked
@@ -281,12 +288,17 @@ Item {
                         }
                         AbracaMenuSeparator {}
                         AbracaMenuItem {
+                            text: qsTr("Save as JSON")
+                            onTriggered: scannerBackend.saveJSON()
+                            enabled: scannerBackend.tableModel.rowCount > 0
+                        }
+                        AbracaMenuItem {
                             text: qsTr("Save as CSV")
                             onTriggered: scannerBackend.saveCSV()
                             enabled: scannerBackend.tableModel.rowCount > 0
                         }
                         AbracaMenuItem {
-                            text: qsTr("Load from CSV")
+                            text: qsTr("Load from file...")
                             enabled: !scannerBackend.isScanning
                             onTriggered: scannerBackend.importAction()
                         }
@@ -490,12 +502,12 @@ Item {
             fileMode: FileDialog.OpenFile
             // On Android, avoid using nameFilters as they don't work reliably with extensions
             // Leave empty on Android to allow all files to be selectable
-            nameFilters: UI.isAndroid ? [] : [qsTr("CSV files") + " (*.csv)"]
+            nameFilters: UI.isAndroid ? [] : [qsTr("JSON files") + " (*.json)", qsTr("CSV files") + " (*.csv)"]
             options: UI.isAndroid ? FileDialog.DontResolveSymlinks : 0
             // currentFolder doesn't work well on Android with content:// URIs
             currentFolder: UI.isAndroid ? "" : fileDialogLoader.filepath
             onAccepted: {
-                scannerBackend.loadCSV(selectedFile);
+                scannerBackend.loadFile(selectedFile);
                 fileDialogLoader.active = false;
             }
             onRejected: {
