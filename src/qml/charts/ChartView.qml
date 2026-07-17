@@ -233,7 +233,8 @@ Item {
             DragHandler {
                 id: dragHandler
                 target: null
-                grabPermissions: PointerHandler.TakeOverForbidden // PointerHandler.CanTakeOverFromAnything
+                // grabPermissions left at default (CanTakeOverFromAnything) so drag still works
+                // when the chart is embedded inside an ancestor Flickable (e.g. ServiceView)
                 property real startXMin: 0
                 property real startXMax: 0
                 property real startYMin: 0
