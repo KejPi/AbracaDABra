@@ -1358,7 +1358,7 @@ void SettingsBackend::selectDataStoragePath(const QUrl &dirUrl)
 
         // Take persistable permission with both read and write flags
         // Qt's FolderDialog may not request write permission by default
-        if (!AndroidFileHelper::takePersistablePermission(path))
+        if (!AndroidFileHelper::instance().takePersistablePermission(path))
         {
             qWarning() << "Failed to take persistable permission for:" << path;
             // Continue anyway - the permission may already be granted

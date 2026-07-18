@@ -67,17 +67,17 @@ void InputDeviceRecorder::start(int timeoutSec)
     std::lock_guard<std::mutex> guard(m_fileMutex);
     if (nullptr == m_file)
     {
-        const QString rawPath = AndroidFileHelper::buildSubdirPath(m_settings->dataStoragePath, RAW_DIR_NAME);
+        const QString rawPath = AndroidFileHelper::instance().buildSubdirPath(m_settings->dataStoragePath, RAW_DIR_NAME);
 
         // Ensure directory exists and is writable
-        if (!AndroidFileHelper::mkpath(m_settings->dataStoragePath, RAW_DIR_NAME))
+        if (!AndroidFileHelper::instance().mkpath(m_settings->dataStoragePath, RAW_DIR_NAME))
         {
-            qCCritical(inputDeviceRecorder) << "Failed to create raw recording directory:" << AndroidFileHelper::lastError();
+            qCCritical(inputDeviceRecorder) << "Failed to create raw recording directory:" << AndroidFileHelper::instance().lastError();
             emit recording(false);
             return;
         }
 
-        if (!AndroidFileHelper::hasWritePermission(rawPath))
+        if (!AndroidFileHelper::instance().hasWritePermission(rawPath))
         {
             qCCritical(inputDeviceRecorder) << "No permission to write to:" << rawPath;
             qCCritical(inputDeviceRecorder) << "Please select a new data storage folder in settings.";
@@ -100,7 +100,7 @@ void InputDeviceRecorder::start(int timeoutSec)
         m_bytesRecorded = 0;
         m_bytesToRecord = timeoutSec * m_bytesPerSec;
 
-        m_file = AndroidFileHelper::openFileForWritingRaw(rawPath, fileName, "application/octet-stream");
+        m_file = AndroidFileHelper::instance().openFileForWritingRaw(rawPath, fileName, "application/octet-stream");
         if (nullptr != m_file)
         {
             if (m_xmlHeaderEna)

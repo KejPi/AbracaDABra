@@ -556,16 +556,16 @@ void SlideShowApp::dumpSlide(const Slide &slide)
         // prepend UA directory
         fileSubdir = QString("%1%2").arg(UA_DIR_NAME, fileSubdir);
 
-        const QString slidePath = AndroidFileHelper::buildSubdirPath(m_dumpPath, fileSubdir);
+        const QString slidePath = AndroidFileHelper::instance().buildSubdirPath(m_dumpPath, fileSubdir);
 
         // Ensure directory exists and is writable
-        if (!AndroidFileHelper::mkpath(m_dumpPath, fileSubdir))
+        if (!AndroidFileHelper::instance().mkpath(m_dumpPath, fileSubdir))
         {
-            qCWarning(slideShowApp) << "Failed to create slide export directory:" << AndroidFileHelper::lastError();
+            qCWarning(slideShowApp) << "Failed to create slide export directory:" << AndroidFileHelper::instance().lastError();
             return;
         }
 
-        if (!AndroidFileHelper::hasWritePermission(slidePath))
+        if (!AndroidFileHelper::instance().hasWritePermission(slidePath))
         {
             qCWarning(slideShowApp) << "No permission to write to:" << slidePath;
             qCWarning(slideShowApp) << "Please select a new data storage folder in settings.";
@@ -578,13 +578,13 @@ void SlideShowApp::dumpSlide(const Slide &slide)
             mime = "image/png";
         }
 
-        if (AndroidFileHelper::writeBinaryFile(slidePath, filename, slide.getRawData(), mime, m_dumpOverwrite))
+        if (AndroidFileHelper::instance().writeBinaryFile(slidePath, filename, slide.getRawData(), mime, m_dumpOverwrite))
         {
             qCInfo(slideShowApp) << "Slide saved to file:" << QString("%1/%2").arg(slidePath, filename);
         }
         else
         {
-            qCWarning(slideShowApp) << "Failed to save slide to file:" << AndroidFileHelper::lastError();
+            qCWarning(slideShowApp) << "Failed to save slide to file:" << AndroidFileHelper::instance().lastError();
         }
     }
 }

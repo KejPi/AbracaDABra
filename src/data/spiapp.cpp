@@ -379,29 +379,29 @@ void SPIApp::dumpFile(uint16_t decoderId, int transportId, QString contentName, 
         // prepend UA directory
         fileSubdir = QString("%1%2").arg(UA_DIR_NAME, fileSubdir);
 
-        const QString dataPath = AndroidFileHelper::buildSubdirPath(m_dumpPath, fileSubdir);
+        const QString dataPath = AndroidFileHelper::instance().buildSubdirPath(m_dumpPath, fileSubdir);
 
         // Ensure directory exists and is writable
-        if (!AndroidFileHelper::mkpath(m_dumpPath, fileSubdir))
+        if (!AndroidFileHelper::instance().mkpath(m_dumpPath, fileSubdir))
         {
-            qCWarning(spiApp) << "Failed to create slide export directory:" << AndroidFileHelper::lastError();
+            qCWarning(spiApp) << "Failed to create slide export directory:" << AndroidFileHelper::instance().lastError();
             return;
         }
 
-        if (!AndroidFileHelper::hasWritePermission(dataPath))
+        if (!AndroidFileHelper::instance().hasWritePermission(dataPath))
         {
             qCWarning(spiApp) << "No permission to write to:" << dataPath;
             qCWarning(spiApp) << "Please select a new data storage folder in settings.";
             return;
         }
 
-        if (AndroidFileHelper::writeBinaryFile(dataPath, filename, data, "application/octet-stream", m_dumpOverwrite))
+        if (AndroidFileHelper::instance().writeBinaryFile(dataPath, filename, data, "application/octet-stream", m_dumpOverwrite))
         {
             qCInfo(spiApp) << "Storing file:" << QString("%1/%2").arg(dataPath, filename);
         }
         else
         {
-            qCWarning(spiApp) << "Failed to file:" << AndroidFileHelper::lastError();
+            qCWarning(spiApp) << "Failed to file:" << AndroidFileHelper::instance().lastError();
         }
     }
 }

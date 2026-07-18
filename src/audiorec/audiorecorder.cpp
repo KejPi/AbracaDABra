@@ -293,16 +293,16 @@ void AudioRecorder::start()
     static const QRegularExpression regexp("[" + QRegularExpression::escape("/:*?\"<>|") + "]");
     if (nullptr == m_file)
     {
-        const QString recPath = AndroidFileHelper::buildSubdirPath(m_recordingPath, AUDIO_DIR_NAME);
+        const QString recPath = AndroidFileHelper::instance().buildSubdirPath(m_recordingPath, AUDIO_DIR_NAME);
 
         // Ensure directory exists and is writable
-        if (!AndroidFileHelper::mkpath(m_recordingPath, AUDIO_DIR_NAME))
+        if (!AndroidFileHelper::instance().mkpath(m_recordingPath, AUDIO_DIR_NAME))
         {
-            qCCritical(audioRecorder) << "Failed to create audio recording directory:" << AndroidFileHelper::lastError();
+            qCCritical(audioRecorder) << "Failed to create audio recording directory:" << AndroidFileHelper::instance().lastError();
             return;
         }
 
-        if (!AndroidFileHelper::hasWritePermission(recPath))
+        if (!AndroidFileHelper::instance().hasWritePermission(recPath))
         {
             qCCritical(audioRecorder) << "No permission to write to:" << recPath;
             qCCritical(audioRecorder) << "Please select a new data storage folder in settings.";
@@ -339,7 +339,7 @@ void AudioRecorder::start()
             }
         }
 
-        m_file = AndroidFileHelper::openFileForWriting(recPath, fileName, mimeType);
+        m_file = AndroidFileHelper::instance().openFileForWriting(recPath, fileName, mimeType);
         if (m_file)
         {
             qCInfo(audioRecorder) << "Recording file:" << fileName;

@@ -457,29 +457,29 @@ bool ServiceList::exportCSV(const QString &path, const QString &filename)
     }
 
     // Ensure path exists and writable
-    if (!AndroidFileHelper::mkpath(path))
+    if (!AndroidFileHelper::instance().mkpath(path))
     {
-        qCWarning(serviceList) << "Failed to create export directory:" << AndroidFileHelper::lastError();
+        qCWarning(serviceList) << "Failed to create export directory:" << AndroidFileHelper::instance().lastError();
         return false;
     }
 
-    if (AndroidFileHelper::isContentUri(path))
+    if (AndroidFileHelper::instance().isContentUri(path))
     {
         // No additional subdir, just ensure trailing encoding handled
-        if (!AndroidFileHelper::hasWritePermission(path))
+        if (!AndroidFileHelper::instance().hasWritePermission(path))
         {
             qCWarning(serviceList) << "No permission to write to:" << path;
             return false;
         }
     }
 
-    if (AndroidFileHelper::writeTextFile(path, filename, csvContent, "text/csv"))
+    if (AndroidFileHelper::instance().writeTextFile(path, filename, csvContent, "text/csv"))
     {
         qCInfo(serviceList) << "Service list exported to:" << QString("%1/%2").arg(path, filename);
     }
     else
     {
-        qCWarning(serviceList) << "Failed to save log CSV:" << AndroidFileHelper::lastError();
+        qCWarning(serviceList) << "Failed to save log CSV:" << AndroidFileHelper::instance().lastError();
         return false;
     }
     return true;

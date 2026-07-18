@@ -43,15 +43,21 @@
  * desktop platforms (using regular file paths) and on Android (using SAF for
  * content:// URIs and regular file operations for app-private storage).
  */
-class AndroidFileHelper
+class AndroidFileHelper : public QObject
 {
 public:
+    static AndroidFileHelper &instance()
+    {
+        static AndroidFileHelper instance;
+        return instance;
+    }
+
     /**
      * @brief Check if a path is an Android content URI that requires SAF handling.
      * @param path The path to check
      * @return true if the path is a content:// URI, false otherwise
      */
-    static bool isContentUri(const QString &path);
+    bool isContentUri(const QString &path);
 
     /**
      * @brief Take persistable URI permission for a tree URI.
@@ -63,7 +69,7 @@ public:
      * @param treeUri The tree URI from the folder picker
      * @return true if permission was successfully taken, false otherwise
      */
-    static bool takePersistablePermission(const QString &treeUri);
+    bool takePersistablePermission(const QString &treeUri);
 
     /**
      * @brief Check if the application has write permission to the given URI.
@@ -74,7 +80,7 @@ public:
      * @param treeUri The tree URI to check (typically from folder picker)
      * @return true if write permission is available, false otherwise
      */
-    static bool hasWritePermission(const QString &treeUri);
+    bool hasWritePermission(const QString &treeUri);
 
     /**
      * @brief Create nested directories under a base path/URI.
@@ -87,7 +93,7 @@ public:
      * @param relativePath Relative subdirectory path to create (e.g. "ensemble" or "a/b/c")
      * @return true if the directory exists or was created, false otherwise
      */
-    static bool mkpath(const QString &basePath, const QString &relativePath = QString());
+    bool mkpath(const QString &basePath, const QString &relativePath = QString());
 
     /**     * @brief Build a subdirectory path by appending a subdirectory to a base path.
      *
@@ -99,7 +105,7 @@ public:
      * @param subdir The subdirectory name to append (without leading/trailing slashes)
      * @return The combined path with proper encoding for content URIs or standard path separator for files
      */
-    static QString buildSubdirPath(const QString &basePath, const QString &subdir);
+    QString buildSubdirPath(const QString &basePath, const QString &subdir);
 
     /**     * @brief Write text content to a file.
      *
@@ -113,8 +119,8 @@ public:
      * @param overwriteExisting If true, overwrites existing files; if false, fails when file exists
      * @return true if the file was written successfully, false otherwise
      */
-    static bool writeTextFile(const QString &basePath, const QString &fileName, const QString &content, const QString &mimeType = "text/plain",
-                              bool overwriteExisting = true);
+    bool writeTextFile(const QString &basePath, const QString &fileName, const QString &content, const QString &mimeType = "text/plain",
+                       bool overwriteExisting = true);
 
     /**
      * @brief Write binary content to a file.
@@ -129,8 +135,8 @@ public:
      * @param overwriteExisting If true, overwrites existing files; if false, fails when file exists
      * @return true if the file was written successfully, false otherwise
      */
-    static bool writeBinaryFile(const QString &basePath, const QString &fileName, const QByteArray &data,
-                                const QString &mimeType = "application/octet-stream", bool overwriteExisting = true);
+    bool writeBinaryFile(const QString &basePath, const QString &fileName, const QByteArray &data,
+                         const QString &mimeType = "application/octet-stream", bool overwriteExisting = true);
 
     /**
      * @brief Open a file for continuous writing.
@@ -147,7 +153,7 @@ public:
      * @param mimeType The MIME type of the file (e.g., "text/csv")
      * @return QFile pointer opened for writing, or nullptr on failure
      */
-    static QFile *openFileForWriting(const QString &basePath, const QString &fileName, const QString &mimeType = "text/plain");
+    QFile *openFileForWriting(const QString &basePath, const QString &fileName, const QString &mimeType = "text/plain");
 
     /**
      * @brief Open a file for continuous binary writing using FILE* (C stdio).
@@ -167,29 +173,32 @@ public:
      * @param mimeType The MIME type of the file (e.g., "application/octet-stream")
      * @return FILE* opened for binary writing ("wb"), or nullptr on failure
      */
-    static FILE *openFileForWritingRaw(const QString &basePath, const QString &fileName, const QString &mimeType = "application/octet-stream");
+    FILE *openFileForWritingRaw(const QString &basePath, const QString &fileName, const QString &mimeType = "application/octet-stream");
 
     /**
      * @brief Get a human-readable error message for the last failed operation.
      * @return Error message string, or empty string if no error occurred
      */
-    static QString lastError();
+    QString lastError() const;
 
 private:
-    static QString s_lastError;
+    explicit AndroidFileHelper(QObject *parent = nullptr) : QObject(parent) {}
+
+    Q_DISABLE_COPY_MOVE(AndroidFileHelper)
+
+    QString m_lastError;
 
 #ifdef Q_OS_ANDROID
     /**
      * @brief Write content using Android SAF APIs (JNI call to Java helper).
      */
-    static bool writeUsingSAF(const QString &treeUri, const QString &fileName, const QString &content, const QString &mimeType,
-                              bool overwriteExisting);
+    bool writeUsingSAF(const QString &treeUri, const QString &fileName, const QString &content, const QString &mimeType, bool overwriteExisting);
 
     /**
      * @brief Write binary content using Android SAF APIs (JNI call to Java helper).
      */
-    static bool writeBinaryUsingSAF(const QString &treeUri, const QString &fileName, const QByteArray &data, const QString &mimeType,
-                                    bool overwriteExisting);
+    bool writeBinaryUsingSAF(const QString &treeUri, const QString &fileName, const QByteArray &data, const QString &mimeType,
+                             bool overwriteExisting);
 #endif
 };
 

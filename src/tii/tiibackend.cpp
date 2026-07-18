@@ -298,17 +298,17 @@ void TIIBackend::startStopLog()
 {
     if (isRecordingLog() == false)
     {
-        const QString tiiPath = AndroidFileHelper::buildSubdirPath(m_settings->dataStoragePath, TII_DIR_NAME);
+        const QString tiiPath = AndroidFileHelper::instance().buildSubdirPath(m_settings->dataStoragePath, TII_DIR_NAME);
 
         // Ensure directory exists and is writable
-        if (!AndroidFileHelper::mkpath(m_settings->dataStoragePath, TII_DIR_NAME))
+        if (!AndroidFileHelper::instance().mkpath(m_settings->dataStoragePath, TII_DIR_NAME))
         {
-            qCCritical(tii) << "Failed to create TII log directory:" << AndroidFileHelper::lastError();
+            qCCritical(tii) << "Failed to create TII log directory:" << AndroidFileHelper::instance().lastError();
             emit showInfoMessage(tr("Failed to create TII log directory"), -1);
             return;
         }
 
-        if (!AndroidFileHelper::hasWritePermission(tiiPath))
+        if (!AndroidFileHelper::instance().hasWritePermission(tiiPath))
         {
             qCCritical(tii) << "No permission to write to:" << tiiPath;
             qCCritical(tii) << "Please select a new data storage folder in settings.";
@@ -323,7 +323,7 @@ void TIIBackend::startStopLog()
             delete m_logFile;
         }
 
-        m_logFile = AndroidFileHelper::openFileForWriting(tiiPath, fileName, "text/csv");
+        m_logFile = AndroidFileHelper::instance().openFileForWriting(tiiPath, fileName, "text/csv");
         if (m_logFile)
         {
             qCInfo(tii) << "Recording TII log to:" << QString("%1/%2").arg(tiiPath, fileName);
@@ -362,7 +362,7 @@ void TIIBackend::startStopLog()
         }
         else
         {
-            qCCritical(tii) << "Unable to write TII log:" << AndroidFileHelper::lastError();
+            qCCritical(tii) << "Unable to write TII log:" << AndroidFileHelper::instance().lastError();
             emit showInfoMessage(tr("Failed to write TII log"), -1);
             setIsRecordingLog(false);
         }
