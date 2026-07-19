@@ -1140,7 +1140,11 @@ void RtlTcpWorker::requestStop()
     m_stopRequested = true;
     if (m_useNativeSocket && m_sock != INVALID_SOCKET)
     {  // force closing of the socket to interrupt blocking recv() call
+#if defined(_WIN32)
+        closesocket(m_sock);
+#else
         ::close(m_sock);
+#endif
     }
 }
 
