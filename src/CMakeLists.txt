@@ -514,6 +514,8 @@ if(HAVE_QTWIDGETS)
     )
 endif(HAVE_QTWIDGETS)
 
+target_link_libraries(${TARGET} PRIVATE ${ZLIB})
+
 if(APPLE)
     target_link_libraries(${TARGET} PRIVATE "-framework MediaPlayer")
 endif()

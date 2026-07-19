@@ -301,7 +301,7 @@ void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator ob
 
     if (m_dumpEna)
     {
-        dumpFile(decoderId, objIt->getId(), objIt->getContentName(), objIt->getBody());
+        dumpFile(decoderId, objIt->getId(), objIt->getContentName(), objIt->getBody(false));  // store compressed MOT object as it is
     }
 
     switch (objIt->getContentType())
