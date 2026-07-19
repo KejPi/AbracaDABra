@@ -429,7 +429,7 @@ void ServiceList::loadFromSettings(QSettings *settings)
     settings->endArray();
 }
 
-bool ServiceList::exportCSV(const QString &path, const QString &filename)
+void ServiceList::exportCSV(const QString &path, const QString &filename)
 {
     // Build CSV content
     QString csvContent;
@@ -456,33 +456,47 @@ bool ServiceList::exportCSV(const QString &path, const QString &filename)
         }
     }
 
-    // Ensure path exists and writable
-    if (!AndroidFileHelper::instance().mkpath(path))
+#if ASK_FOR_PERMISSION_IF_NEEDED
+    std::function<void(const QString &)> callback = [=](const QString &writePath)
     {
-        qCWarning(serviceList) << "Failed to create export directory:" << AndroidFileHelper::instance().lastError();
-        return false;
-    }
-
-    if (AndroidFileHelper::instance().isContentUri(path))
-    {
-        // No additional subdir, just ensure trailing encoding handled
-        if (!AndroidFileHelper::instance().hasWritePermission(path))
+        if (writePath.isEmpty())
         {
-            qCWarning(serviceList) << "No permission to write to:" << path;
-            return false;
+            qCWarning(serviceList) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
+            emit serviceListExported(false);
+            return;
         }
+
+        if (AndroidFileHelper::instance().writeTextFile(writePath, filename, csvContent, "text/csv"))
+        {
+            qCInfo(serviceList) << "Service list exported to:" << QString("%1/%2").arg(writePath, filename);
+            emit serviceListExported(true);
+        }
+        else
+        {
+            qCWarning(serviceList) << "Failed to save log CSV:" << AndroidFileHelper::instance().lastError();
+            emit serviceListExported(false);
+        }
+    };
+    AndroidFileHelper::instance().accessPath(path, "", callback);
+#else
+    const QString writePath = AndroidFileHelper::instance().getPath(path);
+    if (writePath.isEmpty())
+    {
+        qCWarning(serviceList) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
+        emit serviceListExported(false);
     }
 
-    if (AndroidFileHelper::instance().writeTextFile(path, filename, csvContent, "text/csv"))
+    if (AndroidFileHelper::instance().writeTextFile(writePath, filename, csvContent, "text/csv"))
     {
-        qCInfo(serviceList) << "Service list exported to:" << QString("%1/%2").arg(path, filename);
+        qCInfo(serviceList) << "Service list exported to:" << QString("%1/%2").arg(writePath, filename);
+        emit serviceListExported(true);
     }
     else
     {
         qCWarning(serviceList) << "Failed to save log CSV:" << AndroidFileHelper::instance().lastError();
-        return false;
+        emit serviceListExported(false);
     }
-    return true;
+#endif
 }
 
 // this marks all services as obsolete

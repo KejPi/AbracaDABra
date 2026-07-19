@@ -32,6 +32,8 @@
 #include <QString>
 #include <cstdio>
 
+#define ASK_FOR_PERMISSION_IF_NEEDED 1
+
 /**
  * @brief Helper class for Android Storage Access Framework (SAF) file operations.
  *
@@ -45,6 +47,7 @@
  */
 class AndroidFileHelper : public QObject
 {
+    Q_OBJECT
 public:
     static AndroidFileHelper &instance()
     {
@@ -72,18 +75,26 @@ public:
     bool takePersistablePermission(const QString &treeUri);
 
     /**
-     * @brief Check if the application has write permission to the given URI.
+     * @brief Access a path, requesting permissions if needed (Android SAF).
      *
-     * This method is only relevant for Android content:// URIs. For regular
-     * file paths, it always returns true (actual permission check happens at write time).
+     * If the basePath is a content:// URI, this will check if we have permission to write to it.
+     * If not, it will emit requestPermissions() signal to ask the user for permission.
+     * If permission is granted, it will call the callback with the resolved path.
      *
-     * @param treeUri The tree URI to check (typically from folder picker)
-     * @return true if write permission is available, false otherwise
+     * @param basePath Base directory or tree URI (e.g. dataStoragePath)
+     * @param relativePath Relative subdirectory path to access (e.g. "ensemble" or "a/b/c")
+     * @param callback Optional callback function to be called with the resolved path once access is granted
      */
-    bool hasWritePermission(const QString &treeUri);
+    void accessPath(const QString &basePath, const QString &relativePath, std::function<void(const QString &)> callback = nullptr);
 
     /**
-     * @brief Create nested directories under a base path/URI.
+     * @brief This method shall be called when access it granted, method will call the callback function if it was provided in accessPath() method.
+     * @param basePath Base directory or tree URI (e.g. dataStoragePath) that user selected and granted permissions
+     */
+    void pathGranted(const QString &basePath);
+
+    /**
+     * @brief Create nested directories under a base path/URI, ask for permissions if needed (Android SAF).
      *
      * For regular file paths this mirrors QDir::mkpath(). For Android SAF
      * content:// URIs it will ensure the tree is writable and create the
@@ -91,21 +102,9 @@ public:
      *
      * @param basePath Base directory or tree URI (e.g. dataStoragePath)
      * @param relativePath Relative subdirectory path to create (e.g. "ensemble" or "a/b/c")
-     * @return true if the directory exists or was created, false otherwise
+     * @return path string if the directory exists or was created, empty string otherwise
      */
-    bool mkpath(const QString &basePath, const QString &relativePath = QString());
-
-    /**     * @brief Build a subdirectory path by appending a subdirectory to a base path.
-     *
-     * On Android with content:// URIs, this properly handles percent-encoding of the
-     * subdirectory and URI separator encoding. For regular file paths, uses standard
-     * path concatenation with forward slashes.
-     *
-     * @param basePath The base path/URI (may be content:// URI or file system path)
-     * @param subdir The subdirectory name to append (without leading/trailing slashes)
-     * @return The combined path with proper encoding for content URIs or standard path separator for files
-     */
-    QString buildSubdirPath(const QString &basePath, const QString &subdir);
+    QString getPath(const QString &basePath, const QString &relativePath = QString());
 
     /**     * @brief Write text content to a file.
      *
@@ -181,12 +180,55 @@ public:
      */
     QString lastError() const;
 
+signals:
+    void requestPermissions(const QString &basePath);
+
 private:
     explicit AndroidFileHelper(QObject *parent = nullptr) : QObject(parent) {}
 
     Q_DISABLE_COPY_MOVE(AndroidFileHelper)
 
     QString m_lastError;
+
+    // These members are used to store the pending access request state when permissions are needed.
+    QString m_relativePath;
+    std::function<void(const QString &)> m_callback;
+
+    /**
+     * @brief Check if the application has write permission to the given URI.
+     *
+     * This method is only relevant for Android content:// URIs. For regular
+     * file paths, it always returns true (actual permission check happens at write time).
+     *
+     * @param treeUri The tree URI to check (typically from folder picker)
+     * @return true if write permission is available, false otherwise
+     */
+    bool hasWritePermission(const QString &treeUri);
+
+    /**
+     * @brief Create nested directories under a base path/URI.
+     *
+     * For regular file paths this mirrors QDir::mkpath(). For Android SAF
+     * content:// URIs it will ensure the tree is writable and create the
+     * subdirectory structure using SAF APIs.
+     *
+     * @param basePath Base directory or tree URI (e.g. dataStoragePath)
+     * @param relativePath Relative subdirectory path to create (e.g. "ensemble" or "a/b/c")
+     * @return true if the directory exists or was created, false otherwise
+     */
+    bool mkpath(const QString &basePath, const QString &relativePath = QString());
+
+    /**     * @brief Build a subdirectory path by appending a subdirectory to a base path.
+     *
+     * On Android with content:// URIs, this properly handles percent-encoding of the
+     * subdirectory and URI separator encoding. For regular file paths, uses standard
+     * path concatenation with forward slashes.
+     *
+     * @param basePath The base path/URI (may be content:// URI or file system path)
+     * @param subdir The subdirectory name to append (without leading/trailing slashes)
+     * @return The combined path with proper encoding for content URIs or standard path separator for files
+     */
+    QString buildSubdirPath(const QString &basePath, const QString &subdir);
 
 #ifdef Q_OS_ANDROID
     /**

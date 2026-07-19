@@ -303,6 +303,7 @@ public:
     Q_INVOKABLE void setAndroidNavigationBar();
     Q_INVOKABLE void setAndroidKeepScreenOn(bool enable);
     Q_INVOKABLE void deleteEnsembleFromServiceList(int id, const QString &channelName);
+    Q_INVOKABLE void permissionsGranted(const QUrl &path);
 
     bool eventFilter(QObject *obj, QEvent *event) override;
 
@@ -342,6 +343,7 @@ signals:
     void applicationQuitEvent();
     void showInfoMessage(const QString &message, int type);
     void requestActivate();
+    void requestPermissions(const QString &basePath);
 
 private:
     enum Instance

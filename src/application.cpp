@@ -129,6 +129,8 @@
 #endif
 
 #ifdef Q_OS_ANDROID
+#include "androidfilehelper.h"
+
 // Static instance pointer for JNI callbacks (set in constructor, cleared in destructor)
 static Application *s_appInstance = nullptr;
 
@@ -291,6 +293,7 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
         env.registerNativeMethods("org/qtproject/abracadabra/AudioServiceHelper", methods, 3);
     }
     s_appInstance = this;
+    connect(&AndroidFileHelper::instance(), &AndroidFileHelper::requestPermissions, this, &Application::requestPermissions, Qt::QueuedConnection);
 #endif
 
     connect(m_ui, &ApplicationUI::isSystemDarkModeChanged, this, &Application::setColorTheme);
@@ -434,6 +437,18 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_serviceList, &ServiceList::serviceRemovedFromEnsemble, m_slTreeModel, &SLTreeModel::removeEnsembleService);
     connect(m_serviceList, &ServiceList::ensembleRemoved, m_slTreeModel, &SLTreeModel::removeEnsemble);
     connect(m_serviceList, &ServiceList::ensembleRemoved, this, &Application::populateServiceSourcesMenu);
+    connect(m_serviceList, &ServiceList::serviceListExported, this,
+            [this](bool status)
+            {
+                if (status)
+                {
+                    emit showInfoMessage(tr("Service list exported"), 1);
+                }
+                else
+                {
+                    emit showInfoMessage(tr("Failed to export service list"), -1);
+                }
+            });
 
     connect(m_slTreeSelectionModel, &QItemSelectionModel::selectionChanged, this, &Application::onServiceListTreeSelection);
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
@@ -4341,6 +4356,16 @@ void Application::deleteEnsembleFromServiceList(int id, const QString &channelNa
     }
 }
 
+void Application::permissionsGranted(const QUrl &path)
+{
+#ifdef Q_OS_ANDROID
+    qCInfo(application) << "Permissions granted for path:" << path;
+    m_settingsBackend->selectDataStoragePath(path);
+
+    AndroidFileHelper::instance().pathGranted(m_settingsBackend->dataStoragePath());
+#endif
+}
+
 void Application::updateAndroidNotification(const QString &title, const QString &text)
 {
 #ifdef Q_OS_ANDROID
@@ -4657,14 +4682,7 @@ void Application::exportServiceList()
 {
     QString fileName = QString("servicelist_%1.csv").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
 
-    if (m_serviceList->exportCSV(m_settings->dataStoragePath, fileName))
-    {
-        emit showInfoMessage(tr("Service list exported"), 1);
-    }
-    else
-    {
-        emit showInfoMessage(tr("Failed to export service list"), -1);
-    }
+    m_serviceList->exportCSV(m_settings->dataStoragePath, fileName);
 }
 
 void Application::clearServiceList()

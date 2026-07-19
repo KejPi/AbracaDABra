@@ -29,6 +29,7 @@
 //import QtQuick.Controls.Imagine
 import QtQuick.Controls.Basic
 import QtQuick
+import QtQuick.Dialogs
 import QtQuick.Layouts
 
 import abracaComponents
@@ -331,6 +332,38 @@ ApplicationWindow {
             dialogLoader.active = true;
         }
     }
+    Connections {
+        target: application
+        function onRequestPermissions(storagePath) {
+            // store requested storage path in the loader and show the storage access dialog
+            dirDialogLoader.dirpath = storagePath;
+
+            // show message dialog
+            dialogLoader.sourceComponent = storageAccessComponent;
+            dialogLoader.active = true;
+        }
+    }
+
+    Loader {
+        id: dirDialogLoader
+        property string dirpath: ""
+        asynchronous: true
+        active: false
+        onLoaded: item.open()
+        sourceComponent: FolderDialog {
+            id: dirDialog
+            title: qsTr("Data storage folder")
+            options: FileDialog.DontResolveSymlinks
+            currentFolder: dirDialogLoader.dirpath
+            onAccepted: {
+                application.permissionsGranted(selectedFolder)
+                dirDialogLoader.active = false
+            }
+            onRejected: {
+                dirDialogLoader.active = false
+            }
+        }
+    }
 
     Loader {
         id: dialogLoader
@@ -374,6 +407,18 @@ ApplicationWindow {
                 settingsBackend.isCheckForUpdatesEnabled = false;
                 dialogLoader.active = false;
             }
+        }
+    }
+    Component {
+        id: storageAccessComponent
+        StorageAccessDialog {
+            id: storageAccessDialog
+            onAccepted: {
+                dialogLoader.active = false;                
+                dirDialogLoader.active = true;
+            }
+            onRejected: dialogLoader.active = false
+            onClosed: dialogLoader.active = false
         }
     }
     Component {

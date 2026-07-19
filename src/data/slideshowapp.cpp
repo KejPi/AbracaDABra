@@ -555,20 +555,36 @@ void SlideShowApp::dumpSlide(const Slide &slide)
 
         // prepend UA directory
         fileSubdir = QString("%1%2").arg(UA_DIR_NAME, fileSubdir);
-
-        const QString slidePath = AndroidFileHelper::instance().buildSubdirPath(m_dumpPath, fileSubdir);
-
-        // Ensure directory exists and is writable
-        if (!AndroidFileHelper::instance().mkpath(m_dumpPath, fileSubdir))
+#if ASK_FOR_PERMISSION_IF_NEEDED
+        std::function<void(const QString &)> callback = [=](const QString &slidePath)
         {
-            qCWarning(slideShowApp) << "Failed to create slide export directory:" << AndroidFileHelper::instance().lastError();
-            return;
-        }
+            if (slidePath.isEmpty())
+            {
+                qCWarning(slideShowApp) << "Error creating slide export directory:" << AndroidFileHelper::instance().lastError();
+                return;
+            }
 
-        if (!AndroidFileHelper::instance().hasWritePermission(slidePath))
+            QString mime = "image/jpeg";
+            if (slide.getFormat() == "PNG")
+            {
+                mime = "image/png";
+            }
+
+            if (AndroidFileHelper::instance().writeBinaryFile(slidePath, filename, slide.getRawData(), mime, m_dumpOverwrite))
+            {
+                qCInfo(slideShowApp) << "Slide saved to file:" << QString("%1/%2").arg(slidePath, filename);
+            }
+            else
+            {
+                qCWarning(slideShowApp) << "Failed to save slide to file:" << AndroidFileHelper::instance().lastError();
+            }
+        };
+        AndroidFileHelper::instance().accessPath(m_dumpPath, fileSubdir, callback);
+#else
+        const QString slidePath = AndroidFileHelper::instance().getPath(m_dumpPath, fileSubdir);
+        if (slidePath.isEmpty())
         {
-            qCWarning(slideShowApp) << "No permission to write to:" << slidePath;
-            qCWarning(slideShowApp) << "Please select a new data storage folder in settings.";
+            qCWarning(slideShowApp) << "Error creating slide export directory:" << AndroidFileHelper::instance().lastError();
             return;
         }
 
@@ -586,6 +602,7 @@ void SlideShowApp::dumpSlide(const Slide &slide)
         {
             qCWarning(slideShowApp) << "Failed to save slide to file:" << AndroidFileHelper::instance().lastError();
         }
+#endif
     }
 }
 

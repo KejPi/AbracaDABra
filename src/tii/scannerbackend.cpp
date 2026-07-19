@@ -261,30 +261,41 @@ void ScannerBackend::saveJSON()
     root["utc"] = m_settings->tii.timestampInUTC;
     root["data"] = m_model->toJson();
 
-    // qDebug() << qPrintable(QJsonDocument(root).toJson(QJsonDocument::Indented));
     // Ensure path exists and writable
-    const QString basePath = AndroidFileHelper::instance().buildSubdirPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
-    if (!AndroidFileHelper::instance().mkpath(basePath))
+#if ASK_FOR_PERMISSION_IF_NEEDED
+    std::function<void(const QString &)> callback = [=](const QString &basePath)
     {
-        qCWarning(scanner) << "Failed to create export directory:" << AndroidFileHelper::instance().lastError();
+        if (basePath.isEmpty())
+        {
+            qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to save JSON"), -1);
+            return;
+        }
+
+        if (AndroidFileHelper::instance().writeTextFile(basePath, fileName, QJsonDocument(root).toJson(QJsonDocument::Indented), "text/json"))
+        {
+            qCInfo(scanner) << "JSON saved to:" << QString("%1/%2").arg(basePath, fileName);
+            emit showInfoMessage(tr("Data saved to JSON file"), 1);
+        }
+        else
+        {
+            qCWarning(scanner) << "Failed to save scanner JSON:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to save scanner JSON"), -1);
+        }
+    };
+    AndroidFileHelper::instance().accessPath(m_settings->dataStoragePath, SCANNER_DIR_NAME, callback);
+#else
+    const QString basePath = AndroidFileHelper::instance().getPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
+    if (basePath.isEmpty())
+    {
+        qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
         emit showInfoMessage(tr("Failed to save JSON"), -1);
         return;
     }
 
-    QString targetBase = basePath;
-    if (AndroidFileHelper::instance().isContentUri(basePath))
+    if (AndroidFileHelper::instance().writeTextFile(basePath, fileName, QJsonDocument(root).toJson(QJsonDocument::Indented), "text/json"))
     {
-        // No additional subdir, just ensure trailing encoding handled
-        if (!AndroidFileHelper::instance().hasWritePermission(basePath))
-        {
-            qCWarning(scanner) << "No permission to write to:" << basePath;
-            return;
-        }
-    }
-
-    if (AndroidFileHelper::instance().writeTextFile(targetBase, fileName, QJsonDocument(root).toJson(QJsonDocument::Indented), "text/json"))
-    {
-        qCInfo(scanner) << "JSON saved to:" << QString("%1/%2").arg(targetBase, fileName);
+        qCInfo(scanner) << "JSON saved to:" << QString("%1/%2").arg(basePath, fileName);
         emit showInfoMessage(tr("Data saved to JSON file"), 1);
     }
     else
@@ -292,6 +303,7 @@ void ScannerBackend::saveJSON()
         qCWarning(scanner) << "Failed to save scanner JSON:" << AndroidFileHelper::instance().lastError();
         emit showInfoMessage(tr("Failed to save scanner JSON"), -1);
     }
+#endif
 }
 
 CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
@@ -734,28 +746,40 @@ void ScannerBackend::saveToFileCSV(const QString &fileName)
     out.flush();
 
     // Ensure path exists and writable
-    const QString basePath = AndroidFileHelper::instance().buildSubdirPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
-    if (!AndroidFileHelper::instance().mkpath(basePath))
+#if ASK_FOR_PERMISSION_IF_NEEDED
+    std::function<void(const QString &)> callback = [=](const QString &basePath)
     {
-        qCWarning(scanner) << "Failed to create export directory:" << AndroidFileHelper::instance().lastError();
+        if (basePath.isEmpty())
+        {
+            qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to save log"), -1);
+            return;
+        }
+
+        if (AndroidFileHelper::instance().writeTextFile(basePath, fileName, csvContent, "text/csv"))
+        {
+            qCInfo(scanner) << "Log CSV saved to:" << QString("%1/%2").arg(basePath, fileName);
+            emit showInfoMessage(tr("Log saved to CSV file"), 1);
+        }
+        else
+        {
+            qCWarning(scanner) << "Failed to save log CSV:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to save log"), -1);
+        }
+    };
+    AndroidFileHelper::instance().accessPath(m_settings->dataStoragePath, SCANNER_DIR_NAME, callback);
+#else
+    const QString basePath = AndroidFileHelper::instance().getPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
+    if (basePath.isEmpty())
+    {
+        qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
         emit showInfoMessage(tr("Failed to save log"), -1);
         return;
     }
 
-    QString targetBase = basePath;
-    if (AndroidFileHelper::instance().isContentUri(basePath))
+    if (AndroidFileHelper::instance().writeTextFile(basePath, fileName, csvContent, "text/csv"))
     {
-        // No additional subdir, just ensure trailing encoding handled
-        if (!AndroidFileHelper::instance().hasWritePermission(basePath))
-        {
-            qCWarning(scanner) << "No permission to write to:" << basePath;
-            return;
-        }
-    }
-
-    if (AndroidFileHelper::instance().writeTextFile(targetBase, fileName, csvContent, "text/csv"))
-    {
-        qCInfo(scanner) << "Log CSV saved to:" << QString("%1/%2").arg(targetBase, fileName);
+        qCInfo(scanner) << "Log CSV saved to:" << QString("%1/%2").arg(basePath, fileName);
         emit showInfoMessage(tr("Log saved to CSV file"), 1);
     }
     else
@@ -763,6 +787,7 @@ void ScannerBackend::saveToFileCSV(const QString &fileName)
         qCWarning(scanner) << "Failed to save log CSV:" << AndroidFileHelper::instance().lastError();
         emit showInfoMessage(tr("Failed to save log"), -1);
     }
+#endif
 }
 
 void ScannerBackend::startAutoSaveCsv()
@@ -773,23 +798,73 @@ void ScannerBackend::startAutoSaveCsv()
                                                                              : QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
 
     // Ensure path exists and writable
-    const QString basePath = AndroidFileHelper::instance().buildSubdirPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
-    if (!AndroidFileHelper::instance().mkpath(basePath))
+#if ASK_FOR_PERMISSION_IF_NEEDED
+    std::function<void(const QString &)> callback = [=](const QString &basePath)
     {
-        qCWarning(scanner) << "Failed to create export directory:" << AndroidFileHelper::instance().lastError();
-        emit showInfoMessage(tr("Failed to save log"), -1);
-        return;
-    }
-
-    if (AndroidFileHelper::instance().isContentUri(basePath))
-    {
-        // No additional subdir, just ensure trailing encoding handled
-        if (!AndroidFileHelper::instance().hasWritePermission(basePath))
+        if (basePath.isEmpty())
         {
-            qCWarning(scanner) << "No permission to write to:" << basePath;
-            emit showInfoMessage(tr("No permission to write log"), -1);
+            qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to save log"), -1);
             return;
         }
+
+        m_autoSaveFile = AndroidFileHelper::instance().openFileForWriting(basePath, fileName, "text/csv");
+        if (m_autoSaveFile == nullptr)
+        {
+            qCWarning(scanner) << "Failed to open auto-save file:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to save log"), -1);
+            return;
+        }
+
+        if (m_settings->tii.headersInEnglish)
+        {
+            m_autoSaveExportRole = m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTCEnglish
+                                                                  : TxTableModel::TxTableModelRoles::ExportRoleEnglish;
+        }
+        else
+        {
+            m_autoSaveExportRole =
+                m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
+        }
+        m_autoSaveLastCol = m_settings->tii.saveCoordinates ? TxTableModel::LastColumn : TxTableModel::LastColumnWithoutCoordinates;
+
+        // Write header
+        QTextStream out(m_autoSaveFile);
+        bool firstCol = true;
+        for (int col = 0; col <= m_autoSaveLastCol; ++col)
+        {
+            if (m_sortedFilteredModel->rfLevelFilter() && col == TxTableModel::ColRfLevel)
+            {
+                continue;
+            }
+            if (!firstCol)
+            {
+                out << ";";
+            }
+            firstCol = false;
+            out << m_model->headerData(col, Qt::Horizontal, m_autoSaveExportRole).toString();
+        }
+        out << Qt::endl;
+        out.flush();
+        m_autoSaveFile->flush();
+
+        // If model already has rows (clearOnStart == false), write them now
+        if (m_model->rowCount() > 0)
+        {
+            appendAutoSaveRows(0, m_model->rowCount() - 1);
+        }
+
+        qCInfo(scanner) << "Auto-save CSV started:" << fileName;
+        emit showInfoMessage(tr("Auto-save CSV started"), 0);
+    };
+    AndroidFileHelper::instance().accessPath(m_settings->dataStoragePath, SCANNER_DIR_NAME, callback);
+#else
+    const QString basePath = AndroidFileHelper::instance().getPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
+    if (basePath.isEmpty())
+    {
+        qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
+        emit showInfoMessage(tr("Failed to save log"), -1);
+        return;
     }
 
     m_autoSaveFile = AndroidFileHelper::instance().openFileForWriting(basePath, fileName, "text/csv");
@@ -840,6 +915,7 @@ void ScannerBackend::startAutoSaveCsv()
 
     qCInfo(scanner) << "Auto-save CSV started:" << fileName;
     emit showInfoMessage(tr("Auto-save CSV started"), 0);
+#endif
 }
 
 void ScannerBackend::appendAutoSaveRows(int firstRow, int lastRow)
@@ -1297,19 +1373,37 @@ void ScannerBackend::saveEnsembleCSV(int srcModelRow)
     ensemblename.replace(regexp, "_");
     uint32_t frequency = item.ensId().freq();
 
-    const QString ensemblePath = AndroidFileHelper::instance().buildSubdirPath(m_settings->dataStoragePath, ENSEMBLE_DIR_NAME);
-
-    if (!AndroidFileHelper::instance().mkpath(m_settings->dataStoragePath, ENSEMBLE_DIR_NAME))
+#if ASK_FOR_PERMISSION_IF_NEEDED
+    std::function<void(const QString &)> callback = [=](const QString &ensemblePath)
     {
-        qCWarning(scanner) << "Failed to create ensemble export directory:" << AndroidFileHelper::instance().lastError();
-        return;
-    }
+        if (ensemblePath.isEmpty())
+        {
+            qCWarning(scanner) << "Error creating ensemble export directory:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to export ensemble information"), -1);
+            return;
+        }
 
-    if (!AndroidFileHelper::instance().hasWritePermission(ensemblePath))
+        const QString fileName =
+            QString("%1_%2_%3.csv").arg(item.rxTime().toString("yyyy-MM-dd_hhmmss"), DabTables::channelList.value(frequency), ensemblename);
+
+        if (AndroidFileHelper::instance().writeTextFile(ensemblePath, fileName, item.ensConfigCSV(), "text/csv"))
+        {
+            qCInfo(scanner) << "Ensemble CSV exported to:" << ensemblePath << "/" << fileName;
+            emit showInfoMessage(tr("Ensemble information exported"), 1);
+        }
+        else
+        {
+            qCWarning(scanner) << "Failed to export ensemble CSV:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to export ensemble information"), -1);
+        }
+    };
+    AndroidFileHelper::instance().accessPath(m_settings->dataStoragePath, ENSEMBLE_DIR_NAME, callback);
+#else
+    const QString ensemblePath = AndroidFileHelper::instance().getPath(m_settings->dataStoragePath, ENSEMBLE_DIR_NAME);
+    if (ensemblePath.isEmpty())
     {
-        qCWarning(scanner) << "No permission to write to:" << ensemblePath;
-        emit showInfoMessage(tr("No permission to write ensemble information"), -1);
-
+        qCWarning(scanner) << "Error creating ensemble export directory:" << AndroidFileHelper::instance().lastError();
+        emit showInfoMessage(tr("Failed to export ensemble information"), -1);
         return;
     }
 
@@ -1326,6 +1420,7 @@ void ScannerBackend::saveEnsembleCSV(int srcModelRow)
         qCWarning(scanner) << "Failed to export ensemble CSV:" << AndroidFileHelper::instance().lastError();
         emit showInfoMessage(tr("Failed to export ensemble information"), -1);
     }
+#endif
 }
 
 void ScannerBackend::setIsActive(bool isActive)

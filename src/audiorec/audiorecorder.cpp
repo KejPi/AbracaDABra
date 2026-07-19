@@ -293,19 +293,80 @@ void AudioRecorder::start()
     static const QRegularExpression regexp("[" + QRegularExpression::escape("/:*?\"<>|") + "]");
     if (nullptr == m_file)
     {
-        const QString recPath = AndroidFileHelper::instance().buildSubdirPath(m_recordingPath, AUDIO_DIR_NAME);
-
-        // Ensure directory exists and is writable
-        if (!AndroidFileHelper::instance().mkpath(m_recordingPath, AUDIO_DIR_NAME))
+#if ASK_FOR_PERMISSION_IF_NEEDED
+        std::function<void(const QString &)> callback = [=](const QString &recPath)
         {
-            qCCritical(audioRecorder) << "Failed to create audio recording directory:" << AndroidFileHelper::instance().lastError();
-            return;
-        }
+            // calling this in queued connection to avoid calling from the callback thread (which is not the AudioRecorder thread)
+            QMetaObject::invokeMethod(
+                this,
+                [this, recPath]()
+                {
+                    if (recPath.isEmpty())
+                    {
+                        qCCritical(audioRecorder) << "Error creating audio recording directory:" << AndroidFileHelper::instance().lastError();
+                        return;
+                    }
 
-        if (!AndroidFileHelper::instance().hasWritePermission(recPath))
+                    QString servicename = m_serviceName;
+                    servicename.replace(regexp, "_");
+
+                    QString fileName = QString("%1_%2_%3")
+                                           .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd-hhmmss"),
+                                                QString("%1").arg(m_sid.value(), 6, 16, QChar('0')).toUpper(), servicename);
+
+                    QString mimeType;
+                    if (m_doOutputRecording)
+                    {
+                        fileName += ".wav";
+                        mimeType = "audio/wav";
+                        m_recordingState = RecordingState::RecordingWav;
+                    }
+                    else
+                    {
+                        if (m_isAAC)
+                        {
+                            fileName += ".aac";
+                            mimeType = "audio/aac";
+                            m_recordingState = RecordingState::RecordingAAC;
+                        }
+                        else
+                        {
+                            fileName += ".mp2";
+                            mimeType = "audio/mpeg";
+                            m_recordingState = RecordingState::RecordingMP2;
+                        }
+                    }
+
+                    m_file = AndroidFileHelper::instance().openFileForWriting(recPath, fileName, mimeType);
+                    if (m_file)
+                    {
+                        qCInfo(audioRecorder) << "Recording file:" << fileName;
+                        m_bytesWritten = 0;
+                        m_timeWrittenMs = 0;
+                        m_timeSec = 0;
+                        if (m_doOutputRecording)
+                        {  // reserving WAV header space
+                            m_file->write(QByteArray(44, '\x55'));
+                        }
+                        emit recordingStarted(recPath, fileName);
+                    }
+                    else
+                    {
+                        qCCritical(audioRecorder) << "Unable to open file:" << fileName;
+                        delete m_file;
+                        m_file = nullptr;
+                        m_recordingState = RecordingState::Stopped;
+                        emit recordingStopped();
+                    }
+                },
+                Qt::QueuedConnection);
+        };
+        AndroidFileHelper::instance().accessPath(m_recordingPath, AUDIO_DIR_NAME, callback);
+#else
+        const QString recPath = AndroidFileHelper::instance().getPath(m_recordingPath, AUDIO_DIR_NAME);
+        if (recPath.isEmpty())
         {
-            qCCritical(audioRecorder) << "No permission to write to:" << recPath;
-            qCCritical(audioRecorder) << "Please select a new data storage folder in settings.";
+            qCCritical(audioRecorder) << "Error creating audio recording directory:" << AndroidFileHelper::instance().lastError();
             return;
         }
 
@@ -360,6 +421,7 @@ void AudioRecorder::start()
             m_recordingState = RecordingState::Stopped;
             emit recordingStopped();
         }
+#endif
     }
     else
     { /* file is already opened */

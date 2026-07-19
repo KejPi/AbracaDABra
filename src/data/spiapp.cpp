@@ -379,19 +379,30 @@ void SPIApp::dumpFile(uint16_t decoderId, int transportId, QString contentName, 
         // prepend UA directory
         fileSubdir = QString("%1%2").arg(UA_DIR_NAME, fileSubdir);
 
-        const QString dataPath = AndroidFileHelper::instance().buildSubdirPath(m_dumpPath, fileSubdir);
-
-        // Ensure directory exists and is writable
-        if (!AndroidFileHelper::instance().mkpath(m_dumpPath, fileSubdir))
+#if ASK_FOR_PERMISSION_IF_NEEDED
+        std::function<void(const QString &)> callback = [=](const QString &dataPath)
         {
-            qCWarning(spiApp) << "Failed to create slide export directory:" << AndroidFileHelper::instance().lastError();
-            return;
-        }
+            if (dataPath.isEmpty())
+            {
+                qCWarning(spiApp) << "Error creating slide export directory:" << AndroidFileHelper::instance().lastError();
+                return;
+            }
 
-        if (!AndroidFileHelper::instance().hasWritePermission(dataPath))
+            if (AndroidFileHelper::instance().writeBinaryFile(dataPath, filename, data, "application/octet-stream", m_dumpOverwrite))
+            {
+                qCInfo(spiApp) << "Storing file:" << QString("%1/%2").arg(dataPath, filename);
+            }
+            else
+            {
+                qCWarning(spiApp) << "Failed to file:" << AndroidFileHelper::instance().lastError();
+            }
+        };
+        AndroidFileHelper::instance().accessPath(m_dumpPath, fileSubdir, callback);
+#else
+        const QString dataPath = AndroidFileHelper::instance().getPath(m_dumpPath, fileSubdir);
+        if (dataPath.isEmpty())
         {
-            qCWarning(spiApp) << "No permission to write to:" << dataPath;
-            qCWarning(spiApp) << "Please select a new data storage folder in settings.";
+            qCWarning(spiApp) << "Error creating slide export directory:" << AndroidFileHelper::instance().lastError();
             return;
         }
 
@@ -403,6 +414,7 @@ void SPIApp::dumpFile(uint16_t decoderId, int transportId, QString contentName, 
         {
             qCWarning(spiApp) << "Failed to file:" << AndroidFileHelper::instance().lastError();
         }
+#endif
     }
 }
 

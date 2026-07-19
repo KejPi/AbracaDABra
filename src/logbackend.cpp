@@ -34,6 +34,7 @@
 #include <QString>
 #include <QUrl>
 
+#include "androidfilehelper.h"
 #include "settings.h"
 
 Q_DECLARE_LOGGING_CATEGORY(application)
@@ -55,25 +56,64 @@ void LogBackend::setupDarkMode(bool darkModeEna)
 
 void LogBackend::saveLogToFile()
 {
-    auto localFile =
-        QString("%1/%2_%3.log")
-            .arg(m_settings->dataStoragePath, QCoreApplication::applicationName(), QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
-    QFile logFile(localFile);
-    if (!logFile.open(QIODevice::WriteOnly))
+    auto fileName = QString("%2_%3.log").arg(QCoreApplication::applicationName(), QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
+
+#if ASK_FOR_PERMISSION_IF_NEEDED
+    std::function<void(const QString &)> callback = [=](const QString &logPath)
     {
-        qCCritical(application) << "Unable to open file: " << localFile;
+        if (logPath.isEmpty())
+        {
+            qCWarning(application) << "Error creating log export directory:" << AndroidFileHelper::instance().lastError();
+            return;
+        }
+
+        QFile *logFile = AndroidFileHelper::instance().openFileForWriting(logPath, fileName, "text/plain");
+        if (logFile)
+        {
+            QTextStream stream(logFile);
+            for (int n = 0; n < m_logModel->rowCount(); ++n)
+            {
+                stream << m_logModel->data(m_logModel->index(n, 0)).toString() << Qt::endl;
+            }
+            stream.flush();
+            logFile->close();
+            delete logFile;
+
+            qCInfo(application) << "Log file exported: " << QString("%1/%2").arg(logPath, fileName);
+        }
+        else
+        {
+            qCCritical(application) << "Unable to open file: " << QString("%1/%2").arg(logPath, fileName);
+        }
+    };
+    AndroidFileHelper::instance().accessPath(m_settings->dataStoragePath, QString{}, callback);
+#else
+    const QString logPath = AndroidFileHelper::instance().getPath(m_settings->dataStoragePath, QString{});
+    if (logPath.isEmpty())
+    {
+        qCWarning(application) << "Error creating log export directory:" << AndroidFileHelper::instance().lastError();
         return;
     }
 
-    qCInfo(application) << "Writing log to:" << localFile;
-
-    QTextStream stream(&logFile);
-    for (int n = 0; n < m_logModel->rowCount(); ++n)
+    QFile *logFile = AndroidFileHelper::instance().openFileForWriting(logPath, fileName, "text/plain");
+    if (logFile)
     {
-        stream << m_logModel->data(m_logModel->index(n, 0)).toString() << Qt::endl;
+        QTextStream stream(logFile);
+        for (int n = 0; n < m_logModel->rowCount(); ++n)
+        {
+            stream << m_logModel->data(m_logModel->index(n, 0)).toString() << Qt::endl;
+        }
+        stream.flush();
+        logFile->close();
+        delete logFile;
+
+        qCInfo(application) << "Log file exported: " << QString("%1/%2").arg(m_settings->dataStoragePath, fileName);
     }
-    stream.flush();
-    logFile.close();
+    else
+    {
+        qCCritical(application) << "Unable to open file: " << QString("%1/%2").arg(m_settings->dataStoragePath, fileName);
+    }
+#endif
 }
 
 void LogBackend::copyToClipboard()

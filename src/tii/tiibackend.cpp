@@ -298,21 +298,75 @@ void TIIBackend::startStopLog()
 {
     if (isRecordingLog() == false)
     {
-        const QString tiiPath = AndroidFileHelper::instance().buildSubdirPath(m_settings->dataStoragePath, TII_DIR_NAME);
+#if ASK_FOR_PERMISSION_IF_NEEDED
 
-        // Ensure directory exists and is writable
-        if (!AndroidFileHelper::instance().mkpath(m_settings->dataStoragePath, TII_DIR_NAME))
+        std::function<void(const QString &)> callback = [=](const QString &tiiPath)
         {
-            qCCritical(tii) << "Failed to create TII log directory:" << AndroidFileHelper::instance().lastError();
+            if (tiiPath.isEmpty())
+            {
+                qCCritical(tii) << "Error creating TII log directory:" << AndroidFileHelper::instance().lastError();
+                emit showInfoMessage(tr("Failed to create TII log directory"), -1);
+                return;
+            }
+
+            QString fileName = QString("%1_TII.csv").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
+            if (m_logFile)
+            {
+                m_logFile->close();
+                delete m_logFile;
+            }
+
+            m_logFile = AndroidFileHelper::instance().openFileForWriting(tiiPath, fileName, "text/csv");
+            if (m_logFile)
+            {
+                qCInfo(tii) << "Recording TII log to:" << QString("%1/%2").arg(tiiPath, fileName);
+                emit showInfoMessage(tr("TII log started"), 0);
+
+                setIsRecordingLog(true);
+
+                // write header
+                QTextStream out(m_logFile);
+
+                // need to keep local copy to avoid changing this settings during logging
+                m_exportCoordinates = m_settings->tii.saveCoordinates;
+                m_exportNoTii = m_settings->tii.saveNoTii;
+                m_exportUTC = m_settings->tii.timestampInUTC;
+                if (m_settings->tii.headersInEnglish)
+                {
+                    m_exportRole = m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTCEnglish
+                                                                  : TxTableModel::TxTableModelRoles::ExportRoleEnglish;
+                }
+                else
+                {
+                    m_exportRole =
+                        m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
+                }
+
+                // Header
+                int lastCol = m_exportCoordinates ? (TxTableModel::LastColumn) : (TxTableModel::LastColumnWithoutCoordinates);
+                for (int col = 0; col < lastCol; ++col)
+                {
+                    if (col != TxTableModel::ColNumServices && col != TxTableModel::ColRfLevel)
+                    {  // num services and RF level are not logged in TII mode
+                        out << m_model->headerData(col, Qt::Horizontal, m_exportRole).toString() << ";";
+                    }
+                }
+                out << m_model->headerData(lastCol, Qt::Horizontal, m_exportRole).toString() << Qt::endl;
+            }
+            else
+            {
+                qCCritical(tii) << "Unable to write TII log:" << AndroidFileHelper::instance().lastError();
+                emit showInfoMessage(tr("Failed to write TII log"), -1);
+                setIsRecordingLog(false);
+            }
+        };
+        AndroidFileHelper::instance().accessPath(m_settings->dataStoragePath, TII_DIR_NAME, callback);
+#else
+        const QString tiiPath = AndroidFileHelper::instance().getPath(m_settings->dataStoragePath, TII_DIR_NAME);
+        if (tiiPath.isEmpty())
+        {
+            qCCritical(tii) << "Error creating TII log directory:" << AndroidFileHelper::instance().lastError();
             emit showInfoMessage(tr("Failed to create TII log directory"), -1);
-            return;
-        }
-
-        if (!AndroidFileHelper::instance().hasWritePermission(tiiPath))
-        {
-            qCCritical(tii) << "No permission to write to:" << tiiPath;
-            qCCritical(tii) << "Please select a new data storage folder in settings.";
-            emit showInfoMessage(tr("No permission to write log"), -1);
             return;
         }
 
@@ -366,6 +420,7 @@ void TIIBackend::startStopLog()
             emit showInfoMessage(tr("Failed to write TII log"), -1);
             setIsRecordingLog(false);
         }
+#endif
     }
     else
     {
