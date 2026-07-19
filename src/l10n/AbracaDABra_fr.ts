@@ -4517,20 +4517,12 @@ it is anonymous and contains no personal data.</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="397"/>
-        <location filename="../tii/scannerbackend.cpp" line="424"/>
-        <location filename="../tii/scannerbackend.cpp" line="433"/>
-        <location filename="../tii/scannerbackend.cpp" line="441"/>
-        <location filename="../tii/scannerbackend.cpp" line="450"/>
-        <location filename="../tii/scannerbackend.cpp" line="465"/>
-        <location filename="../tii/scannerbackend.cpp" line="479"/>
-        <location filename="../tii/scannerbackend.cpp" line="487"/>
-        <location filename="../tii/scannerbackend.cpp" line="495"/>
-        <location filename="../tii/scannerbackend.cpp" line="534"/>
-        <location filename="../tii/scannerbackend.cpp" line="551"/>
-        <location filename="../tii/scannerbackend.cpp" line="561"/>
-        <source>Failed to load file</source>
-        <translation>Erreur lors du chargement du fichier</translation>
+        <location filename="../tii/scannerbackend.cpp" line="271"/>
+        <location filename="../tii/scannerbackend.cpp" line="283"/>
+        <location filename="../tii/scannerbackend.cpp" line="292"/>
+        <location filename="../tii/scannerbackend.cpp" line="304"/>
+        <source>Failed to save JSON file</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="755"/>
@@ -4596,25 +4588,25 @@ it is anonymous and contains no personal data.</source>
         <translation>Erreurs lors de l&apos;export des informations d&apos;ensemble</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="271"/>
-        <location filename="../tii/scannerbackend.cpp" line="292"/>
-        <source>Failed to save JSON</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../tii/scannerbackend.cpp" line="278"/>
         <location filename="../tii/scannerbackend.cpp" line="299"/>
         <source>Data saved to JSON file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="283"/>
-        <location filename="../tii/scannerbackend.cpp" line="304"/>
-        <source>Failed to save scanner JSON</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../tii/scannerbackend.cpp" line="317"/>
+        <location filename="../tii/scannerbackend.cpp" line="397"/>
+        <location filename="../tii/scannerbackend.cpp" line="424"/>
+        <location filename="../tii/scannerbackend.cpp" line="433"/>
+        <location filename="../tii/scannerbackend.cpp" line="441"/>
+        <location filename="../tii/scannerbackend.cpp" line="450"/>
+        <location filename="../tii/scannerbackend.cpp" line="465"/>
+        <location filename="../tii/scannerbackend.cpp" line="479"/>
+        <location filename="../tii/scannerbackend.cpp" line="487"/>
+        <location filename="../tii/scannerbackend.cpp" line="495"/>
+        <location filename="../tii/scannerbackend.cpp" line="534"/>
+        <location filename="../tii/scannerbackend.cpp" line="551"/>
+        <location filename="../tii/scannerbackend.cpp" line="561"/>
         <source>Failed to load CSV file</source>
         <translation type="unfinished"></translation>
     </message>

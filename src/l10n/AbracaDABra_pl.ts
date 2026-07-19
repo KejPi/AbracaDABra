@@ -4642,29 +4642,13 @@ it is anonymous and contains no personal data.</source>
         <translation>Anuluj</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="271"/>
-        <location filename="../tii/scannerbackend.cpp" line="292"/>
-        <source>Failed to save JSON</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../tii/scannerbackend.cpp" line="278"/>
         <location filename="../tii/scannerbackend.cpp" line="299"/>
         <source>Data saved to JSON file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="283"/>
-        <location filename="../tii/scannerbackend.cpp" line="304"/>
-        <source>Failed to save scanner JSON</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../tii/scannerbackend.cpp" line="317"/>
-        <source>Failed to load CSV file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../tii/scannerbackend.cpp" line="397"/>
         <location filename="../tii/scannerbackend.cpp" line="424"/>
         <location filename="../tii/scannerbackend.cpp" line="433"/>
@@ -4677,7 +4661,7 @@ it is anonymous and contains no personal data.</source>
         <location filename="../tii/scannerbackend.cpp" line="534"/>
         <location filename="../tii/scannerbackend.cpp" line="551"/>
         <location filename="../tii/scannerbackend.cpp" line="561"/>
-        <source>Failed to load file</source>
+        <source>Failed to load CSV file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4777,6 +4761,14 @@ it is anonymous and contains no personal data.</source>
         <location filename="../tii/scannerbackend.cpp" line="1509"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation>Moc ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerbackend.cpp" line="271"/>
+        <location filename="../tii/scannerbackend.cpp" line="283"/>
+        <location filename="../tii/scannerbackend.cpp" line="292"/>
+        <location filename="../tii/scannerbackend.cpp" line="304"/>
+        <source>Failed to save JSON file</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1537"/>

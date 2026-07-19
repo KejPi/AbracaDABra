@@ -268,7 +268,7 @@ void ScannerBackend::saveJSON()
         if (basePath.isEmpty())
         {
             qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
-            emit showInfoMessage(tr("Failed to save JSON"), -1);
+            emit showInfoMessage(tr("Failed to save JSON file"), -1);
             return;
         }
 
@@ -280,7 +280,7 @@ void ScannerBackend::saveJSON()
         else
         {
             qCWarning(scanner) << "Failed to save scanner JSON:" << AndroidFileHelper::instance().lastError();
-            emit showInfoMessage(tr("Failed to save scanner JSON"), -1);
+            emit showInfoMessage(tr("Failed to save JSON file"), -1);
         }
     };
     AndroidFileHelper::instance().accessPath(m_settings->dataStoragePath, SCANNER_DIR_NAME, callback);
@@ -289,7 +289,7 @@ void ScannerBackend::saveJSON()
     if (basePath.isEmpty())
     {
         qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
-        emit showInfoMessage(tr("Failed to save JSON"), -1);
+        emit showInfoMessage(tr("Failed to save JSON file"), -1);
         return;
     }
 
@@ -300,8 +300,8 @@ void ScannerBackend::saveJSON()
     }
     else
     {
-        qCWarning(scanner) << "Failed to save scanner JSON:" << AndroidFileHelper::instance().lastError();
-        emit showInfoMessage(tr("Failed to save scanner JSON"), -1);
+        qCWarning(scanner) << "Failed to save JSON file:" << AndroidFileHelper::instance().lastError();
+        emit showInfoMessage(tr("Failed to save JSON file"), -1);
     }
 #endif
 }
@@ -394,7 +394,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
             {
                 qCWarning(scanner) << "Invalid time value" << qsl.at(TxTableModel::ColTime) << "line #" << lineNum;
                 result.success = false;
-                result.errorMessage = tr("Failed to load file");
+                result.errorMessage = tr("Failed to load CSV file");
                 return result;
             }
 
@@ -421,7 +421,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
             {
                 qCWarning(scanner) << "Invalid frequency value" << qsl.at(TxTableModel::ColFreq) << "line #" << lineNum;
                 result.success = false;
-                result.errorMessage = tr("Failed to load file");
+                result.errorMessage = tr("Failed to load CSV file");
                 return result;
             }
 
@@ -430,7 +430,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
             {
                 qCWarning(scanner) << "Invalid UEID value" << qsl.at(TxTableModel::ColEnsId) << "line #" << lineNum;
                 result.success = false;
-                result.errorMessage = tr("Failed to load file");
+                result.errorMessage = tr("Failed to load CSV file");
                 return result;
             }
             int numServices = qsl.at(TxTableModel::ColNumServices).toInt(&isOk);
@@ -438,7 +438,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
             {
                 qCWarning(scanner) << "Invalid number of services value" << qsl.at(TxTableModel::ColNumServices) << "line #" << lineNum;
                 result.success = false;
-                result.errorMessage = tr("Failed to load file");
+                result.errorMessage = tr("Failed to load CSV file");
                 return result;
             }
 
@@ -447,7 +447,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
             {
                 qCWarning(scanner) << "Invalid SNR value" << qsl.at(TxTableModel::ColSnr) << "line #" << lineNum;
                 result.success = false;
-                result.errorMessage = tr("Failed to load file");
+                result.errorMessage = tr("Failed to load CSV file");
                 return result;
             }
 
@@ -462,7 +462,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
                     {
                         qCWarning(scanner) << "Invalid RF level value" << rfLevelStr << "line #" << lineNum;
                         result.success = false;
-                        result.errorMessage = tr("Failed to load file");
+                        result.errorMessage = tr("Failed to load CSV file");
                         return result;
                     }
                 }
@@ -476,7 +476,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
                 {
                     qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColMainId + rfLevelOffset) << "line #" << lineNum;
                     result.success = false;
-                    result.errorMessage = tr("Failed to load file");
+                    result.errorMessage = tr("Failed to load CSV file");
                     return result;
                 }
                 uint8_t sub = qsl.at(TxTableModel::ColSubId + rfLevelOffset).toUInt(&isOk);
@@ -484,7 +484,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
                 {
                     qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColSubId + rfLevelOffset) << "line #" << lineNum;
                     result.success = false;
-                    result.errorMessage = tr("Failed to load file");
+                    result.errorMessage = tr("Failed to load CSV file");
                     return result;
                 }
                 float level = qsl.at(TxTableModel::ColLevel + rfLevelOffset).toFloat(&isOk);
@@ -492,7 +492,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
                 {
                     qCWarning(scanner) << "Invalid TX level value" << qsl.at(TxTableModel::ColLevel + rfLevelOffset) << "line #" << lineNum;
                     result.success = false;
-                    result.errorMessage = tr("Failed to load file");
+                    result.errorMessage = tr("Failed to load CSV file");
                     return result;
                 }
                 dabsdrTii_t tiiItem({.main = main, .sub = sub, .level = level});
@@ -531,7 +531,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
                     qCWarning(scanner) << "Invalid coordinates value" << qsl.at(TxTableModel::ColLevel + rfLevelOffset + coordOffset) << "line #"
                                        << lineNum;
                     result.success = false;
-                    result.errorMessage = tr("Failed to load file");
+                    result.errorMessage = tr("Failed to load CSV file");
                     return result;
                 }
                 // ColRxAltitude only valid in V2 format:
@@ -548,7 +548,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
                         qCWarning(scanner) << "Invalid altitude value" << qsl.at(TxTableModel::ColLevel + rfLevelOffset + coordOffset) << "line #"
                                            << lineNum;
                         result.success = false;
-                        result.errorMessage = tr("Failed to load file");
+                        result.errorMessage = tr("Failed to load CSV file");
                         return result;
                     }
                 }
@@ -558,7 +558,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
         {
             qCWarning(scanner) << "Unexpected number of cols, line #" << lineNum;
             result.success = false;
-            result.errorMessage = tr("Failed to load file");
+            result.errorMessage = tr("Failed to load CSV file");
             return result;
         }
         lineNum += 1;

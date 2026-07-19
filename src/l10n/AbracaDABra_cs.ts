@@ -982,7 +982,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../qml/DabSignalView.qml" line="319"/>
         <source>Show waterfall</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobrazit waterfall</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="326"/>
@@ -1469,7 +1469,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="553"/>
         <source>Raw data recording finished</source>
-        <translation type="unfinished"></translation>
+        <translation>Záznam vstupního signálu ukončen</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="560"/>
@@ -1613,7 +1613,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../qml/Main.qml" line="355"/>
         <source>Data storage folder</source>
-        <translation type="unfinished">Složka pro ukládání dat</translation>
+        <translation>Složka pro ukládání dat</translation>
     </message>
 </context>
 <context>
@@ -1857,7 +1857,7 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="178"/>
         <source>Show widget on service page</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobrazovat widget na stránce stanice</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="191"/>
@@ -4518,29 +4518,13 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <translation>Zrušit</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="271"/>
-        <location filename="../tii/scannerbackend.cpp" line="292"/>
-        <source>Failed to save JSON</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../tii/scannerbackend.cpp" line="278"/>
         <location filename="../tii/scannerbackend.cpp" line="299"/>
         <source>Data saved to JSON file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../tii/scannerbackend.cpp" line="283"/>
-        <location filename="../tii/scannerbackend.cpp" line="304"/>
-        <source>Failed to save scanner JSON</source>
-        <translation type="unfinished"></translation>
+        <translation>Data byla uložena do souboru JSON</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="317"/>
-        <source>Failed to load CSV file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../tii/scannerbackend.cpp" line="397"/>
         <location filename="../tii/scannerbackend.cpp" line="424"/>
         <location filename="../tii/scannerbackend.cpp" line="433"/>
@@ -4553,23 +4537,23 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <location filename="../tii/scannerbackend.cpp" line="534"/>
         <location filename="../tii/scannerbackend.cpp" line="551"/>
         <location filename="../tii/scannerbackend.cpp" line="561"/>
-        <source>Failed to load file</source>
-        <translation>Načtení souboru se nezdařilo</translation>
+        <source>Failed to load CSV file</source>
+        <translation>Načtení CSV souboru se nezdařilo</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="615"/>
         <source>Failed to load JSON file</source>
-        <translation type="unfinished"></translation>
+        <translation>Načtení JSON souboru se nezdařilo</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="628"/>
         <source>Failed to parse JSON file</source>
-        <translation type="unfinished"></translation>
+        <translation>Parsoavání JSON souboru se nezdařilo</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="636"/>
         <source>Invalid JSON structure</source>
-        <translation type="unfinished"></translation>
+        <translation>Neplatná JSON struktura</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="755"/>
@@ -4653,6 +4637,14 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <location filename="../tii/scannerbackend.cpp" line="1509"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerbackend.cpp" line="271"/>
+        <location filename="../tii/scannerbackend.cpp" line="283"/>
+        <location filename="../tii/scannerbackend.cpp" line="292"/>
+        <location filename="../tii/scannerbackend.cpp" line="304"/>
+        <source>Failed to save JSON file</source>
+        <translation>Uložení JSON souboru se nezdařilo</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1537"/>
@@ -4769,7 +4761,7 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="202"/>
         <source>Incremental scan</source>
-        <translation type="unfinished"></translation>
+        <translation>Inkrementální vyhledávání</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="209"/>
@@ -4784,7 +4776,7 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="221"/>
         <source>AutoSave JSON</source>
-        <translation type="unfinished"></translation>
+        <translation>Automaticky uložit JSON</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="228"/>
@@ -4794,7 +4786,7 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="241"/>
         <source>Save as JSON</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit jako JSON</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="249"/>
@@ -4804,7 +4796,7 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="257"/>
         <source>Load from file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Načíst ze souboru...</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="265"/>
@@ -4872,7 +4864,7 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="257"/>
         <source>Incremental scan</source>
-        <translation type="unfinished"></translation>
+        <translation>Inkrementální vyhledávání</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="264"/>
@@ -4887,7 +4879,7 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="276"/>
         <source>AutoSave JSON</source>
-        <translation type="unfinished"></translation>
+        <translation>Automaticky uložit JSON</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="283"/>
@@ -4897,7 +4889,7 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="291"/>
         <source>Save as JSON</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit jako JSON</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="296"/>
@@ -4907,12 +4899,12 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="301"/>
         <source>Load from file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Načíst ze souboru...</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="505"/>
         <source>JSON files</source>
-        <translation type="unfinished">Soubory JSON</translation>
+        <translation>Soubory JSON</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="306"/>
@@ -5097,12 +5089,12 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     <message>
         <location filename="../qml/ServiceView.qml" line="353"/>
         <source>TII</source>
-        <translation type="unfinished">TII</translation>
+        <translation>TII</translation>
     </message>
     <message>
         <location filename="../qml/ServiceView.qml" line="354"/>
         <source>Signal Spectrum</source>
-        <translation type="unfinished"></translation>
+        <translation>Spektrum signálu</translation>
     </message>
 </context>
 <context>
@@ -5410,23 +5402,24 @@ a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&
     <message>
         <location filename="../qml/StorageAccessDialog.qml" line="41"/>
         <source>Storage access needed</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyžadován přístup k úložišti</translation>
     </message>
     <message>
         <location filename="../qml/StorageAccessDialog.qml" line="56"/>
         <source>AbracaDABra needs permission to store data.
 Please select data storage folder and grant permissions.</source>
-        <translation type="unfinished"></translation>
+        <translation>AbracaDABra potřebuje přístupová práva pro ukládání dat.
+Vyberte adresář pro ukládání dat and schvalte přístupová práva.</translation>
     </message>
     <message>
         <location filename="../qml/StorageAccessDialog.qml" line="67"/>
         <source>Cancel</source>
-        <translation type="unfinished">Zrušit</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <location filename="../qml/StorageAccessDialog.qml" line="73"/>
         <source>Choose folder...</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyber adresář...</translation>
     </message>
 </context>
 <context>
@@ -5567,12 +5560,12 @@ Please select data storage folder and grant permissions.</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="238"/>
         <source>Altitude source:</source>
-        <translation type="unfinished"></translation>
+        <translation>Určení nadmořské výšky:</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="243"/>
         <source>Manual</source>
-        <translation type="unfinished">Manuálně</translation>
+        <translation>Manuálně</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="276"/>
@@ -5592,7 +5585,7 @@ Please select data storage folder and grant permissions.</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="317"/>
         <source>Column names in English</source>
-        <translation type="unfinished"></translation>
+        <translation>Názvy sloupců anglicky</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="328"/>
@@ -5815,12 +5808,12 @@ Please select data storage folder and grant permissions.</source>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="437"/>
         <source>Altitude (TX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nadm. výška (TX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="439"/>
         <source>Antenna Height (TX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Výška antény (TX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="441"/>
@@ -5835,7 +5828,7 @@ Please select data storage folder and grant permissions.</source>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="445"/>
         <source>Altitude (RX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nadm. výška (RX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="407"/>
