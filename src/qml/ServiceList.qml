@@ -38,7 +38,7 @@ Item {
     property int listWidth: minWidth
 
     readonly property int minWidth: channelCombo.width + channelUpDownRow.width
-    readonly property int maxWidth: 3 * minWidth
+    readonly property int maxWidth: 2.2*minWidth
 
     Item {
         id: ensembleInfo
