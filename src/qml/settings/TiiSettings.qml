@@ -119,8 +119,7 @@ Item {
                             ColumnLayout {
                                 id: receiverLocationLayout
                                 anchors.fill: parent
-                                readonly property int labelWidth: geoLocationLabel.implicitWidth > coordinatesLabel.implicitWidth ? geoLocationLabel.implicitWidth : coordinatesLabel.implicitWidth // Math.max(geoLocationLabel.implicitWidth, coordinatesLabel.implicitWidth)
-
+                                readonly property int labelWidth: Math.max(Math.max(geoLocationLabel.implicitWidth, coordinatesLabel.implicitWidth), altitudeLabel.implicitWidth)
                                 spacing: UI.standardMargin
                                 RowLayout {
                                     Layout.fillWidth: true
@@ -227,7 +226,7 @@ Item {
                                     enabled: settingsBackend.locationSourceModel.currentIndex === 1
                                     visible: settingsBackend.locationSourceModel.currentIndex !== 2
                                     textFormat: Text.StyledText
-                                    text: settingsBackend.coordinatesHelp
+                                    text: qsTr("Enter coordinates in \"latitude, longitude\" format, for example: 1.234,-5.678</p><br><p>Tip: <i>Go to <a href=\"https://www.google.com/maps\">Google maps</a>, right click on your location, click on coordinates in popup menu to copy them and then insert the values here as they are.</i></p>")
                                     wrapMode: Text.WordWrap
                                     role: UI.LabelRole.Secondary
                                 }

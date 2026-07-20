@@ -65,7 +65,6 @@ class SettingsBackend : public UIControlProvider
     Q_PROPERTY(SoapySdrGainModel *soapySdrGainModel READ soapySdrGainModel CONSTANT FINAL)
     Q_PROPERTY(QString slsDumpPaternDefault READ slsDumpPaternDefault CONSTANT FINAL)
     Q_PROPERTY(QString spiDumpPaternDefault READ spiDumpPaternDefault CONSTANT FINAL)
-    Q_PROPERTY(QString coordinatesHelp READ coordinatesHelp CONSTANT FINAL)
 
     Q_PROPERTY(bool haveRtlSdrOldDabDriver READ haveRtlSdrOldDabDriver CONSTANT FINAL)
     Q_PROPERTY(bool haveAirspy READ haveAirspy CONSTANT FINAL)
@@ -287,7 +286,6 @@ public:
     void setTiiDbUpdate();
     QString slsDumpPaternDefault() const { return m_slsDumpPaternDefault; }
     QString spiDumpPaternDefault() const { return m_spiDumpPaternDefault; }
-    QString coordinatesHelp() const { return m_coordinatesHelp; }
     QString locationCoordinates() const;
     void setLocationCoordinates(const QString &locationCoordinates);
 
@@ -405,7 +403,6 @@ private:
         ConnectButtonOff,
         ConnectButtonAuto
     };
-    static const QString m_coordinatesHelp;
 
     const QList<QLocale::Language> m_supportedLocalization = {QLocale::Czech, QLocale::German, QLocale::Italian, QLocale::French, QLocale::Polish};
     const QString m_noFileString = tr("No file selected");
