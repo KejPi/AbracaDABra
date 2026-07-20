@@ -5108,149 +5108,136 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
 <context>
     <name>SettingsBackend</name>
     <message>
-        <location filename="../settingsbackend.cpp" line="49"/>
-        <source>
-Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;
-&lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;,
-right click on your location, click on coordinates in popup menu to copy them
-and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
-        <translation>
-Inserisci le coordinate nel formato “latitudine, longitudine”, ad esempio: 1.234,-5.678&lt;/p&gt;
-&lt;p&gt;Suggerimento: &lt;i&gt;Vai su &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google Maps&lt;/a&gt;,
-fai clic con il tasto destro sulla tua posizione, seleziona “Coordinate” dal menu a comparsa per copiarle
-e poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <location filename="../settingsbackend.cpp" line="61"/>
+        <location filename="../settingsbackend.cpp" line="55"/>
         <source>Device</source>
         <translation>Dispositivo</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="62"/>
+        <location filename="../settingsbackend.cpp" line="56"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="63"/>
+        <location filename="../settingsbackend.cpp" line="57"/>
         <source>Announcements</source>
         <translation>Avvisi</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="64"/>
+        <location filename="../settingsbackend.cpp" line="58"/>
         <source>User applications</source>
         <translation>Applicazioni utente</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="65"/>
+        <location filename="../settingsbackend.cpp" line="59"/>
         <source>TII</source>
         <translation>TII</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="66"/>
+        <location filename="../settingsbackend.cpp" line="60"/>
         <source>Others</source>
         <translation>Altro</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="85"/>
+        <location filename="../settingsbackend.cpp" line="79"/>
         <source>Unsigned 8 bits</source>
         <translation>8 bit non firmati</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="86"/>
+        <location filename="../settingsbackend.cpp" line="80"/>
         <source>Signed 16 bits</source>
         <translation>Firmato a 16 bit</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="164"/>
+        <location filename="../settingsbackend.cpp" line="158"/>
         <source>Disabled</source>
         <translation>Disabilitato</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="225"/>
-        <location filename="../settingsbackend.cpp" line="276"/>
+        <location filename="../settingsbackend.cpp" line="219"/>
+        <location filename="../settingsbackend.cpp" line="270"/>
         <source>System</source>
         <translation>Sistema</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="226"/>
-        <location filename="../settingsbackend.cpp" line="277"/>
+        <location filename="../settingsbackend.cpp" line="220"/>
+        <location filename="../settingsbackend.cpp" line="271"/>
         <source>Manual</source>
         <translation>Manuale</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="228"/>
+        <location filename="../settingsbackend.cpp" line="222"/>
         <source>Serial port</source>
         <translation>Porta seriale</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="266"/>
+        <location filename="../settingsbackend.cpp" line="260"/>
         <source>System language</source>
         <translation>Lingua di sistema</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="275"/>
+        <location filename="../settingsbackend.cpp" line="269"/>
         <source>No proxy</source>
         <translation>Nessun Proxy</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="877"/>
-        <location filename="../settingsbackend.cpp" line="915"/>
-        <location filename="../settingsbackend.cpp" line="2076"/>
+        <location filename="../settingsbackend.cpp" line="871"/>
+        <location filename="../settingsbackend.cpp" line="909"/>
+        <location filename="../settingsbackend.cpp" line="2070"/>
         <source>N/A</source>
         <translation>N/A</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="930"/>
+        <location filename="../settingsbackend.cpp" line="924"/>
         <source>RTL SDR device connected</source>
         <translation>Dispositivo RTL-SDR connesso</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="933"/>
+        <location filename="../settingsbackend.cpp" line="927"/>
         <source>RTL TCP device connected</source>
         <translation>Dispositivo RTL-TCP connesso</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="936"/>
+        <location filename="../settingsbackend.cpp" line="930"/>
         <source>No device connected</source>
         <translation>Nessun dispositivo connesso</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="939"/>
+        <location filename="../settingsbackend.cpp" line="933"/>
         <source>Raw file connected</source>
         <translation>File raw connesso</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="942"/>
+        <location filename="../settingsbackend.cpp" line="936"/>
         <source>Airspy device connected</source>
         <translation>Dispositivo Airspy connesso</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="945"/>
+        <location filename="../settingsbackend.cpp" line="939"/>
         <source>Soapy SDR device connected</source>
         <translation>Dispositivo Soapy SDR connesso</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1408"/>
+        <location filename="../settingsbackend.cpp" line="1402"/>
         <source>Update failed</source>
         <translation>Aggiornamento non riuscito</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1418"/>
+        <location filename="../settingsbackend.cpp" line="1412"/>
         <source>Last update: </source>
         <translation>Ultimo aggiornamento: </translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1422"/>
+        <location filename="../settingsbackend.cpp" line="1416"/>
         <source>Data not available</source>
         <translation>Dati non disponibili</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1784"/>
+        <location filename="../settingsbackend.cpp" line="1778"/>
         <source>sec</source>
         <translation>sec</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.h" line="411"/>
+        <location filename="../settingsbackend.h" line="408"/>
         <source>No file selected</source>
         <translation>Nessun file selezionato</translation>
     </message>
@@ -5532,107 +5519,112 @@ Please select data storage folder and grant permissions.</source>
         <translation>Posizione del ricevitore</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="130"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="129"/>
         <source>Geolocation source:</source>
         <translation>Fonte della geolocalizzazione:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="153"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="152"/>
         <source>Apply</source>
         <translation>Appica</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="178"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="177"/>
         <source>GPS coordinates:</source>
         <translation>Coordinate GPS:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="196"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="195"/>
         <source>Serial port:</source>
         <translation>Porta seriale:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="210"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="209"/>
         <source>Baudrate:</source>
         <translation>Velocità di trasmissione:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="238"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="229"/>
+        <source>Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;&lt;br&gt;&lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;, right click on your location, click on coordinates in popup menu to copy them and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/TiiSettings.qml" line="237"/>
         <source>Altitude source:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="243"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="242"/>
         <source>Manual</source>
         <translation type="unfinished">Manuale</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="276"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="275"/>
         <source>Logging</source>
         <translation>Registrazione</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="290"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="289"/>
         <source>Folder:</source>
         <translation>Cartella:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="306"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="305"/>
         <source>Timestamp in UTC</source>
         <translation>Data/Ora in UTC</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="317"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="316"/>
         <source>Column names in English</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="328"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="327"/>
         <source>GPS coordinates</source>
         <translation>Coordinate GPS</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="339"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="338"/>
         <source>No TII (signal monitoring)</source>
         <translation>Nessun TII (monitoraggio del segnale)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="359"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="358"/>
         <source>Detector</source>
         <translation>Rilevatore</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="365"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="364"/>
         <source>Reliable</source>
         <translation>Affidabile</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="381"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="380"/>
         <source>Sensitive</source>
         <translation>Sensibile</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="393"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="392"/>
         <source>User interface</source>
         <translation>Interfaccia utente</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="406"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="405"/>
         <source>Show spectrum plot</source>
         <translation>Mostra il grafico dello spettro</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="418"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="417"/>
         <source>Keep no longer detected transmitters on map (grey marker)</source>
         <translation>Non visualizzare più sulla mappa i trasmettitori non più rilevati (indicatore grigio)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="436"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="435"/>
         <source>Remove after:</source>
         <translation>Rimuovi dopo:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="469"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="468"/>
         <source>Transmitter table columns</source>
         <translation>Colonne della tabella dei trasmettitori</translation>
     </message>

@@ -5108,149 +5108,136 @@ je anonymní a neobsahuje žádná osobní data.</translation>
 <context>
     <name>SettingsBackend</name>
     <message>
-        <location filename="../settingsbackend.cpp" line="49"/>
-        <source>
-Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;
-&lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;,
-right click on your location, click on coordinates in popup menu to copy them
-and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
-        <translation>
-Zadejte souřadnice ve formátu &quot;zeměpisná šířka, zeměpisná délka&quot;, například: 1.234,-5.678&lt;/p&gt;
-&lt;p&gt;Tip: &lt;i&gt;Bežte na &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;,
-klikněte pravým tlačítkem na vaši polohu, klikněte na souřadnice v kontextovém menu, abyste je zkopírovali,
-a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <location filename="../settingsbackend.cpp" line="61"/>
+        <location filename="../settingsbackend.cpp" line="55"/>
         <source>Device</source>
         <translation>Zařízení</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="62"/>
+        <location filename="../settingsbackend.cpp" line="56"/>
         <source>Audio</source>
         <translation>Audio</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="63"/>
+        <location filename="../settingsbackend.cpp" line="57"/>
         <source>Announcements</source>
         <translation>Hlášení</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="64"/>
+        <location filename="../settingsbackend.cpp" line="58"/>
         <source>User applications</source>
         <translation>Aplikace</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="65"/>
+        <location filename="../settingsbackend.cpp" line="59"/>
         <source>TII</source>
         <translation>TII</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="66"/>
+        <location filename="../settingsbackend.cpp" line="60"/>
         <source>Others</source>
         <translation>Ostatní</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="85"/>
+        <location filename="../settingsbackend.cpp" line="79"/>
         <source>Unsigned 8 bits</source>
         <translation>8 bitů bez znaménka</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="86"/>
+        <location filename="../settingsbackend.cpp" line="80"/>
         <source>Signed 16 bits</source>
         <translation>16 bitů se znaménkem</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="164"/>
+        <location filename="../settingsbackend.cpp" line="158"/>
         <source>Disabled</source>
         <translation>Zakázáno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="225"/>
-        <location filename="../settingsbackend.cpp" line="276"/>
+        <location filename="../settingsbackend.cpp" line="219"/>
+        <location filename="../settingsbackend.cpp" line="270"/>
         <source>System</source>
         <translation>Systém</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="226"/>
-        <location filename="../settingsbackend.cpp" line="277"/>
+        <location filename="../settingsbackend.cpp" line="220"/>
+        <location filename="../settingsbackend.cpp" line="271"/>
         <source>Manual</source>
         <translation>Manuálně</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="228"/>
+        <location filename="../settingsbackend.cpp" line="222"/>
         <source>Serial port</source>
         <translation>Sériový port</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="266"/>
+        <location filename="../settingsbackend.cpp" line="260"/>
         <source>System language</source>
         <translation>Jazyk systému</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="275"/>
+        <location filename="../settingsbackend.cpp" line="269"/>
         <source>No proxy</source>
         <translation>Nepoužívat proxy</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="877"/>
-        <location filename="../settingsbackend.cpp" line="915"/>
-        <location filename="../settingsbackend.cpp" line="2076"/>
+        <location filename="../settingsbackend.cpp" line="871"/>
+        <location filename="../settingsbackend.cpp" line="909"/>
+        <location filename="../settingsbackend.cpp" line="2070"/>
         <source>N/A</source>
         <translation>Nedostupný</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="930"/>
+        <location filename="../settingsbackend.cpp" line="924"/>
         <source>RTL SDR device connected</source>
         <translation>RTL SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="933"/>
+        <location filename="../settingsbackend.cpp" line="927"/>
         <source>RTL TCP device connected</source>
         <translation>RTL TCP zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="936"/>
+        <location filename="../settingsbackend.cpp" line="930"/>
         <source>No device connected</source>
         <translation>Žádné zařízení není připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="939"/>
+        <location filename="../settingsbackend.cpp" line="933"/>
         <source>Raw file connected</source>
         <translation>Raw soubor připojen</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="942"/>
+        <location filename="../settingsbackend.cpp" line="936"/>
         <source>Airspy device connected</source>
         <translation>Airspy zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="945"/>
+        <location filename="../settingsbackend.cpp" line="939"/>
         <source>Soapy SDR device connected</source>
         <translation>Soapy SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1408"/>
+        <location filename="../settingsbackend.cpp" line="1402"/>
         <source>Update failed</source>
         <translation>Aktualizace selhala</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1418"/>
+        <location filename="../settingsbackend.cpp" line="1412"/>
         <source>Last update: </source>
         <translation>Poslední aktualizace: </translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1422"/>
+        <location filename="../settingsbackend.cpp" line="1416"/>
         <source>Data not available</source>
         <translation>Není k dispozici</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1784"/>
+        <location filename="../settingsbackend.cpp" line="1778"/>
         <source>sec</source>
         <translation>s</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.h" line="411"/>
+        <location filename="../settingsbackend.h" line="408"/>
         <source>No file selected</source>
         <translation>Není vybraný soubor</translation>
     </message>
@@ -5533,107 +5520,112 @@ Vyberte adresář pro ukládání dat and schvalte přístupová práva.</transl
         <translation>Poloha prijímače</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="130"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="129"/>
         <source>Geolocation source:</source>
         <translation>Určení polohy:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="153"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="152"/>
         <source>Apply</source>
         <translation>Použít</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="178"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="177"/>
         <source>GPS coordinates:</source>
         <translation>Souřadnice GPS:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="196"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="195"/>
         <source>Serial port:</source>
         <translation>Sériový port:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="210"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="209"/>
         <source>Baudrate:</source>
         <translation>Přenosová rychlost:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="238"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="229"/>
+        <source>Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;&lt;br&gt;&lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;, right click on your location, click on coordinates in popup menu to copy them and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
+        <translation type="unfinished">Zadejte souřadnice ve formátu &quot;zeměpisná šířka, zeměpisná délka&quot;, například: 1.234,-5.678&lt;/p&gt;&lt;br&gt;&lt;p&gt;Tip: &lt;i&gt;Otevřete v prohlížeči &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;, klikněte pravým tlačítkem na vaši polohu, klikněte na souřadnice v kontextovém menu, abyste je zkopírovali, a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/TiiSettings.qml" line="237"/>
         <source>Altitude source:</source>
         <translation>Určení nadmořské výšky:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="243"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="242"/>
         <source>Manual</source>
         <translation>Manuálně</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="276"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="275"/>
         <source>Logging</source>
         <translation>Logování</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="290"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="289"/>
         <source>Folder:</source>
         <translation>Složka:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="306"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="305"/>
         <source>Timestamp in UTC</source>
         <translation>Časová značka v UTC</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="317"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="316"/>
         <source>Column names in English</source>
         <translation>Názvy sloupců anglicky</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="328"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="327"/>
         <source>GPS coordinates</source>
         <translation>GPS souřadnice</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="339"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="338"/>
         <source>No TII (signal monitoring)</source>
         <translation>Bez TII (monitorování signálu)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="359"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="358"/>
         <source>Detector</source>
         <translation>Detektor</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="365"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="364"/>
         <source>Reliable</source>
         <translation>Spolehlivý</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="381"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="380"/>
         <source>Sensitive</source>
         <translation>Citlivý</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="393"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="392"/>
         <source>User interface</source>
         <translation>Uživatelské rozhraní</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="406"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="405"/>
         <source>Show spectrum plot</source>
         <translation>Zobrazovat spektrum</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="418"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="417"/>
         <source>Keep no longer detected transmitters on map (grey marker)</source>
         <translation>Zobrazovat v mapě i vysílače, které se už nedetekují (šedá značka)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="436"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="435"/>
         <source>Remove after:</source>
         <translation>Odstranit po:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="469"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="468"/>
         <source>Transmitter table columns</source>
         <translation>Sloupce tabulky vysílačů</translation>
     </message>
