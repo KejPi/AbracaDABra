@@ -31,12 +31,12 @@
     <message>
         <location filename="../aboutui.cpp" line="46"/>
         <source>AbracaDABra &amp; DAB SDR library use following libraries (special thanks to):</source>
-        <translation>AbracaDABra &amp; la librairie DAB SDR utilisent les librairies suivantes (remerciements à) :</translation>
+        <translation>AbracaDABra &amp; la bibliothèque DAB SDR utilisent les bibliothèques suivantes (remerciements à) :</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="77"/>
         <source>Contributors to the translation:</source>
-        <translation>Contributeurs pour la traduction :</translation>
+        <translation>Contributeurs à la traduction :</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="80"/>
@@ -217,7 +217,7 @@
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="103"/>
         <source>Bring window to foreground on alarm announcement</source>
-        <translation>Mettre la fenêtre au premier plan lors de l'annonce urgente</translation>
+        <translation>Afficher la fenêtre au premier plan en cas d'alerte</translation>
     </message>
     <message>
         <location filename="../qml/settings/AnnouncementSettings.qml" line="123"/>
@@ -277,7 +277,7 @@
     <message>
         <location filename="../application.cpp" line="953"/>
         <source>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %5</source>
-        <translation>&lt;b&gt;Ensemble :&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Label court : &lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Pays :&lt;/b&gt; %5</translation>
+        <translation>&lt;b&gt;Multiplex :&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Label court : &lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Pays :&lt;/b&gt; %5</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1159"/>
@@ -454,7 +454,7 @@
     <message>
         <location filename="../application.cpp" line="1913"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
-        <translation>&lt;b&gt;Débit du service&lt;/b&gt;&lt;br&gt;Audio &amp; donnée : %1</translation>
+        <translation>&lt;b&gt;Débit du service&lt;/b&gt;&lt;br&gt;Audio &amp; données : %1</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1963"/>
@@ -464,7 +464,7 @@
     <message>
         <location filename="../application.cpp" line="1964"/>
         <source>Service was removed from ensemble</source>
-        <translation>Le service a été supprimé de l'ensemble</translation>
+        <translation>Le service a été supprimé du multiplex</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="1996"/>
@@ -570,12 +570,12 @@ Decoded %1 / %2 MOT objects</source>
     <message>
         <location filename="../application.cpp" line="2598"/>
         <source>No ensemble</source>
-        <translation>Aucun ensemble</translation>
+        <translation>Aucun multiplex</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2599"/>
         <source>No ensemble tuned</source>
-        <translation>Aucun ensemble syntonisé</translation>
+        <translation>Aucun multiplex syntonisé</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="2610"/>
@@ -750,7 +750,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="70"/>
         <source>Noise level during audio drop-out:</source>
-        <translation>Niveau de bruit lors d'une coupure audio :</translation>
+        <translation>Niveau de bruit en cas de coupure audio :</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="104"/>
@@ -811,7 +811,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="251"/>
         <source>Audio output framework:</source>
-        <translation>Architecture de sortie audio :</translation>
+        <translation>Système de sortie audio :</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="284"/>
@@ -829,7 +829,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../qml/BandScan.qml" line="90"/>
         <source>Ensembles found:</source>
-        <translation>Ensembles trouvés :</translation>
+        <translation>Multiplex trouvés :</translation>
     </message>
     <message>
         <location filename="../qml/BandScan.qml" line="99"/>
@@ -1056,7 +1056,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
         <location filename="../qml/epg/EPGView.qml" line="131"/>
         <location filename="../qml/epg/EPGView.qml" line="173"/>
         <source>Show only current ensemble</source>
-        <translation>Afficher uniquement l'ensemble actuel</translation>
+        <translation>Afficher uniquement le multiplex actuel</translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="215"/>
@@ -1079,7 +1079,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../qml/EnsembleConfigDialog.qml" line="43"/>
         <source>Ensemble Information</source>
-        <translation>Information d'ensemble</translation>
+        <translation>Informations du multiplex</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleConfigDialog.qml" line="80"/>
@@ -1107,7 +1107,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../qml/EnsembleConfigDrawer.qml" line="86"/>
         <source>Ensemble Information</source>
-        <translation>Information d'ensemble</translation>
+        <translation>Informations du multiplex</translation>
     </message>
 </context>
 <context>
@@ -1212,7 +1212,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../ensembleinfobackend.cpp" line="58"/>
         <source>Start CU</source>
-        <translation>CU de démarrage</translation>
+        <translation>CU de départ</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="58"/>
@@ -1272,7 +1272,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../ensembleinfobackend.cpp" line="66"/>
         <source>Audio ratio</source>
-        <translation>Ratio de l'audio</translation>
+        <translation>Ratio audio</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="66"/>
@@ -1282,7 +1282,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../ensembleinfobackend.cpp" line="67"/>
         <source>PAD ratio</source>
-        <translation>Ratio du PAD</translation>
+        <translation>Ratio PAD</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="67"/>
@@ -1307,7 +1307,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../ensembleinfobackend.cpp" line="72"/>
         <source>RS uncorrectable</source>
-        <translation>RS irrécupérable</translation>
+        <translation>Blocs RS incorrigibles</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="72"/>
@@ -1347,7 +1347,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../ensembleinfobackend.cpp" line="78"/>
         <source>Allocated</source>
-        <translation>Alloués</translation>
+        <translation>Alloué</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="78"/>
@@ -1402,17 +1402,17 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../ensembleinfobackend.cpp" line="85"/>
         <source>Error protection</source>
-        <translation>Protection d'erreur</translation>
+        <translation>Type de protection contre les erreurs</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="85"/>
         <source>Sub-channel error protection</source>
-        <translation>Protection d'erreur du sous-canal</translation>
+        <translation>Protection du sous-canal</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="86"/>
         <source>Bitrate</source>
-        <translation>Débit</translation>
+        <translation>Débit binaire</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="86"/>
@@ -1467,7 +1467,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
         <location filename="../ensembleinfobackend.cpp" line="391"/>
         <location filename="../ensembleinfobackend.cpp" line="482"/>
         <source>N/A</source>
-        <translation>Non applicable</translation>
+        <translation>Non disponible</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="556"/>
@@ -1477,22 +1477,22 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../ensembleinfobackend.cpp" line="591"/>
         <source>Ensemble information export failed</source>
-        <translation>L'exportation des informations de l'ensemble a échoué.</translation>
+        <translation>L'exportation des informations du multiplex a échoué.</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="599"/>
         <source>No permission to write ensemble information</source>
-        <translation>Refus d'autorisation pour l'écriture des informations d'ensemble</translation>
+        <translation>Refus d'autorisation pour l'écriture des informations du multiplex</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="606"/>
         <source>Ensemble information exported</source>
-        <translation>Informations d'ensemble exportées</translation>
+        <translation>Informations du multiplex exportées</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="611"/>
         <source>Failed to export ensemble information</source>
-        <translation>L'exportation des informations de l'ensemble a échoué</translation>
+        <translation>L'exportation des informations du multiplex a échoué</translation>
     </message>
 </context>
 <context>
@@ -1515,7 +1515,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="316"/>
         <source>Show ensemble configuration</source>
-        <translation>Afficher la configuration d'ensemble</translation>
+        <translation>Afficher la configuration du multiplex</translation>
     </message>
     <message>
         <location filename="../qml/EnsembleInfoView.qml" line="330"/>
@@ -1674,7 +1674,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../navigationmodel.cpp" line="44"/>
         <source>Ensemble information</source>
-        <translation>Information d'ensemble</translation>
+        <translation>Informations du multiplex</translation>
     </message>
     <message>
         <location filename="../navigationmodel.cpp" line="50"/>
@@ -1852,12 +1852,12 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="178"/>
         <source>Show system time when DAB time is not available</source>
-        <translation>Afficher l'heure système quand l'heure DAB n'est pas disponible</translation>
+        <translation>Afficher l'heure système lorsque l'heure DAB n'est pas disponible</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="190"/>
         <source>Show ensemble country flag (internet connection required)</source>
-        <translation>Afficher le drapeau du pays d'ensemble (connexion internet requise)</translation>
+        <translation>Afficher le drapeau du pays du multiplex (connexion internet requise)</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="202"/>
@@ -1907,7 +1907,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="332"/>
         <source>Backup settings</source>
-        <translation>Paramètres de sauvegarde</translation>
+        <translation>Sauvegarder les réglages</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="336"/>
@@ -1962,24 +1962,24 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="488"/>
         <source>Upload ensemble information</source>
-        <translation>Envoyer les informations d'ensemble</translation>
+        <translation>Envoyer les informations du multiplex</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="503"/>
         <source>Ensemble information is a small CSV file with list of services in the ensemble,
 it is anonymous and contains no personal data.</source>
-        <translation>Les informations d'ensemble sont exportées dans un petit fichier CSV contenant la liste des services de l'ensemble,
+        <translation>Les informations du multiplex sont exportées dans un petit fichier CSV contenant la liste des services du multiplex,
         ce fichier est anonyme et ne contient aucune donnée personnelle.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="510"/>
         <source>Application automatically uploads ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</source>
-        <translation>L'application envoie automatiquement les données d'ensemble à&lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</translation>
+        <translation>L'application envoie automatiquement les données du multiplex à&lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="511"/>
         <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
-        <translation>L'envoi des informations d'ensemble à &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; est actuellement désactivé.</translation>
+        <translation>L'envoi des informations du multiplex à &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; est actuellement désactivé.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="519"/>
@@ -2205,7 +2205,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../dabtables.cpp" line="310"/>
         <source>Unknown/NA</source>
-        <translation>Inconnu / Non applicable</translation>
+        <translation>Inconnu / Non disponible</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="312"/>
@@ -3826,7 +3826,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../dabtables.cpp" line="2197"/>
         <source>Transport News</source>
-        <translation>Actualité des transports</translation>
+        <translation>Infos transports</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="2199"/>
@@ -3853,17 +3853,17 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../dabtables.cpp" line="2209"/>
         <source>Radio Info</source>
-        <translation>Radio Info</translation>
+        <translation>Infos programme</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="2211"/>
         <source>Sport news</source>
-        <translation>Informations sportives</translation>
+        <translation>Infos sportives</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="2213"/>
         <source>Financial news</source>
-        <translation>Informations financières</translation>
+        <translation>Infos financières</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="2215"/>
@@ -4567,22 +4567,22 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="977"/>
         <source>Show ensemble information</source>
-        <translation>Afficher les informations d'ensemble</translation>
+        <translation>Afficher les informations du multiplex</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1043"/>
         <source>No permission to write ensemble information</source>
-        <translation>Refus d'autorisartion pour l'écriture des informations d'ensemble</translation>
+        <translation>Refus d'autorisartion pour l'écriture des informations du multiplex</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1054"/>
         <source>Ensemble information exported</source>
-        <translation>Informations d'ensemble exportées</translation>
+        <translation>Informations du multiplex exportées</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1059"/>
         <source>Failed to export ensemble information</source>
-        <translation>Erreurs lors de l'export des informations d'ensemble</translation>
+        <translation>Erreurs lors de l'export des informations du multiplex</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1094"/>
@@ -4792,7 +4792,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="219"/>
         <source>Select channels</source>
-        <translation>Sélectionnez les canaux</translation>
+        <translation>Sélection des canaux</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="226"/>
@@ -4905,7 +4905,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="254"/>
         <source>N/A</source>
-        <translation>Non applicable</translation>
+        <translation>Non disponible</translation>
     </message>
     <message>
         <location filename="../qml/settings/SdrPlayDevice.qml" line="258"/>
@@ -4960,12 +4960,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/ServiceList.qml" line="970"/>
         <source>Ensembles</source>
-        <translation>Ensembles</translation>
+        <translation>Multiplex</translation>
     </message>
     <message>
         <location filename="../servicelist.cpp" line="439"/>
         <source>Service name;Short label;SID;SCIdS;Number of ensembles</source>
-        <translation>Nom du service;Label court;SID,SCIdS;Nombre d'ensembles</translation>
+        <translation>Nom du service;Label court;SID,SCIdS;Nombre de multiplex</translation>
     </message>
 </context>
 <context>
@@ -4996,18 +4996,18 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/ServiceView.qml" line="207"/>
         <source>Switch to another ensemble</source>
-        <translation>Basculer sur un autre ensemble</translation>
+        <translation>Basculer vers un autre multiplex</translation>
     </message>
     <message>
         <location filename="../qml/ServiceView.qml" line="287"/>
         <source>Right click to copy Dynamic label</source>
-        <translation>Clic droit pour copier le Label Dynamique</translation>
+        <translation>Faîtes un clic droit pour copier le Label Dynamique</translation>
     </message>
     <message>
         <location filename="../qml/ServiceView.qml" line="312"/>
         <location filename="../qml/ServiceView.qml" line="324"/>
         <source>Right click to copy Dynamic label +</source>
-        <translation>Clic droit pour copier le Label Dynamique +</translation>
+        <translation>Faîtes un clic droit pour copier le Label Dynamique +</translation>
     </message>
 </context>
 <context>
@@ -5109,7 +5109,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
         <location filename="../settingsbackend.cpp" line="912"/>
         <location filename="../settingsbackend.cpp" line="2073"/>
         <source>N/A</source>
-        <translation>Non applicable</translation>
+        <translation>Non disponible</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="927"/>
@@ -5149,7 +5149,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../settingsbackend.cpp" line="1415"/>
         <source>Last update: </source>
-        <translation>Dernière mise à jour :</translation>
+        <translation>Dernière mise à jour : </translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="1419"/>
@@ -5192,7 +5192,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../signalbackend.cpp" line="290"/>
         <source>N/A</source>
-        <translation>Non applicable</translation>
+        <translation>Non disponible</translation>
     </message>
 </context>
 <context>
@@ -5409,7 +5409,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="79"/>
         <source>Application uses DAB transmiter database provided by &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;By pressing &lt;i&gt;Update&lt;/i&gt; button you agree with data usage &lt;a href=&apos;https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php&apos;&gt;terms and conditions&lt;/a&gt;.</source>
-        <translation>L'application utilise une base de donneés d'émetteurs DAB fournie par &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;En appuyant sur &lt;i&gt;Mettre à jour&lt;/i&gt; vous acceptez l'utilisation des données &lt;a href=&apos;https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php&apos;&gt;les termes et conditions&lt;/a&gt;.</translation>
+        <translation>L'application utilise une base de donneés d'émetteurs DAB fournie par &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.&lt;br&gt;En cliquant sur &lt;i&gt;Mettre à jour&lt;/i&gt; vous acceptez l'utilisation des données, &lt;a href=&apos;https://www.fmlist.org/fmlist_copyright_disclaimer_legal_notice.php&apos;&gt;les termes et conditions&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="98"/>
@@ -5509,7 +5509,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="433"/>
         <source>Transmitter table columns</source>
-        <translation>Colonne du tableau émetteur</translation>
+        <translation>Colonnes du tableau des émetteurs</translation>
     </message>
 </context>
 <context>
@@ -5550,7 +5550,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../tii/txmapbackend.cpp" line="301"/>
         <source>Ensemble: &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation>Ensemble : &lt;b&gt;%1&lt;/b&gt;</translation>
+        <translation>Multiplex : &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location filename="../tii/txmapbackend.cpp" line="303"/>
@@ -5735,7 +5735,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="92"/>
         <source>Download data from internet</source>
-        <translation>Télécharger les données depuis internet</translation>
+        <translation>Télécharger les données depuis Internet</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="106"/>
@@ -5790,7 +5790,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="248"/>
         <source>Data storage path pattern supports these tokens.</source>
-        <translation>Le modèle de chemin de stockage des données prend en charge ces jetons.</translation>
+        <translation>Le format du chemin de stockage prend en charge ces variables.</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="249"/>
@@ -5810,7 +5810,7 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="297"/>
         <source>current ensemble ID (hex number)</source>
-        <translation>ID de l'ensemble actuel (nombre hexadécimal)</translation>
+        <translation>ID du multiplex actuel (nombre hexadécimal)</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="307"/>
@@ -5825,12 +5825,12 @@ and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="327"/>
         <source>content name with extension (only SLS)</source>
-        <translation>Nom actuel avec extension (SLS uniquement)</translation>
+        <translation>Nom du contenu avec extension (SLS uniquement)</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="337"/>
         <source>transport ID of directory (only SPI)</source>
-        <translation>Répertoire de l'ID de transport (SPI uniquement)</translation>
+        <translation>ID de transport du répertoire (SPI uniquement)</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="347"/>
