@@ -21,7 +21,7 @@
     <message>
         <location filename="../aboutui.cpp" line="44"/>
         <source>If you like the application you can</source>
-        <translation>Se ti piace l&apos;applicazione puoi </translation>
+        <translation>Se ti piace l&apos;applicazione puoi</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="44"/>
@@ -938,7 +938,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/DabSignalView.qml" line="225"/>
         <source>RF level </source>
-        <translation>Livello RF</translation>
+        <translation>Livello RF </translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="226"/>
@@ -948,7 +948,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/DabSignalView.qml" line="243"/>
         <source>Gain </source>
-        <translation>Guadagno</translation>
+        <translation>Guadagno </translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="244"/>
@@ -958,7 +958,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/DabSignalView.qml" line="261"/>
         <source>Frequency </source>
-        <translation>Frequenza</translation>
+        <translation>Frequenza </translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="262"/>
@@ -983,7 +983,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/DabSignalView.qml" line="319"/>
         <source>Show waterfall</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra cascata</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="326"/>
@@ -1470,7 +1470,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="553"/>
         <source>Raw data recording finished</source>
-        <translation type="unfinished"></translation>
+        <translation>Regitrazione dati raw terminata</translation>
     </message>
     <message>
         <location filename="../ensembleinfobackend.cpp" line="560"/>
@@ -1614,7 +1614,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/Main.qml" line="355"/>
         <source>Data storage folder</source>
-        <translation type="unfinished">Cartella archiviazione dati</translation>
+        <translation>Cartella archiviazione dati</translation>
     </message>
 </context>
 <context>
@@ -1858,7 +1858,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="178"/>
         <source>Show widget on service page</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra widget nella pagina servizi</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="191"/>
@@ -2329,7 +2329,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../dabtables.cpp" line="192"/>
         <source>Serious Classical</source>
-        <translation>Classica seria </translation>
+        <translation>Classica seria</translation>
     </message>
     <message>
         <location filename="../dabtables.cpp" line="194"/>
@@ -4521,7 +4521,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
         <location filename="../tii/scannerbackend.cpp" line="278"/>
         <location filename="../tii/scannerbackend.cpp" line="299"/>
         <source>Data saved to JSON file</source>
-        <translation type="unfinished"></translation>
+        <translation>Dati salvati nel file JSON</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="317"/>
@@ -4538,22 +4538,22 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
         <location filename="../tii/scannerbackend.cpp" line="551"/>
         <location filename="../tii/scannerbackend.cpp" line="561"/>
         <source>Failed to load CSV file</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile caricare il file CSV</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="615"/>
         <source>Failed to load JSON file</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile caricare il file JSON</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="628"/>
         <source>Failed to parse JSON file</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile analizzare il file JSON</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="636"/>
         <source>Invalid JSON structure</source>
-        <translation type="unfinished"></translation>
+        <translation>Struttura JSON non valida</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="755"/>
@@ -4644,7 +4644,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
         <location filename="../tii/scannerbackend.cpp" line="292"/>
         <location filename="../tii/scannerbackend.cpp" line="304"/>
         <source>Failed to save JSON file</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile salvare il file JSON</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1537"/>
@@ -4703,7 +4703,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="90"/>
         <source>Number of cycles:</source>
-        <translation>Numero di cicli</translation>
+        <translation>Numero di cicli:</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="107"/>
@@ -4761,7 +4761,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="202"/>
         <source>Incremental scan</source>
-        <translation type="unfinished"></translation>
+        <translation>Scansione incrementale</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="209"/>
@@ -4776,7 +4776,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="221"/>
         <source>AutoSave JSON</source>
-        <translation type="unfinished"></translation>
+        <translation>Salavataggio automatico su file JSON</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="228"/>
@@ -4786,7 +4786,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="241"/>
         <source>Save as JSON</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva come JSON</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="249"/>
@@ -4796,7 +4796,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="257"/>
         <source>Load from file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Carica dal file...</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="265"/>
@@ -4864,7 +4864,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="257"/>
         <source>Incremental scan</source>
-        <translation type="unfinished"></translation>
+        <translation>Scansione incrementale</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="264"/>
@@ -4879,7 +4879,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="276"/>
         <source>AutoSave JSON</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvataggio automatico su file JSON</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="283"/>
@@ -4889,7 +4889,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="291"/>
         <source>Save as JSON</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva come JSON</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="296"/>
@@ -4899,12 +4899,13 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="301"/>
         <source>Load from file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Carica dal file...</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="505"/>
         <source>JSON files</source>
-        <translation type="unfinished">File JSON</translation>
+        <translatorcomment>File JSON</translatorcomment>
+        <translation>File JSON</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="306"/>
@@ -5089,12 +5090,13 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/ServiceView.qml" line="353"/>
         <source>TII</source>
-        <translation type="unfinished">TII</translation>
+        <translatorcomment>TII</translatorcomment>
+        <translation>TII</translation>
     </message>
     <message>
         <location filename="../qml/ServiceView.qml" line="354"/>
         <source>Signal Spectrum</source>
-        <translation type="unfinished"></translation>
+        <translation>Spettro Segnale</translation>
     </message>
 </context>
 <context>
@@ -5389,23 +5391,24 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/StorageAccessDialog.qml" line="41"/>
         <source>Storage access needed</source>
-        <translation type="unfinished"></translation>
+        <translation>Accesso all&apos;archivio necessario</translation>
     </message>
     <message>
         <location filename="../qml/StorageAccessDialog.qml" line="56"/>
         <source>AbracaDABra needs permission to store data.
 Please select data storage folder and grant permissions.</source>
-        <translation type="unfinished"></translation>
+        <translation>AbracaDABra richiede l&apos;autorizzazione per archiviare i dati.
+Seleziona la cartella in cui archiviare i dati e concedi le autorizzazioni.</translation>
     </message>
     <message>
         <location filename="../qml/StorageAccessDialog.qml" line="67"/>
         <source>Cancel</source>
-        <translation type="unfinished">Cancella</translation>
+        <translation>Cancella</translation>
     </message>
     <message>
         <location filename="../qml/StorageAccessDialog.qml" line="73"/>
         <source>Choose folder...</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli una cartella...</translation>
     </message>
 </context>
 <context>
@@ -5546,17 +5549,17 @@ Please select data storage folder and grant permissions.</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="229"/>
         <source>Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;&lt;br&gt;&lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;, right click on your location, click on coordinates in popup menu to copy them and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Inserisci le coordinate nel formato “latitudine, longitudine”, ad esempio: 1.234,-5.678&lt;/p&gt;&lt;br&gt;&lt;p&gt;Suggerimento: &lt;i&gt;Vai su &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;, fai clic con il tasto destro sulla tua posizione, seleziona “Coordinate” dal menu a comparsa per copiarlee poi inserisci qui i valori così come sono.&lt;/i&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="237"/>
         <source>Altitude source:</source>
-        <translation type="unfinished"></translation>
+        <translation>Fonte dei dati sull&apos;altitudine:</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="242"/>
         <source>Manual</source>
-        <translation type="unfinished">Manuale</translation>
+        <translation>Manuale</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="275"/>
@@ -5576,7 +5579,7 @@ Please select data storage folder and grant permissions.</source>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="316"/>
         <source>Column names in English</source>
-        <translation type="unfinished"></translation>
+        <translation>Nomi delle colonne in inglese</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="327"/>
@@ -5799,12 +5802,12 @@ Please select data storage folder and grant permissions.</source>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="437"/>
         <source>Altitude (TX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Altitudine (TX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="439"/>
         <source>Antenna Height (TX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Altezza dell&apos;Antenna (TX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="441"/>
@@ -5819,7 +5822,7 @@ Please select data storage folder and grant permissions.</source>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="445"/>
         <source>Altitude (RX)</source>
-        <translation type="unfinished"></translation>
+        <translation>Altitudine (RX)</translation>
     </message>
     <message>
         <location filename="../tii/txtablemodel.cpp" line="407"/>
