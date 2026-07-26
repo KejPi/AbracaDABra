@@ -131,7 +131,7 @@ Item {
             opacity: 1.0
             anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height/2)
             visible: backend.positionValid
-            z: 100
+            z: 2
         }
 
         MapItemView {
@@ -158,7 +158,7 @@ Item {
         }
 
         Rectangle {
-            id: infoBox
+            id: infoBox            
 
             HoverHandler {
                 id: infoHoverHandler
@@ -216,6 +216,8 @@ Item {
             anchors.top: map.top
             anchors.rightMargin: (map.width - width) > width/2 ? 10 : (map.width - width) / 2
             anchors.topMargin: 10
+
+            z: 3
 
             sourceComponent: AbracaTableView {
                 id: tiiTableView
