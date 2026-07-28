@@ -193,6 +193,14 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
             }
             return 1;  // center
         }
+        case TxTableModelRoles::IconSourceRole:
+            if (index.column() == ColNumServices)
+            {
+                // the trailing counter is a cache-busting token: it must change whenever the flag pixmap is
+                // (re)downloaded, otherwise QML won't detect a value change and will never re-request the image
+                return QString("image://metadata/flag/%1/%2").arg(item.ensId().value()).arg(m_flagRefreshCounter);
+            }
+            return QString{};
         case TxTableModelRoles::ExportRole:
         case TxTableModelRoles::ExportRoleUTC:
         case TxTableModelRoles::ExportRoleEnglish:
@@ -526,6 +534,7 @@ QHash<int, QByteArray> TxTableModel::roleNames() const
     roles[TxTableModelRoles::SelectedTxRole] = "selectedTx";
     roles[TxTableModelRoles::IsActiveRole] = "isActive";
     roles[TxTableModelRoles::IsLocalRole] = "isLocal";
+    roles[TxTableModelRoles::IconSourceRole] = "iconSource";
     roles[Qt::TextAlignmentRole] = "textAlignment";
 
     return roles;
@@ -743,6 +752,14 @@ void TxTableModel::setDisplayTimeInUTC(bool newDisplayTimeInUTC)
     }
 }
 
+void TxTableModel::countryFlagUpdated(const ServiceListId &ensId)
+{
+    // bump the cache-busting token so the IconSourceRole value actually changes; otherwise QML bindings
+    // won't notice dataChanged() since the returned URL string would stay identical
+    ++m_flagRefreshCounter;
+    emit dataChanged(index(0, ColNumServices), index(m_modelData.size() - 1, ColNumServices), {TxTableModelRoles::IconSourceRole});
+}
+
 void TxTableModel::loadLocalTxList(const QString &filename)
 {
     if (m_localTxList != nullptr)
@@ -832,7 +849,7 @@ QJsonObject TxTableModel::toJson() const
         txObj["frequency"] = static_cast<int>(it->ensId().freq());
         txObj["ueid"] = QString("%1").arg(it->ensId().ueid(), 6, 16, QChar(' ')).toUpper();
         txObj["label"] = it->ensLabel();
-        txObj["snr"] = qRound(it->snr() * 10) * 0.1;          // round to 1 decimal place
+        txObj["snr"] = qRound(it->snr() * 10) * 0.1;  // round to 1 decimal place
         if (std::isnan(it->rfLevel()) == false)
         {
             txObj["rfLevel"] = qRound(it->rfLevel() * 10) * 0.1;  // round to 1 decimal place

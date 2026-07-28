@@ -29,8 +29,10 @@
 
 #include <QDomDocument>
 #include <QHash>
+#include <QNetworkAccessManager>
 #include <QObject>
 #include <QPixmap>
+#include <QSet>
 
 #include "epgmodel.h"
 #include "servicelist.h"
@@ -94,6 +96,8 @@ private:
     QHash<QString, serviceInfo_t> m_info;
     QHash<ServiceListId, EPGModel *> m_epgList;
     ServiceListId m_currentEnsemble;
+    QNetworkAccessManager *m_networkManager;
+    mutable QSet<QString> m_pendingFlagDownloads;
 
     bool parseProgramme(const QDomElement &element, const ServiceListId &id);
     void parseDescription(const QDomElement &element, EPGModelItem *progItem);

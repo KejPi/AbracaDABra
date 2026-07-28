@@ -62,6 +62,7 @@ public:
         SelectedTxRole,
         IsActiveRole,
         IsLocalRole,
+        IconSourceRole,
     };
 
     enum TxTableCols
@@ -118,6 +119,7 @@ public:
                        const QString &ensConfig, const QString &ensCSV, int numServices, float snr, float rfLevel);
     void setCoordinates(const QGeoCoordinate &newCoordinates);
     void setDisplayTimeInUTC(bool newDisplayTimeInUTC);
+    void countryFlagUpdated(const ServiceListId &ensId);
 
     // local TX management
     void loadLocalTxList(const QString &filename);
@@ -141,6 +143,7 @@ private:
     QMultiHash<ServiceListId, TxDataItem *> m_txList;
     QGeoCoordinate m_coordinates;
     TxLocalList *m_localTxList = nullptr;
+    int m_flagRefreshCounter = 0;  // cache-busting token appended to flag icon URL so QML detects the value change
 };
 
 #endif  // TXTABLEMODEL_H

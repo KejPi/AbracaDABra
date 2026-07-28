@@ -143,6 +143,7 @@ public:
     void setServiceToRestore(const DabSId &sid, uint8_t scids) { m_serviceToRestore = ServiceListId(sid.value(), scids); }
     ServiceListId getServiceToRestore() const { return m_serviceToRestore; };
     void loadSettings();
+    void countryFlagUpdated(const ServiceListId &ensId);
 
     ChannelSelectionModel *channelSelectionModel() const { return m_channelSelectionModel; }
     MessageBoxBackend *messageBoxBackend() const { return m_messageBoxBackend; }

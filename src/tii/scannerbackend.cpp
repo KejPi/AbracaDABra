@@ -1476,6 +1476,11 @@ void ScannerBackend::loadSettings()
     m_sortedFilteredModel->setLocalTxFilter(m_settings->scanner.hideLocalTx);
 }
 
+void ScannerBackend::countryFlagUpdated(const ServiceListId &ensId)
+{
+    m_model->countryFlagUpdated(ensId);
+}
+
 void ScannerBackend::selectTxOnMap(int markerIndex)
 {
     if (markerIndex == -1)

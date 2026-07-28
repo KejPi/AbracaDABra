@@ -33,6 +33,7 @@
 #include <QFileInfo>
 #include <QIODevice>
 #include <QLoggingCategory>
+#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QRegularExpression>
 #include <QStandardPaths>
@@ -44,7 +45,11 @@
 Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
 
 MetadataManager::MetadataManager(const ServiceList *serviceList, QObject *parent)
-    : QObject(parent), m_serviceList(serviceList), m_isLoadingFromCache(false), m_cleanEpgCache(true)
+    : QObject(parent),
+      m_serviceList(serviceList),
+      m_isLoadingFromCache(false),
+      m_cleanEpgCache(true),
+      m_networkManager(new QNetworkAccessManager(this))
 {}
 
 MetadataManager::~MetadataManager()
@@ -815,29 +820,45 @@ QVariant MetadataManager::data(const ServiceListId &ensId, const ServiceListId &
             {  // download flag
                 if (!countryCode.isEmpty())
                 {
-                    QNetworkAccessManager *manager = new QNetworkAccessManager();
-                    connect(manager, &QNetworkAccessManager::finished, this,
-                            [=](QNetworkReply *reply)
+                    // data() may be invoked from a non-GUI thread (e.g. QQuickPixmapReader when
+                    // loading images asynchronously). QNetworkAccessManager and its replies must
+                    // only be created/used from the thread that owns m_networkManager, so marshal
+                    // the actual request initiation onto MetadataManager's own thread.
+                    ServiceListId id = servId.isValid() ? servId : ensId;
+                    QMetaObject::invokeMethod(
+                        const_cast<MetadataManager *>(this),
+                        [this, filename, countryCode, id]()
+                        {
+                            if (m_pendingFlagDownloads.contains(countryCode))
                             {
-                                if (reply->error() == QNetworkReply::NoError)
-                                {
-                                    QDir dir;
-
-                                    dir.mkpath(QFileInfo(filename).absolutePath());
-                                    QFile file(filename);
-                                    if (file.open(QIODevice::WriteOnly))
+                                return;
+                            }
+                            m_pendingFlagDownloads.insert(countryCode);
+                            QNetworkRequest request(QUrl("https://flagcdn.com/40x30/" + QString("%1.png").arg(countryCode)));
+                            QNetworkReply *reply = m_networkManager->get(request);
+                            connect(reply, &QNetworkReply::finished, this,
+                                    [this, reply, filename, countryCode, id]()
                                     {
-                                        file.write(reply->readAll());
-                                        file.close();
-                                        emit dataUpdated(servId, MetadataManager::CountryFlag);
-                                    }
-                                }
-                                reply->deleteLater();
-                            });
-                    connect(manager, &QNetworkAccessManager::finished, manager, &QNetworkAccessManager::deleteLater);
-                    QNetworkRequest *request = new QNetworkRequest();
-                    request->setUrl(QUrl("https://flagcdn.com/40x30/" + QString("%1.png").arg(countryCode)));
-                    manager->get(*request);
+                                        if (reply->error() == QNetworkReply::NoError)
+                                        {
+                                            if (QFileInfo::exists(filename) == false)
+                                            {
+                                                QDir dir;
+                                                dir.mkpath(QFileInfo(filename).absolutePath());
+                                                QFile file(filename);
+                                                if (file.open(QIODevice::WriteOnly))
+                                                {
+                                                    file.write(reply->readAll());
+                                                    file.close();
+                                                    emit dataUpdated(id, MetadataManager::CountryFlag);
+                                                }
+                                            }
+                                        }
+                                        m_pendingFlagDownloads.remove(countryCode);
+                                        reply->deleteLater();
+                                    });
+                        },
+                        Qt::QueuedConnection);
                 }
             }
         }

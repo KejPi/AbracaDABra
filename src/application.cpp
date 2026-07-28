@@ -2357,6 +2357,10 @@ void Application::onMetadataUpdated(const ServiceListId &id, MetadataManager::Me
     }
     else
     {  // ensemble
+        if (m_scannerBackend && role == MetadataManager::CountryFlag)
+        {  // update scanner
+            m_scannerBackend->countryFlagUpdated(id);
+        }
         if (id.ueid() == m_ueid)
         {
             switch (role)
