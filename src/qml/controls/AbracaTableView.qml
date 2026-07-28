@@ -354,7 +354,7 @@ Item {
                     anchors.left: parent.left
                     anchors.leftMargin: visible ? UI.standardMargin / 4 : 0
                     anchors.verticalCenter: parent.verticalCenter
-                    height: cellText.font.pointSize // tableItem.rowHeight - 2*UI.standardMargin
+                    height: tableItem.rowHeight - UI.standardMargin // cellText.font.pointSize
                     fillMode: Image.PreserveAspectFit
                     asynchronous: true
                     cache: false
