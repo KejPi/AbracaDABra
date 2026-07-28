@@ -138,8 +138,8 @@ void ScannerBackend::stopScan()
     }
 
     stopAutoSaveCsv();
-    if (autoSaveJSON())
-    {
+    if (autoSaveJSON() && m_model->rowCount() > 0)
+    {  // JSON is only svaed when there is at least one row in the table
         saveJSON();
     }
 
