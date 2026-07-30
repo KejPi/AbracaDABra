@@ -240,7 +240,7 @@ private:
     void onJsonParsed();
 
     // Incremental scan
-    bool m_dataLoadedFromCsv = false;
+    bool m_dataLoadedFromFile = false;
     QHash<uint32_t, IncrementalChannelRecord> m_incrementalBaseline;  // key = frequency
 };
 

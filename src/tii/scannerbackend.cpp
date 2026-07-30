@@ -258,6 +258,8 @@ void ScannerBackend::saveJSON()
         root["scanStartTime"] = m_settings->tii.timestampInUTC ? QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss")
                                                                : QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
     }
+    root["coordinates"] =
+        QJsonObject{{"lat", m_scanStartLocation.latitude()}, {"lon", m_scanStartLocation.longitude()}, {"alt", m_scanStartLocation.altitude()}};
     root["utc"] = m_settings->tii.timestampInUTC;
     root["data"] = m_model->toJson();
 
@@ -591,7 +593,7 @@ void ScannerBackend::onCsvParsed()
                             << result.offlineCoords.longitude();
             setOfflinePosition(result.offlineCoords);
         }
-        m_dataLoadedFromCsv = true;
+        m_dataLoadedFromFile = true;
     }
     else
     {
@@ -669,6 +671,22 @@ void ScannerBackend::onJsonParsed()
             scanStartTime.setTimeZone(QTimeZone(QTimeZone::LocalTime));
         }
         m_scanStartTime = scanStartTime.toLocalTime();
+
+        // load coordinates if present
+        if (result.jsonObject.contains("coordinates") && result.jsonObject["coordinates"].isObject())
+        {
+            QJsonObject coordsObj = result.jsonObject["coordinates"].toObject();
+            double lat = coordsObj.value("lat").toDouble();
+            double lon = coordsObj.value("lon").toDouble();
+            double alt = coordsObj.value("alt").toDouble();
+            QGeoCoordinate coords(lat, lon, alt);
+            if (coords.isValid())
+            {
+                setOfflinePosition(coords);
+                qCInfo(scanner) << "Using offline coordinates from JSON: lat" << coords.latitude() << "lon" << coords.longitude();
+            }
+        }
+        m_dataLoadedFromFile = true;
     }
     else
     {
@@ -973,8 +991,8 @@ void ScannerBackend::startScan()
     clearOfflineMode();
 
     // If data was loaded from CSV, always force-clear the table regardless of clearOnStart setting
-    const bool forceClear = m_dataLoadedFromCsv || m_settings->scanner.clearOnStart;
-    m_dataLoadedFromCsv = false;
+    const bool forceClear = m_dataLoadedFromFile || m_settings->scanner.clearOnStart;
+    m_dataLoadedFromFile = false;
     if (forceClear)
     {
         reset();
