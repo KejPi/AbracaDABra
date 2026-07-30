@@ -336,6 +336,7 @@ Item {
                 }
                 contextMenuModel: scannerBackend.contextMenuModel
                 sortingEnabled: true
+                cellsLeftAligned: false
                 onDoubleClickedRow: function(row) {
                     scannerBackend.showEnsembleConfig(row)
                 }

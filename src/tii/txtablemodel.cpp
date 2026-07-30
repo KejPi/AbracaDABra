@@ -187,7 +187,7 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
         break;
         case Qt::TextAlignmentRole:
         {
-            if (index.column() == ColLocation)
+            if (index.column() == ColLocation || index.column() == ColEnsLabel || index.column() == ColNumServices)
             {
                 return 0;  // left
             }

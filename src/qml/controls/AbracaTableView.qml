@@ -276,8 +276,11 @@ Item {
             required property int index
 
             Row {
-                spacing: 2
-                anchors.centerIn: parent
+                spacing: 2                
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: tableItem.cellsLeftAligned ? undefined : parent.horizontalCenter
+                anchors.left: tableItem.cellsLeftAligned ? parent.left : undefined
+                anchors.leftMargin: tableItem.cellsLeftAligned ? UI.standardMargin / 4 : undefined
                 Text {
                     id: colLabel
                     text: display
