@@ -578,6 +578,8 @@ void ScannerBackend::onCsvParsed()
 
     if (result.success)
     {
+        reset();
+
         m_model->beginLoadingFromFile();
         for (const auto &row : result.rows)
         {
@@ -655,6 +657,8 @@ void ScannerBackend::onJsonParsed()
     }
     if (result.success && result.jsonObject.contains("data") && result.jsonObject["data"].isObject())
     {  // we may have something that is valid
+        reset();
+
         QJsonObject dataObj = result.jsonObject["data"].toObject();
         success = m_model->loadFromJson(dataObj, utcTime);
     }
