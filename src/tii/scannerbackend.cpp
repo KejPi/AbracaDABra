@@ -258,10 +258,11 @@ void ScannerBackend::saveJSON()
         root["scanStartTime"] = m_settings->tii.timestampInUTC ? QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss")
                                                                : QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
     }
-    root["coordinates"] =
-        QJsonObject{{"lat", m_scanStartLocation.latitude()}, {"lon", m_scanStartLocation.longitude()}, {"alt", m_scanStartLocation.altitude()}};
     root["utc"] = m_settings->tii.timestampInUTC;
-    root["data"] = m_model->toJson();
+    QJsonObject modelData = m_model->toJson();
+    modelData["rx"] =
+        QJsonObject{{"lat", m_scanStartLocation.latitude()}, {"lon", m_scanStartLocation.longitude()}, {"alt", m_scanStartLocation.altitude()}};
+    root["data"] = modelData;
 
     // Ensure path exists and writable
 #if ASK_FOR_PERMISSION_IF_NEEDED
@@ -677,12 +678,13 @@ void ScannerBackend::onJsonParsed()
         m_scanStartTime = scanStartTime.toLocalTime();
 
         // load coordinates if present
-        if (result.jsonObject.contains("coordinates") && result.jsonObject["coordinates"].isObject())
+        QJsonObject dataObj = result.jsonObject["data"].toObject();
+        if (dataObj.contains("rx") && dataObj["rx"].isObject())
         {
-            QJsonObject coordsObj = result.jsonObject["coordinates"].toObject();
-            double lat = coordsObj.value("lat").toDouble();
-            double lon = coordsObj.value("lon").toDouble();
-            double alt = coordsObj.value("alt").toDouble();
+            QJsonObject rxObj = dataObj["rx"].toObject();
+            double lat = rxObj.value("lat").toDouble();
+            double lon = rxObj.value("lon").toDouble();
+            double alt = rxObj.value("alt").toDouble();
             QGeoCoordinate coords(lat, lon, alt);
             if (coords.isValid())
             {

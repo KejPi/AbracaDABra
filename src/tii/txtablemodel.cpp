@@ -819,7 +819,6 @@ void TxTableModel::endLoadingFromFile()
 QJsonObject TxTableModel::toJson() const
 {
     // JSON structure is following:
-    // RX location
     // TX [
     //        timestamp
     //        frequency
@@ -835,8 +834,6 @@ QJsonObject TxTableModel::toJson() const
     //                 ]
     // ]
 
-    QJsonObject rootObj;
-    rootObj["rx"] = QJsonObject{{"lat", m_coordinates.latitude()}, {"lon", m_coordinates.longitude()}, {"alt", m_coordinates.altitude()}};
     QJsonArray txArray;
 
     // go through model data and create array of TX
@@ -882,6 +879,7 @@ QJsonObject TxTableModel::toJson() const
         // append to root object
         txArray.append(txObj);
     }
+    QJsonObject rootObj;
     rootObj["tx"] = txArray;
     return rootObj;
 }
