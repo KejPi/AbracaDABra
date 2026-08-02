@@ -865,6 +865,9 @@ Application::~Application()
     delete m_inputDevice;
     delete m_inputDeviceRecorder;
 
+    delete m_scannerBackend;
+    delete m_tiiBackend;
+
     delete m_dlDecoder[Instance::Service];
     delete m_dlDecoder[Instance::Announcement];
     delete m_dlPlusModel[Instance::Service];

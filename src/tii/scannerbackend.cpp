@@ -73,6 +73,10 @@ ScannerBackend::ScannerBackend(Settings *settings, QObject *parent) : TxMapBacke
 ScannerBackend::~ScannerBackend()
 {
     stopAutoSaveCsv();
+    if (autoSaveJSON() && m_model->rowCount() > 0)
+    {  // JSON is only svaed when there is at least one row in the table
+        saveJSON();
+    }
 
     if (m_csvFutureWatcher != nullptr)
     {
@@ -1478,6 +1482,10 @@ void ScannerBackend::onInputDeviceError(const InputDevice::ErrorCode)
         }
         stopScan();
         stopAutoSaveCsv();
+        if (autoSaveJSON() && m_model->rowCount() > 0)
+        {  // JSON is only svaed when there is at least one row in the table
+            saveJSON();
+        }
         scanningLabel(tr("Scanning failed"));
     }
 }
