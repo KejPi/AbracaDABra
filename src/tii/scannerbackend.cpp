@@ -73,8 +73,8 @@ ScannerBackend::ScannerBackend(Settings *settings, QObject *parent) : TxMapBacke
 ScannerBackend::~ScannerBackend()
 {
     stopAutoSaveCsv();
-    if (autoSaveJSON() && m_model->rowCount() > 0)
-    {  // JSON is only svaed when there is at least one row in the table
+    if (autoSaveJSON() && m_model->rowCount() > 0 && m_isScanning)
+    {  // JSON is only saved when there is at least one row in the table
         saveJSON();
     }
 
