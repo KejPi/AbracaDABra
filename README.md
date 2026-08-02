@@ -410,8 +410,8 @@ There are some interesting projects to visualize CVS logs, check it [here](#proj
 AbracaDABra offers the possibility to run an unattended DAB band scan and to store all received transmitters. This is an advanced DX feature. [TII decoding](#tii-decoding) configuration is required for the tool to function correctly. 
 
 <p align="center" width="100%">
-    <img width="1029" height="998" alt="Scanning tool" src="https://github.com/user-attachments/assets/4b863271-a836-4c30-a80f-ce8a6768131f" />
-</p>
+    <img width="1364" height="869" alt="Scanning tool" src="https://github.com/user-attachments/assets/c7e82c36-3485-414b-b2d1-fccb8c13e395" />
+</p>    
 
 The scanning tool can be configured to run in one of 3 different modes:
 
