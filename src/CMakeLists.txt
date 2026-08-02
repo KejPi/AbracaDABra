@@ -279,6 +279,7 @@ qt_add_qml_module(${TARGET}
         qml/DabSignalView.qml
         qml/UpdateDialog.qml        
         qml/SystemTray.qml
+        qml/StorageAccessDialog.qml
 
         qml/audiorec/AudioRecordingStatus.qml
         qml/audiorec/AudioRecording.qml
@@ -512,6 +513,8 @@ if(HAVE_QTWIDGETS)
         Qt${QT_VERSION_MAJOR}::Widgets
     )
 endif(HAVE_QTWIDGETS)
+
+target_link_libraries(${TARGET} PRIVATE ${ZLIB})
 
 if(APPLE)
     target_link_libraries(${TARGET} PRIVATE "-framework MediaPlayer")

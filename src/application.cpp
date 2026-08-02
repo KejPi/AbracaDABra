@@ -53,6 +53,7 @@
 #include <android/log.h>
 #include <unistd.h>
 
+#include <QBuffer>
 #include <QJniEnvironment>
 #include <QJniObject>
 #include <cstring>
@@ -128,6 +129,8 @@
 #endif
 
 #ifdef Q_OS_ANDROID
+#include "androidfilehelper.h"
+
 // Static instance pointer for JNI callbacks (set in constructor, cleared in destructor)
 static Application *s_appInstance = nullptr;
 
@@ -290,10 +293,10 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
         env.registerNativeMethods("org/qtproject/abracadabra/AudioServiceHelper", methods, 3);
     }
     s_appInstance = this;
+    connect(&AndroidFileHelper::instance(), &AndroidFileHelper::requestPermissions, this, &Application::requestPermissions, Qt::QueuedConnection);
 #endif
 
     connect(m_ui, &ApplicationUI::isSystemDarkModeChanged, this, &Application::setColorTheme);
-
     connect(m_navigationModel, &NavigationModel::isUndockedChanged, this, &Application::pageUndocked);
     connect(m_navigationModel, &NavigationModel::isActiveChanged, this, &Application::pageActive);
 
@@ -312,6 +315,8 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_settingsBackend, &SettingsBackend::spiIconSettingsChanged, this, &Application::onSpiProgressSettingsChanged);
     connect(m_settingsBackend, &SettingsBackend::applicationStyleChanged, this, &Application::setColorTheme);
     connect(m_settingsBackend, &SettingsBackend::compactUiChanged, this, [this]() { m_ui->isCompact(m_settings->compactUi); });
+    connect(m_settingsBackend, &SettingsBackend::showServicePageWidgetChanged, this,
+            [this]() { m_ui->showServicePageWidget(m_settings->showServicePageWidget); });
     connect(m_settingsBackend, &SettingsBackend::restartRequested, this,
             [this]()
             {
@@ -432,6 +437,18 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_serviceList, &ServiceList::serviceRemovedFromEnsemble, m_slTreeModel, &SLTreeModel::removeEnsembleService);
     connect(m_serviceList, &ServiceList::ensembleRemoved, m_slTreeModel, &SLTreeModel::removeEnsemble);
     connect(m_serviceList, &ServiceList::ensembleRemoved, this, &Application::populateServiceSourcesMenu);
+    connect(m_serviceList, &ServiceList::serviceListExported, this,
+            [this](bool status)
+            {
+                if (status)
+                {
+                    emit showInfoMessage(tr("Service list exported"), 1);
+                }
+                else
+                {
+                    emit showInfoMessage(tr("Failed to export service list"), -1);
+                }
+            });
 
     connect(m_slTreeSelectionModel, &QItemSelectionModel::selectionChanged, this, &Application::onServiceListTreeSelection);
     connect(m_serviceList, &ServiceList::empty, m_slTreeModel, &SLTreeModel::clear);
@@ -636,7 +653,17 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_radioControl, &RadioControl::stopAudio, m_audioDecoder, &AudioDecoder::stop, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::startAudio, m_audioOutput, &AudioOutput::start, Qt::QueuedConnection);
 #ifdef Q_OS_ANDROID
-    connect(m_audioDecoder, &AudioDecoder::startAudio, this, [this]() { updateAndroidNotification(m_ui->serviceLabel(), ""); }, Qt::QueuedConnection);
+    connect(
+        m_audioDecoder, &AudioDecoder::startAudio, this, [this]() { updateAndroidNotification(m_ui->serviceLabel(), "DAB radio"); },
+        Qt::QueuedConnection);
+    connect(
+        m_audioDecoder, &AudioDecoder::stopAudio, this,
+        [this]()
+        {
+            updateAndroidNotification(m_ui->serviceLabel(), "");
+            updateAndroidArtwork(QPixmap{});
+        },
+        Qt::QueuedConnection);
 #endif
     connect(m_audioDecoder, &AudioDecoder::switchAudio, m_audioOutput, &AudioOutput::restart, Qt::QueuedConnection);
     connect(m_audioDecoder, &AudioDecoder::stopAudio, m_audioOutput, &AudioOutput::stop, Qt::QueuedConnection);
@@ -838,6 +865,9 @@ Application::~Application()
     delete m_inputDevice;
     delete m_inputDeviceRecorder;
 
+    delete m_scannerBackend;
+    delete m_tiiBackend;
+
     delete m_dlDecoder[Instance::Service];
     delete m_dlDecoder[Instance::Announcement];
     delete m_dlPlusModel[Instance::Service];
@@ -880,7 +910,8 @@ void Application::setContextProperties()
     context->setContextProperty("application", this);
     context->setContextProperty("appUI", m_ui);
     context->setContextProperty("navigationModel", m_navigationModel);
-    context->setContextProperty("slModel", m_slProxyModel);
+    context->setContextProperty("slModel", m_slModel);
+    context->setContextProperty("slProxyModel", m_slProxyModel);
     context->setContextProperty("slTreeModel", m_slTreeModel);
     context->setContextProperty("channelListModel", m_channelListModel);
     context->setContextProperty("slSelectionModel", m_slSelectionModel);
@@ -902,12 +933,14 @@ void Application::onInputDeviceReady()
     switch (m_inputDeviceId)
     {
         case InputDevice::Id::AIRSPY:
+#if HAVE_AIRSPY
             // these are settings that are configures in ini file manually
             // they are only set when device is initialized
             if (dynamic_cast<AirspyInput *>(m_inputDevice))
             {
                 dynamic_cast<AirspyInput *>(m_inputDevice)->setDataPacking(m_settings->airspy.dataPacking);
             }
+#endif
             break;
         case InputDevice::Id::RAWFILE:
             if (m_inputDevice->deviceDescription().rawFile.frequency_kHz != 0)
@@ -1860,6 +1893,17 @@ void Application::onAudioServiceSelection(const RadioControlServiceComponent &s)
         {
             m_slsBackend[Instance::Service]->showServiceLogo(logo, true);
         }
+        logo = m_metadataManager->data(m_ueid, s.SId.value(), s.SCIdS, MetadataManager::SquareLogo).value<QPixmap>();
+        if (!logo.isNull())
+        {
+#ifdef Q_OS_MACOS
+            macUpdateNowPlayingArtwork(logo);
+#endif
+#if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
+            linuxUpdateNowPlayingArtwork(m_metadataManager->squareLogoFilePath(m_ueid, s.SId.value(), s.SCIdS));
+#endif
+        }
+        updateAndroidArtwork(logo);
         onShowCountryFlagChanged();
     }
     else
@@ -2284,6 +2328,18 @@ void Application::onMetadataUpdated(const ServiceListId &id, MetadataManager::Me
                     }
                 }
                 break;
+                case MetadataManager::MetadataRole::SquareLogo:
+                {
+                    QPixmap logo = m_metadataManager->data(ServiceListId(0, m_ueid), id, MetadataManager::SquareLogo).value<QPixmap>();
+#ifdef Q_OS_MACOS
+                    macUpdateNowPlayingArtwork(logo);
+#endif
+#if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
+                    linuxUpdateNowPlayingArtwork(m_metadataManager->squareLogoFilePath(m_ueid, m_SId.value(), m_SCIdS));
+#endif
+                    updateAndroidArtwork(logo);
+                }
+                break;
                 case MetadataManager::CountryFlag:
                 {
                     if (m_settings->showServiceFlag)
@@ -2304,6 +2360,10 @@ void Application::onMetadataUpdated(const ServiceListId &id, MetadataManager::Me
     }
     else
     {  // ensemble
+        if (m_scannerBackend && role == MetadataManager::CountryFlag)
+        {  // update scanner
+            m_scannerBackend->countryFlagUpdated(id);
+        }
         if (id.ueid() == m_ueid)
         {
             switch (role)
@@ -2508,28 +2568,18 @@ void Application::pageActive(int id, bool isActive)
 {
     switch (id)
     {
-        case NavigationModel::Tii:
-            if (m_tiiBackend)
-            {
-                m_tiiBackend->setIsActive(isActive);
-            }
-            break;
         case NavigationModel::Scanner:
             if (m_scannerBackend)
             {
                 m_scannerBackend->setIsActive(isActive);
             }
             break;
+        case NavigationModel::Tii:
+
         case NavigationModel::DabSignal:
-            if (m_signalBackend)
-            {
-                m_signalBackend->setIsActive(isActive);
-            }
-            break;
         case NavigationModel::Undefined:
         case NavigationModel::Service:
         case NavigationModel::EnsembleInfo:
-
         case NavigationModel::Epg:
         case NavigationModel::ServiceList:
         case NavigationModel::Settings:
@@ -2744,7 +2794,7 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
         break;
         case InputDevice::Id::RTLTCP:
         {
-            m_inputDevice = new RtlTcpInput();
+            m_inputDevice = new RtlTcpInput(m_settings->rtltcp.useNativeSocket);
 
             // signals have to be connected before calling openDevice
             // RTL_TCP is opened immediately and starts receiving data
@@ -3255,6 +3305,9 @@ void Application::loadSettings()
     m_settings->showSystemTime = settings->value("showSystemTime", false).toBool();
     m_settings->showEnsFlag = settings->value("showEnsembleCountryFlag", false).toBool();
     m_settings->showServiceFlag = settings->value("showServiceCountryFlag", false).toBool();
+    m_settings->showServicePageWidget = settings->value("showServicePageWidget", false).toBool();
+    m_ui->servicePageWidget(static_cast<ApplicationUI::ServicePageWidget>(
+        settings->value("servicePageWidget", static_cast<int>(ApplicationUI::ServicePageWidget::TII)).toInt()));
 #ifdef Q_OS_ANDROID
     m_settings->keepScreenOn = settings->value("keepScreenOn", false).toBool();
 #else
@@ -3271,6 +3324,8 @@ void Application::loadSettings()
     m_settings->tii.locationSource = static_cast<Settings::GeolocationSource>(
         settings->value("TII/locationSource", static_cast<int>(Settings::GeolocationSource::System)).toInt());
     m_settings->tii.coordinates = QGeoCoordinate(settings->value("TII/latitude", 0.0).toDouble(), settings->value("TII/longitude", 0.0).toDouble());
+    m_settings->tii.manualAltitude = settings->value("TII/manualAltitude", false).toBool();
+    m_settings->tii.altitude = settings->value("TII/altitude", 280).toInt();
     m_settings->tii.serialPort = settings->value("TII/serialPort", "").toString();
     m_settings->tii.serialPortBaudrate = settings->value("TII/serialPortBaudrate", 4800).toInt();
     m_settings->tii.showSpectumPlot = settings->value("TII/showSpectrumPlot", false).toBool();
@@ -3312,6 +3367,8 @@ void Application::loadSettings()
     m_settings->scanner.clearOnStart = settings->value("Scanner/clearOnStart", true).toBool();
     m_settings->scanner.hideLocalTx = settings->value("Scanner/hideLocalTx", false).toBool();
     m_settings->scanner.autoSave = settings->value("Scanner/autoSave", false).toBool();
+    m_settings->scanner.autoSaveJSON = settings->value("Scanner/autoSaveJSON", false).toBool();
+    m_settings->scanner.incrementalScan = settings->value("Scanner/incrementalScan", false).toBool();
     m_settings->scanner.waitForSync = settings->value("Scanner/waitForSyncSec", 3).toInt();
     m_settings->scanner.waitForEnsemble = settings->value("Scanner/waitForEnsembleSec", 6).toInt();
     m_settings->scanner.centerMapToCurrentPosition = settings->value("Scanner/mapCenterCurrPos", true).toBool();
@@ -3388,6 +3445,7 @@ void Application::loadSettings()
     m_settings->rtltcp.agcLevelMax = settings->value("RTL-TCP/agcLevelMax", 0).toInt();
     m_settings->rtltcp.ppm = settings->value("RTL-TCP/ppm", 0).toInt();
     m_settings->rtltcp.rfLevelOffset = settings->value("RTL-TCP/rfLevelOffset", 0.0).toFloat();
+    m_settings->rtltcp.useNativeSocket = settings->value("RTL-TCP/useNativeSocket", true).toBool();
 
 #if HAVE_RARTTCP
     m_settings->rarttcp.tcpAddress = settings->value("RART-TCP/address", QString("127.0.0.1")).toString();
@@ -3583,6 +3641,8 @@ void Application::saveSettings()
     settings->setValue("dataStoragePath", m_settings->dataStoragePath);
     settings->setValue("compactUi", m_settings->compactUi);
     settings->setValue("cableChannelsEna", m_settings->cableChannelsEna);
+    settings->setValue("showServicePageWidget", m_settings->showServicePageWidget);
+    settings->setValue("servicePageWidget", static_cast<int>(m_ui->servicePageWidget()));
 #ifdef Q_OS_ANDROID
     settings->setValue("keepScreenOn", m_settings->keepScreenOn);
 #endif
@@ -3606,6 +3666,8 @@ void Application::saveSettings()
     settings->setValue("TII/locationSource", static_cast<int>(m_settings->tii.locationSource));
     settings->setValue("TII/latitude", m_settings->tii.coordinates.latitude());
     settings->setValue("TII/longitude", m_settings->tii.coordinates.longitude());
+    settings->setValue("TII/manualAltitude", m_settings->tii.manualAltitude);
+    settings->setValue("TII/altitude", m_settings->tii.altitude);
     settings->setValue("TII/serialPort", m_settings->tii.serialPort);
     settings->setValue("TII/serialPortBaudrate", m_settings->tii.serialPortBaudrate);
     settings->setValue("TII/showSpectrumPlot", m_settings->tii.showSpectumPlot);
@@ -3644,6 +3706,8 @@ void Application::saveSettings()
     settings->setValue("Scanner/clearOnStart", m_settings->scanner.clearOnStart);
     settings->setValue("Scanner/hideLocalTx", m_settings->scanner.hideLocalTx);
     settings->setValue("Scanner/autoSave", m_settings->scanner.autoSave);
+    settings->setValue("Scanner/autoSaveJSON", m_settings->scanner.autoSaveJSON);
+    settings->setValue("Scanner/incrementalScan", m_settings->scanner.incrementalScan);
     settings->setValue("Scanner/mapCenterCurrPos", m_settings->scanner.centerMapToCurrentPosition);
     settings->setValue("Scanner/mapCenterLat", m_settings->scanner.mapCenter.latitude());
     settings->setValue("Scanner/mapCenterLon", m_settings->scanner.mapCenter.longitude());
@@ -3769,7 +3833,7 @@ void Application::saveSettings()
     settings->setValue("RTL-TCP/agcLevelMax", m_settings->rtltcp.agcLevelMax);
     settings->setValue("RTL-TCP/ppm", m_settings->rtltcp.ppm);
     settings->setValue("RTL-TCP/rfLevelOffset", m_settings->rtltcp.rfLevelOffset);
-
+    settings->setValue("RTL-TCP/useNativeSocket", m_settings->rtltcp.useNativeSocket);
 #if HAVE_RARTTCP
     settings->setValue("RART-TCP/address", m_settings->rarttcp.tcpAddress);
     settings->setValue("RART-TCP/port", m_settings->rarttcp.tcpPort);
@@ -3896,6 +3960,16 @@ void Application::onMuteButtonToggled(bool doMute)
 #endif
 #if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
     linuxUpdateNowPlayingPlaybackState(!doMute);
+#endif
+#ifdef Q_OS_ANDROID
+    try
+    {
+        QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "updateMuteState", "(Z)V", static_cast<jboolean>(doMute));
+    }
+    catch (...)
+    {
+        qCWarning(application) << "Exception while updating Android mute state";
+    }
 #endif
 }
 
@@ -4122,7 +4196,14 @@ void Application::close()
 
         m_allowQuitEvent = true;  // allow the quit event to proceed if we intercepted it
 
-        qApp->exit(m_exitCode);
+        if (m_exitCode != Application::EXIT_CODE_RESTART)
+        {
+            qApp->exit(m_exitCode);
+        }
+        else
+        {  // delay the restart slightly to allow the close event to fully complete and release any resources before we start the new instance
+            QTimer::singleShot(500, [this]() { qApp->exit(m_exitCode); });
+        }
     }
     else
     {  // message is needed for Windows -> stopping RTL SDR thread may take long time :-(
@@ -4282,6 +4363,16 @@ void Application::deleteEnsembleFromServiceList(int id, const QString &channelNa
     }
 }
 
+void Application::permissionsGranted(const QUrl &path)
+{
+#ifdef Q_OS_ANDROID
+    qCInfo(application) << "Permissions granted for path:" << path;
+    m_settingsBackend->selectDataStoragePath(path);
+
+    AndroidFileHelper::instance().pathGranted(m_settingsBackend->dataStoragePath());
+#endif
+}
+
 void Application::updateAndroidNotification(const QString &title, const QString &text)
 {
 #ifdef Q_OS_ANDROID
@@ -4305,6 +4396,38 @@ void Application::updateAndroidNotification(const QString &title, const QString 
 #endif
 }
 
+void Application::updateAndroidArtwork(const QPixmap &logo)
+{
+#ifdef Q_OS_ANDROID
+    try
+    {
+        QString base64;
+        QByteArray bytes;
+        QBuffer buf(&bytes);
+        buf.open(QIODevice::WriteOnly);
+        if (logo.isNull())
+        {
+            QPixmap appLogo(":/resources/appIcon-square.png");
+            appLogo.save(&buf, "PNG");
+        }
+        else
+        {
+            logo.save(&buf, "PNG");
+        }
+        buf.close();
+        base64 = QString::fromLatin1(bytes.toBase64());
+
+        QJniObject jBase64 = QJniObject::fromString(base64);
+        QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "updateArtwork", "(Ljava/lang/String;)V",
+                                           jBase64.object<jstring>());
+    }
+    catch (...)
+    {
+        qCWarning(application) << "Exception while updating Android artwork";
+    }
+#endif
+}
+
 QObject *Application::createTiiBackend()
 {
     if (m_tiiBackend == nullptr)
@@ -4316,7 +4439,6 @@ QObject *Application::createTiiBackend()
         connect(m_radioControl, &RadioControl::signalState, m_tiiBackend, &TIIBackend::onSignalState, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tiiData, m_tiiBackend, &TIIBackend::onTiiData, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::ensembleInformation, m_tiiBackend, &TIIBackend::onEnsembleInformation, Qt::QueuedConnection);
-        m_tiiBackend->setIsActive(m_navigationModel->isActive(NavigationModel::Tii));
         emit getEnsembleInfo();  // this triggers ensemble infomation used to configure EPG dialog
     }
     return m_tiiBackend;
@@ -4335,8 +4457,6 @@ QObject *Application::createSignalBackend()
         {
             connect(m_inputDevice, &InputDevice::rfLevel, m_signalBackend, &SignalBackend::updateRfLevel);
         }
-        m_signalBackend->setIsActive(m_navigationModel->isActive(NavigationModel::DabSignal));
-
         m_signalBackend->setInputDevice(m_inputDeviceId);
     }
     return m_signalBackend;
@@ -4569,14 +4689,7 @@ void Application::exportServiceList()
 {
     QString fileName = QString("servicelist_%1.csv").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
 
-    if (m_serviceList->exportCSV(m_settings->dataStoragePath, fileName))
-    {
-        emit showInfoMessage(tr("Service list exported"), 1);
-    }
-    else
-    {
-        emit showInfoMessage(tr("Failed to export service list"), -1);
-    }
+    m_serviceList->exportCSV(m_settings->dataStoragePath, fileName);
 }
 
 void Application::clearServiceList()

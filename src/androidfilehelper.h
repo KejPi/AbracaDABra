@@ -32,6 +32,8 @@
 #include <QString>
 #include <cstdio>
 
+#define ASK_FOR_PERMISSION_IF_NEEDED 1
+
 /**
  * @brief Helper class for Android Storage Access Framework (SAF) file operations.
  *
@@ -43,15 +45,22 @@
  * desktop platforms (using regular file paths) and on Android (using SAF for
  * content:// URIs and regular file operations for app-private storage).
  */
-class AndroidFileHelper
+class AndroidFileHelper : public QObject
 {
+    Q_OBJECT
 public:
+    static AndroidFileHelper &instance()
+    {
+        static AndroidFileHelper instance;
+        return instance;
+    }
+
     /**
      * @brief Check if a path is an Android content URI that requires SAF handling.
      * @param path The path to check
      * @return true if the path is a content:// URI, false otherwise
      */
-    static bool isContentUri(const QString &path);
+    bool isContentUri(const QString &path);
 
     /**
      * @brief Take persistable URI permission for a tree URI.
@@ -63,21 +72,29 @@ public:
      * @param treeUri The tree URI from the folder picker
      * @return true if permission was successfully taken, false otherwise
      */
-    static bool takePersistablePermission(const QString &treeUri);
+    bool takePersistablePermission(const QString &treeUri);
 
     /**
-     * @brief Check if the application has write permission to the given URI.
+     * @brief Access a path, requesting permissions if needed (Android SAF).
      *
-     * This method is only relevant for Android content:// URIs. For regular
-     * file paths, it always returns true (actual permission check happens at write time).
+     * If the basePath is a content:// URI, this will check if we have permission to write to it.
+     * If not, it will emit requestPermissions() signal to ask the user for permission.
+     * If permission is granted, it will call the callback with the resolved path.
      *
-     * @param treeUri The tree URI to check (typically from folder picker)
-     * @return true if write permission is available, false otherwise
+     * @param basePath Base directory or tree URI (e.g. dataStoragePath)
+     * @param relativePath Relative subdirectory path to access (e.g. "ensemble" or "a/b/c")
+     * @param callback Optional callback function to be called with the resolved path once access is granted
      */
-    static bool hasWritePermission(const QString &treeUri);
+    void accessPath(const QString &basePath, const QString &relativePath, std::function<void(const QString &)> callback = nullptr);
 
     /**
-     * @brief Create nested directories under a base path/URI.
+     * @brief This method shall be called when access it granted, method will call the callback function if it was provided in accessPath() method.
+     * @param basePath Base directory or tree URI (e.g. dataStoragePath) that user selected and granted permissions
+     */
+    void pathGranted(const QString &basePath);
+
+    /**
+     * @brief Create nested directories under a base path/URI, ask for permissions if needed (Android SAF).
      *
      * For regular file paths this mirrors QDir::mkpath(). For Android SAF
      * content:// URIs it will ensure the tree is writable and create the
@@ -85,21 +102,9 @@ public:
      *
      * @param basePath Base directory or tree URI (e.g. dataStoragePath)
      * @param relativePath Relative subdirectory path to create (e.g. "ensemble" or "a/b/c")
-     * @return true if the directory exists or was created, false otherwise
+     * @return path string if the directory exists or was created, empty string otherwise
      */
-    static bool mkpath(const QString &basePath, const QString &relativePath = QString());
-
-    /**     * @brief Build a subdirectory path by appending a subdirectory to a base path.
-     *
-     * On Android with content:// URIs, this properly handles percent-encoding of the
-     * subdirectory and URI separator encoding. For regular file paths, uses standard
-     * path concatenation with forward slashes.
-     *
-     * @param basePath The base path/URI (may be content:// URI or file system path)
-     * @param subdir The subdirectory name to append (without leading/trailing slashes)
-     * @return The combined path with proper encoding for content URIs or standard path separator for files
-     */
-    static QString buildSubdirPath(const QString &basePath, const QString &subdir);
+    QString getPath(const QString &basePath, const QString &relativePath = QString());
 
     /**     * @brief Write text content to a file.
      *
@@ -113,8 +118,8 @@ public:
      * @param overwriteExisting If true, overwrites existing files; if false, fails when file exists
      * @return true if the file was written successfully, false otherwise
      */
-    static bool writeTextFile(const QString &basePath, const QString &fileName, const QString &content, const QString &mimeType = "text/plain",
-                              bool overwriteExisting = true);
+    bool writeTextFile(const QString &basePath, const QString &fileName, const QString &content, const QString &mimeType = "text/plain",
+                       bool overwriteExisting = true);
 
     /**
      * @brief Write binary content to a file.
@@ -129,8 +134,8 @@ public:
      * @param overwriteExisting If true, overwrites existing files; if false, fails when file exists
      * @return true if the file was written successfully, false otherwise
      */
-    static bool writeBinaryFile(const QString &basePath, const QString &fileName, const QByteArray &data,
-                                const QString &mimeType = "application/octet-stream", bool overwriteExisting = true);
+    bool writeBinaryFile(const QString &basePath, const QString &fileName, const QByteArray &data,
+                         const QString &mimeType = "application/octet-stream", bool overwriteExisting = true);
 
     /**
      * @brief Open a file for continuous writing.
@@ -147,7 +152,7 @@ public:
      * @param mimeType The MIME type of the file (e.g., "text/csv")
      * @return QFile pointer opened for writing, or nullptr on failure
      */
-    static QFile *openFileForWriting(const QString &basePath, const QString &fileName, const QString &mimeType = "text/plain");
+    QFile *openFileForWriting(const QString &basePath, const QString &fileName, const QString &mimeType = "text/plain");
 
     /**
      * @brief Open a file for continuous binary writing using FILE* (C stdio).
@@ -167,29 +172,75 @@ public:
      * @param mimeType The MIME type of the file (e.g., "application/octet-stream")
      * @return FILE* opened for binary writing ("wb"), or nullptr on failure
      */
-    static FILE *openFileForWritingRaw(const QString &basePath, const QString &fileName, const QString &mimeType = "application/octet-stream");
+    FILE *openFileForWritingRaw(const QString &basePath, const QString &fileName, const QString &mimeType = "application/octet-stream");
 
     /**
      * @brief Get a human-readable error message for the last failed operation.
      * @return Error message string, or empty string if no error occurred
      */
-    static QString lastError();
+    QString lastError() const;
+
+signals:
+    void requestPermissions(const QString &basePath);
 
 private:
-    static QString s_lastError;
+    explicit AndroidFileHelper(QObject *parent = nullptr) : QObject(parent) {}
+
+    Q_DISABLE_COPY_MOVE(AndroidFileHelper)
+
+    QString m_lastError;
+
+    // These members are used to store the pending access request state when permissions are needed.
+    QString m_relativePath;
+    std::function<void(const QString &)> m_callback;
+
+    /**
+     * @brief Check if the application has write permission to the given URI.
+     *
+     * This method is only relevant for Android content:// URIs. For regular
+     * file paths, it always returns true (actual permission check happens at write time).
+     *
+     * @param treeUri The tree URI to check (typically from folder picker)
+     * @return true if write permission is available, false otherwise
+     */
+    bool hasWritePermission(const QString &treeUri);
+
+    /**
+     * @brief Create nested directories under a base path/URI.
+     *
+     * For regular file paths this mirrors QDir::mkpath(). For Android SAF
+     * content:// URIs it will ensure the tree is writable and create the
+     * subdirectory structure using SAF APIs.
+     *
+     * @param basePath Base directory or tree URI (e.g. dataStoragePath)
+     * @param relativePath Relative subdirectory path to create (e.g. "ensemble" or "a/b/c")
+     * @return true if the directory exists or was created, false otherwise
+     */
+    bool mkpath(const QString &basePath, const QString &relativePath = QString());
+
+    /**     * @brief Build a subdirectory path by appending a subdirectory to a base path.
+     *
+     * On Android with content:// URIs, this properly handles percent-encoding of the
+     * subdirectory and URI separator encoding. For regular file paths, uses standard
+     * path concatenation with forward slashes.
+     *
+     * @param basePath The base path/URI (may be content:// URI or file system path)
+     * @param subdir The subdirectory name to append (without leading/trailing slashes)
+     * @return The combined path with proper encoding for content URIs or standard path separator for files
+     */
+    QString buildSubdirPath(const QString &basePath, const QString &subdir);
 
 #ifdef Q_OS_ANDROID
     /**
      * @brief Write content using Android SAF APIs (JNI call to Java helper).
      */
-    static bool writeUsingSAF(const QString &treeUri, const QString &fileName, const QString &content, const QString &mimeType,
-                              bool overwriteExisting);
+    bool writeUsingSAF(const QString &treeUri, const QString &fileName, const QString &content, const QString &mimeType, bool overwriteExisting);
 
     /**
      * @brief Write binary content using Android SAF APIs (JNI call to Java helper).
      */
-    static bool writeBinaryUsingSAF(const QString &treeUri, const QString &fileName, const QByteArray &data, const QString &mimeType,
-                                    bool overwriteExisting);
+    bool writeBinaryUsingSAF(const QString &treeUri, const QString &fileName, const QByteArray &data, const QString &mimeType,
+                             bool overwriteExisting);
 #endif
 };
 

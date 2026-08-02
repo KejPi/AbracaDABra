@@ -74,7 +74,7 @@ public:
     void save(const QString &filename);
     void load(const QString &filename);
     void loadFromSettings(QSettings *settings);
-    bool exportCSV(const QString &path, const QString &filename);
+    void exportCSV(const QString &path, const QString &filename);
 
     void beginEnsembleUpdate(const RadioControlEnsemble &e);
     void endEnsembleUpdate(const RadioControlEnsemble &e);
@@ -91,6 +91,8 @@ signals:
 
     void ensembleRemoved(const ServiceListId &ensId);
     void empty();
+
+    void serviceListExported(bool status);
 
 private:
     QHash<ServiceListId, ServiceListItem *> m_serviceList;

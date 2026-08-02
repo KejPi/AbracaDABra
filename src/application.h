@@ -141,6 +141,12 @@ public:
         PortraitNarrowView = 2
     };
     Q_ENUM(ViewType)
+    enum ServicePageWidget
+    {
+        TII = 0,
+        Spectrum
+    };
+    Q_ENUM(ServicePageWidget)
 
     ApplicationUI(QObject *parent = nullptr) : UIControlProvider(parent) { m_colors.resize(NumColors); }
 
@@ -216,6 +222,8 @@ public:
     UI_PROPERTY(QString, messageInfoDetails)
     UI_PROPERTY_DEFAULT(bool, isSystemDarkMode, false)
     UI_PROPERTY_DEFAULT(bool, isCompact, false)
+    UI_PROPERTY_DEFAULT(bool, showServicePageWidget, false)
+    UI_PROPERTY_DEFAULT(ServicePageWidget, servicePageWidget, ServicePageWidget::TII)
 
     QString fixedFontFamily() const { return QFontDatabase::systemFont(QFontDatabase::FixedFont).family(); }
     QList<QColor> colors() const { return m_colors; }
@@ -295,6 +303,7 @@ public:
     Q_INVOKABLE void setAndroidNavigationBar();
     Q_INVOKABLE void setAndroidKeepScreenOn(bool enable);
     Q_INVOKABLE void deleteEnsembleFromServiceList(int id, const QString &channelName);
+    Q_INVOKABLE void permissionsGranted(const QUrl &path);
 
     bool eventFilter(QObject *obj, QEvent *event) override;
 
@@ -334,6 +343,7 @@ signals:
     void applicationQuitEvent();
     void showInfoMessage(const QString &message, int type);
     void requestActivate();
+    void requestPermissions(const QString &basePath);
 
 private:
     enum Instance
@@ -536,6 +546,7 @@ private:
     void handleServiceSourceSelection(int actionId, bool checked, const QVariant &data);
     void onApplicationStateChanged(Qt::ApplicationState state);
     void updateAndroidNotification(const QString &title, const QString &text);
+    void updateAndroidArtwork(const QPixmap &logo);
 
     // this class serves as simple image provider for QML using MatedataManager as backend
     class LogoProvider : public QQuickImageProvider

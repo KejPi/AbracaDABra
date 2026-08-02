@@ -41,6 +41,8 @@
 // #define SPI_APP_INVALID_TAG 0x7F
 #define SPI_APP_INVALID_DECODER_ID 0xF000
 
+#define SPI_APP_RADIODNS_LOOKUP_DELAY 10
+
 class SPIApp : public UserApplication
 {
     Q_OBJECT
@@ -69,8 +71,6 @@ public:
     void enable(bool ena);
 
     // RadioDNS
-    void setUseInternet(bool ena) { m_useInternet = ena; }
-    void setEnableRadioDNS(bool ena);
     void getSI(const ServiceListId &servId, const uint32_t &ueid);
     void getPI(const ServiceListId &servId, const QList<uint32_t> &ueidList, const QDate &date);
 
@@ -118,13 +118,15 @@ private:
     QHash<QString, QString> m_dnsCache;
     QNetworkAccessManager *m_netAccessManager;
     QQueue<QPair<QString, QString>> m_radioDnsDownloadQueue;
+    QQueue<QPair<QString, QNetworkRequest>> m_downloadReqQueue;
     QHash<uint16_t, QMultiHash<QString, QString>> m_motObjRequestList;
     void radioDNSLookup();
     QString radioDNSFQDN(const ServiceListId &servId, const uint32_t &ueid) const;
     QString radioDNSServiceIdentifier(const ServiceListId &servId, const uint32_t &ueid) const;
     void handleRadioDNSLookup();
     void handleRadioDoHLookup(QNetworkReply *reply);
-    void downloadFile(const QString &url, const QString &requestId, bool useCache = true);
+    void downloadFileRequest(const QString &url, const QString &requestId, bool useCache = true);
+    void downloadFile();
     void onFileDownloaded(QNetworkReply *reply);
     void dumpFile(uint16_t decoderId, int transportId, QString contentName, const QByteArray &data);
 };

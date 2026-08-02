@@ -410,14 +410,16 @@ There are some interesting projects to visualize CVS logs, check it [here](#proj
 AbracaDABra offers the possibility to run an unattended DAB band scan and to store all received transmitters. This is an advanced DX feature. [TII decoding](#tii-decoding) configuration is required for the tool to function correctly. 
 
 <p align="center" width="100%">
-    <img width="1029" height="998" alt="Scanning tool" src="https://github.com/user-attachments/assets/4b863271-a836-4c30-a80f-ce8a6768131f" />
-</p>
+    <img width="1364" height="869" alt="Scanning tool" src="https://github.com/user-attachments/assets/c7e82c36-3485-414b-b2d1-fccb8c13e395" />
+</p>    
 
 The scanning tool can be configured to run in one of 3 different modes:
 
 * Fast - fast scanning, but weak transmitters might not be detected (about 4 seconds per ensemble)
 * Normal (this is the default mode) - the best compromise between scanning speed and TII decoding performance (about 8 seconds per ensemble)
-* Precise - the best TII decoding performance but it is quite slow (about 16 seconds per ensemble). The ensemble configuration is also recorded in this mode. 
+* Precise - the best TII decoding performance but it is quite slow (about 16 seconds per ensemble).
+
+_Note:_ Ensemble configuration is acquired in all scanning modes but it might be incomplete in Fast and Normal mode.
 
 The number of scan cycles can be configured. One scan cycle means scanning all selected channels once. You can let the Scanning tool run "forever" by setting number of cycles to be infinite (value 0). 
 
@@ -425,9 +427,11 @@ By default, all the channels in band III are scanned (5A-13F, 38 channels in tot
 
 The scanning results are displayed in the table and as red circles on the map. The blue circle is the location specified in the TII settings. You can select any row in the table by clicking on it and the corresponding transmitter is shown as a bubble on the map with detailed information shown in the bottom right corner (see screenshot above). It also works the other way around by clicking the red circle on the map. Selection of multiple rows is also supported. In this case the corresponding dots are shown on the map but no details about the transmitters are available. The table can be sorted by any column by clicking on its header. It is possible to display the ensemble structure by double clicking on the row or from the context menu shown with a right mouse click (Precise mode only).
 
-Results of scanning can be stored to a CSV file using the "Save as CSV" menu item. The scanner tool does not store the results "on the fly" during scanning by default but it can be configured to do so by enabling AutoSave option in menu. Scanning log is stored as CVS file in `scanner` directory under [data storage](#data-storage) folder. Application stores GPS location of the receiver when it is enabled in TII settings. You can also load previously stored CSV files to display the results. Please note that this CSV file replaces the contents of the table. When GPS location of the receiver is found in the log, application shows the first valid location as blue dot on the map and calculated distances from this location, when GPS location is not the the log, application uses current location to calculate the distances.
+Results of scanning can be stored to a JSON or CSV file using the "Save as JSON" and/or "Save as CSV" menu item. The scanner tool does not store the results automatically during scanning by default but it can be configured to do so by enabling AutoSave JSON/CVS options in menu. When Autosave is enabled for CSV, application stores the log during the scan when new transmitters are found nevertheless JSON is stored when the scan is stopped. Scanning log is stored as JSON and/or CVS file in `scanner` directory under [data storage](#data-storage) folder. Application stores GPS location of the receiver when it is enabled in TII settings. You can also load previously stored JSON or CSV files to display the results. JSON contains all available information inluding ensemble configurations while CVS is limited. Please note that this file replaces the contents of the table. When GPS location of the receiver is found in the log, application shows the first valid location as blue dot on the map and calculated distances from this location, when GPS location is not the the log, application uses current location to calculate the distances.
 
 There are some interesting projects to visualize CVS logs, check it [here](#projects-using-abracadabra-logs).
+
+Application supports so "Incremental scan" feature that can be enabled in menu. If it is enabled, only changes are recorded. Changes are evaluated since the beginning of scan and following is considered: new ensemble in given channel, new ensemble name or different number of services in the ensemble or new transmitter (TII code). 
 
 Individual transmitters in scanning results can be marked as local (known) transmitters using context menu (multiple transmitters can be selected and marked as local at once). These local (known) transmitters can be excluded from results view using "Hide local (known) transmitters" option in Scanner tool menu. Furthermore, when local transmitters are hidden, they are not exported to CSV. 
 
@@ -435,7 +439,7 @@ _Note:_ The application service list is preserved when the Scanning tool is runn
 
 ## DAB signal overview
 
-The DAB signal overview displays the spectrum of the input signal, a time plot of SNR and other signal parameters known by the application. The border between plots can be moved to the very top or very bottom to hide the spectrum or SNR plot respectively. It is possible to display also NULL symbol spectrum. The default refresh rate of the spectrum is 1 second, but it can be modified in the configuration menu. 
+The DAB signal overview displays the spectrum of the input signal with optional waterfall visualization, a time plot of SNR and other signal parameters known by the application. The border between plots can be moved to the very top or very bottom to hide the spectrum or SNR plot respectively. It is possible to display also NULL symbol spectrum. The default refresh rate of the spectrum is 1 second, but it can be modified in the configuration menu. 
 
 The spectrum plot can be zoomed in both axes with the mouse wheel or in one axis by clicking on the axis and zooming. 
 

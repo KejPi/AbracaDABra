@@ -7,6 +7,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
@@ -508,7 +510,7 @@ public class AudioServiceHelper {
             }
             
             // Remove notification
-            hideNotification(context);
+            // hideNotification(context);
             
         } catch (Exception e) {
             Log.e(TAG, "Failed to release wake lock: " + e.getMessage(), e);
@@ -680,92 +682,45 @@ public class AudioServiceHelper {
      */
     public static void updateNotification(Context context, String title, String text) {
         if (wakeLock != null && wakeLock.isHeld()) {
-            showNotification(context, title, text);
+            AudioPlaybackService service = AudioPlaybackService.getInstance();
+            if (service != null) {
+                service.updateNotification(title, text);   // routes through the session-aware path
+            }
         }
     }
 
     /**
-     * Show notification for background playback
+     * Sync the mute/unmute state from the Qt application into the MediaSession.
+     * Called from C++ via JNI whenever the user mutes or unmutes.
+     * muted=true  → STATE_PAUSED  (notification shows ▶ play button)
+     * muted=false → STATE_PLAYING (notification shows ⏸ pause button)
      */
-    public static void showNotification(Context context, String title, String text) {
+    public static void updateMuteState(boolean muted) {
+        AudioPlaybackService service = AudioPlaybackService.getInstance();
+        if (service != null) {
+            service.setMuted(muted);
+        }
+    }
+
+    /**
+     * Update the artwork shown in media controls and notification.
+     * Pass an empty string to clear artwork (app icon will be used).
+     */
+    public static void updateArtwork(String base64png) {
+        AudioPlaybackService service = AudioPlaybackService.getInstance();
+        if (service == null) {
+            return;
+        }
         try {
-            NotificationManager notificationManager = 
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            
-            if (notificationManager == null) {
-                return;
-            }
-
-            // Create notification channel for Android O and above
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Audio Playback",
-                    NotificationManager.IMPORTANCE_LOW
-                );
-                channel.setDescription("Shows when DAB radio is playing");
-                channel.setShowBadge(false);
-                notificationManager.createNotificationChannel(channel);
-            }
-
-            // Create intent to open the app when notification is tapped
-            Intent notificationIntent = new Intent(context, AbracaDABraActivity.class);
-            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            
-            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                flags |= PendingIntent.FLAG_IMMUTABLE;
-            }
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, flags);
-
-            // Build notification
-            Notification.Builder builder;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                builder = new Notification.Builder(context, CHANNEL_ID);
+            if (base64png == null || base64png.isEmpty()) {
+                service.setArtwork(null);
             } else {
-                builder = new Notification.Builder(context);
-            }
-
-            builder.setContentTitle(title)
-                   .setContentText(text)
-                   .setSmallIcon(android.R.drawable.ic_media_play)
-                   .setContentIntent(pendingIntent)
-                   .setOngoing(true)
-                   .setShowWhen(false);
-
-            // For Android 8.0 and above, set category
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                builder.setCategory(Notification.CATEGORY_SERVICE);
-            }
-            
-            // For Android 10.0 and above, set as media style
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                builder.setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE);
-            }
-
-            Notification notification = builder.build();
-            notificationManager.notify(NOTIFICATION_ID, notification);
-            
-            // Log.d(TAG, "Notification shown: " + title + " - " + text);
-            
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to show notification: " + e.getMessage(), e);
-        }
-    }
-    /**
-     * Hide the notification
-     */
-    private static void hideNotification(Context context) {
-        try {
-            NotificationManager notificationManager = 
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            
-            if (notificationManager != null) {
-                notificationManager.cancel(NOTIFICATION_ID);
-                Log.d(TAG, "Notification hidden");
+                byte[] bytes = android.util.Base64.decode(base64png, android.util.Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                service.setArtwork(bitmap);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Failed to hide notification: " + e.getMessage(), e);
+            Log.e(TAG, "Failed to update artwork: " + e.getMessage(), e);
         }
     }
 }

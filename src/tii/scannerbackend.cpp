@@ -73,6 +73,10 @@ ScannerBackend::ScannerBackend(Settings *settings, QObject *parent) : TxMapBacke
 ScannerBackend::~ScannerBackend()
 {
     stopAutoSaveCsv();
+    if (autoSaveJSON() && m_model->rowCount() > 0)
+    {  // JSON is only svaed when there is at least one row in the table
+        saveJSON();
+    }
 
     if (m_csvFutureWatcher != nullptr)
     {
@@ -116,7 +120,6 @@ void ScannerBackend::startStopAction()
     else
     {  // start pressed
         m_numSelectedChannels = 0;
-        m_isPreciseMode = (mode() == Mode::Mode_Precise);
         m_numSelectedChannels = m_channelSelectionModel->numChecked();
         if (numCycles() > 0)
         {
@@ -139,6 +142,10 @@ void ScannerBackend::stopScan()
     }
 
     stopAutoSaveCsv();
+    if (autoSaveJSON() && m_model->rowCount() > 0)
+    {  // JSON is only svaed when there is at least one row in the table
+        saveJSON();
+    }
 
     // restore UI
     isScanning(false);
@@ -187,7 +194,7 @@ QUrl ScannerBackend::csvPath() const
     return QUrl::fromLocalFile(m_settings->dataStoragePath + '/' + SCANNER_DIR_NAME);
 }
 
-void ScannerBackend::loadCSV(const QUrl &fileUrl)
+void ScannerBackend::loadFile(const QUrl &fileUrl)
 {
     if (fileUrl.isEmpty())
     {
@@ -215,14 +222,95 @@ void ScannerBackend::loadCSV(const QUrl &fileUrl)
     qCInfo(scanner) << "Loading file:" << fileName;
 
     isLoading(true);
-
-    if (m_csvFutureWatcher == nullptr)
+    if (fileName.endsWith(".json", Qt::CaseInsensitive))
     {
-        m_csvFutureWatcher = new QFutureWatcher<CsvParseResult>(this);
-        connect(m_csvFutureWatcher, &QFutureWatcher<CsvParseResult>::finished, this, &ScannerBackend::onCsvParsed);
+        if (m_jsonFutureWatcher == nullptr)
+        {
+            m_jsonFutureWatcher = new QFutureWatcher<JsonParseResult>(this);
+            connect(m_jsonFutureWatcher, &QFutureWatcher<JsonParseResult>::finished, this, &ScannerBackend::onJsonParsed);
+        }
+        m_jsonFutureWatcher->setFuture(QtConcurrent::run(&ScannerBackend::parseJsonFile, fileName));
+    }
+    else
+    {
+        if (m_csvFutureWatcher == nullptr)
+        {
+            m_csvFutureWatcher = new QFutureWatcher<CsvParseResult>(this);
+            connect(m_csvFutureWatcher, &QFutureWatcher<CsvParseResult>::finished, this, &ScannerBackend::onCsvParsed);
+        }
+        m_csvFutureWatcher->setFuture(QtConcurrent::run(&ScannerBackend::parseCsvFile, fileName));
+    }
+}
+
+void ScannerBackend::saveJSON()
+{
+    const QString fileName = QString("%1.json").arg(m_scanStartTime.isValid() ? m_scanStartTime.toString("yyyy-MM-dd_hhmmss")
+                                                                              : QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
+
+    QJsonObject root;
+    root["jsonVersion"] = SCANNER_JSON_VERSION;
+    root["application"] = QJsonObject{{"name", "AbracaDABra"}, {"version", PROJECT_VER}};
+    root["created"] = m_settings->tii.timestampInUTC ? QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss")
+                                                     : QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    if (m_scanStartTime.isValid())
+    {
+        root["scanStartTime"] = m_settings->tii.timestampInUTC ? m_scanStartTime.toUTC().toString("yyyy-MM-dd hh:mm:ss")
+                                                               : m_scanStartTime.toString("yyyy-MM-dd hh:mm:ss");
+    }
+    else
+    {
+        root["scanStartTime"] = m_settings->tii.timestampInUTC ? QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss")
+                                                               : QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    }
+    root["utc"] = m_settings->tii.timestampInUTC;
+    QJsonObject modelData = m_model->toJson();
+    modelData["rx"] =
+        QJsonObject{{"lat", m_scanStartLocation.latitude()}, {"lon", m_scanStartLocation.longitude()}, {"alt", m_scanStartLocation.altitude()}};
+    root["data"] = modelData;
+
+    // Ensure path exists and writable
+#if ASK_FOR_PERMISSION_IF_NEEDED
+    std::function<void(const QString &)> callback = [=](const QString &basePath)
+    {
+        if (basePath.isEmpty())
+        {
+            qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to save JSON file"), -1);
+            return;
+        }
+
+        if (AndroidFileHelper::instance().writeTextFile(basePath, fileName, QJsonDocument(root).toJson(QJsonDocument::Indented), "text/json"))
+        {
+            qCInfo(scanner) << "JSON saved to:" << QString("%1/%2").arg(basePath, fileName);
+            emit showInfoMessage(tr("Data saved to JSON file"), 1);
+        }
+        else
+        {
+            qCWarning(scanner) << "Failed to save scanner JSON:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to save JSON file"), -1);
+        }
+    };
+    AndroidFileHelper::instance().accessPath(m_settings->dataStoragePath, SCANNER_DIR_NAME, callback);
+#else
+    const QString basePath = AndroidFileHelper::instance().getPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
+    if (basePath.isEmpty())
+    {
+        qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
+        emit showInfoMessage(tr("Failed to save JSON file"), -1);
+        return;
     }
 
-    m_csvFutureWatcher->setFuture(QtConcurrent::run(&ScannerBackend::parseCsvFile, fileName));
+    if (AndroidFileHelper::instance().writeTextFile(basePath, fileName, QJsonDocument(root).toJson(QJsonDocument::Indented), "text/json"))
+    {
+        qCInfo(scanner) << "JSON saved to:" << QString("%1/%2").arg(basePath, fileName);
+        emit showInfoMessage(tr("Data saved to JSON file"), 1);
+    }
+    else
+    {
+        qCWarning(scanner) << "Failed to save JSON file:" << AndroidFileHelper::instance().lastError();
+        emit showInfoMessage(tr("Failed to save JSON file"), -1);
+    }
+#endif
 }
 
 CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
@@ -233,7 +321,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         result.success = false;
-        result.errorMessage = tr("Failed to load file");
+        result.errorMessage = tr("Failed to load CSV file");
         return result;
     }
 
@@ -241,7 +329,8 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
     bool timeIsUTC = in.readLine().contains("(UTC)");
     int lineNum = 2;
     int numCols = 0;
-    bool hasRfLevel = false;  // true for new CSV format with RF Level column
+    bool hasRfLevel = false;   // true for new CSV format with RF Level column
+    bool hasAltitude = false;  // true for V2 format with altitude columns
     while (!in.atEnd())
     {
         QString line = in.readLine();
@@ -249,29 +338,49 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
         QStringList qsl = line.split(';');
         if (numCols == 0)
         {  // detect column count from first data row
-            if (qsl.size() == TxTableModel::NumColsWithoutCoordinates)
+            if (qsl.size() == TxTableModel::LastColumnWithoutCoordinates + 1)
             {  // new format without coordinates
-                numCols = TxTableModel::NumColsWithoutCoordinates;
+                numCols = TxTableModel::LastColumnWithoutCoordinates + 1;
                 hasRfLevel = true;
+                hasAltitude = false;
+            }
+            else if (qsl.size() == TxTableModel::LastColumnWithoutCoordinates)
+            {  // old format without coordinates (no RF Level column)
+                numCols = TxTableModel::LastColumnWithoutCoordinates;
+                hasRfLevel = false;
+                hasAltitude = false;
             }
             else if (qsl.size() == TxTableModel::LastColumn + 1)
-            {  // new format with coordinates
+            {  // V2 format with coordinates
                 numCols = TxTableModel::LastColumn + 1;
                 hasRfLevel = true;
-            }
-            else if (qsl.size() == TxTableModel::NumColsWithoutCoordinates - 1)
-            {  // old format without coordinates (no RF Level column)
-                numCols = TxTableModel::NumColsWithoutCoordinates - 1;
-                hasRfLevel = false;
+                hasAltitude = true;
             }
             else if (qsl.size() == TxTableModel::LastColumn)
             {  // old format with coordinates (no RF Level column)
                 numCols = TxTableModel::LastColumn;
                 hasRfLevel = false;
+                hasAltitude = true;
+            }
+            else if (qsl.size() == TxTableModel::LastColumnV1Coords + 1)
+            {
+                numCols = TxTableModel::LastColumnV1Coords + 1;
+                hasRfLevel = true;
+                hasAltitude = false;
+            }
+            else if (qsl.size() == TxTableModel::LastColumnV1Coords)
+            {
+                numCols = TxTableModel::LastColumnV1Coords;
+                hasRfLevel = false;
+                hasAltitude = false;
             }
         }
         // colOffset accounts for missing ColRfLevel in old CSV files
-        const int colOffset = hasRfLevel ? 0 : -1;
+        const int rfLevelOffset = hasRfLevel ? 0 : -1;
+
+        // coordOffset: -2 for old coord formats (ColTxAltitude and ColTxAntennaHeight absent)
+        const int coordOffset = hasAltitude ? 0 : -2;
+
         if (qsl.size() == numCols)
         {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
@@ -292,7 +401,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
             {
                 qCWarning(scanner) << "Invalid time value" << qsl.at(TxTableModel::ColTime) << "line #" << lineNum;
                 result.success = false;
-                result.errorMessage = tr("Failed to load file");
+                result.errorMessage = tr("Failed to load CSV file");
                 return result;
             }
 
@@ -319,7 +428,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
             {
                 qCWarning(scanner) << "Invalid frequency value" << qsl.at(TxTableModel::ColFreq) << "line #" << lineNum;
                 result.success = false;
-                result.errorMessage = tr("Failed to load file");
+                result.errorMessage = tr("Failed to load CSV file");
                 return result;
             }
 
@@ -328,7 +437,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
             {
                 qCWarning(scanner) << "Invalid UEID value" << qsl.at(TxTableModel::ColEnsId) << "line #" << lineNum;
                 result.success = false;
-                result.errorMessage = tr("Failed to load file");
+                result.errorMessage = tr("Failed to load CSV file");
                 return result;
             }
             int numServices = qsl.at(TxTableModel::ColNumServices).toInt(&isOk);
@@ -336,7 +445,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
             {
                 qCWarning(scanner) << "Invalid number of services value" << qsl.at(TxTableModel::ColNumServices) << "line #" << lineNum;
                 result.success = false;
-                result.errorMessage = tr("Failed to load file");
+                result.errorMessage = tr("Failed to load CSV file");
                 return result;
             }
 
@@ -345,7 +454,7 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
             {
                 qCWarning(scanner) << "Invalid SNR value" << qsl.at(TxTableModel::ColSnr) << "line #" << lineNum;
                 result.success = false;
-                result.errorMessage = tr("Failed to load file");
+                result.errorMessage = tr("Failed to load CSV file");
                 return result;
             }
 
@@ -360,37 +469,37 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
                     {
                         qCWarning(scanner) << "Invalid RF level value" << rfLevelStr << "line #" << lineNum;
                         result.success = false;
-                        result.errorMessage = tr("Failed to load file");
+                        result.errorMessage = tr("Failed to load CSV file");
                         return result;
                     }
                 }
             }
 
             QList<dabsdrTii_t> tiiList;
-            if (!qsl.at(TxTableModel::ColMainId + colOffset).isEmpty())
+            if (!qsl.at(TxTableModel::ColMainId + rfLevelOffset).isEmpty())
             {
-                uint8_t main = qsl.at(TxTableModel::ColMainId + colOffset).toUInt(&isOk);
+                uint8_t main = qsl.at(TxTableModel::ColMainId + rfLevelOffset).toUInt(&isOk);
                 if (!isOk)
                 {
-                    qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColMainId + colOffset) << "line #" << lineNum;
+                    qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColMainId + rfLevelOffset) << "line #" << lineNum;
                     result.success = false;
-                    result.errorMessage = tr("Failed to load file");
+                    result.errorMessage = tr("Failed to load CSV file");
                     return result;
                 }
-                uint8_t sub = qsl.at(TxTableModel::ColSubId + colOffset).toUInt(&isOk);
+                uint8_t sub = qsl.at(TxTableModel::ColSubId + rfLevelOffset).toUInt(&isOk);
                 if (!isOk)
                 {
-                    qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColSubId + colOffset) << "line #" << lineNum;
+                    qCWarning(scanner) << "Invalid TII code" << qsl.at(TxTableModel::ColSubId + rfLevelOffset) << "line #" << lineNum;
                     result.success = false;
-                    result.errorMessage = tr("Failed to load file");
+                    result.errorMessage = tr("Failed to load CSV file");
                     return result;
                 }
-                float level = qsl.at(TxTableModel::ColLevel + colOffset).toFloat(&isOk);
+                float level = qsl.at(TxTableModel::ColLevel + rfLevelOffset).toFloat(&isOk);
                 if (!isOk)
                 {
-                    qCWarning(scanner) << "Invalid TX level value" << qsl.at(TxTableModel::ColLevel + colOffset) << "line #" << lineNum;
+                    qCWarning(scanner) << "Invalid TX level value" << qsl.at(TxTableModel::ColLevel + rfLevelOffset) << "line #" << lineNum;
                     result.success = false;
-                    result.errorMessage = tr("Failed to load file");
+                    result.errorMessage = tr("Failed to load CSV file");
                     return result;
                 }
                 dabsdrTii_t tiiItem({.main = main, .sub = sub, .level = level});
@@ -408,12 +517,14 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
             result.rows.append(rowData);
 
             // Parse RX coordinates from first row with coordinate columns
-            const bool hasCoordsCols = (numCols == TxTableModel::LastColumn + 1) || (numCols == TxTableModel::LastColumn);
+            const bool hasCoordsCols = (numCols == TxTableModel::LastColumn + 1) || (numCols == TxTableModel::LastColumnV1Coords + 1) ||
+                                       (numCols == TxTableModel::LastColumnV1Coords);
+
             if (!result.offlineCoords.isValid() && hasCoordsCols)
             {
                 bool latOk = false, lonOk = false;
-                double lat = qsl.at(TxTableModel::ColRxCoordinatesLat + colOffset).toDouble(&latOk);
-                double lon = qsl.at(TxTableModel::ColRxCoordinatesLon + colOffset).toDouble(&lonOk);
+                double lat = qsl.at(TxTableModel::ColRxCoordinatesLat + rfLevelOffset + coordOffset).toDouble(&latOk);
+                double lon = qsl.at(TxTableModel::ColRxCoordinatesLon + rfLevelOffset + coordOffset).toDouble(&lonOk);
                 if (latOk && lonOk)
                 {
                     QGeoCoordinate candidate(lat, lon);
@@ -422,13 +533,39 @@ CsvParseResult ScannerBackend::parseCsvFile(const QString &fileName)
                         result.offlineCoords = candidate;
                     }
                 }
+                else
+                {
+                    qCWarning(scanner) << "Invalid coordinates value" << qsl.at(TxTableModel::ColLevel + rfLevelOffset + coordOffset) << "line #"
+                                       << lineNum;
+                    result.success = false;
+                    result.errorMessage = tr("Failed to load CSV file");
+                    return result;
+                }
+                // ColRxAltitude only valid in V2 format:
+                if (hasAltitude)
+                {
+                    bool altOk = false;
+                    int alt = qsl.at(TxTableModel::ColRxAltitude + rfLevelOffset + coordOffset + coordOffset).toInt(&altOk);
+                    if (altOk)
+                    {
+                        result.offlineCoords.setAltitude(alt);
+                    }
+                    else
+                    {
+                        qCWarning(scanner) << "Invalid altitude value" << qsl.at(TxTableModel::ColLevel + rfLevelOffset + coordOffset) << "line #"
+                                           << lineNum;
+                        result.success = false;
+                        result.errorMessage = tr("Failed to load CSV file");
+                        return result;
+                    }
+                }
             }
         }
         else
         {
             qCWarning(scanner) << "Unexpected number of cols, line #" << lineNum;
             result.success = false;
-            result.errorMessage = tr("Failed to load file");
+            result.errorMessage = tr("Failed to load CSV file");
             return result;
         }
         lineNum += 1;
@@ -446,6 +583,8 @@ void ScannerBackend::onCsvParsed()
 
     if (result.success)
     {
+        reset();
+
         m_model->beginLoadingFromFile();
         for (const auto &row : result.rows)
         {
@@ -461,6 +600,7 @@ void ScannerBackend::onCsvParsed()
                             << result.offlineCoords.longitude();
             setOfflinePosition(result.offlineCoords);
         }
+        m_dataLoadedFromFile = true;
     }
     else
     {
@@ -473,13 +613,109 @@ void ScannerBackend::onCsvParsed()
     isLoading(false);
 }
 
-void ScannerBackend::saveCSV()
+JsonParseResult ScannerBackend::parseJsonFile(const QString &fileName)
 {
-    const QString fileName = QString("%1.csv").arg(m_scanStartTime.toString("yyyy-MM-dd_hhmmss"));
-    saveToFile(fileName);
+    JsonParseResult result;
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        result.success = false;
+        result.errorMessage = tr("Failed to load JSON file");
+        return result;
+    }
+
+    QByteArray data = file.readAll();
+    file.close();
+
+    QJsonParseError parseError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &parseError);
+    if (parseError.error != QJsonParseError::NoError)
+    {
+        qCWarning(scanner) << "Failed to parse JSON file:" << parseError.errorString();
+        result.success = false;
+        result.errorMessage = tr("Failed to parse JSON file");
+        return result;
+    }
+
+    if (!jsonDoc.isObject())
+    {
+        qCWarning(scanner) << "Invalid JSON structure: root is not an object";
+        result.success = false;
+        result.errorMessage = tr("Invalid JSON structure");
+        return result;
+    }
+
+    result.jsonObject = jsonDoc.object();
+    result.success = true;
+    return result;
 }
 
-void ScannerBackend::saveToFile(const QString &fileName)
+void ScannerBackend::onJsonParsed()
+{
+    JsonParseResult result = m_jsonFutureWatcher->result();
+    bool success = false;
+    bool utcTime = false;
+    if (result.success && result.jsonObject.contains("utc"))
+    {
+        utcTime = result.jsonObject.value("utc").toBool();
+    }
+    if (result.success && result.jsonObject.contains("data") && result.jsonObject["data"].isObject())
+    {  // we may have something that is valid
+        reset();
+
+        QJsonObject dataObj = result.jsonObject["data"].toObject();
+        success = m_model->loadFromJson(dataObj, utcTime);
+    }
+
+    if (success)
+    {
+        QDateTime scanStartTime = QDateTime::fromString(result.jsonObject.value("scanStartTime").toString(), "yyyy-MM-dd hh:mm:ss");
+        if (utcTime)
+        {
+            scanStartTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+        }
+        else
+        {
+            scanStartTime.setTimeZone(QTimeZone(QTimeZone::LocalTime));
+        }
+        m_scanStartTime = scanStartTime.toLocalTime();
+
+        // load coordinates if present
+        QJsonObject dataObj = result.jsonObject["data"].toObject();
+        if (dataObj.contains("rx") && dataObj["rx"].isObject())
+        {
+            QJsonObject rxObj = dataObj["rx"].toObject();
+            double lat = rxObj.value("lat").toDouble();
+            double lon = rxObj.value("lon").toDouble();
+            double alt = rxObj.value("alt").toDouble();
+            QGeoCoordinate coords(lat, lon, alt);
+            if (coords.isValid())
+            {
+                setOfflinePosition(coords);
+                qCInfo(scanner) << "Using offline coordinates from JSON: lat" << coords.latitude() << "lon" << coords.longitude();
+            }
+        }
+        m_dataLoadedFromFile = true;
+    }
+    else
+    {
+        qCWarning(scanner) << "Failed to load JSON file";
+        emit showInfoMessage(result.errorMessage, -1);
+        reset();
+        m_sortedFilteredModel->setRfLevelFilter(m_deviceHasRfLevel == false);
+    }
+    isLoading(false);
+}
+
+void ScannerBackend::saveCSV()
+{
+    const QString fileName = QString("%1.csv").arg(m_scanStartTime.isValid() ? m_scanStartTime.toString("yyyy-MM-dd_hhmmss")
+                                                                             : QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
+    saveToFileCSV(fileName);
+}
+
+void ScannerBackend::saveToFileCSV(const QString &fileName)
 {
     // Build CSV content
     QString csvContent;
@@ -538,67 +774,131 @@ void ScannerBackend::saveToFile(const QString &fileName)
     out.flush();
 
     // Ensure path exists and writable
-    const QString basePath = AndroidFileHelper::buildSubdirPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
-    if (!AndroidFileHelper::mkpath(basePath))
+#if ASK_FOR_PERMISSION_IF_NEEDED
+    std::function<void(const QString &)> callback = [=](const QString &basePath)
     {
-        qCWarning(scanner) << "Failed to create export directory:" << AndroidFileHelper::lastError();
+        if (basePath.isEmpty())
+        {
+            qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to save log"), -1);
+            return;
+        }
+
+        if (AndroidFileHelper::instance().writeTextFile(basePath, fileName, csvContent, "text/csv"))
+        {
+            qCInfo(scanner) << "Log CSV saved to:" << QString("%1/%2").arg(basePath, fileName);
+            emit showInfoMessage(tr("Log saved to CSV file"), 1);
+        }
+        else
+        {
+            qCWarning(scanner) << "Failed to save log CSV:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to save log"), -1);
+        }
+    };
+    AndroidFileHelper::instance().accessPath(m_settings->dataStoragePath, SCANNER_DIR_NAME, callback);
+#else
+    const QString basePath = AndroidFileHelper::instance().getPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
+    if (basePath.isEmpty())
+    {
+        qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
         emit showInfoMessage(tr("Failed to save log"), -1);
         return;
     }
 
-    QString targetBase = basePath;
-    if (AndroidFileHelper::isContentUri(basePath))
+    if (AndroidFileHelper::instance().writeTextFile(basePath, fileName, csvContent, "text/csv"))
     {
-        // No additional subdir, just ensure trailing encoding handled
-        if (!AndroidFileHelper::hasWritePermission(basePath))
-        {
-            qCWarning(scanner) << "No permission to write to:" << basePath;
-            return;
-        }
-    }
-
-    if (AndroidFileHelper::writeTextFile(targetBase, fileName, csvContent, "text/csv"))
-    {
-        qCInfo(scanner) << "Log CSV saved to:" << QString("%1/%2").arg(targetBase, fileName);
+        qCInfo(scanner) << "Log CSV saved to:" << QString("%1/%2").arg(basePath, fileName);
         emit showInfoMessage(tr("Log saved to CSV file"), 1);
     }
     else
     {
-        qCWarning(scanner) << "Failed to save log CSV:" << AndroidFileHelper::lastError();
+        qCWarning(scanner) << "Failed to save log CSV:" << AndroidFileHelper::instance().lastError();
         emit showInfoMessage(tr("Failed to save log"), -1);
     }
+#endif
 }
 
 void ScannerBackend::startAutoSaveCsv()
 {
     stopAutoSaveCsv();  // close any previously open file
 
-    const QString fileName = QString("%1.csv").arg(m_scanStartTime.toString("yyyy-MM-dd_hhmmss"));
+    const QString fileName = QString("%1.csv").arg(m_scanStartTime.isValid() ? m_scanStartTime.toString("yyyy-MM-dd_hhmmss")
+                                                                             : QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"));
 
     // Ensure path exists and writable
-    const QString basePath = AndroidFileHelper::buildSubdirPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
-    if (!AndroidFileHelper::mkpath(basePath))
+#if ASK_FOR_PERMISSION_IF_NEEDED
+    std::function<void(const QString &)> callback = [=](const QString &basePath)
     {
-        qCWarning(scanner) << "Failed to create export directory:" << AndroidFileHelper::lastError();
+        if (basePath.isEmpty())
+        {
+            qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to save log"), -1);
+            return;
+        }
+
+        m_autoSaveFile = AndroidFileHelper::instance().openFileForWriting(basePath, fileName, "text/csv");
+        if (m_autoSaveFile == nullptr)
+        {
+            qCWarning(scanner) << "Failed to open auto-save file:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to save log"), -1);
+            return;
+        }
+
+        if (m_settings->tii.headersInEnglish)
+        {
+            m_autoSaveExportRole = m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTCEnglish
+                                                                  : TxTableModel::TxTableModelRoles::ExportRoleEnglish;
+        }
+        else
+        {
+            m_autoSaveExportRole =
+                m_settings->tii.timestampInUTC ? TxTableModel::TxTableModelRoles::ExportRoleUTC : TxTableModel::TxTableModelRoles::ExportRole;
+        }
+        m_autoSaveLastCol = m_settings->tii.saveCoordinates ? TxTableModel::LastColumn : TxTableModel::LastColumnWithoutCoordinates;
+
+        // Write header
+        QTextStream out(m_autoSaveFile);
+        bool firstCol = true;
+        for (int col = 0; col <= m_autoSaveLastCol; ++col)
+        {
+            if (m_sortedFilteredModel->rfLevelFilter() && col == TxTableModel::ColRfLevel)
+            {
+                continue;
+            }
+            if (!firstCol)
+            {
+                out << ";";
+            }
+            firstCol = false;
+            out << m_model->headerData(col, Qt::Horizontal, m_autoSaveExportRole).toString();
+        }
+        out << Qt::endl;
+        out.flush();
+        m_autoSaveFile->flush();
+
+        // If model already has rows (clearOnStart == false), write them now
+        if (m_model->rowCount() > 0)
+        {
+            appendAutoSaveRows(0, m_model->rowCount() - 1);
+        }
+
+        qCInfo(scanner) << "Auto-save CSV started:" << fileName;
+        emit showInfoMessage(tr("Auto-save CSV started"), 0);
+    };
+    AndroidFileHelper::instance().accessPath(m_settings->dataStoragePath, SCANNER_DIR_NAME, callback);
+#else
+    const QString basePath = AndroidFileHelper::instance().getPath(m_settings->dataStoragePath, SCANNER_DIR_NAME);
+    if (basePath.isEmpty())
+    {
+        qCWarning(scanner) << "Error creating export directory:" << AndroidFileHelper::instance().lastError();
         emit showInfoMessage(tr("Failed to save log"), -1);
         return;
     }
 
-    if (AndroidFileHelper::isContentUri(basePath))
-    {
-        // No additional subdir, just ensure trailing encoding handled
-        if (!AndroidFileHelper::hasWritePermission(basePath))
-        {
-            qCWarning(scanner) << "No permission to write to:" << basePath;
-            emit showInfoMessage(tr("No permission to write log"), -1);
-            return;
-        }
-    }
-
-    m_autoSaveFile = AndroidFileHelper::openFileForWriting(basePath, fileName, "text/csv");
+    m_autoSaveFile = AndroidFileHelper::instance().openFileForWriting(basePath, fileName, "text/csv");
     if (m_autoSaveFile == nullptr)
     {
-        qCWarning(scanner) << "Failed to open auto-save file:" << AndroidFileHelper::lastError();
+        qCWarning(scanner) << "Failed to open auto-save file:" << AndroidFileHelper::instance().lastError();
         emit showInfoMessage(tr("Failed to save log"), -1);
         return;
     }
@@ -643,6 +943,7 @@ void ScannerBackend::startAutoSaveCsv()
 
     qCInfo(scanner) << "Auto-save CSV started:" << fileName;
     emit showInfoMessage(tr("Auto-save CSV started"), 0);
+#endif
 }
 
 void ScannerBackend::appendAutoSaveRows(int firstRow, int lastRow)
@@ -699,12 +1000,21 @@ void ScannerBackend::startScan()
 
     clearOfflineMode();
 
-    if (m_settings->scanner.clearOnStart)
+    // If data was loaded from CSV, always force-clear the table regardless of clearOnStart setting
+    const bool forceClear = m_dataLoadedFromFile || m_settings->scanner.clearOnStart;
+    m_dataLoadedFromFile = false;
+    if (forceClear)
     {
         reset();
+        m_scanStartTime = QDateTime{};  // invalid data time
         m_sortedFilteredModel->setRfLevelFilter(m_deviceHasRfLevel == false);
+        m_incrementalBaseline.clear();
     }
-    m_scanStartTime = QDateTime::currentDateTime();
+
+    if (m_scanStartTime.isValid() == false)
+    {
+        m_scanStartTime = QDateTime::currentDateTime();
+    }
     m_scanStartLocation = m_currentPosition;
     scanningLabel(tr("Channel:"));
 
@@ -919,16 +1229,10 @@ void ScannerBackend::onTiiData(const RadioControlTIIData &data)
                 m_timer->stop();
             }
 
-            if (m_isPreciseMode)
-            {  // request ensemble info
-                m_tiiData = data;
-                qCDebug(scanner) << "Requesting ensemble config @" << m_frequency;
-                emit requestEnsembleConfiguration();
-            }
-            else
-            {
-                storeEnsembleData(data, QString(), QString());
-            }
+            // request ensemble info
+            m_tiiData = data;
+            qCDebug(scanner) << "Requesting ensemble config @" << m_frequency;
+            emit requestEnsembleConfiguration();
         }
     }
 }
@@ -939,8 +1243,60 @@ void ScannerBackend::storeEnsembleData(const RadioControlTIIData &tiiData, const
 
     int firstNewRow = m_model->rowCount();
 
-    m_model->appendEnsData(QDateTime::currentDateTime(), tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf,
-                           m_numServicesFound, m_snr / m_snrCntr, m_rfLevel);
+    if (m_settings->scanner.incrementalScan)
+    {
+        IncrementalChannelRecord &baseline = m_incrementalBaseline[m_frequency];
+        const ServiceListId currentEnsId(m_ensemble);
+
+        const bool ueidChanged = !baseline.hasData || (baseline.ueid != currentEnsId.ueid());
+        const bool labelChanged = baseline.hasData && (baseline.ensLabel != m_ensemble.label);
+        const bool numServicesChanged = baseline.hasData && (baseline.numServices != m_numServicesFound);
+
+        QList<dabsdrTii_t> newTiiCodes;
+        for (const auto &tii : tiiData.idList)
+        {
+            const int id = (tii.sub << 8) | tii.main;
+            if (!baseline.tiiIds.contains(id))
+            {
+                newTiiCodes.append(tii);
+            }
+        }
+        const bool newTiiDetected = !newTiiCodes.isEmpty();
+
+        if (ueidChanged || labelChanged || numServicesChanged || newTiiDetected)
+        {
+            const QList<dabsdrTii_t> &toStore = (ueidChanged || labelChanged || numServicesChanged) ? tiiData.idList : newTiiCodes;
+            m_model->appendEnsData(QDateTime::currentDateTime(), toStore, currentEnsId, m_ensemble.label, conf, csvConf, m_numServicesFound,
+                                   m_snr / m_snrCntr, m_rfLevel);
+            // qCInfo(scanner) << "Incremental: storing" << toStore.size() << "row(s) @" << m_frequency << "ueidChanged" << ueidChanged <<
+            // "labelChanged"
+            //                 << labelChanged << "numServicesChanged" << numServicesChanged << "newTiiDetected" << newTiiDetected;
+        }
+        else
+        {
+            qCInfo(scanner) << "Incremental: no change @" << m_frequency;
+        }
+
+        // Always update baseline (union for TII codes, replace for scalar fields)
+        baseline.hasData = true;
+        baseline.ueid = currentEnsId.ueid();
+        baseline.ensLabel = m_ensemble.label;
+        baseline.numServices = m_numServicesFound;
+        if (ueidChanged)
+        {
+            // UEID changed — old TII codes belong to a different ensemble, start fresh
+            baseline.tiiIds.clear();
+        }
+        for (const auto &tii : tiiData.idList)
+        {
+            baseline.tiiIds.insert((tii.sub << 8) | tii.main);
+        }
+    }
+    else
+    {
+        m_model->appendEnsData(QDateTime::currentDateTime(), tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf,
+                               m_numServicesFound, m_snr / m_snrCntr, m_rfLevel);
+    }
 
     int lastNewRow = m_model->rowCount() - 1;
     if (m_autoSaveFile != nullptr && lastNewRow >= firstNewRow)
@@ -991,13 +1347,13 @@ void ScannerBackend::createContextMenu(int row)
     m_contextMenuModel->addMenuItem(markAsLocalAction ? tr("Mark as local (known) transmitter") : tr("Unmark local (known) transmitter"),
                                     ContextMenuActionId::MarkLocal, QVariant(markAsLocalAction), true);
     m_contextMenuModel->addMenuItem(tr("Show ensemble information"), ContextMenuActionId::ShowEnsembleInfo, QVariant(row),
-                                    m_isPreciseMode && m_tableSelectionModel->selectedRows().count() == 1);
+                                    m_tableSelectionModel->selectedRows().count() == 1);
 }
 
 void ScannerBackend::showEnsembleConfig(int row)
 {
     auto index = m_tableModel->index(row, 0);
-    if (index.isValid() && m_isPreciseMode)
+    if (index.isValid())
     {
         QModelIndex srcIndex = mapToSourceModel(index);
         if (srcIndex.isValid())
@@ -1045,35 +1401,54 @@ void ScannerBackend::saveEnsembleCSV(int srcModelRow)
     ensemblename.replace(regexp, "_");
     uint32_t frequency = item.ensId().freq();
 
-    const QString ensemblePath = AndroidFileHelper::buildSubdirPath(m_settings->dataStoragePath, ENSEMBLE_DIR_NAME);
-
-    if (!AndroidFileHelper::mkpath(m_settings->dataStoragePath, ENSEMBLE_DIR_NAME))
+#if ASK_FOR_PERMISSION_IF_NEEDED
+    std::function<void(const QString &)> callback = [=](const QString &ensemblePath)
     {
-        qCWarning(scanner) << "Failed to create ensemble export directory:" << AndroidFileHelper::lastError();
-        return;
-    }
+        if (ensemblePath.isEmpty())
+        {
+            qCWarning(scanner) << "Error creating ensemble export directory:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to export ensemble information"), -1);
+            return;
+        }
 
-    if (!AndroidFileHelper::hasWritePermission(ensemblePath))
+        const QString fileName =
+            QString("%1_%2_%3.csv").arg(item.rxTime().toString("yyyy-MM-dd_hhmmss"), DabTables::channelList.value(frequency), ensemblename);
+
+        if (AndroidFileHelper::instance().writeTextFile(ensemblePath, fileName, item.ensConfigCSV(), "text/csv"))
+        {
+            qCInfo(scanner) << "Ensemble CSV exported to:" << ensemblePath << "/" << fileName;
+            emit showInfoMessage(tr("Ensemble information exported"), 1);
+        }
+        else
+        {
+            qCWarning(scanner) << "Failed to export ensemble CSV:" << AndroidFileHelper::instance().lastError();
+            emit showInfoMessage(tr("Failed to export ensemble information"), -1);
+        }
+    };
+    AndroidFileHelper::instance().accessPath(m_settings->dataStoragePath, ENSEMBLE_DIR_NAME, callback);
+#else
+    const QString ensemblePath = AndroidFileHelper::instance().getPath(m_settings->dataStoragePath, ENSEMBLE_DIR_NAME);
+    if (ensemblePath.isEmpty())
     {
-        qCWarning(scanner) << "No permission to write to:" << ensemblePath;
-        emit showInfoMessage(tr("No permission to write ensemble information"), -1);
-
+        qCWarning(scanner) << "Error creating ensemble export directory:" << AndroidFileHelper::instance().lastError();
+        emit showInfoMessage(tr("Failed to export ensemble information"), -1);
         return;
     }
 
     const QString fileName =
         QString("%1_%2_%3.csv").arg(item.rxTime().toString("yyyy-MM-dd_hhmmss"), DabTables::channelList.value(frequency), ensemblename);
 
-    if (AndroidFileHelper::writeTextFile(ensemblePath, fileName, item.ensConfigCSV(), "text/csv"))
+    if (AndroidFileHelper::instance().writeTextFile(ensemblePath, fileName, item.ensConfigCSV(), "text/csv"))
     {
         qCInfo(scanner) << "Ensemble CSV exported to:" << ensemblePath << "/" << fileName;
         emit showInfoMessage(tr("Ensemble information exported"), 1);
     }
     else
     {
-        qCWarning(scanner) << "Failed to export ensemble CSV:" << AndroidFileHelper::lastError();
+        qCWarning(scanner) << "Failed to export ensemble CSV:" << AndroidFileHelper::instance().lastError();
         emit showInfoMessage(tr("Failed to export ensemble information"), -1);
     }
+#endif
 }
 
 void ScannerBackend::setIsActive(bool isActive)
@@ -1107,6 +1482,10 @@ void ScannerBackend::onInputDeviceError(const InputDevice::ErrorCode)
         }
         stopScan();
         stopAutoSaveCsv();
+        if (autoSaveJSON() && m_model->rowCount() > 0)
+        {  // JSON is only svaed when there is at least one row in the table
+            saveJSON();
+        }
         scanningLabel(tr("Scanning failed"));
     }
 }
@@ -1127,6 +1506,11 @@ void ScannerBackend::loadSettings()
     }
 
     m_sortedFilteredModel->setLocalTxFilter(m_settings->scanner.hideLocalTx);
+}
+
+void ScannerBackend::countryFlagUpdated(const ServiceListId &ensId)
+{
+    m_model->countryFlagUpdated(ensId);
 }
 
 void ScannerBackend::selectTxOnMap(int markerIndex)
@@ -1197,6 +1581,7 @@ void ScannerBackend::clearTableAction()
                                    {
                                        reset();
                                        m_sortedFilteredModel->setRfLevelFilter(m_deviceHasRfLevel == false);
+                                       m_incrementalBaseline.clear();
                                    });
             }
             else

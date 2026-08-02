@@ -377,7 +377,7 @@ void AudioRecManager::onAudioRecordingStarted(const QString &recpath, const QStr
     {
         QFileInfo fi(filename);
         QString dlLogFilename = fi.completeBaseName() + ".txt";
-        m_dlLogFile = AndroidFileHelper::openFileForWriting(recpath, dlLogFilename, "text/plain");
+        m_dlLogFile = AndroidFileHelper::instance().openFileForWriting(recpath, dlLogFilename, "text/plain");
         if (m_dlLogFile)
         {
             QTextStream out(m_dlLogFile);

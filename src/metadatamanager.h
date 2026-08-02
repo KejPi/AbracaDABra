@@ -29,8 +29,10 @@
 
 #include <QDomDocument>
 #include <QHash>
+#include <QNetworkAccessManager>
 #include <QObject>
 #include <QPixmap>
+#include <QSet>
 
 #include "epgmodel.h"
 #include "servicelist.h"
@@ -47,6 +49,7 @@ public:
     {
         SmallLogo = Qt::UserRole,
         SLSLogo,
+        SquareLogo,
         ShortName,
         MediumName,
         LongName,
@@ -59,6 +62,7 @@ public:
     void onFileReceived(const QByteArray &data, const QString &requestId);
     QVariant data(uint32_t ueid, uint32_t sid, uint8_t SCIdS, MetadataManager::MetadataRole role) const;
     QVariant data(const ServiceListId &endId, const ServiceListId &id, MetadataManager::MetadataRole role) const;
+    QString squareLogoFilePath(uint32_t ueid, uint32_t sid, uint8_t SCIdS) const;
 
     EPGModel *epgModel(const ServiceListId &id) const;
 
@@ -92,6 +96,8 @@ private:
     QHash<QString, serviceInfo_t> m_info;
     QHash<ServiceListId, EPGModel *> m_epgList;
     ServiceListId m_currentEnsemble;
+    QNetworkAccessManager *m_networkManager;
+    mutable QSet<QString> m_pendingFlagDownloads;
 
     bool parseProgramme(const QDomElement &element, const ServiceListId &id);
     void parseDescription(const QDomElement &element, EPGModelItem *progItem);

@@ -3,7 +3,7 @@
  *
  * MIT License
  *
- * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecky <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,9 +32,21 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QThread>
+#include <QMutex>
+#include <QQueue>
 #include <QTimer>
+#include <atomic>
 #include <rtl-sdr.h>
 #include "inputdevice.h"
+
+#define RTLTCP_CHUNK_SIZE (INPUT_CHUNK_IQ_SAMPLES * 2 * sizeof(uint8_t))  // 64ms of IQ samples at 2048 kHz
+
+#define RTLTCP_DOC_ENABLE 1          // enable DOC
+#define RTLTCP_AGC_ENABLE 1          // enable AGC
+#define RTLTCP_START_COUNTER_INIT 2  // init value of the counter used to reset buffer after tune
+#define RTLTCP_START_COUNTER_FILL_BUFFER (16)  // number of input buffers to fill before emitting data after tune
+
+#define RTLTCP_AGC_LEVEL_MAX_DEFAULT 105
 
 // socket
 #if defined(_WIN32)
@@ -57,22 +69,16 @@
 #endif
 // clang-format on
 
-#define RTLTCP_CHUNK_SIZE (INPUT_CHUNK_IQ_SAMPLES * 2 * sizeof(uint8_t))  // 64ms of IQ samples at 2048 kHz
-
-#define RTLTCP_DOC_ENABLE 1          // enable DOC
-#define RTLTCP_AGC_ENABLE 1          // enable AGC
-#define RTLTCP_START_COUNTER_INIT 2  // init value of the counter used to reset buffer after tune
-
-#define RTLTCP_AGC_LEVEL_MAX_DEFAULT 105
-
 class RtlTcpWorker : public QThread
 {
     Q_OBJECT
 public:
-    explicit RtlTcpWorker(SOCKET sock, QObject *parent = nullptr);
+    explicit RtlTcpWorker(const QString &address, int port, bool useNativeSocket, QObject *parent = nullptr);
     void captureIQ(bool ena);
     void startStopRecording(bool ena);
     bool isRunning();
+    void writeData(const QByteArray &data);
+    void requestStop();
 
 protected:
     void run() override;
@@ -82,14 +88,21 @@ signals:
     void recordBuffer(const uint8_t *buf, uint32_t len);
     void dataReady();
     void serverInfo(uint32_t tunerType, uint32_t tunerGainCount);
+    void errorOccurred(QAbstractSocket::SocketError socketError);
 
 private:
-    SOCKET m_sock;
-
+    QString m_address;
+    int m_port;
+    bool m_useNativeSocket;
+    SOCKET m_sock = INVALID_SOCKET;
+    QMutex m_commandMutex;
+    QQueue<QByteArray> m_commandQueue;
+    std::atomic<bool> m_stopRequested;
     std::atomic<bool> m_isRecording;
     std::atomic<bool> m_enaCaptureIQ;
     std::atomic<bool> m_watchdogFlag;
     std::atomic<int8_t> m_captureStartCntr;
+    int_fast8_t m_bufferFillCntr;
 
     // DOC memory
     float m_dcI = 0.0;
@@ -109,6 +122,10 @@ private:
     // input buffer
     uint8_t m_bufferIQ[RTLTCP_CHUNK_SIZE];
     void processInputData(unsigned char *buf, uint32_t len);
+    void flushCommandQueue(SOCKET &socket);
+    void flushCommandQueue(QTcpSocket &socket);
+    void runNativeSocket();
+    void runQtSocket();
 };
 
 class RtlTcpInput : public InputDevice
@@ -145,7 +162,7 @@ class RtlTcpInput : public InputDevice
     static const int unknown_gains[];
 
 public:
-    explicit RtlTcpInput(QObject *parent = nullptr);
+    explicit RtlTcpInput(bool useNativeSocket = true, QObject *parent = nullptr);
     ~RtlTcpInput();
     bool openDevice(const QVariant &hwId = QVariant(), bool fallbackConnection = true) override;
     void tune(uint32_t frequency) override;
@@ -161,12 +178,12 @@ public:
 
 private:
     uint32_t m_frequency;
-    SOCKET m_sock;
     QString m_address;
     int m_port;
     QTcpSocket *m_controlSocket;
     bool m_controlSocketEna;
     bool m_haveControlSocket;
+    bool m_useNativeSocket;
 
     RtlTcpWorker *m_worker;
     QTimer m_watchdogTimer;
@@ -194,6 +211,7 @@ private:
 
     void sendCommand(const RtlTcpCommand &cmd, uint32_t param);
     void onReadThreadStopped();
+    void onStreamSocketError(QAbstractSocket::SocketError e);
     void onWatchdogTimeout();
 
     void initControlSocket();

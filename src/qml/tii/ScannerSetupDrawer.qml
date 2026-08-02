@@ -199,6 +199,13 @@ AbracaDrawer {
                 }
 
                 AbracaMenuItem {
+                    text: qsTr("Incremental scan")
+                    checkable: true
+                    enabled: !scannerBackend.isScanning
+                    onTriggered: scannerBackend.incrementalScan = checked
+                    Component.onCompleted: checked = scannerBackend.incrementalScan
+                }
+                AbracaMenuItem {
                     text: qsTr("Clear scan results on start")
                     checkable: true
                     onTriggered: scannerBackend.clearOnStart = checked
@@ -211,8 +218,16 @@ AbracaDrawer {
                     Component.onCompleted: checked = scannerBackend.hideLocalTx
                 }
                 AbracaMenuItem {
-                    text: qsTr("AutoSave CSV")
+                    text: qsTr("AutoSave JSON")
                     checkable: true
+                    enabled: !scannerBackend.isScanning
+                    onTriggered: scannerBackend.autoSaveJSON = checked
+                    Component.onCompleted: checked = scannerBackend.autoSaveJSON
+                }
+                AbracaMenuItem {
+                    text: qsTr("AutoSave CSV")                    
+                    checkable: true
+                    enabled: !scannerBackend.isScanning
                     onTriggered: scannerBackend.autoSave = checked
                     Component.onCompleted: checked = scannerBackend.autoSave
                 }
@@ -223,6 +238,14 @@ AbracaDrawer {
                     Layout.bottomMargin: UI.standardMargin
                 }
                 AbracaMenuItem {
+                    text: qsTr("Save as JSON")
+                    onTriggered: {
+                        scannerBackend.saveJSON()
+                        drawer.close()
+                    }
+                    enabled: scannerBackend.tableModel.rowCount > 0
+                }
+                AbracaMenuItem {
                     text: qsTr("Save as CSV")
                     onTriggered: {
                         scannerBackend.saveCSV()
@@ -231,7 +254,7 @@ AbracaDrawer {
                     enabled: scannerBackend.tableModel.rowCount > 0
                 }
                 AbracaMenuItem {
-                    text: qsTr("Load from CSV")
+                    text: qsTr("Load from file...")
                     enabled: !scannerBackend.isScanning
                     onTriggered: {
                         scannerBackend.importAction()

@@ -80,7 +80,8 @@ Item {
             //                        map.bearing -= delta
             //                        map.alignCoordinateToPoint(map.startCentroid, pinch.centroid.position)
             //                    }
-            grabPermissions: PointerHandler.TakeOverForbidden
+            // grabPermissions left at default (CanTakeOverFromAnything) so pinch still works
+            // when TIIMap is embedded inside an ancestor Flickable (e.g. ServiceView)
         }
         WheelHandler {
             id: wheel
@@ -122,27 +123,23 @@ Item {
             onActivated: map.zoomLevel = Math.round(map.zoomLevel - 1)
         }
 
-        MapQuickItem {
-            id: currentPosition
-            parent: map
-            sourceItem: Rectangle { width: 14; height: 14; color: "#251ee4"; border.width: 2; border.color: "white"; smooth: true; radius: 7; opacity: 0.8 }
-            coordinate: backend.currentPosition
-            opacity: 1.0
-            anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height/2)
-            visible: backend.positionValid
-        }
-
         MapItemView {
+            z: 3
             model: backend.mapModel
             delegate: TransmitterMarker {
                 id: marker
+                readonly property bool markerSelected: (index >= 0) ? selectedTx : false
                 parent: map
                 coordinate:  coordinates
                 tiiCode: tiiString
                 markerColor: levelColor
-                isSelected: (index >= 0) ? selectedTx : false
+
+                // no selection in this layer, overlay is used to render selected item
+                isSelected: false // (index >= 0) ? selectedTx : false
                 isTiiMode: backend.isTii
-                z: isSelected ? 2 : 1
+
+                // only what is not selected is visible
+                visible: markerSelected === false
 
                 TapHandler {
                     id: txTapHandler
@@ -155,8 +152,40 @@ Item {
             }
         }
 
+        MapQuickItem {
+            id: currentPosition
+            parent: map
+            sourceItem: Rectangle { width: 14; height: 14; color: "#251ee4"; border.width: 2; border.color: "white"; smooth: true; radius: 7; opacity: 0.8 }
+            coordinate: backend.currentPosition
+            opacity: 1.0
+            anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height/2)
+            visible: backend.positionValid
+            z: 3
+        }
+
+        // this is overlay item that is only showing what is selected to render it on top
+        // changing Z layer interactively does not work
+        MapItemView {
+            z: 4
+            model: backend.mapModel
+            visible: backend.ensembleInfo[0] !== ""
+            delegate: TransmitterMarker {
+                id: markerOverlay
+                readonly property bool markerSelected: (index >= 0) ? selectedTx : false
+
+                parent: map
+                coordinate:  coordinates
+                tiiCode: tiiString
+                markerColor: levelColor
+                isSelected: markerSelected
+                visible: isSelected
+                isTiiMode: backend.isTii
+                //z: isSelected ? 1 : -1
+            }
+        }
+
         Rectangle {
-            id: infoBox
+            id: infoBox            
 
             HoverHandler {
                 id: infoHoverHandler
@@ -171,7 +200,7 @@ Item {
             anchors.rightMargin: 10
             anchors.bottomMargin: UI.isMobile ? 25 : 10
             visible: backend.ensembleInfo[0] !== ""
-            z: 3
+            z: 10
             Behavior on opacity {
                 SmoothedAnimation {
                     velocity: 20
@@ -214,6 +243,8 @@ Item {
             anchors.top: map.top
             anchors.rightMargin: (map.width - width) > width/2 ? 10 : (map.width - width) / 2
             anchors.topMargin: 10
+
+            z: 10
 
             sourceComponent: AbracaTableView {
                 id: tiiTableView
@@ -258,7 +289,7 @@ Item {
             anchors.bottom: parent.bottom
             anchors.leftMargin: 10
             anchors.bottomMargin: 25
-            z: 3
+            z: 10
             FontMetrics {
                 id: fMetrics
             }

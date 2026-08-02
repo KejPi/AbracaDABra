@@ -171,19 +171,6 @@ void SPIApp::enable(bool ena)
     }
 }
 
-void SPIApp::setEnableRadioDNS(bool ena)
-{
-    if (m_enaRadioDNS != ena)
-    {
-        m_enaRadioDNS = ena;
-        m_radioDnsDownloadQueue.clear();
-        if (m_enaRadioDNS)
-        {
-            emit radioDNSAvailable();
-        }
-    }
-}
-
 void SPIApp::onUserAppData(const RadioControlUserAppData &data)
 {
     if ((DabUserApplicationType::SPI == data.userAppType) && (m_isRunning))
@@ -314,7 +301,7 @@ void SPIApp::processObject(uint16_t decoderId, MOTObjectCache::const_iterator ob
 
     if (m_dumpEna)
     {
-        dumpFile(decoderId, objIt->getId(), objIt->getContentName(), objIt->getBody());
+        dumpFile(decoderId, objIt->getId(), objIt->getContentName(), objIt->getBody(false));  // store compressed MOT object as it is
     }
 
     switch (objIt->getContentType())
@@ -392,30 +379,42 @@ void SPIApp::dumpFile(uint16_t decoderId, int transportId, QString contentName, 
         // prepend UA directory
         fileSubdir = QString("%1%2").arg(UA_DIR_NAME, fileSubdir);
 
-        const QString dataPath = AndroidFileHelper::buildSubdirPath(m_dumpPath, fileSubdir);
-
-        // Ensure directory exists and is writable
-        if (!AndroidFileHelper::mkpath(m_dumpPath, fileSubdir))
+#if ASK_FOR_PERMISSION_IF_NEEDED
+        std::function<void(const QString &)> callback = [=](const QString &dataPath)
         {
-            qCWarning(spiApp) << "Failed to create slide export directory:" << AndroidFileHelper::lastError();
+            if (dataPath.isEmpty())
+            {
+                qCWarning(spiApp) << "Error creating slide export directory:" << AndroidFileHelper::instance().lastError();
+                return;
+            }
+
+            if (AndroidFileHelper::instance().writeBinaryFile(dataPath, filename, data, "application/octet-stream", m_dumpOverwrite))
+            {
+                qCInfo(spiApp) << "Storing file:" << QString("%1/%2").arg(dataPath, filename);
+            }
+            else
+            {
+                qCWarning(spiApp) << "Failed to file:" << AndroidFileHelper::instance().lastError();
+            }
+        };
+        AndroidFileHelper::instance().accessPath(m_dumpPath, fileSubdir, callback);
+#else
+        const QString dataPath = AndroidFileHelper::instance().getPath(m_dumpPath, fileSubdir);
+        if (dataPath.isEmpty())
+        {
+            qCWarning(spiApp) << "Error creating slide export directory:" << AndroidFileHelper::instance().lastError();
             return;
         }
 
-        if (!AndroidFileHelper::hasWritePermission(dataPath))
-        {
-            qCWarning(spiApp) << "No permission to write to:" << dataPath;
-            qCWarning(spiApp) << "Please select a new data storage folder in settings.";
-            return;
-        }
-
-        if (AndroidFileHelper::writeBinaryFile(dataPath, filename, data, "application/octet-stream", m_dumpOverwrite))
+        if (AndroidFileHelper::instance().writeBinaryFile(dataPath, filename, data, "application/octet-stream", m_dumpOverwrite))
         {
             qCInfo(spiApp) << "Storing file:" << QString("%1/%2").arg(dataPath, filename);
         }
         else
         {
-            qCWarning(spiApp) << "Failed to file:" << AndroidFileHelper::lastError();
+            qCWarning(spiApp) << "Failed to file:" << AndroidFileHelper::instance().lastError();
         }
+#endif
     }
 }
 
@@ -448,14 +447,30 @@ void SPIApp::onFileRequest(uint16_t decoderId, const QString &url, const QString
     // not found -> try to download it if not relative URL
     if (QUrl(url).isValid() && !QUrl(url).isRelative())
     {
-        downloadFile(url, requestId);
+        downloadFileRequest(url, requestId);
     }
 }
 
 void SPIApp::onSettingsChanged(bool useInternet, bool enaRadioDNS)
 {
-    setUseInternet(useInternet);
-    setEnableRadioDNS(enaRadioDNS);
+    // radioDNS requres internet access, so it cannot be enabled if internet access is disabled
+    bool enaRadioDns = useInternet && enaRadioDNS;
+
+    if (m_useInternet != useInternet)
+    {
+        m_useInternet = useInternet;
+        m_downloadReqQueue.clear();
+    }
+
+    if (m_enaRadioDNS != enaRadioDns)
+    {
+        m_enaRadioDNS = enaRadioDns;
+        m_radioDnsDownloadQueue.clear();
+        if (enaRadioDns)
+        {
+            emit radioDNSAvailable();
+        }
+    }
 }
 
 void SPIApp::parseBinaryInfo(uint16_t decoderId, const MOTObject &motObj)
@@ -1629,7 +1644,7 @@ void SPIApp::radioDNSLookup()
 
         if (!m_dnsCache[fqdn].isEmpty())
         {  // valid address
-            downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(m_dnsCache[fqdn], file), "XML|" + file);
+            downloadFileRequest(QString("%1/radiodns/spi/3.1/%3").arg(m_dnsCache[fqdn], file), "XML|" + file);
         }
         else
         {
@@ -1637,7 +1652,7 @@ void SPIApp::radioDNSLookup()
         }
 
         // next dns lookup
-        QTimer::singleShot(10, this, [this, fqdn]() { radioDNSLookup(); });
+        QTimer::singleShot(SPI_APP_RADIODNS_LOOKUP_DELAY, this, [this, fqdn]() { radioDNSLookup(); });
     }
     else
     {
@@ -1662,7 +1677,7 @@ void SPIApp::radioDNSLookup()
 
 void SPIApp::getSI(const ServiceListId &servId, const uint32_t &ueid)
 {
-    if (m_useInternet && m_enaRadioDNS)
+    if (m_enaRadioDNS)
     {  // query RadioDNS
         m_radioDnsDownloadQueue.enqueue({radioDNSFQDN(servId, ueid), "SI.xml"});
         if (m_radioDnsDownloadQueue.size() == 1)
@@ -1674,7 +1689,7 @@ void SPIApp::getSI(const ServiceListId &servId, const uint32_t &ueid)
 
 void SPIApp::getPI(const ServiceListId &servId, const QList<uint32_t> &ueidList, const QDate &date)
 {
-    if (m_useInternet && m_enaRadioDNS)
+    if (m_enaRadioDNS)
     {  // query RadioDNS
         for (const auto &ueid : ueidList)
         {
@@ -1729,7 +1744,7 @@ void SPIApp::handleRadioDNSLookup()
             m_dnsCache[fqdn] = "";  // invalid record in cache
 
             // next lookup
-            QTimer::singleShot(10, this, [this, fqdn]() { radioDNSLookup(); });
+            QTimer::singleShot(SPI_APP_RADIODNS_LOOKUP_DELAY, this, [this, fqdn]() { radioDNSLookup(); });
         }
         return;
     }
@@ -1765,9 +1780,9 @@ void SPIApp::handleRadioDNSLookup()
                 address = QString("http://%1").arg(record.target());
             }
             m_dnsCache[fqdn] = address;
-            downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(address, request.second), "XML|" + request.second);
+            downloadFileRequest(QString("%1/radiodns/spi/3.1/%3").arg(address, request.second), "XML|" + request.second);
 
-            QTimer::singleShot(10, this, [this, fqdn]() { radioDNSLookup(); });
+            QTimer::singleShot(SPI_APP_RADIODNS_LOOKUP_DELAY, this, [this, fqdn]() { radioDNSLookup(); });
         }
     }
 }
@@ -1793,7 +1808,7 @@ void SPIApp::handleRadioDoHLookup(QNetworkReply *reply)
                     }
                     // giving priority to non TLS (against standard)
                     QString srvUrl = QString("https://dns.google/resolve?name=_radioepg._tcp.%1&type=SRV").arg(data);
-                    downloadFile(srvUrl, "DOH_SRV", false);
+                    downloadFileRequest(srvUrl, "DOH_SRV", false);
                     return;
                 }
                 else if (requestId == "DOH_SRV")
@@ -1816,10 +1831,10 @@ void SPIApp::handleRadioDoHLookup(QNetworkReply *reply)
                             address = QString("http://%1").arg(match.captured(1));
                         }
                         m_dnsCache[fqdn] = address;
-                        downloadFile(QString("%1/radiodns/spi/3.1/%3").arg(address, request.second), "XML|" + request.second);
+                        downloadFileRequest(QString("%1/radiodns/spi/3.1/%3").arg(address, request.second), "XML|" + request.second);
 
                         // next lookup
-                        QTimer::singleShot(10, this, [this, fqdn]() { radioDNSLookup(); });
+                        QTimer::singleShot(SPI_APP_RADIODNS_LOOKUP_DELAY, this, [this, fqdn]() { radioDNSLookup(); });
                         return;
                     }
                 }
@@ -1839,7 +1854,7 @@ void SPIApp::handleRadioDoHLookup(QNetworkReply *reply)
                 if (name.startsWith("_radioepg._tcp."))
                 {  // try  TLS lookup
                     QString srvUrl = QString("https://dns.google/resolve?name=%1&type=SRV").arg(name.replace("_radioepg._tcp.", "_radiospi._tcp."));
-                    downloadFile(srvUrl, "DOH_SRV", false);
+                    downloadFileRequest(srvUrl, "DOH_SRV", false);
                     return;
                 }
             }
@@ -1852,11 +1867,11 @@ void SPIApp::handleRadioDoHLookup(QNetworkReply *reply)
         QString fqdn = m_radioDnsDownloadQueue.dequeue().first;
         m_dnsCache[fqdn] = "";  // invalid record in cache
         // next lookup
-        QTimer::singleShot(10, this, [this]() { radioDNSLookup(); });
+        QTimer::singleShot(SPI_APP_RADIODNS_LOOKUP_DELAY, this, [this]() { radioDNSLookup(); });
     }
 }
 
-void SPIApp::downloadFile(const QString &url, const QString &requestId, bool useCache)
+void SPIApp::downloadFileRequest(const QString &url, const QString &requestId, bool useCache)
 {
     qCDebug(spiApp) << Q_FUNC_INFO << url;
     if (!m_useInternet)
@@ -1870,15 +1885,37 @@ void SPIApp::downloadFile(const QString &url, const QString &requestId, bool use
         request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
     }
     request.setUrl(QUrl(url));
-    auto reply = m_netAccessManager->get(request);
-    reply->setProperty("requestId", requestId);
+    m_downloadReqQueue.enqueue({requestId, std::move(request)});
+    if (m_downloadReqQueue.size() == 1)
+    {
+        downloadFile();
+    }
+}
+
+void SPIApp::downloadFile()
+{
+    if (m_downloadReqQueue.isEmpty() == false)
+    {
+        auto request = m_downloadReqQueue.head();
+        auto reply = m_netAccessManager->get(request.second);
+        reply->setProperty("requestId", request.first);
+    }
 }
 
 void SPIApp::onFileDownloaded(QNetworkReply *reply)
 {
+    QString requestId = reply->property("requestId").toString();
+    if (!requestId.isEmpty() && m_downloadReqQueue.isEmpty() == false && requestId == m_downloadReqQueue.head().first)
+    {
+        m_downloadReqQueue.dequeue();
+        if (m_downloadReqQueue.isEmpty() == false)
+        {
+            downloadFile();
+        }
+    }
+
     if (reply->error() == QNetworkReply::NoError)
     {
-        QString requestId = reply->property("requestId").toString();
         if (requestId.startsWith("XML|"))
         {
             QByteArray data = reply->readAll();

@@ -59,10 +59,11 @@ public:
     explicit SignalBackend(Settings *settings, int freq, QObject *parent = nullptr);
     ~SignalBackend();
     Q_INVOKABLE void registerSpectrumPlot(QQuickItem *item);
+    Q_INVOKABLE void unregisterSpectrumPlot(QQuickItem *item);
     Q_INVOKABLE void registerSnrPlot(QQuickItem *item);
     Q_INVOKABLE void registerWaterfallPlot(QQuickItem *item);
+    Q_INVOKABLE void unregisterWaterfallPlot(QQuickItem *item);
 
-    void setIsActive(bool isActive);
     void setIsUndocked(bool isUndocked);
     bool isUndocked() const { return m_isUndocked; }
     void setInputDevice(InputDevice::Id id);
@@ -101,9 +102,9 @@ private:
 
     bool m_isUndocked = false;  // this flag holds the information if the page is undocked
 
-    LineChartItem *m_spectrumPlot = nullptr;
+    QList<LineChartItem *> m_spectrumPlotItems;
+    QList<WaterfallItem *> m_waterfallPlotItems;
     LineChartItem *m_snrPlot = nullptr;
-    WaterfallItem *m_waterfallItem = nullptr;
     int m_signalSpectSeriesId = -1;
     int m_nullSpectSeriesId = -1;
     int m_spectLeftMarginId = -1;
@@ -113,6 +114,8 @@ private:
 
     std::vector<float> m_signalSpectrumBuffer;
     std::vector<float> m_nullSpectrumBuffer;
+
+    bool m_nullSpectrumUpdated = false;
     int m_frequency = 0;
     float m_rfLevel = NAN;
     float m_tunerGain = NAN;
@@ -130,7 +133,6 @@ private:
     void addToPlot(float snr);
     void setFreqRange();
     void reset();
-
     void setSpectrumUpdate();
 
     void setGainVisible(bool visible);

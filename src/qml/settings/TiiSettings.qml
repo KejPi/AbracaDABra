@@ -119,8 +119,7 @@ Item {
                             ColumnLayout {
                                 id: receiverLocationLayout
                                 anchors.fill: parent
-                                readonly property int labelWidth: geoLocationLabel.implicitWidth > coordinatesLabel.implicitWidth ? geoLocationLabel.implicitWidth : coordinatesLabel.implicitWidth // Math.max(geoLocationLabel.implicitWidth, coordinatesLabel.implicitWidth)
-
+                                readonly property int labelWidth: Math.max(Math.max(geoLocationLabel.implicitWidth, coordinatesLabel.implicitWidth), altitudeLabel.implicitWidth)
                                 spacing: UI.standardMargin
                                 RowLayout {
                                     Layout.fillWidth: true
@@ -183,12 +182,6 @@ Item {
                                             readonly property regexp coordRegExp: /^\s*[+-]?\d+(?:\.\d+)?\s*,\s*[+-]?\d+(?:\.\d+)?\s*$/
                                             validator: RegularExpressionValidator { regularExpression: coordinatesTextField.coordRegExp }
                                             text: settingsBackend.locationCoordinates
-                                            // onEditingFinished: {
-                                            //     var txt = text.trim();
-                                            //     if (settingsBackend.locationCoordinates !== txt) {
-                                            //         settingsBackend.locationCoordinates = txt
-                                            //     }
-                                            // }
                                         }
                                     }
                                     GridLayout {
@@ -226,16 +219,47 @@ Item {
                                             }
                                         }
                                     }
-                                }
+                                }                                
                                 AbracaLabel {
                                     id: coordinatesHelpLabel
                                     Layout.fillWidth: true
                                     enabled: settingsBackend.locationSourceModel.currentIndex === 1
                                     visible: settingsBackend.locationSourceModel.currentIndex !== 2
                                     textFormat: Text.StyledText
-                                    text: settingsBackend.coordinatesHelp
+                                    text: qsTr("Enter coordinates in \"latitude, longitude\" format, for example: 1.234,-5.678</p><br><p>Tip: <i>Go to <a href=\"https://www.google.com/maps\">Google maps</a>, right click on your location, click on coordinates in popup menu to copy them and then insert the values here as they are.</i></p>")
                                     wrapMode: Text.WordWrap
                                     role: UI.LabelRole.Secondary
+                                }
+                                RowLayout {
+                                    id: altitudeLayout
+                                    AbracaLabel {
+                                        id: altitudeLabel
+                                        text: qsTr("Altitude source:")
+                                        Layout.preferredWidth: receiverLocationLayout.labelWidth
+                                    }
+                                    AbracaSwitch {
+                                        id: manualAltitudeSwitch
+                                        text: qsTr("Manual")
+                                        enabled: settingsBackend.locationSourceModel.currentIndex !== 1
+                                        checked: settingsBackend.tiiManualAltitude || settingsBackend.locationSourceModel.currentIndex === 1
+                                        onToggled: {
+                                            if (settingsBackend.tiiManualAltitude !== checked) {
+                                                settingsBackend.tiiManualAltitude = checked
+                                            }
+                                        }
+                                    }
+                                    AbracaSpinBox {
+                                        enabled: manualAltitudeSwitch.checked || settingsBackend.locationSourceModel.currentIndex === 1
+                                        stepSize: 10
+                                        from: 0
+                                        to: 5000
+                                        editable: true
+                                        suffix: " m"
+                                        value: settingsBackend.tiiAltitude
+                                        onValueChanged: if (value !== settingsBackend.tiiAltitude) {
+                                            settingsBackend.tiiAltitude = value;
+                                        }
+                                    }
                                 }
                             }
                         }

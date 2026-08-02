@@ -65,7 +65,6 @@ class SettingsBackend : public UIControlProvider
     Q_PROPERTY(SoapySdrGainModel *soapySdrGainModel READ soapySdrGainModel CONSTANT FINAL)
     Q_PROPERTY(QString slsDumpPaternDefault READ slsDumpPaternDefault CONSTANT FINAL)
     Q_PROPERTY(QString spiDumpPaternDefault READ spiDumpPaternDefault CONSTANT FINAL)
-    Q_PROPERTY(QString coordinatesHelp READ coordinatesHelp CONSTANT FINAL)
 
     Q_PROPERTY(bool haveRtlSdrOldDabDriver READ haveRtlSdrOldDabDriver CONSTANT FINAL)
     Q_PROPERTY(bool haveAirspy READ haveAirspy CONSTANT FINAL)
@@ -200,6 +199,8 @@ class SettingsBackend : public UIControlProvider
     UI_PROPERTY_SETTINGS(bool, tiiShowInactive, m_settings->tii.showInactiveTx)
     UI_PROPERTY_SETTINGS(bool, isTiiInactiveTimeoutEnabled, m_settings->tii.inactiveTxTimeoutEna)
     UI_PROPERTY_SETTINGS(int, tiiInactiveTimeout, m_settings->tii.inactiveTxTimeout)
+    UI_PROPERTY_SETTINGS(bool, tiiManualAltitude, m_settings->tii.manualAltitude)
+    UI_PROPERTY_SETTINGS(int, tiiAltitude, m_settings->tii.altitude)
 
     UI_PROPERTY_DEFAULT(int, applicationTheme, 0)
     UI_PROPERTY_SETTINGS(bool, showDlPlus, m_settings->dlPlusEna)
@@ -223,6 +224,7 @@ class SettingsBackend : public UIControlProvider
     UI_PROPERTY_SETTINGS(bool, isXmlHeaderEnabled, m_settings->xmlHeaderEna)
     UI_PROPERTY_SETTINGS(QString, dataStoragePath, m_settings->dataStoragePath)
     UI_PROPERTY_SETTINGS(bool, keepScreenOn, m_settings->keepScreenOn)
+    UI_PROPERTY_SETTINGS(bool, showServicePageWidget, m_settings->showServicePageWidget)
 
 public:
     SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *parent = nullptr);
@@ -284,7 +286,6 @@ public:
     void setTiiDbUpdate();
     QString slsDumpPaternDefault() const { return m_slsDumpPaternDefault; }
     QString spiDumpPaternDefault() const { return m_spiDumpPaternDefault; }
-    QString coordinatesHelp() const { return m_coordinatesHelp; }
     QString locationCoordinates() const;
     void setLocationCoordinates(const QString &locationCoordinates);
 
@@ -368,7 +369,6 @@ signals:
     void isSdrplayIfAgcCheckedChanged();
     void sdrplayRfGainIndexChanged();
     void sdrplayIfGainChanged();
-
     void locationCoordinatesChanged();
 
 protected:
@@ -403,9 +403,8 @@ private:
         ConnectButtonOff,
         ConnectButtonAuto
     };
-    static const QString m_coordinatesHelp;
 
-    const QList<QLocale::Language> m_supportedLocalization = {QLocale::Czech, QLocale::German, QLocale::Italian, QLocale::Polish};
+    const QList<QLocale::Language> m_supportedLocalization = {QLocale::Czech, QLocale::German, QLocale::Italian, QLocale::French, QLocale::Polish};
     const QString m_noFileString = tr("No file selected");
 
     Settings *m_settings = nullptr;

@@ -78,12 +78,17 @@ QModelIndex TxMapBackend::mapToSourceModel(const QModelIndex &proxyIndex) const
 
 void TxMapBackend::positionUpdated(const QGeoPositionInfo &position)
 {
+    QGeoCoordinate positionWithAlt = position.coordinate();
+    if (m_settings->tii.locationSource == Settings::GeolocationSource::Manual || m_settings->tii.manualAltitude)
+    {
+        positionWithAlt.setAltitude(m_settings->tii.altitude);
+    }
     if (m_offlineMode)
     {
-        m_currentPositionBackup = position.coordinate();  // update backup position so when going back online, position is updated to the latest one
-        return;                                           // Ignore GPS updates in offline mode
+        m_currentPositionBackup = positionWithAlt;  // update backup position so when going back online, position is updated to the latest one
+        return;                                     // Ignore GPS updates in offline mode
     }
-    setCurrentPosition(position.coordinate());
+    setCurrentPosition(positionWithAlt);
     m_model->setCoordinates(m_currentPosition);
     setPositionValid(true);
 }
@@ -246,6 +251,10 @@ void TxMapBackend::onSettingsChanged()
     if (m_isActive)
     {
         doLocationUpdate(true);
+    }
+    if (m_settings->tii.manualAltitude)
+    {
+        m_currentPosition.setAltitude(m_settings->tii.altitude);
     }
     m_model->setDisplayTimeInUTC(m_settings->tii.timestampInUTC);
     m_sortedFilteredModel->setInactiveTxFilter(m_settings->tii.showInactiveTx == false);

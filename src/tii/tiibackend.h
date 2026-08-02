@@ -61,7 +61,8 @@ public:
     void onTxTableSettingsChanged();
     Q_INVOKABLE void startStopLog() override;
     Q_INVOKABLE void registerTiiSpectrumPlot(QQuickItem *item);
-    void setIsActive(bool isActive);
+    Q_INVOKABLE void registerMap();
+    Q_INVOKABLE void unregisterMap();
 
 protected:
     void onSelectedRowChanged() override;
@@ -88,12 +89,15 @@ private:
     void logTiiData() const;
     void addToPlot(const RadioControlTIIData &data);
     void updateTiiPlot();
+    void setIsActive(bool isActive);
 
     LineChartItem *m_tiiSpectrumPlot = nullptr;
     int m_sSpect = -1;
     int m_sTii = -1;
 
     TxTableColumnProxyModel *m_columnProxyModel;
+
+    int m_mapCntr = 0;
 };
 
 #endif  // TIIBACKEND_H

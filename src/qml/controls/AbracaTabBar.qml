@@ -32,6 +32,7 @@ import abracaComponents
 
 TabBar {
     id: control
+    property bool showLine: true
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
                             contentWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
@@ -73,6 +74,7 @@ TabBar {
             height: 1
             color: UI.colors.divider
             opacity: 0.8
+            visible: control.showLine
         }
     }
 

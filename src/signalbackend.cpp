@@ -51,9 +51,12 @@ SignalBackend::SignalBackend(Settings *settings, int freq, QObject *parent) : UI
     connect(this, &SignalBackend::showNULLChanged, this,
             [this]()
             {
-                if (m_settings->signal.showNULL == false && m_spectrumPlot)
+                if (m_settings->signal.showNULL == false && m_spectrumPlotItems.isEmpty() == false)
                 {
-                    m_spectrumPlot->clear(m_nullSpectSeriesId);
+                    for (LineChartItem *plot : std::as_const(m_spectrumPlotItems))
+                    {
+                        plot->clear(m_nullSpectSeriesId);
+                    }
                 }
             });
     setSpectrumUpdate();
@@ -69,65 +72,77 @@ void SignalBackend::registerSpectrumPlot(QQuickItem *item)
 {
     if (item == nullptr)
     {
-        m_spectrumPlot = nullptr;
         return;
     }
 
     LineChartItem *spectrum = dynamic_cast<LineChartItem *>(item);
-    if (spectrum && spectrum != m_spectrumPlot)
+    if (spectrum && m_spectrumPlotItems.contains(spectrum) == false)
     {
-        m_spectrumPlot = spectrum;
-        // m_spectrumPlot->setDecimationEnabled(false);
-        m_spectrumPlot->setXLabelDecimals(1);
-        m_spectrumPlot->setYLabelDecimals(0);
-        m_spectrumPlot->setYMin(-200);
-        m_spectrumPlot->setYMax(10);
-        m_spectrumPlot->setDefaultYMin(-200);
-        m_spectrumPlot->setDefaultYMax(10);
-        m_spectrumPlot->setAutoRangeX(true);
-        m_spectrumPlot->setAutoRangeY(true);
-        m_spectrumPlot->resetToAutoRangeY();
+        if (m_spectrumPlotItems.isEmpty())
+        {
+            emit startSignalSpectrum(true);
+        }
 
-        m_spectrumPlot->setMinXSpan(0.064);
-        m_spectrumPlot->setMaxXSpan(2.048);
+        m_spectrumPlotItems.append(spectrum);
+        spectrum->setXLabelDecimals(1);
+        spectrum->setYLabelDecimals(0);
+        spectrum->setYMin(-200);
+        spectrum->setYMax(10);
+        spectrum->setDefaultYMin(-200);
+        spectrum->setDefaultYMax(10);
+        spectrum->setAutoRangeX(true);
+        spectrum->setAutoRangeY(true);
+        spectrum->resetToAutoRangeY();
 
-        m_spectrumPlot->setXAxisTitle(tr("Frequency [MHz]"));
-        m_spectrumPlot->setYAxisTitle(tr("dBFS"));
+        spectrum->setMinXSpan(0.064);
+        spectrum->setMaxXSpan(2.048);
 
-        m_signalSpectSeriesId = m_spectrumPlot->addSeries("signal", Qt::cyan, 1.0);
-        m_spectrumPlot->setSeriesStyle(m_signalSpectSeriesId, (int)LineSeries::Normal);
+        spectrum->setXAxisTitle(tr("Frequency [MHz]"));
+        spectrum->setYAxisTitle(tr("dBFS"));
 
-        m_nullSpectSeriesId = m_spectrumPlot->addSeries("null", QColor(0xdfd274), 1.0);
-        m_spectrumPlot->setSeriesStyle(m_nullSpectSeriesId, (int)LineSeries::Normal);
+        m_signalSpectSeriesId = spectrum->addSeries("signal", Qt::cyan, 1.0);
+        spectrum->setSeriesStyle(m_signalSpectSeriesId, (int)LineSeries::Normal);
+
+        m_nullSpectSeriesId = spectrum->addSeries("null", QColor(0xdfd274), 1.0);
+        spectrum->setSeriesStyle(m_nullSpectSeriesId, (int)LineSeries::Normal);
 
         // Add a vertical marker lines
-        m_spectLeftMarginId = m_spectrumPlot->addMarkerLine(true, -768e-3);
-        m_spectRightMarginId = m_spectrumPlot->addMarkerLine(true, 768e-3);
-        m_spectCenterId = m_spectrumPlot->addMarkerLine(true, 0.0);
+        m_spectLeftMarginId = spectrum->addMarkerLine(true, -768e-3);
+        m_spectRightMarginId = spectrum->addMarkerLine(true, 768e-3);
+        m_spectCenterId = spectrum->addMarkerLine(true, 0.0);
 
         QPen pen;
         pen.setColor(Qt::white);
         pen.setWidth(1);
         pen.setStyle(Qt::DotLine);
-        m_spectrumPlot->setMarkerLinePen(m_spectLeftMarginId, pen);
-        m_spectrumPlot->setMarkerLinePen(m_spectRightMarginId, pen);
+        spectrum->setMarkerLinePen(m_spectLeftMarginId, pen);
+        spectrum->setMarkerLinePen(m_spectRightMarginId, pen);
 
         pen.setColor(QColor(255, 84, 84));
         pen.setWidth(1);
         pen.setStyle(Qt::SolidLine);
-        m_spectrumPlot->setMarkerLinePen(m_spectCenterId, pen);
+        spectrum->setMarkerLinePen(m_spectCenterId, pen);
 
-        connect(m_spectrumPlot, &LineChartItem::autoRangeYChanged, this,
-                [this]()
+        connect(spectrum, &LineChartItem::autoRangeYChanged, this,
+                [this, spectrum]()
                 {
-                    if (m_spectrumPlot->autoRangeY())
+                    if (spectrum->autoRangeY())
                     {
-                        m_spectrumPlot->setProgrammaticYRange(m_spectYViewMin, m_spectYViewMax);
+                        spectrum->setProgrammaticYRange(m_spectYViewMin, m_spectYViewMax);
                     }
                 });
-        connect(m_spectrumPlot, &QObject::destroyed, this, [this]() { m_spectrumPlot = nullptr; });
+        connect(spectrum, &QObject::destroyed, this, [this, spectrum]() { m_spectrumPlotItems.removeAll(spectrum); });
 
         setFreqRange();
+    }
+}
+
+void SignalBackend::unregisterSpectrumPlot(QQuickItem *item)
+{
+    m_spectrumPlotItems.removeAll(dynamic_cast<LineChartItem *>(item));
+    if (m_spectrumPlotItems.isEmpty())
+    {
+        emit startSignalSpectrum(false);
     }
 }
 
@@ -135,20 +150,25 @@ void SignalBackend::registerWaterfallPlot(QQuickItem *item)
 {
     if (item == nullptr)
     {
-        m_waterfallItem = nullptr;
         return;
     }
 
     WaterfallItem *wf = dynamic_cast<WaterfallItem *>(item);
-    if (wf && wf != m_waterfallItem)
+    if (wf && m_waterfallPlotItems.contains(wf) == false)
     {
-        m_waterfallItem = wf;
-        m_waterfallItem->setDataRange((-1024 + m_frequency) * 0.001, (1024 + m_frequency) * 0.001);
-        m_waterfallItem->setMarkerLeft((-768 + m_frequency) * 0.001);
-        m_waterfallItem->setMarkerRight((768 + m_frequency) * 0.001);
-        m_waterfallItem->setMarkerCenter(m_frequency * 0.001);
-        connect(m_waterfallItem, &QObject::destroyed, this, [this]() { m_waterfallItem = nullptr; });
+        m_waterfallPlotItems.append(wf);
+        wf = wf;
+        wf->setDataRange((-1024 + m_frequency) * 0.001, (1024 + m_frequency) * 0.001);
+        wf->setMarkerLeft((-768 + m_frequency) * 0.001);
+        wf->setMarkerRight((768 + m_frequency) * 0.001);
+        wf->setMarkerCenter(m_frequency * 0.001);
+        connect(wf, &QObject::destroyed, this, [this, wf]() { m_waterfallPlotItems.removeAll(wf); });
     }
+}
+
+void SignalBackend::unregisterWaterfallPlot(QQuickItem *item)
+{
+    m_waterfallPlotItems.removeAll(dynamic_cast<WaterfallItem *>(item));
 }
 
 void SignalBackend::registerSnrPlot(QQuickItem *item)
@@ -202,11 +222,6 @@ void SignalBackend::registerSnrPlot(QQuickItem *item)
         m_startTimeMsec = 0;
         m_timer->start();
     }
-}
-
-void SignalBackend::setIsActive(bool isActive)
-{
-    emit startSignalSpectrum(isActive);
 }
 
 void SignalBackend::setIsUndocked(bool isUndocked)
@@ -271,25 +286,25 @@ void SignalBackend::setSignalState(uint8_t sync, float snr)
 
 void SignalBackend::setFreqRange()
 {
-    if (m_spectrumPlot)
+    for (auto spectrumPlot : std::as_const(m_spectrumPlotItems))
     {
-        m_spectrumPlot->setDefaultXMin((-1024 + m_frequency) * 0.001);
-        m_spectrumPlot->setDefaultXMax((1024 + m_frequency) * 0.001);
-        m_spectrumPlot->setXMin((-1024 + m_frequency) * 0.001);
-        m_spectrumPlot->setXMax((1024 + m_frequency) * 0.001);
+        spectrumPlot->setDefaultXMin((-1024 + m_frequency) * 0.001);
+        spectrumPlot->setDefaultXMax((1024 + m_frequency) * 0.001);
+        spectrumPlot->setXMin((-1024 + m_frequency) * 0.001);
+        spectrumPlot->setXMax((1024 + m_frequency) * 0.001);
 
-        m_spectrumPlot->resetZoomX();
-        m_spectrumPlot->resetToAutoRangeY();
-        m_spectrumPlot->setMarkerLinePosition(m_spectLeftMarginId, (-768 + m_frequency) * 0.001);
-        m_spectrumPlot->setMarkerLinePosition(m_spectRightMarginId, (768 + m_frequency) * 0.001);
-        m_spectrumPlot->setMarkerLinePosition(m_spectCenterId, (0 + m_frequency) * 0.001);
+        spectrumPlot->resetZoomX();
+        spectrumPlot->resetToAutoRangeY();
+        spectrumPlot->setMarkerLinePosition(m_spectLeftMarginId, (-768 + m_frequency) * 0.001);
+        spectrumPlot->setMarkerLinePosition(m_spectRightMarginId, (768 + m_frequency) * 0.001);
+        spectrumPlot->setMarkerLinePosition(m_spectCenterId, (0 + m_frequency) * 0.001);
     }
-    if (m_waterfallItem)
+    for (auto waterfallItem : std::as_const(m_waterfallPlotItems))
     {
-        m_waterfallItem->setDataRange((-1024 + m_frequency) * 0.001, (1024 + m_frequency) * 0.001);
-        m_waterfallItem->setMarkerLeft((-768 + m_frequency) * 0.001);
-        m_waterfallItem->setMarkerRight((768 + m_frequency) * 0.001);
-        m_waterfallItem->setMarkerCenter(m_frequency * 0.001);
+        waterfallItem->setDataRange((-1024 + m_frequency) * 0.001, (1024 + m_frequency) * 0.001);
+        waterfallItem->setMarkerLeft((-768 + m_frequency) * 0.001);
+        waterfallItem->setMarkerRight((768 + m_frequency) * 0.001);
+        waterfallItem->setMarkerCenter(m_frequency * 0.001);
     }
 }
 
@@ -302,12 +317,12 @@ void SignalBackend::reset()
     m_spectYRangeMax = 0;
     m_spectYViewMin = m_spectYRangeMin;
     m_spectYViewMax = m_spectYRangeMax;
-    if (m_spectrumPlot)
+    for (auto spectrumPlot : std::as_const(m_spectrumPlotItems))
     {
-        m_spectrumPlot->clear(m_signalSpectSeriesId);
-        m_spectrumPlot->clear(m_nullSpectSeriesId);
-        m_spectrumPlot->setYMin(m_spectYRangeMin);
-        m_spectrumPlot->setYMax(m_spectYRangeMax);
+        spectrumPlot->clear(m_signalSpectSeriesId);
+        spectrumPlot->clear(m_nullSpectSeriesId);
+        spectrumPlot->setYMin(m_spectYRangeMin);
+        spectrumPlot->setYMax(m_spectYRangeMax);
     }
     m_isUserView = false;
     // ui->menuLabel->setEnabled(false);
@@ -347,9 +362,9 @@ void SignalBackend::setGainVisible(bool visible)
     {
         gainLabel("");
     }
-    if (m_spectrumPlot)
+    for (auto spectrumPlot : std::as_const(m_spectrumPlotItems))
     {
-        m_spectrumPlot->setYAxisTitle(visible ? "dBm" : "dBFS");
+        spectrumPlot->setYAxisTitle(visible ? "dBm" : "dBFS");
     }
 }
 
@@ -420,8 +435,8 @@ void SignalBackend::onSignalSpectrum(std::shared_ptr<std::vector<float>> data, i
 
         if (++m_signalAvrgCntr >= m_numAvrg)
         {
-            // qDebug() << *std::min_element(m_spectrumBuffer.cbegin(), m_spectrumBuffer.cend())*0.1 << *std::max_element(m_spectrumBuffer.cbegin(),
-            // m_spectrumBuffer.cend())*0.1; qDebug() << Q_FUNC_INFO;
+            // qDebug() << *std::min_element(m_spectrumBuffer.cbegin(), m_spectrumBuffer.cend())*0.1 <<
+            // *std::max_element(m_spectrumBuffer.cbegin(), m_spectrumBuffer.cend())*0.1; qDebug() << Q_FUNC_INFO;
             m_signalAvrgCntr = 0;
             float offset_dB = m_offset_dB + m_avrgFactor_dB;
             if (!std::isnan(m_tunerGain))
@@ -458,25 +473,37 @@ void SignalBackend::onSignalSpectrum(std::shared_ptr<std::vector<float>> data, i
                 *it = 0.0;
             }
 
-            if (m_spectrumPlot)
+            if (m_spectrumPlotItems.size() > 0)
             {
-                m_spectrumPlot->replaceBuffer(m_signalSpectSeriesId, bins);
-                if ((minVal - m_spectrumPlot->yMin()) < 0 || (minVal - m_spectrumPlot->yMin()) > 20)
+                auto spectrumPlot = m_spectrumPlotItems.first();
+                if ((minVal - spectrumPlot->yMin()) < 0 || (minVal - spectrumPlot->yMin()) > 20)
                 {  // set minumum to at least minVal + 10, use multiples of 10
                     m_spectYViewMin = std::fmaxf(ceilf((minVal - 10) / 10.0) * 10.0, m_spectYRangeMin);
                 }
-                if ((m_spectrumPlot->yMax() - maxVal) < 0 || (m_spectrumPlot->yMax() - maxVal) > 20)
+                if ((spectrumPlot->yMax() - maxVal) < 0 || (spectrumPlot->yMax() - maxVal) > 20)
                 {
                     m_spectYViewMax = std::fminf(floorf((maxVal + 10) / 10.0) * 10.0, m_spectYRangeMax);
                 }
-                if (m_spectrumPlot->userModifiedY() == false)
+                for (auto spectrumPlot : std::as_const(m_spectrumPlotItems))
                 {
-                    m_spectrumPlot->setProgrammaticYRange(m_spectYViewMin, m_spectYViewMax);
+                    spectrumPlot->replaceBuffer(m_signalSpectSeriesId, bins);
+                    if (spectrumPlot->userModifiedY() == false)
+                    {
+                        spectrumPlot->setProgrammaticYRange(m_spectYViewMin, m_spectYViewMax);
+                    }
+
+                    if (m_settings->signal.showNULL && m_nullSpectrumUpdated == false)
+                    {  // no sync clear NULL spectrum
+                        spectrumPlot->clear(m_nullSpectSeriesId);
+                        m_nullSpectrumBuffer.assign(2048, 0.0);
+                    }
                 }
+                m_nullSpectrumUpdated = false;
             }
-            if (m_waterfallItem)
+
+            for (auto waterfallItem : std::as_const(m_waterfallPlotItems))
             {
-                m_waterfallItem->addRow(bins);
+                waterfallItem->addRow(bins);
             }
         }
     }
@@ -557,10 +584,11 @@ void SignalBackend::onSignalSpectrum(std::shared_ptr<std::vector<float>> data, i
             }
 #endif
 
-            if (m_spectrumPlot)
+            for (auto spectrumPlot : std::as_const(m_spectrumPlotItems))
             {
-                m_spectrumPlot->replaceBuffer(m_nullSpectSeriesId, bins);
+                spectrumPlot->replaceBuffer(m_nullSpectSeriesId, bins);
             }
+            m_nullSpectrumUpdated = true;
         }
     }
 }

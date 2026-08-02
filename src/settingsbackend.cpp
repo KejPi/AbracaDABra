@@ -46,12 +46,6 @@
 #endif
 #include "txdataloader.h"
 
-const QString SettingsBackend::m_coordinatesHelp = QString(QT_TR_NOOP(R"(
-Enter coordinates in "latitude, longitude" format, for example: 1.234,-5.678</p>
-<p>Tip: <i>Go to <a href="https://www.google.com/maps">Google maps</a>,
-right click on your location, click on coordinates in popup menu to copy them
-and then insert the values here as they are.</i></p>)"));
-
 SettingsBackend::SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *parent) : UIControlProvider(parent)
 {
     QQmlContext *context = qmlEngine->rootContext();
@@ -257,6 +251,8 @@ SettingsBackend::SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *pare
     connect(this, &SettingsBackend::tiiShowInactiveChanged, this, &SettingsBackend::tiiSettingsChanged);
     connect(this, &SettingsBackend::isTiiInactiveTimeoutEnabledChanged, this, &SettingsBackend::tiiSettingsChanged);
     connect(this, &SettingsBackend::tiiInactiveTimeoutChanged, this, &SettingsBackend::tiiSettingsChanged);
+    connect(this, &SettingsBackend::tiiManualAltitudeChanged, this, &SettingsBackend::tiiSettingsChanged);
+    connect(this, &SettingsBackend::tiiAltitudeChanged, this, &SettingsBackend::tiiSettingsChanged);
 
     m_languageSelectionModel = new ItemModel(this);
 
@@ -593,6 +589,7 @@ void SettingsBackend::init(Settings *settings)
     emit fullscreenChanged();
     emit compactUiChanged();
     emit cableChannelsEnaChanged();
+    emit showServicePageWidgetChanged();
 }
 
 void SettingsBackend::setRawFileLength(int msec)
@@ -1355,7 +1352,7 @@ void SettingsBackend::selectDataStoragePath(const QUrl &dirUrl)
 
         // Take persistable permission with both read and write flags
         // Qt's FolderDialog may not request write permission by default
-        if (!AndroidFileHelper::takePersistablePermission(path))
+        if (!AndroidFileHelper::instance().takePersistablePermission(path))
         {
             qWarning() << "Failed to take persistable permission for:" << path;
             // Continue anyway - the permission may already be granted

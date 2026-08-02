@@ -187,12 +187,20 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
         break;
         case Qt::TextAlignmentRole:
         {
-            if (index.column() == ColLocation)
+            if (index.column() == ColLocation || index.column() == ColEnsLabel || index.column() == ColNumServices)
             {
                 return 0;  // left
             }
             return 1;  // center
         }
+        case TxTableModelRoles::IconSourceRole:
+            if (index.column() == ColNumServices)
+            {
+                // the trailing counter is a cache-busting token: it must change whenever the flag pixmap is
+                // (re)downloaded, otherwise QML won't detect a value change and will never re-request the image
+                return QString("image://metadata/flag/%1/%2").arg(item.ensId().value()).arg(m_flagRefreshCounter);
+            }
+            return QString{};
         case TxTableModelRoles::ExportRole:
         case TxTableModelRoles::ExportRoleUTC:
         case TxTableModelRoles::ExportRoleEnglish:
@@ -255,18 +263,32 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
                     return QVariant("");
                 case ColRxCoordinatesLat:
                     return QString("%1").arg(static_cast<double>(m_coordinates.latitude()), 0, 'f');
+                case ColRxCoordinatesLon:
+                    return QString("%1").arg(static_cast<double>(m_coordinates.longitude()), 0, 'f');
+                case ColRxAltitude:
+                    return QString("%1").arg(static_cast<int>(qRound(m_coordinates.altitude())));
                 case ColTxCoordinatesLat:
                     if (item.hasTxData())
                     {
                         return QString("%1").arg(static_cast<double>(item.transmitterData().coordinates().latitude()), 0, 'f');
                     }
                     return QVariant("");
-                case ColRxCoordinatesLon:
-                    return QString("%1").arg(static_cast<double>(m_coordinates.longitude()), 0, 'f');
                 case ColTxCoordinatesLon:
                     if (item.hasTxData())
                     {
                         return QString("%1").arg(static_cast<double>(item.transmitterData().coordinates().longitude()), 0, 'f');
+                    }
+                    return QVariant("");
+                case ColTxAltidude:
+                    if (item.hasTxData())
+                    {
+                        return QString("%1").arg(static_cast<int>(item.transmitterData().coordinates().altitude()));
+                    }
+                    return QVariant("");
+                case ColTxAntennaHeight:
+                    if (item.hasTxData())
+                    {
+                        return QString("%1").arg(static_cast<int>(item.transmitterData().antHeight()));
                     }
                     return QVariant("");
             }
@@ -419,10 +441,16 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
                     return tr("Latitude (TX)");
                 case ColTxCoordinatesLon:
                     return tr("Longitude (TX)");
+                case ColTxAltidude:
+                    return tr("Altitude (TX)");
+                case ColTxAntennaHeight:
+                    return tr("Antenna Height (TX)");
                 case ColRxCoordinatesLat:
                     return tr("Latitude (RX)");
                 case ColRxCoordinatesLon:
                     return tr("Longitude (RX)");
+                case ColRxAltitude:
+                    return tr("Altitude (RX)");
                 default:
                     break;
             }
@@ -474,10 +502,16 @@ QVariant TxTableModel::headerData(int section, Qt::Orientation orientation, int 
                     return "Latitude (TX)";
                 case ColTxCoordinatesLon:
                     return "Longitude (TX)";
+                case ColTxAltidude:
+                    return "Altitude (TX)";
+                case ColTxAntennaHeight:
+                    return "Antenna Height (TX)";
                 case ColRxCoordinatesLat:
                     return "Latitude (RX)";
                 case ColRxCoordinatesLon:
                     return "Longitude (RX)";
+                case ColRxAltitude:
+                    return "Altitude (RX)";
                 default:
                     break;
             }
@@ -500,6 +534,7 @@ QHash<int, QByteArray> TxTableModel::roleNames() const
     roles[TxTableModelRoles::SelectedTxRole] = "selectedTx";
     roles[TxTableModelRoles::IsActiveRole] = "isActive";
     roles[TxTableModelRoles::IsLocalRole] = "isLocal";
+    roles[TxTableModelRoles::IconSourceRole] = "iconSource";
     roles[Qt::TextAlignmentRole] = "textAlignment";
 
     return roles;
@@ -717,6 +752,14 @@ void TxTableModel::setDisplayTimeInUTC(bool newDisplayTimeInUTC)
     }
 }
 
+void TxTableModel::countryFlagUpdated(const ServiceListId &ensId)
+{
+    // bump the cache-busting token so the IconSourceRole value actually changes; otherwise QML bindings
+    // won't notice dataChanged() since the returned URL string would stay identical
+    ++m_flagRefreshCounter;
+    emit dataChanged(index(0, ColNumServices), index(m_modelData.size() - 1, ColNumServices), {TxTableModelRoles::IconSourceRole});
+}
+
 void TxTableModel::loadLocalTxList(const QString &filename)
 {
     if (m_localTxList != nullptr)
@@ -771,4 +814,180 @@ void TxTableModel::endLoadingFromFile()
 {
     m_loadingFromFile = false;
     endResetModel();
+}
+
+QJsonObject TxTableModel::toJson() const
+{
+    // JSON structure is following:
+    // TX [
+    //        timestamp
+    //        frequency
+    //        ensemble ID
+    //        snr
+    //        RF level
+    //        num services
+    //        ensemble CVS
+    //        tiiCodes [
+    //                    main ID
+    //                    sub ID
+    //                    level
+    //                 ]
+    // ]
+
+    QJsonArray txArray;
+
+    // go through model data and create array of TX
+    auto it = m_modelData.cbegin();
+    while (it != m_modelData.cend())
+    {
+        QJsonObject txObj;
+        auto rxTime = it->rxTime();
+        txObj["timestamp"] = m_displayTimeInUTC ? rxTime.toUTC().toString("yyyy-MM-dd hh:mm:ss") : rxTime.toString("yyyy-MM-dd hh:mm:ss");
+        txObj["frequency"] = static_cast<int>(it->ensId().freq());
+        txObj["ueid"] = QString("%1").arg(it->ensId().ueid(), 6, 16, QChar(' ')).toUpper();
+        txObj["label"] = it->ensLabel();
+        txObj["snr"] = qRound(it->snr() * 10) * 0.1;  // round to 1 decimal place
+        if (std::isnan(it->rfLevel()) == false)
+        {
+            txObj["rfLevel"] = qRound(it->rfLevel() * 10) * 0.1;  // round to 1 decimal place
+        }
+        txObj["numServices"] = it->numServices();
+        txObj["ensConfig"] = it->ensConfig();
+        txObj["ensConfigCsv"] = it->ensConfigCSV();
+
+        // create array of TII codes
+        QJsonArray tiiArray;
+        while (it != m_modelData.cend() && it->rxTime() == rxTime)
+        {
+            QJsonObject tiiObj;
+            tiiObj["main"] = it->mainId();
+            tiiObj["sub"] = it->subId();
+            tiiObj["level"] = qRound(it->level() * 10) * 0.1;  // round to 1 decimal place
+            tiiObj["location"] = it->hasTxData() ? it->transmitterData().location() : "";
+            tiiObj["power"] = it->hasTxData() ? it->transmitterData().power() : 0.0;
+            tiiObj["txLat"] = it->hasTxData() ? it->transmitterData().coordinates().latitude() : 0.0;
+            tiiObj["txLon"] = it->hasTxData() ? it->transmitterData().coordinates().longitude() : 0.0;
+            tiiObj["txAlt"] = it->hasTxData() ? it->transmitterData().coordinates().altitude() : 0.0;
+            tiiObj["txAntHeight"] = it->hasTxData() ? it->transmitterData().antHeight() : 0.0;
+            tiiObj["distance"] = it->distance();
+            tiiObj["azimuth"] = it->azimuth();
+            tiiArray.append(tiiObj);
+            ++it;
+        }
+        txObj["tii"] = tiiArray;
+
+        // append to root object
+        txArray.append(txObj);
+    }
+    QJsonObject rootObj;
+    rootObj["tx"] = txArray;
+    return rootObj;
+}
+
+bool TxTableModel::loadFromJson(const QJsonObject &json, bool utcTime)
+{
+    if (!json.contains("rx") || !json.contains("tx"))
+    {
+        return false;
+    }
+
+    beginLoadingFromFile();
+
+    QJsonObject rxObj = json["rx"].toObject();
+    m_coordinates.setLatitude(rxObj["lat"].toDouble());
+    m_coordinates.setLongitude(rxObj["lon"].toDouble());
+    m_coordinates.setAltitude(rxObj["alt"].toDouble());
+
+    QJsonArray txArray = json["tx"].toArray();
+    for (const auto &txValue : std::as_const(txArray))
+    {
+        QJsonObject txObj = txValue.toObject();
+        QDateTime rxTime = QDateTime::fromString(txObj["timestamp"].toString(), "yyyy-MM-dd hh:mm:ss");
+        if (utcTime)
+        {
+            rxTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+        }
+        else
+        {
+            rxTime.setTimeZone(QTimeZone(QTimeZone::LocalTime));
+        }
+        ServiceListId ensId(txObj["frequency"].toInt(), txObj["ueid"].toString().toUInt(nullptr, 16));
+        QString ensLabel = txObj["label"].toString();
+        int numServices = txObj["numServices"].toInt();
+        float snr = static_cast<float>(txObj["snr"].toDouble());
+        float rfLevel = NAN;
+        if (txObj.contains("rfLevel"))
+        {
+            rfLevel = static_cast<float>(txObj["rfLevel"].toDouble());
+        }
+        QString ensConfig = txObj["ensConfig"].toString();
+        QString ensCSV = txObj["ensConfigCsv"].toString();
+
+        QJsonArray tiiArray = txObj["tii"].toArray();
+        QList<dabsdrTii_t> tiiData;
+        QList<TxDataItem *> txDataList;
+        for (const auto &tiiValue : std::as_const(tiiArray))
+        {
+            QJsonObject tiiObj = tiiValue.toObject();
+            dabsdrTii_t tii;
+            tii.main = static_cast<int8_t>(tiiObj["main"].toInt());
+            tii.sub = static_cast<int8_t>(tiiObj["sub"].toInt());
+            tii.level = static_cast<float>(tiiObj["level"].toDouble());
+            tiiData.append(tii);
+
+            if (tiiObj["location"].toString().isEmpty() == false)
+            {
+                TxDataItem *txDataItem = new TxDataItem;
+                txDataItem->setEnsId(ensId);
+                txDataItem->setMainId(tii.main);
+                txDataItem->setSubId(tii.sub);
+                txDataItem->setLocation(tiiObj["location"].toString());
+                txDataItem->setPower(static_cast<float>(tiiObj["power"].toDouble()));
+                txDataItem->setCoordinates(QGeoCoordinate(tiiObj["txLat"].toDouble(), tiiObj["txLon"].toDouble(), tiiObj["txAlt"].toDouble()));
+                txDataItem->setAntHeight(static_cast<float>(tiiObj["txAntHeight"].toDouble()));
+                txDataList.append(txDataItem);
+            }
+        }
+
+        // append m_txList.value(ensId) to txDataList
+        // these will be used as fallback if no TX data was stored for some TII code
+        const int numTxDataItems = txDataList.size();
+        for (TxDataItem *txDataItem : m_txList.values(ensId))
+        {
+            txDataList.append(txDataItem);
+        }
+
+        if (!tiiData.empty())
+        {
+            for (auto it = tiiData.cbegin(); it != tiiData.cend(); ++it)
+            {
+                // create new item
+                TxTableModelItem item(it->main, it->sub, it->level, m_coordinates, txDataList);
+                item.setEnsData(ensId, ensLabel, numServices, snr);
+                item.setEnsConfig(ensConfig, ensCSV);
+                item.setRfLevel(rfLevel);
+                item.setRxTime(rxTime.toLocalTime());
+                m_modelData.append(item);
+            }
+        }
+        else
+        {
+            // create new item
+            TxTableModelItem item(-1, -1, 0, m_coordinates, txDataList);
+            item.setEnsData(ensId, ensLabel, numServices, snr);
+            item.setEnsConfig(ensConfig, ensCSV);
+            item.setRfLevel(rfLevel);
+            item.setRxTime(rxTime);
+            m_modelData.append(item);
+        }
+
+        // delete txDataList items (only items created here are deleted, m_txList values are not deleted)
+        for (int n = 0; n < numTxDataItems; ++n)
+        {
+            delete txDataList[n];
+        }
+    }
+
+    endLoadingFromFile();
+    return true;
 }

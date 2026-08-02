@@ -254,6 +254,13 @@ Item {
                             return result + padding * 2;
                         }
                         AbracaMenuItem {
+                            text: qsTr("Incremental scan")
+                            checkable: true
+                            enabled: !scannerBackend.isScanning
+                            onTriggered: scannerBackend.incrementalScan = checked
+                            Component.onCompleted: checked = scannerBackend.incrementalScan
+                        }
+                        AbracaMenuItem {
                             text: qsTr("Clear scan results on start")
                             checkable: true
                             onTriggered: scannerBackend.clearOnStart = checked
@@ -266,19 +273,32 @@ Item {
                             Component.onCompleted: checked = scannerBackend.hideLocalTx
                         }
                         AbracaMenuItem {
+                            text: qsTr("AutoSave JSON")
+                            checkable: true
+                            onTriggered: scannerBackend.autoSaveJSON = checked
+                            enabled: !scannerBackend.isScanning
+                            Component.onCompleted: checked = scannerBackend.autoSaveJSON
+                        }
+                        AbracaMenuItem {
                             text: qsTr("AutoSave CSV")
                             checkable: true
                             onTriggered: scannerBackend.autoSave = checked
+                            enabled: !scannerBackend.isScanning
                             Component.onCompleted: checked = scannerBackend.autoSave
                         }
                         AbracaMenuSeparator {}
+                        AbracaMenuItem {
+                            text: qsTr("Save as JSON")
+                            onTriggered: scannerBackend.saveJSON()
+                            enabled: scannerBackend.tableModel.rowCount > 0
+                        }
                         AbracaMenuItem {
                             text: qsTr("Save as CSV")
                             onTriggered: scannerBackend.saveCSV()
                             enabled: scannerBackend.tableModel.rowCount > 0
                         }
                         AbracaMenuItem {
-                            text: qsTr("Load from CSV")
+                            text: qsTr("Load from file...")
                             enabled: !scannerBackend.isScanning
                             onTriggered: scannerBackend.importAction()
                         }
@@ -316,6 +336,7 @@ Item {
                 }
                 contextMenuModel: scannerBackend.contextMenuModel
                 sortingEnabled: true
+                cellsLeftAligned: false
                 onDoubleClickedRow: function(row) {
                     scannerBackend.showEnsembleConfig(row)
                 }
@@ -465,6 +486,7 @@ Item {
         enabled: scannerSetupDrawerLoader.item !== null
 
         function onClosed() {
+            scannerBackend.channelSelectionModel.save();
             scannerSetupDrawerLoader.active = false
         }
     }
@@ -481,12 +503,12 @@ Item {
             fileMode: FileDialog.OpenFile
             // On Android, avoid using nameFilters as they don't work reliably with extensions
             // Leave empty on Android to allow all files to be selectable
-            nameFilters: UI.isAndroid ? [] : [qsTr("CSV files") + " (*.csv)"]
+            nameFilters: UI.isAndroid ? [] : [qsTr("JSON files") + " (*.json)", qsTr("CSV files") + " (*.csv)"]
             options: UI.isAndroid ? FileDialog.DontResolveSymlinks : 0
             // currentFolder doesn't work well on Android with content:// URIs
             currentFolder: UI.isAndroid ? "" : fileDialogLoader.filepath
             onAccepted: {
-                scannerBackend.loadCSV(selectedFile);
+                scannerBackend.loadFile(selectedFile);
                 fileDialogLoader.active = false;
             }
             onRejected: {
@@ -516,6 +538,13 @@ Item {
         color: Qt.rgba(0, 0, 0, 0.3)
         visible: scannerBackend.isLoading
         z: 100
+
+        // we need to consume all mouse events to prevent interaction with the UI while loading
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.AllButtons
+            hoverEnabled: true
+        }
 
         AbracaBusyIndicator {
             anchors.centerIn: parent

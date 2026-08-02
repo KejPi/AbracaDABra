@@ -26,6 +26,8 @@
 
 #include "motobject.h"
 
+#include <zlib.h>
+
 #include <QDebug>
 #include <QLoggingCategory>
 
@@ -276,10 +278,7 @@ void MOTObjectData::parseHeader()
                     isOk = false;
                     break;
                 case DabMotExtParameter::CompressionType:
-                    // ignoring compressed data
-                    qCWarning(motObject) << "MOT compressed ignoring";
-                    m_bodySize = -1;
-                    isOk = false;
+                    m_isCompressed = true;
                     break;
                 default:
                     // some user app parameter or parameter not handled by MOT decoder
@@ -358,10 +357,29 @@ bool MOTObject::addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t
     return d->m_objectIsComplete;
 }
 
-QByteArray MOTObject::getBody() const
+QByteArray MOTObject::getBody(bool decompress) const
 {
     if (d->m_objectIsComplete)
     {  // MOT object is complete
+        if (d->m_isCompressed && decompress)
+        {
+            // sanity check before decompressing
+            auto body = d->m_body.getData();
+            if (body.size() >= 2)
+            {
+                quint8 b0 = static_cast<quint8>(body.at(0));
+                quint8 b1 = static_cast<quint8>(body.at(1));
+                if ((b0 == 0x1F && b1 == 0x8B))
+                {  // Gzip magic
+                    // Decompress the body using zlib
+                    return gzipDecompress(body);
+                }
+                else
+                {
+                    qCWarning(motObject) << "Ignoring MOT compression flag, gzip magic not found";
+                }
+            }
+        }
         return d->m_body.getData();
     }
 
@@ -381,6 +399,50 @@ uint16_t MOTObject::getContentSubType() const
 const QString &MOTObject::getContentName() const
 {
     return d->m_contentName;
+}
+
+QByteArray MOTObject::gzipDecompress(const QByteArray &compressedData) const
+{
+    if (compressedData.isEmpty())
+    {
+        return QByteArray();
+    }
+
+    z_stream strm = {};
+    strm.next_in = reinterpret_cast<Bytef *>(const_cast<char *>(compressedData.data()));
+    strm.avail_in = compressedData.size();
+
+    // 15 + 16 tells zlib to expect a gzip header (instead of raw zlib/deflate)
+    if (inflateInit2(&strm, 15 + 16) != Z_OK)
+    {
+        return QByteArray();
+    }
+
+    QByteArray uncompressed;
+    const int chunkSize = 32768;
+    QByteArray buffer(chunkSize, 0);
+
+    int ret;
+    do
+    {
+        strm.next_out = reinterpret_cast<Bytef *>(buffer.data());
+        strm.avail_out = chunkSize;
+
+        ret = inflate(&strm, Z_NO_FLUSH);
+
+        if (ret != Z_OK && ret != Z_STREAM_END)
+        {
+            inflateEnd(&strm);
+            return QByteArray();  // decompression failed
+        }
+
+        int bytesProduced = chunkSize - strm.avail_out;
+        uncompressed.append(buffer.constData(), bytesProduced);
+
+    } while (ret != Z_STREAM_END);
+
+    inflateEnd(&strm);
+    return uncompressed;
 }
 
 MOTDirectory::MOTDirectory(uint_fast32_t transportId, MOTObjectCache *cachePtr)

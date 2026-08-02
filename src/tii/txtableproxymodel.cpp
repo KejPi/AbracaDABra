@@ -172,6 +172,10 @@ bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &rig
         case TxTableModel::ColLocation:
             return itemL.transmitterData().location() < itemR.transmitterData().location();
         case TxTableModel::ColTime:
+            if (!m_filterCols && itemL.rxTime() == itemR.rxTime())
+            {
+                return itemL.level() > itemR.level();
+            }
             return itemL.rxTime() < itemR.rxTime();
         case TxTableModel::ColEnsId:
             if (itemL.ensId().ueid() == itemR.ensId().ueid())

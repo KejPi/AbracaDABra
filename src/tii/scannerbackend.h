@@ -39,6 +39,8 @@
 #include "txmapmodel.h"
 #include "uicontrolprovider.h"
 
+#define SCANNER_JSON_VERSION 1
+
 struct CsvRowData
 {
     QDateTime time;
@@ -57,6 +59,22 @@ struct CsvParseResult
     bool hasRfLevel = false;
     bool success = false;
     QString errorMessage;
+};
+
+struct JsonParseResult
+{
+    QJsonObject jsonObject;
+    bool success = false;
+    QString errorMessage;
+};
+
+struct IncrementalChannelRecord
+{
+    bool hasData = false;
+    uint32_t ueid = 0;
+    QString ensLabel;
+    int numServices = 0;
+    QSet<int> tiiIds;  // id() = (subId<<8)|mainId for each known TII code
 };
 
 class Settings;
@@ -84,7 +102,9 @@ class ScannerBackend : public TxMapBackend
     UI_PROPERTY_SETTINGS(QVariant, splitterState, m_settings->scanner.splitterState)
     UI_PROPERTY_SETTINGS(bool, clearOnStart, m_settings->scanner.clearOnStart)
     UI_PROPERTY_SETTINGS(bool, autoSave, m_settings->scanner.autoSave)
+    UI_PROPERTY_SETTINGS(bool, autoSaveJSON, m_settings->scanner.autoSaveJSON)
     UI_PROPERTY_SETTINGS(bool, hideLocalTx, m_settings->scanner.hideLocalTx)
+    UI_PROPERTY_SETTINGS(bool, incrementalScan, m_settings->scanner.incrementalScan)
     UI_PROPERTY_SETTINGS(int, mode, m_settings->scanner.mode)
     UI_PROPERTY_SETTINGS(int, numCycles, m_settings->scanner.numCycles)
     UI_PROPERTY_SETTINGS(int, txTableSortCol, m_settings->scanner.txTableSortCol)
@@ -102,7 +122,8 @@ public:
     Q_INVOKABLE void startStopAction();
     Q_INVOKABLE QUrl csvPath() const;
     Q_INVOKABLE void saveCSV();
-    Q_INVOKABLE void loadCSV(const QUrl &fileUrl);
+    Q_INVOKABLE void saveJSON();
+    Q_INVOKABLE void loadFile(const QUrl &fileUrl);
     Q_INVOKABLE void createContextMenu(int row);
     Q_INVOKABLE void showEnsembleConfig(int row);
     Q_INVOKABLE void saveEnsembleCSV(int srcModelRow);
@@ -122,6 +143,7 @@ public:
     void setServiceToRestore(const DabSId &sid, uint8_t scids) { m_serviceToRestore = ServiceListId(sid.value(), scids); }
     ServiceListId getServiceToRestore() const { return m_serviceToRestore; };
     void loadSettings();
+    void countryFlagUpdated(const ServiceListId &ensId);
 
     ChannelSelectionModel *channelSelectionModel() const { return m_channelSelectionModel; }
     MessageBoxBackend *messageBoxBackend() const { return m_messageBoxBackend; }
@@ -185,8 +207,6 @@ private:
     QDateTime m_scanStartTime;
     QGeoCoordinate m_scanStartLocation;
 
-    // this is used in precise mode
-    bool m_isPreciseMode = false;
     RadioControlTIIData m_tiiData;
 
     ServiceListId m_serviceToRestore;
@@ -194,7 +214,7 @@ private:
     void startScan();
     void scanStep();
     void stopScan();
-    void saveToFile(const QString &fileName);
+    void saveToFileCSV(const QString &fileName);
     void storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf);
     void handleContextMenuAction(int actionId, const QVariant &data);
     ContextMenuModel *m_contextMenuModel = nullptr;
@@ -213,6 +233,15 @@ private:
     TxMapModel *m_txMapModel = nullptr;
     static CsvParseResult parseCsvFile(const QString &fileName);
     void onCsvParsed();
+
+    // JSON loading
+    QFutureWatcher<JsonParseResult> *m_jsonFutureWatcher = nullptr;
+    static JsonParseResult parseJsonFile(const QString &fileName);
+    void onJsonParsed();
+
+    // Incremental scan
+    bool m_dataLoadedFromFile = false;
+    QHash<uint32_t, IncrementalChannelRecord> m_incrementalBaseline;  // key = frequency
 };
 
 class ChannelSelectionModel : public QAbstractListModel

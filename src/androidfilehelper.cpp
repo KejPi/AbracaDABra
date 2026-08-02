@@ -43,9 +43,7 @@
 #include <QJniObject>
 #endif
 
-Q_LOGGING_CATEGORY(fileHelper, "fileHelper", QtInfoMsg)
-
-QString AndroidFileHelper::s_lastError;
+Q_DECLARE_LOGGING_CATEGORY(application)
 
 bool AndroidFileHelper::isContentUri(const QString &path)
 {
@@ -70,17 +68,68 @@ bool AndroidFileHelper::takePersistablePermission(const QString &treeUri)
 
     if (!result)
     {
-        s_lastError = "Failed to take persistable permission for the selected folder.";
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = "Failed to take persistable permission for the selected folder.";
+        qCWarning(application) << m_lastError;
     }
     else
     {
-        qCInfo(fileHelper) << "Took persistable permission for:" << treeUri;
+        qCInfo(application) << "Took persistable permission for:" << treeUri;
     }
     return result;
 #else
     return true;
 #endif
+}
+
+void AndroidFileHelper::accessPath(const QString &basePath, const QString &relativePath, std::function<void(const QString &)> callback)
+{
+    m_relativePath = relativePath;
+    m_callback = callback;
+
+    if (isContentUri(basePath) && !hasWritePermission(basePath))
+    {
+        // we need to ask for permissions here
+        emit requestPermissions(basePath);
+        return;
+    }
+    pathGranted(basePath);
+}
+
+void AndroidFileHelper::pathGranted(const QString &basePath)
+{
+    if (!m_callback)
+    {
+        return;
+    }
+
+    if (basePath.isEmpty() == false)
+    {
+        QString path = buildSubdirPath(basePath, m_relativePath);
+        if (!mkpath(basePath, m_relativePath))
+        {
+            qCCritical(application) << "Failed to create directory:" << lastError();
+            m_lastError = "Failed to create path: " + path;
+            m_callback(QString{});
+            return;
+        }
+
+        if (!hasWritePermission(path))
+        {
+            qCCritical(application) << "No permission to write to:" << path;
+            qCCritical(application) << "Please select a new data storage folder in settings.";
+            m_lastError = "No permission to write path: " + path;
+            m_callback(QString{});
+            return;
+        }
+
+        // success
+        m_callback(path);
+    }
+    else
+    {  // error
+        m_callback(QString{});
+    }
+    m_callback = nullptr;
 }
 
 bool AndroidFileHelper::hasWritePermission(const QString &treeUri)
@@ -101,7 +150,7 @@ bool AndroidFileHelper::hasWritePermission(const QString &treeUri)
 
     if (!result)
     {
-        s_lastError = "No write permission for the selected folder. Please select a new data storage folder in settings.";
+        m_lastError = "No write permission for the selected folder. Please select a new data storage folder in settings.";
     }
     return result;
 #else
@@ -109,9 +158,40 @@ bool AndroidFileHelper::hasWritePermission(const QString &treeUri)
 #endif
 }
 
+QString AndroidFileHelper::getPath(const QString &basePath, const QString &relativePath)
+{
+    const QString path = AndroidFileHelper::instance().buildSubdirPath(basePath, relativePath);
+
+    // check if the path is a content URI and if we have permission
+    if (isContentUri(basePath) && !hasWritePermission(basePath))
+    {
+        qCCritical(application) << "No permission to write to:" << basePath;
+        qCCritical(application) << "Please select a new data storage folder in settings.";
+        m_lastError = "No permission to write path: " + basePath;
+        return QString{};
+    }
+
+    // Ensure directory exists and is writable
+    if (!mkpath(basePath, relativePath))
+    {
+        qCCritical(application) << "Failed to create directory:" << lastError();
+        m_lastError = "Failed to create path: " + path;
+        return QString{};
+    }
+
+    if (!hasWritePermission(path))
+    {
+        qCCritical(application) << "No permission to write to:" << path;
+        qCCritical(application) << "Please select a new data storage folder in settings.";
+        m_lastError = "No permission to write path: " + path;
+        return QString{};
+    }
+    return path;
+}
+
 bool AndroidFileHelper::mkpath(const QString &basePath, const QString &relativePath)
 {
-    s_lastError.clear();
+    m_lastError.clear();
 
 #ifdef Q_OS_ANDROID
     if (isContentUri(basePath))
@@ -138,8 +218,8 @@ bool AndroidFileHelper::mkpath(const QString &basePath, const QString &relativeP
 
         if (!result)
         {
-            s_lastError = QString("Failed to create directories: %1/%2").arg(basePath, normalized);
-            qCWarning(fileHelper) << s_lastError;
+            m_lastError = QString("Failed to create directories: %1/%2").arg(basePath, normalized);
+            qCWarning(application) << m_lastError;
         }
         return result;
     }
@@ -158,8 +238,8 @@ bool AndroidFileHelper::mkpath(const QString &basePath, const QString &relativeP
 
     if (!QDir().mkpath(target))
     {
-        s_lastError = QString("Failed to create directory: %1").arg(target);
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = QString("Failed to create directory: %1").arg(target);
+        qCWarning(application) << m_lastError;
         return false;
     }
 
@@ -179,7 +259,7 @@ QString AndroidFileHelper::buildSubdirPath(const QString &basePath, const QStrin
 bool AndroidFileHelper::writeTextFile(const QString &basePath, const QString &fileName, const QString &content, const QString &mimeType,
                                       bool overwriteExisting)
 {
-    s_lastError.clear();
+    m_lastError.clear();
 
 #ifdef Q_OS_ANDROID
     if (isContentUri(basePath))
@@ -193,23 +273,23 @@ bool AndroidFileHelper::writeTextFile(const QString &basePath, const QString &fi
 
     if (!overwriteExisting && QFile::exists(fullPath))
     {
-        s_lastError = QString("File already exists: %1").arg(fullPath);
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = QString("File already exists: %1").arg(fullPath);
+        qCWarning(application) << m_lastError;
         return false;
     }
 
     if (!QDir().mkpath(QFileInfo(fullPath).path()))
     {
-        s_lastError = QString("Failed to create directory: %1").arg(QFileInfo(fullPath).path());
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = QString("Failed to create directory: %1").arg(QFileInfo(fullPath).path());
+        qCWarning(application) << m_lastError;
         return false;
     }
 
     QFile file(fullPath);
     if (!file.open(QIODevice::WriteOnly))
     {
-        s_lastError = QString("Failed to open file for writing: %1 - %2").arg(fullPath, file.errorString());
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = QString("Failed to open file for writing: %1 - %2").arg(fullPath, file.errorString());
+        qCWarning(application) << m_lastError;
         return false;
     }
 
@@ -217,14 +297,14 @@ bool AndroidFileHelper::writeTextFile(const QString &basePath, const QString &fi
     out << content;
     file.close();
 
-    qCInfo(fileHelper) << "File written successfully:" << fullPath;
+    qCInfo(application) << "File written successfully:" << fullPath;
     return true;
 }
 
 bool AndroidFileHelper::writeBinaryFile(const QString &basePath, const QString &fileName, const QByteArray &data, const QString &mimeType,
                                         bool overwriteExisting)
 {
-    s_lastError.clear();
+    m_lastError.clear();
 
 #ifdef Q_OS_ANDROID
     if (isContentUri(basePath))
@@ -238,36 +318,36 @@ bool AndroidFileHelper::writeBinaryFile(const QString &basePath, const QString &
 
     if (!overwriteExisting && QFile::exists(fullPath))
     {
-        s_lastError = QString("File already exists: %1").arg(fullPath);
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = QString("File already exists: %1").arg(fullPath);
+        qCWarning(application) << m_lastError;
         return false;
     }
 
     if (!QDir().mkpath(QFileInfo(fullPath).path()))
     {
-        s_lastError = QString("Failed to create directory: %1").arg(QFileInfo(fullPath).path());
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = QString("Failed to create directory: %1").arg(QFileInfo(fullPath).path());
+        qCWarning(application) << m_lastError;
         return false;
     }
 
     QFile file(fullPath);
     if (!file.open(QIODevice::WriteOnly))
     {
-        s_lastError = QString("Failed to open file for writing: %1 - %2").arg(fullPath, file.errorString());
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = QString("Failed to open file for writing: %1 - %2").arg(fullPath, file.errorString());
+        qCWarning(application) << m_lastError;
         return false;
     }
 
     file.write(data);
     file.close();
 
-    qCInfo(fileHelper) << "File written successfully:" << fullPath;
+    qCInfo(application) << "File written successfully:" << fullPath;
     return true;
 }
 
 QFile *AndroidFileHelper::openFileForWriting(const QString &basePath, const QString &fileName, const QString &mimeType)
 {
-    s_lastError.clear();
+    m_lastError.clear();
 
 #ifdef Q_OS_ANDROID
     if (isContentUri(basePath))
@@ -284,8 +364,8 @@ QFile *AndroidFileHelper::openFileForWriting(const QString &basePath, const QStr
 
         if (fd < 0)
         {
-            s_lastError = QString("Failed to open file via SAF: %1/%2").arg(basePath, fileName);
-            qCWarning(fileHelper) << s_lastError;
+            m_lastError = QString("Failed to open file via SAF: %1/%2").arg(basePath, fileName);
+            qCWarning(application) << m_lastError;
             return nullptr;
         }
 
@@ -293,14 +373,14 @@ QFile *AndroidFileHelper::openFileForWriting(const QString &basePath, const QStr
         QFile *file = new QFile();
         if (!file->open(fd, QIODevice::WriteOnly, QFileDevice::AutoCloseHandle))
         {
-            s_lastError = QString("Failed to wrap file descriptor: %1").arg(file->errorString());
-            qCWarning(fileHelper) << s_lastError;
+            m_lastError = QString("Failed to wrap file descriptor: %1").arg(file->errorString());
+            qCWarning(application) << m_lastError;
             ::close(fd);
             delete file;
             return nullptr;
         }
 
-        qCInfo(fileHelper) << "Opened file for writing via SAF:" << basePath << "/" << fileName;
+        qCInfo(application) << "Opened file for writing via SAF:" << basePath << "/" << fileName;
         return file;
     }
 #endif
@@ -310,27 +390,27 @@ QFile *AndroidFileHelper::openFileForWriting(const QString &basePath, const QStr
 
     if (!QDir().mkpath(QFileInfo(fullPath).path()))
     {
-        s_lastError = QString("Failed to create directory: %1").arg(QFileInfo(fullPath).path());
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = QString("Failed to create directory: %1").arg(QFileInfo(fullPath).path());
+        qCWarning(application) << m_lastError;
         return nullptr;
     }
 
     QFile *file = new QFile(fullPath);
     if (!file->open(QIODevice::WriteOnly))
     {
-        s_lastError = QString("Failed to open file for writing: %1 - %2").arg(fullPath, file->errorString());
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = QString("Failed to open file for writing: %1 - %2").arg(fullPath, file->errorString());
+        qCWarning(application) << m_lastError;
         delete file;
         return nullptr;
     }
 
-    qCInfo(fileHelper) << "Opened file for writing:" << fullPath;
+    qCInfo(application) << "Opened file for writing:" << fullPath;
     return file;
 }
 
 FILE *AndroidFileHelper::openFileForWritingRaw(const QString &basePath, const QString &fileName, const QString &mimeType)
 {
-    s_lastError.clear();
+    m_lastError.clear();
 
 #ifdef Q_OS_ANDROID
     if (isContentUri(basePath))
@@ -347,8 +427,8 @@ FILE *AndroidFileHelper::openFileForWritingRaw(const QString &basePath, const QS
 
         if (fd < 0)
         {
-            s_lastError = QString("Failed to open file via SAF: %1/%2").arg(basePath, fileName);
-            qCWarning(fileHelper) << s_lastError;
+            m_lastError = QString("Failed to open file via SAF: %1/%2").arg(basePath, fileName);
+            qCWarning(application) << m_lastError;
             return nullptr;
         }
 
@@ -356,13 +436,13 @@ FILE *AndroidFileHelper::openFileForWritingRaw(const QString &basePath, const QS
         FILE *file = fdopen(fd, "wb");
         if (file == nullptr)
         {
-            s_lastError = QString("Failed to fdopen file descriptor: %1").arg(strerror(errno));
-            qCWarning(fileHelper) << s_lastError;
+            m_lastError = QString("Failed to fdopen file descriptor: %1").arg(strerror(errno));
+            qCWarning(application) << m_lastError;
             ::close(fd);
             return nullptr;
         }
 
-        qCInfo(fileHelper) << "Opened file for raw writing via SAF:" << basePath << "/" << fileName;
+        qCInfo(application) << "Opened file for raw writing via SAF:" << basePath << "/" << fileName;
         return file;
     }
 #endif
@@ -372,26 +452,26 @@ FILE *AndroidFileHelper::openFileForWritingRaw(const QString &basePath, const QS
 
     if (!QDir().mkpath(QFileInfo(fullPath).path()))
     {
-        s_lastError = QString("Failed to create directory: %1").arg(QFileInfo(fullPath).path());
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = QString("Failed to create directory: %1").arg(QFileInfo(fullPath).path());
+        qCWarning(application) << m_lastError;
         return nullptr;
     }
 
     FILE *file = fopen(QDir::toNativeSeparators(fullPath).toUtf8().data(), "wb");
     if (file == nullptr)
     {
-        s_lastError = QString("Failed to open file for writing: %1 - %2").arg(fullPath, strerror(errno));
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = QString("Failed to open file for writing: %1 - %2").arg(fullPath, strerror(errno));
+        qCWarning(application) << m_lastError;
         return nullptr;
     }
 
-    qCInfo(fileHelper) << "Opened file for raw writing:" << fullPath;
+    qCInfo(application) << "Opened file for raw writing:" << fullPath;
     return file;
 }
 
-QString AndroidFileHelper::lastError()
+QString AndroidFileHelper::lastError() const
 {
-    return s_lastError;
+    return m_lastError;
 }
 
 #ifdef Q_OS_ANDROID
@@ -411,12 +491,12 @@ bool AndroidFileHelper::writeUsingSAF(const QString &treeUri, const QString &fil
 
     if (success)
     {
-        qCInfo(fileHelper) << "File written via SAF:" << treeUri << "/" << fileName;
+        qCInfo(application) << "File written via SAF:" << treeUri << "/" << fileName;
     }
     else
     {
-        s_lastError = QString("Failed to write file via SAF: %1/%2").arg(treeUri, fileName);
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = QString("Failed to write file via SAF: %1/%2").arg(treeUri, fileName);
+        qCWarning(application) << m_lastError;
     }
 
     return success;
@@ -443,12 +523,12 @@ bool AndroidFileHelper::writeBinaryUsingSAF(const QString &treeUri, const QStrin
 
     if (success)
     {
-        qCInfo(fileHelper) << "Binary file written via SAF:" << treeUri << "/" << fileName;
+        qCInfo(application) << "Binary file written via SAF:" << treeUri << "/" << fileName;
     }
     else
     {
-        s_lastError = QString("Failed to write binary file via SAF: %1/%2").arg(treeUri, fileName);
-        qCWarning(fileHelper) << s_lastError;
+        m_lastError = QString("Failed to write binary file via SAF: %1/%2").arg(treeUri, fileName);
+        qCWarning(application) << m_lastError;
     }
 
     return success;

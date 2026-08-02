@@ -67,20 +67,57 @@ void InputDeviceRecorder::start(int timeoutSec)
     std::lock_guard<std::mutex> guard(m_fileMutex);
     if (nullptr == m_file)
     {
-        const QString rawPath = AndroidFileHelper::buildSubdirPath(m_settings->dataStoragePath, RAW_DIR_NAME);
-
-        // Ensure directory exists and is writable
-        if (!AndroidFileHelper::mkpath(m_settings->dataStoragePath, RAW_DIR_NAME))
+#if ASK_FOR_PERMISSION_IF_NEEDED
+        std::function<void(const QString &)> callback = [=](const QString &rawPath)
         {
-            qCCritical(inputDeviceRecorder) << "Failed to create raw recording directory:" << AndroidFileHelper::lastError();
-            emit recording(false);
-            return;
-        }
+            if (rawPath.isEmpty())
+            {
+                qCCritical(inputDeviceRecorder) << "Error creating raw recording directory:" << AndroidFileHelper::instance().lastError();
+                emit recording(false);
+                return;
+            }
 
-        if (!AndroidFileHelper::hasWritePermission(rawPath))
+            QString fileName;
+            if (m_xmlHeaderEna)
+            {
+                fileName =
+                    QString("%1_%2.uff").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"), DabTables::channelList.value(m_frequency));
+            }
+            else
+            {
+                fileName =
+                    QString("%1_%2.raw").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd_hhmmss"), DabTables::channelList.value(m_frequency));
+            }
+
+            m_bytesRecorded = 0;
+            m_bytesToRecord = timeoutSec * m_bytesPerSec;
+
+            m_file = AndroidFileHelper::instance().openFileForWritingRaw(rawPath, fileName, "application/octet-stream");
+            if (nullptr != m_file)
+            {
+                if (m_xmlHeaderEna)
+                {
+                    startXmlHeader();
+                    char *padding = new char[INPUTDEVICERECORDER_XML_PADDING];
+                    memset(padding, 0, INPUTDEVICERECORDER_XML_PADDING);
+                    fwrite(padding, 1, INPUTDEVICERECORDER_XML_PADDING, m_file);
+                    delete[] padding;
+                }
+                qCInfo(inputDeviceRecorder) << "IQ recording starts, timeout:" << timeoutSec
+                                            << "sec, file:" << QString("%1/%2").arg(rawPath, fileName);
+                emit recording(true);
+            }
+            else
+            {  // error
+                emit recording(false);
+            }
+        };
+        AndroidFileHelper::instance().accessPath(m_settings->dataStoragePath, RAW_DIR_NAME, callback);
+#else
+        const QString rawPath = AndroidFileHelper::instance().getPath(m_settings->dataStoragePath, RAW_DIR_NAME);
+        if (rawPath.isEmpty())
         {
-            qCCritical(inputDeviceRecorder) << "No permission to write to:" << rawPath;
-            qCCritical(inputDeviceRecorder) << "Please select a new data storage folder in settings.";
+            qCCritical(inputDeviceRecorder) << "Error creating raw recording directory:" << AndroidFileHelper::instance().lastError();
             emit recording(false);
             return;
         }
@@ -100,7 +137,7 @@ void InputDeviceRecorder::start(int timeoutSec)
         m_bytesRecorded = 0;
         m_bytesToRecord = timeoutSec * m_bytesPerSec;
 
-        m_file = AndroidFileHelper::openFileForWritingRaw(rawPath, fileName, "application/octet-stream");
+        m_file = AndroidFileHelper::instance().openFileForWritingRaw(rawPath, fileName, "application/octet-stream");
         if (nullptr != m_file)
         {
             if (m_xmlHeaderEna)
@@ -118,6 +155,7 @@ void InputDeviceRecorder::start(int timeoutSec)
         {  // error
             emit recording(false);
         }
+#endif
     }
     else
     { /* file is already opened */

@@ -64,6 +64,7 @@ public:
     uint16_t m_contentType;
     uint16_t m_contentSubType;
     QString m_contentName;
+    bool m_isCompressed = false;
 
     MOTEntity m_header;
     MOTEntity m_body;
@@ -83,13 +84,14 @@ public:
     uint16_t getId() const { return d->m_id; }
     bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag, bool isHeader = false);
     bool isComplete() const { return d->m_objectIsComplete; };
-    QByteArray getBody() const;
+    QByteArray getBody(bool decompress = true) const;
     bool isObsolete() const { return d->m_objectIsObsolete; }
     void setObsolete(bool obsolete) { d->m_objectIsObsolete = obsolete; };
 
     uint16_t getContentType() const;
     uint16_t getContentSubType() const;
     const QString &getContentName() const;
+    bool isCompressed() const { return d->m_isCompressed; }
 
     // iterator access to user parameters
     typedef QHash<int, QByteArray>::const_iterator paramsIterator;
@@ -99,6 +101,7 @@ public:
 
 private:
     QSharedDataPointer<MOTObjectData> d;
+    QByteArray gzipDecompress(const QByteArray &compressedData) const;
 };
 
 class MOTObjectCache

@@ -121,7 +121,6 @@ void AudioOutputQt::start(audioFifo_t *buffer)
 #ifdef Q_OS_ANDROID
     // Acquire wake lock to ensure background audio playback
     acquireAndroidWakeLock();
-    updateAndroidNotification("AbracaDABra", tr("DAB radio"));
 #endif
 
     // Reset restart counter on successful start
@@ -243,7 +242,6 @@ void AudioOutputQt::doStop()
 #ifdef Q_OS_ANDROID
     // Release wake lock when audio stops on Android
     releaseAndroidWakeLock();
-    updateAndroidNotification("AbracaDABra", "");
 #endif
 }
 
@@ -730,27 +728,6 @@ void AudioOutputQt::releaseAndroidWakeLock()
     catch (...)
     {
         qCWarning(audioOutput) << "Exception while releasing Android wake lock";
-    }
-}
-
-void AudioOutputQt::updateAndroidNotification(const QString &title, const QString &text)
-{
-    try
-    {
-        QJniObject context = QNativeInterface::QAndroidApplication::context();
-        if (context.isValid())
-        {
-            QJniObject jTitle = QJniObject::fromString(title);
-            QJniObject jText = QJniObject::fromString(text);
-
-            QJniObject::callStaticMethod<void>("org/qtproject/abracadabra/AudioServiceHelper", "updateNotification",
-                                               "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;)V", context.object<jobject>(),
-                                               jTitle.object<jstring>(), jText.object<jstring>());
-        }
-    }
-    catch (...)
-    {
-        qCWarning(audioOutput) << "Exception while updating Android notification";
     }
 }
 

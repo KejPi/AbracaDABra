@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
+import android.graphics.Bitmap;
 import android.media.MediaMetadata;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
@@ -15,10 +16,12 @@ import android.os.Binder;
 import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.KeyEvent;
 
 public class AudioPlaybackService extends Service {
     private static final String TAG = "AudioPlaybackService";
@@ -32,7 +35,20 @@ public class AudioPlaybackService extends Service {
     
     // MediaSession for proper media app recognition
     private MediaSession mediaSession = null;
-    
+
+    // Dedicated background thread for MediaSession callbacks — independent of Activity lifecycle
+    // so controls work reliably on the lock screen without waiting for unlock.
+    private HandlerThread callbackThread = null;
+
+    // Current playback state: true = playing (unmuted), false = paused (muted).
+    // Drives both the periodic position update and the play/pause icon.
+    private boolean isPlaying = true;
+
+    // Last known notification content (needed to rebuild notification on artwork update)
+    private String lastNotificationTitle = "AbracaDABra";
+    private String lastNotificationText = "DAB radio";
+    private Bitmap lastArtworkBitmap = null;
+
     // Handler for periodic playback state updates
     private Handler handler = null;
     private long playbackStartTime = 0;
@@ -89,6 +105,12 @@ public class AudioPlaybackService extends Service {
             // Activate the session
             mediaSession.setActive(true);
 
+            // Use a dedicated background HandlerThread for callbacks so they fire reliably
+            // on the lock screen (independent of Activity/main-Looper lifecycle pauses).
+            callbackThread = new HandlerThread("MediaSessionCallbackThread");
+            callbackThread.start();
+            Handler callbackHandler = new Handler(callbackThread.getLooper());
+
             // Register callback so media buttons (notification + Bluetooth) call into C++
             mediaSession.setCallback(new MediaSession.Callback() {
                 @Override
@@ -107,7 +129,40 @@ public class AudioPlaybackService extends Service {
                 public void onSkipToPrevious() {
                     AudioServiceHelper.nativePreviousFavorite();
                 }
-            });
+
+                @Override
+                public boolean onMediaButtonEvent(Intent mediaButtonIntent) {
+                    if (mediaButtonIntent == null || !Intent.ACTION_MEDIA_BUTTON.equals(mediaButtonIntent.getAction())) {
+                        return super.onMediaButtonEvent(mediaButtonIntent);
+                    }
+
+                    KeyEvent keyEvent = mediaButtonIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+                    if (keyEvent == null) {
+                        return true;
+                    }
+
+                    // Handle only ACTION_DOWN to avoid duplicate execution on key-up.
+                    if (keyEvent.getAction() != KeyEvent.ACTION_DOWN) {
+                        return true;
+                    }
+
+                    switch (keyEvent.getKeyCode()) {
+                        case KeyEvent.KEYCODE_MEDIA_NEXT:
+                            AudioServiceHelper.nativeNextFavorite();
+                            return true;
+                        case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                            AudioServiceHelper.nativePreviousFavorite();
+                            return true;
+                        case KeyEvent.KEYCODE_MEDIA_PLAY:
+                        case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                        case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                            AudioServiceHelper.nativeToggleMute();
+                            return true;
+                        default:
+                            return super.onMediaButtonEvent(mediaButtonIntent);
+                    }
+                }
+            }, callbackHandler);
 
             // Start periodic playback position updates
             // This signals to Android that we're actively playing
@@ -132,10 +187,12 @@ public class AudioPlaybackService extends Service {
                 if (mediaSession != null && isServiceRunning) {
                     // Calculate elapsed time as "position"
                     long position = SystemClock.elapsedRealtime() - playbackStartTime;
-                    
+
+                    // Reflect current mute/unmute state — do NOT hard-code STATE_PLAYING
+                    int state = isPlaying ? PlaybackState.STATE_PLAYING : PlaybackState.STATE_PAUSED;
                     PlaybackState playbackState = new PlaybackState.Builder()
-                            .setState(PlaybackState.STATE_PLAYING, position, 1.0f)
-                            .setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PAUSE
+                            .setState(state, position, 1.0f)
+                            .setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PAUSE | PlaybackState.ACTION_PLAY_PAUSE
                                     | PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS)
                             .build();
                     mediaSession.setPlaybackState(playbackState);
@@ -167,11 +224,23 @@ public class AudioPlaybackService extends Service {
         if (mediaSession != null) {
             PlaybackState playbackState = new PlaybackState.Builder()
                     .setState(state, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1.0f)
-                    .setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PAUSE
+                    .setActions(PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PAUSE | PlaybackState.ACTION_PLAY_PAUSE
                             | PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS)
                     .build();
             mediaSession.setPlaybackState(playbackState);
         }
+    }
+
+    /**
+     * Reflect the mute state from the Qt application in the MediaSession.
+     * muted=true → STATE_PAUSED (shows ▶ play button), muted=false → STATE_PLAYING (shows ⏸ pause button).
+     * Also rebuilds the notification so the icon updates immediately.
+     */
+    public void setMuted(boolean muted) {
+        isPlaying = !muted;
+        int state = isPlaying ? PlaybackState.STATE_PLAYING : PlaybackState.STATE_PAUSED;
+        updatePlaybackState(state);
+        rebuildNotification();
     }
 
     @Override
@@ -308,10 +377,49 @@ public class AudioPlaybackService extends Service {
      * Update the notification with new content
      */
     public void updateNotification(String title, String text) {
+        if (lastNotificationTitle.equals(title) && lastNotificationText.equals(text)) {
+            // No change, skip rebuild
+            return;
+        }
+        lastNotificationTitle = title;
+        lastNotificationText = text;
+        rebuildNotification();
+    }
+
+    /**
+     * Update the MediaSession artwork and refresh the notification large icon.
+     * Pass null bitmap to clear artwork (fall back to app icon).
+     */
+    public void setArtwork(Bitmap bitmap) {                
+        lastArtworkBitmap = bitmap;
+        rebuildNotification();
+    }
+
+    /**
+     * Rebuild the foreground notification with the current title, text, and artwork.
+     */
+    private void rebuildNotification() {        
+        // Update MediaSession metadata
+        if (mediaSession != null) {
+            try {
+                MediaMetadata.Builder metaBuilder = new MediaMetadata.Builder()
+                        .putString(MediaMetadata.METADATA_KEY_TITLE, lastNotificationTitle)
+                        .putString(MediaMetadata.METADATA_KEY_ARTIST, lastNotificationText)
+                        .putLong(MediaMetadata.METADATA_KEY_DURATION, -1);
+                if (lastArtworkBitmap != null) {
+                    metaBuilder.putBitmap(MediaMetadata.METADATA_KEY_ART, lastArtworkBitmap);
+                    metaBuilder.putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, lastArtworkBitmap);
+                }
+                mediaSession.setMetadata(metaBuilder.build());
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to set MediaSession artwork: " + e.getMessage(), e);
+            }
+        }
+
         try {
             Intent notificationIntent = new Intent(this, AbracaDABraActivity.class);
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            
+
             int flags = PendingIntent.FLAG_UPDATE_CURRENT;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 flags |= PendingIntent.FLAG_IMMUTABLE;
@@ -325,13 +433,17 @@ public class AudioPlaybackService extends Service {
                 builder = new Notification.Builder(this);
             }
 
-            builder.setContentTitle(title)
-                   .setContentText(text)
+            builder.setContentTitle(lastNotificationTitle)
+                   .setContentText(lastNotificationText)
                    .setSmallIcon(android.R.drawable.ic_media_play)
                    .setContentIntent(pendingIntent)
                    .setOngoing(true)
                    .setShowWhen(false)
                    .setVisibility(Notification.VISIBILITY_PUBLIC);
+
+            if (lastArtworkBitmap != null) {
+                builder.setLargeIcon(lastArtworkBitmap);
+            }
 
             builder.setCategory(Notification.CATEGORY_TRANSPORT);
             if (mediaSession != null) {
@@ -342,9 +454,10 @@ public class AudioPlaybackService extends Service {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             if (notificationManager != null) {
                 notificationManager.notify(NOTIFICATION_ID, builder.build());
-            }
+            }            
+
         } catch (Exception e) {
-            Log.e(TAG, "Failed to update notification: " + e.getMessage(), e);
+            Log.e(TAG, "Failed to rebuild notification: " + e.getMessage(), e);
         }
     }
     
@@ -373,7 +486,13 @@ public class AudioPlaybackService extends Service {
         
         // Stop periodic updates
         stopPlaybackPositionUpdates();
-        
+
+        // Stop the MediaSession callback HandlerThread
+        if (callbackThread != null) {
+            callbackThread.quitSafely();
+            callbackThread = null;
+        }
+
         // Release MediaSession
         if (mediaSession != null) {
             mediaSession.setActive(false);

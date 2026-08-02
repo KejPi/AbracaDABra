@@ -118,6 +118,7 @@ public:
         int agcLevelMax;
         int ppm;
         float rfLevelOffset;
+        bool useNativeSocket;
     } rtltcp;
 #if HAVE_AIRSPY
     struct
@@ -186,6 +187,7 @@ public:
     bool compactUi;
     bool cableChannelsEna;
     QString dataStoragePath;
+    bool showServicePageWidget;
     bool keepScreenOn;  // Keep screen on (Android only)
 
     struct
@@ -221,6 +223,8 @@ public:
     {
         GeolocationSource locationSource;
         QGeoCoordinate coordinates;
+        bool manualAltitude;
+        int altitude;
         QString serialPort;
         int serialPortBaudrate;
         bool showSpectumPlot;
@@ -311,6 +315,8 @@ public:
         bool clearOnStart;
         bool hideLocalTx;
         bool autoSave;
+        bool autoSaveJSON;
+        bool incrementalScan;
         bool centerMapToCurrentPosition;
         QGeoCoordinate mapCenter;
         float mapZoom;

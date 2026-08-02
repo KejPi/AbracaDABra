@@ -332,19 +332,37 @@ void SLSBackend::saveSlideToFile()
 
     if (!filename.isEmpty())
     {
-        const QString slidePath = AndroidFileHelper::buildSubdirPath(m_settings->dataStoragePath, SLIDES_DIR_NAME);
+#if ASK_FOR_PERMISSION_IF_NEEDED
 
-        // Ensure directory exists and is writable
-        if (!AndroidFileHelper::mkpath(m_settings->dataStoragePath, SLIDES_DIR_NAME))
+        std::function<void(const QString &)> callback = [=](const QString &slidePath)
         {
-            qCWarning(application) << "Failed to create slide export directory:" << AndroidFileHelper::lastError();
-            return;
-        }
+            if (slidePath.isEmpty())
+            {
+                qCWarning(application) << "Error creating slide export directory:" << AndroidFileHelper::instance().lastError();
+                return;
+            }
 
-        if (!AndroidFileHelper::hasWritePermission(slidePath))
+            QString mime = "image/jpeg";
+            if (m_currentSlide.getFormat() == "PNG")
+            {
+                mime = "image/png";
+            }
+
+            if (AndroidFileHelper::instance().writeBinaryFile(slidePath, filename, data, mime))
+            {
+                qCInfo(application) << "Slide saved to file:" << QString("%1/%2").arg(slidePath, filename);
+            }
+            else
+            {
+                qCWarning(application) << "Failed to save slide to file:" << AndroidFileHelper::instance().lastError();
+            }
+        };
+        AndroidFileHelper::instance().accessPath(m_settings->dataStoragePath, SLIDES_DIR_NAME, callback);
+#else
+        const QString slidePath = AndroidFileHelper::instance().getPath(m_settings->dataStoragePath, SLIDES_DIR_NAME);
+        if (slidePath.isEmpty())
         {
-            qCWarning(application) << "No permission to write to:" << slidePath;
-            qCWarning(application) << "Please select a new data storage folder in settings.";
+            qCWarning(application) << "Error creating slide export directory:" << AndroidFileHelper::instance().lastError();
             return;
         }
 
@@ -355,13 +373,14 @@ void SLSBackend::saveSlideToFile()
             mime = "image/png";
         }
 
-        if (AndroidFileHelper::writeBinaryFile(slidePath, filename, data, mime))
+        if (AndroidFileHelper::instance().writeBinaryFile(slidePath, filename, data, mime))
         {
             qCInfo(application) << "Slide saved to file:" << QString("%1/%2").arg(slidePath, filename);
         }
         else
         {
-            qCWarning(application) << "Failed to save slide to file:" << AndroidFileHelper::lastError();
+            qCWarning(application) << "Failed to save slide to file:" << AndroidFileHelper::instance().lastError();
         }
+#endif
     }
 }

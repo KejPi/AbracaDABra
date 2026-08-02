@@ -228,8 +228,8 @@ Item {
             tableItem.columnWidths[cols - 1] = avail - totalWidthScaled;
         }
 
+        Qt.callLater(tableView.forceLayout);
 
-        tableView.forceLayout();
         // compute total content width from columns and expose it so scrollbars can use it
         var totalContent = 0;
         for (var t = 0; t < tableItem.columnWidths.length; ++t) {
@@ -251,7 +251,7 @@ Item {
             var hdr = tableView.model.headerData(n, Qt.Horizontal, Qt.DisplayRole);
             tableItem.columnWidths[n] = Math.max(minColumnWidth, Math.ceil(fontMetrics.boundingRect(hdr).width) + UI.standardMargin);
         }
-        tableView.forceLayout();
+        Qt.callLater(tableView.forceLayout);
         tableItem.calculatePreferedWidth()
         // ensure sizes account for content and scrollbars
         tableItem.autoAdjustColumns();
@@ -276,8 +276,11 @@ Item {
             required property int index
 
             Row {
-                spacing: 2
-                anchors.centerIn: parent
+                spacing: 2                
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: tableItem.cellsLeftAligned ? undefined : parent.horizontalCenter
+                anchors.left: tableItem.cellsLeftAligned ? parent.left : undefined
+                anchors.leftMargin: tableItem.cellsLeftAligned ? UI.standardMargin / 4 : undefined
                 Text {
                     id: colLabel
                     text: display
@@ -344,18 +347,38 @@ Item {
                 required property bool isActive
                 required property int row
                 required property int textAlignment
+                required property string iconSource
 
                 implicitHeight: tableItem.rowHeight
                 color: selected ? UI.colors.highlight : UI.colors.background
+
+                Image {
+                    id: iconImage
+                    anchors.left: parent.left
+                    anchors.leftMargin: visible ? UI.standardMargin / 4 : 0
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: tableItem.rowHeight - UI.standardMargin // cellText.font.pointSize
+                    fillMode: Image.PreserveAspectFit
+                    asynchronous: true
+                    cache: false
+                    visible: iconSource !== ""
+                    source: iconSource
+                    opacity: isActive ? 1.0 : 0.6
+                }
                 Text {
-                    anchors.fill: parent
-                    anchors.leftMargin: UI.standardMargin
+                    id: cellText
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.left: iconImage.visible ? iconImage.right : parent.left
+                    anchors.leftMargin: iconImage.visible ? UI.standardMargin : UI.standardMargin / 4
+                    anchors.right: parent.right
+                    anchors.rightMargin: UI.standardMargin / 4
                     text: display
                     verticalAlignment: Text.AlignVCenter
                     horizontalAlignment: tableItem.cellsLeftAligned ? Text.AlignLeft : (textAlignment == 0 ? Text.AlignLeft : (textAlignment == 1 ? Text.AlignHCenter : Text.AlignRight))
                     elide: Text.ElideRight
                     color: isActive ? UI.colors.textPrimary : UI.colors.textSecondary
-                    font.italic: !isActive
+                    font.italic: !isActive                    
                 }
                 MouseArea {
                     anchors.fill: parent
