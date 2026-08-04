@@ -50,10 +50,18 @@ public:
     void setRfLevelFilter(bool filterRfLevel);
     bool rfLevelFilter() const { return m_filterRfLevel; }
 
+    // Public wrapper so external consumers (e.g. TxMapModel) can check whether a source
+    // row currently passes the row filter, without duplicating the filtering logic.
+    bool isSourceRowVisible(int sourceRow) const { return filterAcceptsRow(sourceRow, QModelIndex()); }
+
 signals:
     void rowCountChanged();
 
     void rfLevelFilterChanged();
+
+    // Emitted whenever the row-filtering criteria (local Tx / inactive Tx) change,
+    // so that consumers relying on filterAcceptsRow() directly (e.g. TxMapModel) can react.
+    void rowsFilterChanged();
 
 protected:
     bool m_filterCols = true;

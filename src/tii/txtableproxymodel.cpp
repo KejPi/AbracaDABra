@@ -70,6 +70,7 @@ void TxTableProxyModel::setInactiveTxFilter(bool filterInactiveTx)
 #else
         invalidateRowsFilter();
 #endif
+        emit rowsFilterChanged();
     }
 }
 
@@ -87,6 +88,7 @@ void TxTableProxyModel::setLocalTxFilter(bool filterLocalTx)
 #else
         invalidateRowsFilter();
 #endif
+        emit rowsFilterChanged();
     }
 }
 

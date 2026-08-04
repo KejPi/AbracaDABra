@@ -50,7 +50,7 @@ Q_LOGGING_CATEGORY(scanner, "Scanner", QtDebugMsg)
 ScannerBackend::ScannerBackend(Settings *settings, QObject *parent) : TxMapBackend(settings, false, parent)
 {
     m_sortedFilteredModel->setColumnsFilter(false);
-    m_txMapModel = new TxMapModel(m_model, this);
+    m_txMapModel = new TxMapModel(m_model, m_sortedFilteredModel, this);
     m_mapModel = m_txMapModel;
     m_channelSelectionModel = new ChannelSelectionModel(settings, this);
     m_messageBoxBackend = new MessageBoxBackend(this);

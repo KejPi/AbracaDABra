@@ -36,6 +36,7 @@
 #include "txtablemodel.h"
 
 class QSortFilterProxyModel;
+class TxTableProxyModel;
 
 // Deduplication key: same physical transmitter = same location + same ensemble (channel) + same TII code.
 struct MarkerKey
@@ -70,7 +71,9 @@ public:
         SelectedTxRole,
     };
 
-    explicit TxMapModel(TxTableModel *sourceModel, QObject *parent = nullptr);
+    // proxy is the row-filtering proxy (local/inactive Tx filters) whose visibility
+    // decisions are used to decide whether a source row should contribute a marker.
+    explicit TxMapModel(TxTableModel *sourceModel, TxTableProxyModel *proxy, QObject *parent = nullptr);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
@@ -93,6 +96,7 @@ private:
     };
 
     TxTableModel *m_source;
+    TxTableProxyModel *m_proxy;
     QList<MarkerItem> m_markers;
     // Key: (lat, lon, ensId, tiiId) — uniquely identifies one physical transmitter on one channel.
     QHash<MarkerKey, int> m_markerLookup;

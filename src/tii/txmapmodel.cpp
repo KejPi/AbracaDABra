@@ -28,18 +28,23 @@
 
 #include <QSortFilterProxyModel>
 
-TxMapModel::TxMapModel(TxTableModel *sourceModel, QObject *parent) : QAbstractListModel(parent), m_source(sourceModel)
+#include "txtableproxymodel.h"
+
+TxMapModel::TxMapModel(TxTableModel *sourceModel, TxTableProxyModel *proxy, QObject *parent)
+    : QAbstractListModel(parent), m_source(sourceModel), m_proxy(proxy)
 {
     // Full rebuild whenever the source model is reset (e.g. CSV load).
     connect(m_source, &QAbstractItemModel::modelReset, this, &TxMapModel::rebuild);
 
     // Incremental update for appended rows (normal scan operation).
-    connect(m_source, &QAbstractItemModel::rowsInserted, this, [this](const QModelIndex &, int first, int last) {
-        for (int row = first; row <= last; ++row)
-        {
-            processSourceRow(row, true);
-        }
-    });
+    connect(m_source, &QAbstractItemModel::rowsInserted, this,
+            [this](const QModelIndex &, int first, int last)
+            {
+                for (int row = first; row <= last; ++row)
+                {
+                    processSourceRow(row, true);
+                }
+            });
 
     // Rows removed: simplest safe strategy is a full rebuild.
     // In scanner mode rows are never individually removed (only via modelReset),
@@ -49,6 +54,19 @@ TxMapModel::TxMapModel(TxTableModel *sourceModel, QObject *parent) : QAbstractLi
     // Selection changes: use the dedicated signal for O(1) hash lookups.
     // TxTableModel::setSelectedRows emits selectedRowsChanged with the complete new set.
     connect(m_source, &TxTableModel::selectedRowsChanged, this, &TxMapModel::applySelection);
+
+    // Row-filter criteria (local Tx / inactive Tx) changed on the proxy — a full rebuild is
+    // required since markers may need to be added or removed independently of source row inserts.
+    connect(m_proxy, &TxTableProxyModel::rowsFilterChanged, this, &TxMapModel::rebuild);
+
+    connect(m_source, &QAbstractItemModel::dataChanged, this,
+            [this](const QModelIndex &, const QModelIndex &, const QList<int> &roles)
+            {
+                if (roles.contains(TxTableModel::TxTableModelRoles::IsLocalRole))
+                {
+                    rebuild();
+                }
+            });
 
     rebuild();
 }
@@ -149,6 +167,12 @@ void TxMapModel::processSourceRow(int sourceRow, bool emitSignals)
     {
         return;
     }
+    // Skip rows currently hidden by the table's row filter (e.g. hide local Tx / hide inactive Tx),
+    // so map markers stay in sync with what is shown in the table.
+    if (!m_proxy->isSourceRowVisible(sourceRow))
+    {
+        return;
+    }
     const QGeoCoordinate coord = item.transmitterData().coordinates();
     if (!coord.isValid())
     {
@@ -157,8 +181,7 @@ void TxMapModel::processSourceRow(int sourceRow, bool emitSignals)
 
     const QString tiiCode = QString("%1-%2").arg(item.mainId()).arg(item.subId());
     const QColor color = levelColorFor(item);
-    const bool selected =
-        m_source->data(m_source->index(sourceRow, 0), TxTableModel::TxTableModelRoles::SelectedTxRole).toBool();
+    const bool selected = m_source->data(m_source->index(sourceRow, 0), TxTableModel::TxTableModelRoles::SelectedTxRole).toBool();
 
     const auto key = markerKey(item);
     const auto it = m_markerLookup.constFind(key);
