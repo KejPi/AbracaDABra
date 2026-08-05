@@ -64,7 +64,7 @@ bool Mp3Encoder::init(int sampleRate, int numChannels)
     lame_set_in_samplerate(m_lame, sampleRate);
     lame_set_num_channels(m_lame, numChannels);
     lame_set_mode(m_lame, 1 == numChannels ? MONO : JOINT_STEREO);
-    lame_set_brate(m_lame, 1 == numChannels ? 64 : 128);
+    lame_set_brate(m_lame, 1 == numChannels ? 128 : 192);
     lame_set_quality(m_lame, 2);  // 2 = high quality, still fast enough for realtime encoding
 
     if (lame_init_params(m_lame) < 0)

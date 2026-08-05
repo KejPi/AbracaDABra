@@ -123,8 +123,8 @@ bool CliTui::start()
                                            const QString channel = m_status.value("channel").toString();
                                            const double freqKHz = m_status.value("frequencyKHz").toDouble();
 
-                                           const std::string syncStr = sync >= 3 ? "SYNC" : (sync == 0 ? "NO SIGNAL" : "SEARCHING");
-                                           const Color syncColor = sync >= 3 ? Color::Green : (sync == 0 ? Color::Red : Color::Yellow);
+                                           const std::string syncStr = sync >= 2 ? "SYNC" : (sync == 0 ? "NO SIGNAL" : "SEARCHING");
+                                           const Color syncColor = sync >= 2 ? Color::Green : (sync == 0 ? Color::Red : Color::Yellow);
 
                                            const QString nowPlaying = current.value("playing").toBool()
                                                                            ? current.value("label").toString()
