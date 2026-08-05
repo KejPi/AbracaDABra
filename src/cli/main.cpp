@@ -29,10 +29,16 @@
 #include <csignal>
 #include <memory>
 
+#ifndef _WIN32
+#include <termios.h>
+#include <unistd.h>
+#endif
+
 #include <QCommandLineParser>
 #include <QElapsedTimer>
 #include <QGuiApplication>
 #include <QLoggingCategory>
+#include <QSocketNotifier>
 #include <QTimer>
 
 #include "config.h"
@@ -97,8 +103,9 @@ int main(int argc, char *argv[])
     parser.setApplicationDescription(
         "Headless DAB/DAB+ receiver with a web UI, built on the AbracaDABra DAB engine.");
     parser.addHelpOption();
-    // not parser.addVersionOption(): that registers "-v" for --version, which we need for --verbose
-    QCommandLineOption versionOpt("version", "Displays version information.");
+    // not parser.addVersionOption(): it auto-exits on -v/--version before we can tell a single -v
+    // apart from repeated -vv/-vvv, which we count below to control verbosity instead
+    QCommandLineOption versionOpt(QStringList() << "v" << "version", "Displays version information and exits.");
     parser.addOption(versionOpt);
 
     QCommandLineOption deviceOpt(QStringList() << "d" << "device", "Input device: rtlsdr (default) or rtltcp.", "device", "rtlsdr");
@@ -123,9 +130,12 @@ int main(int argc, char *argv[])
     QCommandLineOption hardwareAgcOpt("hardware-agc", "Use the RTL-SDR's own hardware AGC instead of software AGC (RTL-SDR only).");
 
     QCommandLineOption listChannelsOpt("list-channels", "Print the DAB channel table and exit.");
-    QCommandLineOption verboseOpt(QStringList() << "v" << "verbose",
-                                   "Increase log verbosity; repeatable. -v: debug logging, -vv: also Qt's own debug logging, "
-                                   "-vvv or more: same as -vv.");
+    QCommandLineOption commandlineOnlyOpt("commandline-only", "Disable the interactive terminal dashboard (TUI) and log to commandline instead, "
+                                                        "independent of verbosity.");
+    QCommandLineOption verboseOpt("verbose",
+                                   "Increase log verbosity and log to commandline instead of the TUI; repeatable, e.g. by repeating "
+                                   "-v (-vv, -vvv) or this option. Twice enables debug logging, three times also enables Qt's "
+                                   "own debug logging.");
 
     parser.addOption(deviceOpt);
     parser.addOption(serialOpt);
@@ -141,15 +151,10 @@ int main(int argc, char *argv[])
     parser.addOption(gainOpt);
     parser.addOption(hardwareAgcOpt);
     parser.addOption(listChannelsOpt);
+    parser.addOption(commandlineOnlyOpt);
     parser.addOption(verboseOpt);
 
     parser.process(app);
-
-    if (parser.isSet(versionOpt))
-    {
-        printf("%s %s\n", qPrintable(QCoreApplication::applicationName()), qPrintable(QCoreApplication::applicationVersion()));
-        return 0;
-    }
 
     if (parser.isSet(listChannelsOpt))
     {
@@ -160,18 +165,28 @@ int main(int argc, char *argv[])
     int verboseLevel = 0;
     for (const QString &name : parser.optionNames())
     {
-        if (name == QLatin1String("v") || name == QLatin1String("verbose"))
+        if (name == QLatin1String("v") || name == QLatin1String("version") || name == QLatin1String("verbose"))
         {
             ++verboseLevel;
         }
     }
     verboseLevel = std::min(verboseLevel, 3);
 
-    if (verboseLevel <= 0)
+    // a single -v/--version shows version; -vv/-vvv (or repeated --verbose) enable verbose
+    // commandline logging without the TUI instead
+    if (verboseLevel == 1)
+    {
+        printf("%s %s\n", qPrintable(QCoreApplication::applicationName()), qPrintable(QCoreApplication::applicationVersion()));
+        return 0;
+    }
+
+    bool forcecommandlineOnly = (verboseLevel >= 2) || parser.isSet(commandlineOnlyOpt);
+
+    if (verboseLevel <= 1)
     {
         QLoggingCategory::setFilterRules("*.debug=false");
     }
-    else if (verboseLevel == 1)
+    else if (verboseLevel == 2)
     {
         QLoggingCategory::setFilterRules("*.debug=true\nqt.*.debug=false");
     }
@@ -239,7 +254,7 @@ int main(int argc, char *argv[])
     // shown instead of the web UI when the user didn't explicitly ask for one; falls back to
     // plain logging (below) if stdout isn't an interactive terminal (e.g. output redirected)
     std::unique_ptr<CliTui> tui;
-    if (!config.webUiEnabled)
+    if (!config.webUiEnabled && !forcecommandlineOnly)
     {
         tui = std::make_unique<CliTui>(&cliApp, verboseLevel);
         if (tui->start())
@@ -251,6 +266,69 @@ int main(int argc, char *argv[])
         else
         {
             tui.reset();
+        }
+    }
+#endif
+
+#ifndef _WIN32
+    // when not showing the interactive TUI (commandline-only/-vv/-vvv, or the TUI failed to start,
+    // e.g. non-tty stdout), still allow basic keyboard control (same keys as the TUI) from a tty
+    bool commandlineKeysActive = !config.webUiEnabled;
+#if HAVE_FTXUI
+    commandlineKeysActive = commandlineKeysActive && !tui;
+#endif
+    struct termios origTermios;
+    bool termiosSaved = false;
+    std::unique_ptr<QSocketNotifier> stdinNotifier;
+    if (commandlineKeysActive && isatty(STDIN_FILENO))
+    {
+        struct termios raw;
+        if (0 == tcgetattr(STDIN_FILENO, &origTermios))
+        {
+            raw = origTermios;
+            raw.c_lflag &= ~(ICANON | ECHO);  // read keys immediately, without waiting for Enter
+            raw.c_cc[VMIN] = 0;
+            raw.c_cc[VTIME] = 0;
+            if (0 == tcsetattr(STDIN_FILENO, TCSANOW, &raw))
+            {
+                termiosSaved = true;
+            }
+        }
+        if (termiosSaved)
+        {
+            stdinNotifier = std::make_unique<QSocketNotifier>(STDIN_FILENO, QSocketNotifier::Read);
+            QObject::connect(stdinNotifier.get(), &QSocketNotifier::activated, &app,
+                              [&cliApp]()
+                              {
+                                  char buf[64];
+                                  ssize_t n = ::read(STDIN_FILENO, buf, sizeof(buf));
+                                  for (ssize_t i = 0; i < n; ++i)
+                                  {
+                                      const char c = buf[i];
+                                      if ('+' == c || '=' == c)
+                                      {
+                                          cliApp.setVolume(cliApp.volumePercent() + 5);  // matches CliTui::kVolumeStep
+                                          printf("volume: %d%%\n", cliApp.volumePercent());
+                                          fflush(stdout);
+                                      }
+                                      else if ('-' == c || '_' == c)
+                                      {
+                                          cliApp.setVolume(cliApp.volumePercent() - 5);
+                                          printf("volume: %d%%\n", cliApp.volumePercent());
+                                          fflush(stdout);
+                                      }
+                                      else if ('m' == c || 'M' == c)
+                                      {
+                                          cliApp.toggleMute();
+                                          printf("volume: %d%%\n", cliApp.volumePercent());
+                                          fflush(stdout);
+                                      }
+                                      else if ('q' == c || 3 == c)
+                                      {
+                                          g_quitRequested.store(true);
+                                      }
+                                  }
+                              });
         }
     }
 #endif
@@ -287,5 +365,12 @@ int main(int argc, char *argv[])
                       });
     quitTimer.start(200);
 
-    return app.exec();
+    int ret = app.exec();
+#ifndef _WIN32
+    if (termiosSaved)
+    {
+        tcsetattr(STDIN_FILENO, TCSANOW, &origTermios);
+    }
+#endif
+    return ret;
 }
