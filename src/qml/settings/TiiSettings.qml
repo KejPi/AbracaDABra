@@ -229,9 +229,10 @@ Item {
                                     text: qsTr("Enter coordinates in \"latitude, longitude\" format, for example: 1.234,-5.678</p><br><p>Tip: <i>Go to <a href=\"https://www.google.com/maps\">Google maps</a>, right click on your location, click on coordinates in popup menu to copy them and then insert the values here as they are.</i></p>")
                                     wrapMode: Text.WordWrap
                                     role: UI.LabelRole.Secondary
-                                }
-                                RowLayout {
+                                }                            
+                                GridLayout {
                                     id: altitudeLayout
+                                    columns: UI.isMobile ? 2 : 4
                                     AbracaLabel {
                                         id: altitudeLabel
                                         text: qsTr("Altitude source:")
@@ -249,6 +250,8 @@ Item {
                                         }
                                     }
                                     AbracaSpinBox {
+                                        Layout.column: UI.isMobile ? 1 : 2
+                                        Layout.row: UI.isMobile ? 1 : 0
                                         enabled: manualAltitudeSwitch.checked || settingsBackend.locationSourceModel.currentIndex === 1
                                         stepSize: 10
                                         from: 0

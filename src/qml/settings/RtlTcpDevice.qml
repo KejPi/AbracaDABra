@@ -187,119 +187,123 @@ Item {
             isVertical: false
             Layout.topMargin: UI.standardMargin
             Layout.bottomMargin: 2*UI.standardMargin
-        }
+        }    
         AbracaGroupBox {
             id: expertGroupBox
             title: qsTr("Expert settings")
             enabled: settingsBackend.isRtlTcpControlEnabled
             Layout.fillWidth: true
-            GridLayout {
-                id: expertSettingsLayout
-                // anchors.fill: parent:
-                anchors.top: parent.top
-                anchors.horizontalCenter: parent.horizontalCenter
-                columns: 3
-                columnSpacing: appUI.isPortraitView ? UI.standardMargin : 30
-                readonly property bool showIcon: mainItem.width < UI.narrowViewWidth
+            Item {
+                width: expertGroupBox.width
+                implicitHeight: expertSettingsLayout.implicitHeight
+                GridLayout {
+                    id: expertSettingsLayout
+                    anchors.top: parent.top
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: Math.min(expertGroupBox.width, implicitWidth)
+                    columns: 3
+                    columnSpacing: appUI.isPortraitView ? UI.standardMargin : 30
+                    readonly property bool showIcon: mainItem.width < UI.narrowViewWidth
 
-                AbracaLabel {
-                    text: qsTr("SW AGC level threshold:")
-                }
-                AbracaSpinBox {
-                    id: agcThrSpinBox
-                    Layout.fillWidth: true
-                    from: 0
-                    to: 127
-                    stepSize: 1
-                    value: settingsBackend.rtlTcpAgcLevelThr
-                    onValueChanged: if (settingsBackend.rtlTcpAgcLevelThr !== value) {
-                        settingsBackend.rtlTcpAgcLevelThr = value;
+                    AbracaLabel {
+                        text: qsTr("SW AGC level threshold:")
                     }
-                    editable: true
-                    specialValue: 0
-                    specialValueString: qsTr("Default")
-                }
-                AbracaButton {
-                    Layout.fillWidth: true
-                    Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
-                    // Layout.minimumWidth: implicitWidth
-                    text: qsTr("Set default")
-                    icon {
-                        source: UI.imagesUrl + "reload.svg"
-                        width: UI.iconSize
-                        height: UI.iconSize
-                        color: enabled ? UI.colors.icon : UI.colors.iconDisabled
-                    }
-                    display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
-                    enabled: settingsBackend.rtlTcpAgcLevelThr > 0
-                    onClicked: settingsBackend.rtlTcpAgcLevelThr = 0
-                }
-                AbracaLabel {
-                    text: qsTr("Frequency correction:")
-                }
-                AbracaSpinBox {
-                    id: freqCorrSpinBox
-                    Layout.fillWidth: true
-                    from: -300
-                    to: 300
-                    stepSize: 1
-                    value: settingsBackend.rtlTcpFreqCorrection
-                    onValueChanged: if (settingsBackend.rtlTcpFreqCorrection !== value) {
-                        settingsBackend.rtlTcpFreqCorrection = value;
-                    }
-                    editable: true
-                    suffix: " PPM"
-                }
-                AbracaButton {
-                    Layout.fillWidth: true
-                    Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
-                    // Layout.minimumWidth: implicitWidth
-                    text: qsTr("Reset")
-                    icon {
-                        source: UI.imagesUrl + "reload.svg"
-                        width: UI.iconSize
-                        height: UI.iconSize
-                        color: enabled ? UI.colors.icon : UI.colors.iconDisabled
-                    }
-                    display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
-                    enabled: settingsBackend.rtlTcpFreqCorrection !== 0
-                    onClicked: settingsBackend.rtlTcpFreqCorrection = 0
-                }
-                AbracaLabel {
-                    text: qsTr("RF level correction:")
-                }
-                AbracaDoubleSpinBox {
-                    id: rfLevelCorrSpinBox
-                    Layout.fillWidth: true
-                    stepSizeReal: 1.0
-                    fromReal: -50.0
-                    toReal: 50.0
-                    realValue: settingsBackend.rtlTcpRfLevelCorrection
-                    onValueChanged: {
-                        var newReal = rfLevelCorrSpinBox.valueToReal();
-                        if (settingsBackend.rtlTcpRfLevelCorrection !== newReal) {
-                            settingsBackend.rtlTcpRfLevelCorrection = newReal;
+                    AbracaSpinBox {
+                        id: agcThrSpinBox
+                        Layout.fillWidth: true
+                        from: 0
+                        to: 127
+                        stepSize: 1
+                        value: settingsBackend.rtlTcpAgcLevelThr
+                        onValueChanged: if (settingsBackend.rtlTcpAgcLevelThr !== value) {
+                            settingsBackend.rtlTcpAgcLevelThr = value;
                         }
+                        editable: true
+                        specialValue: 0
+                        specialValueString: qsTr("Default")
                     }
-                    editable: true
-                    suffix: " dB"
-                }
-                AbracaButton {
-                    id: rfLevelCorrResetButton
-                    Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
-                    // Layout.minimumWidth: implicitWidth
-                    text: qsTr("Reset")
-                    icon {
-                        source: UI.imagesUrl + "reload.svg"
-                        width: UI.iconSize
-                        height: UI.iconSize
-                        color: enabled ? UI.colors.icon : UI.colors.iconDisabled
+                    AbracaButton {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
+                        // Layout.minimumWidth: implicitWidth
+                        text: qsTr("Set default")
+                        icon {
+                            source: UI.imagesUrl + "reload.svg"
+                            width: UI.iconSize
+                            height: UI.iconSize
+                            color: enabled ? UI.colors.icon : UI.colors.iconDisabled
+                        }
+                        display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
+                        enabled: settingsBackend.rtlTcpAgcLevelThr > 0
+                        onClicked: settingsBackend.rtlTcpAgcLevelThr = 0
                     }
-                    display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
-                    enabled: settingsBackend.rtlTcpRfLevelCorrection !== 0.0
-                    onClicked: settingsBackend.rtlTcpRfLevelCorrection = 0.0
+                    AbracaLabel {
+                        text: qsTr("Frequency correction:")
+                    }
+                    AbracaSpinBox {
+                        id: freqCorrSpinBox
+                        Layout.fillWidth: true
+                        from: -300
+                        to: 300
+                        stepSize: 1
+                        value: settingsBackend.rtlTcpFreqCorrection
+                        onValueChanged: if (settingsBackend.rtlTcpFreqCorrection !== value) {
+                            settingsBackend.rtlTcpFreqCorrection = value;
+                        }
+                        editable: true
+                        suffix: " PPM"
+                    }
+                    AbracaButton {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
+                        // Layout.minimumWidth: implicitWidth
+                        text: qsTr("Reset")
+                        icon {
+                            source: UI.imagesUrl + "reload.svg"
+                            width: UI.iconSize
+                            height: UI.iconSize
+                            color: enabled ? UI.colors.icon : UI.colors.iconDisabled
+                        }
+                        display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
+                        enabled: settingsBackend.rtlTcpFreqCorrection !== 0
+                        onClicked: settingsBackend.rtlTcpFreqCorrection = 0
+                    }
+                    AbracaLabel {
+                        text: qsTr("RF level correction:")
+                    }
+                    AbracaDoubleSpinBox {
+                        id: rfLevelCorrSpinBox
+                        Layout.fillWidth: true
+                        stepSizeReal: 1.0
+                        fromReal: -50.0
+                        toReal: 50.0
+                        realValue: settingsBackend.rtlTcpRfLevelCorrection
+                        onValueChanged: {
+                            var newReal = rfLevelCorrSpinBox.valueToReal();
+                            if (settingsBackend.rtlTcpRfLevelCorrection !== newReal) {
+                                settingsBackend.rtlTcpRfLevelCorrection = newReal;
+                            }
+                        }
+                        editable: true
+                        suffix: " dB"
+                    }
+                    AbracaButton {
+                        id: rfLevelCorrResetButton
+                        Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
+                        // Layout.minimumWidth: implicitWidth
+                        text: qsTr("Reset")
+                        icon {
+                            source: UI.imagesUrl + "reload.svg"
+                            width: UI.iconSize
+                            height: UI.iconSize
+                            color: enabled ? UI.colors.icon : UI.colors.iconDisabled
+                        }
+                        display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
+                        enabled: settingsBackend.rtlTcpRfLevelCorrection !== 0.0
+                        onClicked: settingsBackend.rtlTcpRfLevelCorrection = 0.0
+                    }
                 }
             }
-        }
+        }            
     }
 }

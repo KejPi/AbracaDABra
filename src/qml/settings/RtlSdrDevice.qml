@@ -202,7 +202,6 @@ Item {
                     columns: 3
                     columnSpacing: appUI.isPortraitView ? UI.standardMargin : 30
                     readonly property bool showIcon: mainItem.width < UI.narrowViewWidth
-
                     AbracaLabel {
                         text: qsTr("Bandwidth:")
                     }
@@ -270,7 +269,6 @@ Item {
                     }
                     AbracaLabel {
                         text: qsTr("Frequency correction:")
-
                     }
                     AbracaSpinBox {
                         id: freqCorrSpinBox
@@ -286,6 +284,7 @@ Item {
                         suffix: " PPM"
                     }
                     AbracaButton {
+                        id: freqCorrResetButton
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
@@ -313,7 +312,10 @@ Item {
                         }
                         visible: settingsBackend.haveRtlSdrOldDabDriver
                     }
-                    Item {visible: settingsBackend.haveRtlSdrOldDabDriver}
+                    Item {
+                        Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : freqCorrResetButton.implicitWidth
+                        visible: settingsBackend.haveRtlSdrOldDabDriver
+                    }
                     AbracaLabel {
                         text: qsTr("RF level correction:")
                         visible: settingsBackend.haveRtlSdrOldDabDriver
