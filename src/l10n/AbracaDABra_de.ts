@@ -5882,7 +5882,7 @@ Bitte den Speicherort auswählen und Rechte gewähren.</translation>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="132"/>
         <source>Hide progress when completed</source>
-        <translation>Versteckte Fortschritt wenn beendet</translation>
+        <translation type="unfinished">Verstecke Fortschritt wenn beendet</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="152"/>
