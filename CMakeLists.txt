@@ -22,6 +22,8 @@ option (USE_SYSTEM_LIBUSB       "Use system provided libusb"          ON)
 option (USE_SYSTEM_FAAD         "Use system provided libfaad"         ON)
 option (USE_SYSTEM_FDKAAC       "Use system provided libfdk-aac"      ON)
 option (USE_SYSTEM_MPG123       "Use system provided libmpg123"       ON)
+option (USE_SYSTEM_MP3LAME      "Use system provided libmp3lame"      ON)
+option (USE_SYSTEM_FTXUI        "Use system provided FTXUI"           ON)
 option (USE_SYSTEM_PORTAUDIO    "Use system provided portaudio"       ON)
 option (USE_SYSTEM_AIRSPY       "Use system provided airspy lib"      ON)
 option (USE_SYSTEM_SOAPYSDR     "Use system provided SoapySDR lib"    ON)
@@ -109,6 +111,8 @@ if(WIN32 OR (APPLE AND APPLE_APP_BUNDLE) OR ANDROID)
     set(USE_SYSTEM_FAAD         OFF)
     set(USE_SYSTEM_FDKAAC       OFF)
     set(USE_SYSTEM_MPG123       OFF)
+    set(USE_SYSTEM_MP3LAME      OFF)
+    set(USE_SYSTEM_FTXUI        OFF)
     set(USE_SYSTEM_PORTAUDIO    OFF)
     set(USE_SYSTEM_AIRSPY       OFF)
     set(USE_SYSTEM_SOAPYSDR     OFF)
@@ -120,7 +124,7 @@ if(ANDROID)
     set(USE_PORTAUDIO OFF)
     set(SOAPYSDR OFF)
     set(RARTTCP OFF)
-    
+
     # For Android cross-compilation, add external libs to CMAKE_FIND_ROOT_PATH
     # This allows find_library to locate Android ARM libraries
     list(APPEND CMAKE_FIND_ROOT_PATH ${EXTERNAL_LIBS_DIR})
@@ -460,6 +464,74 @@ else(USE_SYSTEM_MPG123)
 endif (USE_SYSTEM_MPG123)
 
 #########################################################
+## MP3LAME (optional - used by AbracaDABra-cli to encode its live web-stream
+## as MP3 for standard <audio> playback / Icecast-style clients. Not required
+## for the main GUI application; if not found, the CLI falls back to raw PCM
+## streaming.)
+if (NOT ANDROID)
+    if (USE_SYSTEM_MP3LAME)
+        find_library (LIBMP3LAME_LINK_LIBRARIES mp3lame)
+        find_path(LIBMP3LAME_INCLUDE_DIRS lame/lame.h)
+        if (NOT WIN32)
+            pkg_search_module (LIBMP3LAME mp3lame)
+        endif()
+        if (NOT LIBMP3LAME_LINK_LIBRARIES)
+            # not found in system -> trying ${EXTERNAL_LIBS_DIR}
+            find_library(LIBMP3LAME_LINK_LIBRARIES mp3lame PATHS ${EXTERNAL_LIBS_DIR}/lib)
+            find_path(LIBMP3LAME_INCLUDE_DIRS lame/lame.h PATHS ${EXTERNAL_LIBS_DIR}/include)
+
+            if (LIBMP3LAME_LINK_LIBRARIES)
+                message (STATUS "libmp3lame found: ${LIBMP3LAME_LINK_LIBRARIES}")
+                set(HAVE_MP3LAME ON)
+            else(LIBMP3LAME_LINK_LIBRARIES)
+                message (STATUS "libmp3lame not found. CLI web stream will fall back to raw PCM.")
+                set(HAVE_MP3LAME OFF)
+            endif()
+        else()
+            message (STATUS "libmp3lame found: ${LIBMP3LAME_LINK_LIBRARIES}")
+            set(HAVE_MP3LAME ON)
+        endif()
+    else(USE_SYSTEM_MP3LAME)
+        find_library(LIBMP3LAME_LINK_LIBRARIES mp3lame PATHS ${EXTERNAL_LIBS_DIR}/lib NO_DEFAULT_PATH)
+        find_path(LIBMP3LAME_INCLUDE_DIRS lame/lame.h PATHS ${EXTERNAL_LIBS_DIR}/include NO_DEFAULT_PATH)
+        if (LIBMP3LAME_LINK_LIBRARIES)
+            message (STATUS "libmp3lame found: ${LIBMP3LAME_LINK_LIBRARIES}")
+            set(HAVE_MP3LAME ON)
+        else()
+            message (STATUS "libmp3lame not found. CLI web stream will fall back to raw PCM.")
+            set(HAVE_MP3LAME OFF)
+        endif()
+    endif (USE_SYSTEM_MP3LAME)
+else(NOT ANDROID)
+    set(HAVE_MP3LAME OFF)
+endif(NOT ANDROID)
+
+#########################################################
+## FTXUI (optional - used by AbracaDABra-cli to show an interactive terminal
+## dashboard instead of the web UI when --bind/--port are not given. If not
+## found, the CLI falls back to plain log output in that case.)
+if (NOT ANDROID)
+    if (USE_SYSTEM_FTXUI)
+        find_package(ftxui CONFIG QUIET)
+        if (NOT ftxui_FOUND)
+            find_package(ftxui CONFIG QUIET PATHS ${EXTERNAL_LIBS_DIR} NO_DEFAULT_PATH)
+        endif()
+    else(USE_SYSTEM_FTXUI)
+        find_package(ftxui CONFIG QUIET PATHS ${EXTERNAL_LIBS_DIR} NO_DEFAULT_PATH)
+    endif (USE_SYSTEM_FTXUI)
+
+    if (ftxui_FOUND)
+        message (STATUS "FTXUI found")
+        set(HAVE_FTXUI ON)
+    else()
+        message (STATUS "FTXUI not found. CLI interactive terminal UI will not be available.")
+        set(HAVE_FTXUI OFF)
+    endif()
+else(NOT ANDROID)
+    set(HAVE_FTXUI OFF)
+endif(NOT ANDROID)
+
+#########################################################
 ## PORTAUDIO
 if (USE_PORTAUDIO)
     if (USE_SYSTEM_PORTAUDIO)
@@ -631,7 +703,7 @@ else()
     # this is required fro dock menu on macos
     set(HAVE_QTWIDGETS ON)
     find_package(QT NAMES Qt6 COMPONENTS Widgets REQUIRED)
-    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)    
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
     if(UNIX AND NOT APPLE AND NOT ANDROID)
         find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS DBus)
@@ -641,7 +713,7 @@ else()
         else()
             message(STATUS "Linux DBus support not found. To enable, install Qt DBus")
         endif()
-    endif()    
+    endif()
 endif()
 
 # Android OpenSSL integration (must be after Qt packages are found)
@@ -654,7 +726,7 @@ if(ANDROID)
             set(ANDROID_OPENSSL_DIR "${ANDROID_SDK_ROOT}/android_openssl")
         endif()
     endif()
-    
+
     if(ANDROID_OPENSSL_DIR AND EXISTS "${ANDROID_OPENSSL_DIR}/android_openssl.cmake")
         message(STATUS "Including Android OpenSSL from: ${ANDROID_OPENSSL_DIR}")
         # Ensure Qt6_VERSION is available for android_openssl.cmake version detection
@@ -693,7 +765,7 @@ else ()
     install(TARGETS ${TARGET})
     #install(FILES ${qm_files} DESTINATION ${INSTALL_EXAMPLEDIR})
 
-    if(UNIX AND NOT APPLE)        
+    if(UNIX AND NOT APPLE)
         include(GNUInstallDirs)
         INSTALL (FILES ${PROJECT_SOURCE_DIR}/src/resources/AbracaDABra.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications/ RENAME ${TARGET}.desktop)
         INSTALL (FILES ${PROJECT_SOURCE_DIR}/src/resources/appIcon-linux-512x512.png DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps/ RENAME ${TARGET}.png)
@@ -717,4 +789,3 @@ if(NOT TARGET uninstall)
   add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 endif()
-

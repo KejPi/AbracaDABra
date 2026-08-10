@@ -84,6 +84,28 @@ Application supports following keyboard shortcuts for navigation and actions
 
 AbracaDABra shows flat service list according to <a href="https://www.etsi.org/deliver/etsi_ts/103100_103199/103176/02.04.01_60/ts_103176v020401p.pdf">TS 103 176</a>. Besides that it can display also so hiearchical service tree with ensemble names and audio services available in the ensembles. Please note that data services are not shown. Both views can be used to select audio service and toggle favorite by clicking on star icon. Service list supports filtering functionality to search for service. This feture is triggered by keyboard shortcut `⌘ F` or`Ctrl+F` or by starting to type on the keyboard (type-to-search) when the service list has an active focus on desktop. On Android it is triggered by dragging the list down from the top. Service tree on the other hand allows to delete ensemble with all its services from the list. This feature is triggered by dragging the ensemble name to the left or swiping left the ensemble name on Android.
 
+### AbracaDABra-cli
+There is also a cli tool available for directly listen to radio from the commandline or stream over a web UI.
+A detailed description of options and settings can be found in the help menu:
+```
+AbracaDABra-cli --help
+```
+
+Default is opening the interactive terminal UI:
+```
+AbracaDABra-cli
+```
+
+By handing over a port (and bind adress) you can enable the web UI you can open in a webbrowser:
+```
+AbracaDABra-cli -o 8080 --bind 192.168.178.13
+```
+
+If you want just listen to a dedicated service, you can also launch it in the commandline only version:
+```
+AbracaDABra-cli -c 12D --sid 0xE0D07B --commandline-only
+```
+
 ## Input devices
 
 AbracaDABra supports multiple input devices, some of them are optional. Device specific settings are described in this section. 
@@ -547,13 +569,16 @@ The following libraries are required:
 * portaudio (optional but recommended)
 * airspy (optional)
 * SoapySDR (optional)
+* ftxui (for tui-cli)
+* mp3lame (optional for cli)
 
 On a fresh Ubuntu 22.04 installation you can use the following commands to install all the required packages:
 
        sudo apt-get install git cmake build-essential mesa-common-dev 
        sudo apt-get install libcups2-dev libxkbcommon-x11-dev libxcb-cursor0 libxcb-cursor-dev
-       sudo apt-get install libusb-dev librtlsdr-dev libfaad2 mpg123 libmpg123-dev libfaad-dev
-       sudo apt-get install portaudio19-dev rtl-sdr    
+       sudo apt-get install libusb-dev librtlsdr-dev libfaad2 mpg123 libmpg123-dev libfaad-dev libmp3lame-dev
+       sudo apt-get install libftxui-dev
+       sudo apt-get install portaudio19-dev rtl-sdr
 
 Ubuntu 24.10 or lower does not support the version of Qt (at least 6.7.0) that is required to build the application. If you want to compile the application you should [install](https://doc.qt.io/qt-6/qt-online-installation.html) Qt using the [online installer](https://www.qt.io/download-qt-installer-oss). The following modules are sufficient to compile AbracaDABra:
 

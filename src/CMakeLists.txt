@@ -48,6 +48,12 @@ endif(HAVE_FAAD)
 if (HAVE_FDKAAC)
     set(FDKAAC_SOURCES audiodecoderfdkaac.cpp audiodecoderfdkaac.h)
 endif(HAVE_FDKAAC)
+if (HAVE_MP3LAME)
+    set(MP3ENCODER_SOURCES cli/mp3encoder.cpp cli/mp3encoder.h)
+endif(HAVE_MP3LAME)
+if (HAVE_FTXUI)
+    set(TUI_SOURCES cli/clitui.cpp cli/clitui.h)
+endif(HAVE_FTXUI)
 if (HAVE_AIRSPY)
     set(AIRSPY_SOURCES input/airspyinput.h input/airspyinput.cpp)
 endif(HAVE_AIRSPY)
@@ -56,6 +62,7 @@ if (HAVE_SOAPYSDR)
 endif(HAVE_SOAPYSDR)
 if (HAVE_PORTAUDIO)
     set(PORTAUDIO_SOURCES audiooutputpa.h audiooutputpa.cpp)
+    set(CLI_AUDIO_SOURCES cli/cliaudiooutput.h cli/cliaudiooutput.cpp)
 endif(HAVE_PORTAUDIO)
 
 
@@ -71,7 +78,7 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     ${APP_ICON_MACOSX}
     ${APP_ICON_RESOURCE_WINDOWS}
     ${APP_RESOURCE_WINDOWS}
-    ${CMAKE_CURRENT_BINARY_DIR}/config.h    
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
     ${PORTAUDIO_SOURCES}
     ${APPLE_SOURCES}
     ${WIN_SOURCES}
@@ -103,7 +110,7 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     ensemblelistitem.h
     ensemblelistitem.cpp
     servicelistitem.h
-    servicelistitem.cpp   
+    servicelistitem.cpp
 
     settings.h
 
@@ -215,7 +222,7 @@ qt_add_qml_module(${TARGET}
         qml/images/volume-0.svg
         qml/images/volume-1.svg
         qml/images/volume-2.svg
-        qml/images/volume-3.svg        
+        qml/images/volume-3.svg
         qml/images/diagonal-line-pattern.svg
         qml/images/alert.svg
         qml/images/icon-recording.svg
@@ -256,8 +263,8 @@ qt_add_qml_module(${TARGET}
 
         qml/ServiceList.qml
         qml/SignalState.qml
-        qml/Navigation.qml        
-        qml/ServiceView.qml        
+        qml/Navigation.qml
+        qml/ServiceView.qml
         qml/ContentView.qml
         qml/EnsembleInfoView.qml
         qml/EnsembleConfigDialog.qml
@@ -277,7 +284,7 @@ qt_add_qml_module(${TARGET}
         qml/MessageBox.qml
         qml/DabSignal.qml
         qml/DabSignalView.qml
-        qml/UpdateDialog.qml        
+        qml/UpdateDialog.qml
         qml/SystemTray.qml
         qml/StorageAccessDialog.qml
 
@@ -391,7 +398,7 @@ qt_add_qml_module(${TARGET}
         logbackend.cpp logbackend.h
         aboutui.h aboutui.cpp
         bandscanbackend.cpp bandscanbackend.h
-        settingsbackend.cpp settingsbackend.h        
+        settingsbackend.cpp settingsbackend.h
         soapysdrgainmodel.h soapysdrgainmodel.cpp
 
         messageboxbackend.h messageboxbackend.cpp
@@ -410,7 +417,7 @@ qt_add_qml_module(${TARGET}
         audiorec/audiorecschedulemodel.h
         audiorec/audiorecschedulemodel.cpp
         audiorec/audiorecmanager.h
-        audiorec/audiorecmanager.cpp        
+        audiorec/audiorecmanager.cpp
 
         slproxymodel.h
         slproxymodel.cpp
@@ -576,54 +583,151 @@ if(ANDROID)
     if(EXISTS "${EXTERNAL_LIBS_DIR}/lib/librtlsdr.so")
         list(APPEND ANDROID_EXTRA_LIBS "${EXTERNAL_LIBS_DIR}/lib/librtlsdr.so")
     endif()
-    
+
     # Add libusb library (required by RTL-SDR)
     if(EXISTS "${EXTERNAL_LIBS_DIR}/lib/libusb-1.0.so")
         list(APPEND ANDROID_EXTRA_LIBS "${EXTERNAL_LIBS_DIR}/lib/libusb-1.0.so")
     endif()
-    
+
     # Add other required libraries if they exist
     if(HAVE_FAAD AND EXISTS "${EXTERNAL_LIBS_DIR}/lib/libfaad.so")
         list(APPEND ANDROID_EXTRA_LIBS "${EXTERNAL_LIBS_DIR}/lib/libfaad.so")
     endif()
-    
+
     if(HAVE_FDKAAC AND EXISTS "${EXTERNAL_LIBS_DIR}/lib/libfdk-aac.so")
         list(APPEND ANDROID_EXTRA_LIBS "${EXTERNAL_LIBS_DIR}/lib/libfdk-aac.so")
     endif()
-    
+
     if(EXISTS "${EXTERNAL_LIBS_DIR}/lib/libmpg123.so")
         list(APPEND ANDROID_EXTRA_LIBS "${EXTERNAL_LIBS_DIR}/lib/libmpg123.so")
     endif()
-    
+
     # Add Airspy library if enabled
     if(HAVE_AIRSPY AND EXISTS "${EXTERNAL_LIBS_DIR}/lib/libairspy.so")
         list(APPEND ANDROID_EXTRA_LIBS "${EXTERNAL_LIBS_DIR}/lib/libairspy.so")
     endif()
-    
+
     if(ANDROID_EXTRA_LIBS)
         message(STATUS "Android extra libs: ${ANDROID_EXTRA_LIBS}")
         set_property(TARGET ${TARGET} PROPERTY QT_ANDROID_EXTRA_LIBS "${ANDROID_EXTRA_LIBS}")
     endif()
-    
+
     # Set Android package properties
     # Calculate Android version code: (((MAJOR*100)+MINOR)*100+PATCH)*1000+GIT
     # This ensures the version code increases with every release
     math(EXPR ANDROID_VERSION_CODE "(((${VER_MAJOR} * 100) + ${VER_MINOR}) * 100 + ${VER_PATCH}) * 1000 + ${VER_GIT}")
-    
+
     set_target_properties(${TARGET} PROPERTIES
         QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android"
         QT_ANDROID_VERSION_NAME "${VER_MAJOR}.${VER_MINOR}.${VER_PATCH}"
         QT_ANDROID_VERSION_CODE "${ANDROID_VERSION_CODE}"
     )
-    
+
     message(STATUS "Android version: ${VER_MAJOR}.${VER_MINOR}.${VER_PATCH} (code: ${ANDROID_VERSION_CODE})")
-    
+
     # Add OpenSSL libraries if ANDROID_OPENSSL_DIR is set
     # Must be called BEFORE qt_finalize_executable
     if(ANDROID_OPENSSL_DIR)
         add_android_openssl_libraries(${TARGET})
     endif()
-    
+
     # For Android, qt_finalize_executable must be called from the same directory as the target
     qt_finalize_executable(${TARGET})
 endif(ANDROID)
+
+#########################################################
+## Headless CLI tool (RTL-SDR / rtl_tcp only, web UI)
+## Reuses the include directories accumulated above (DAB, RTL-SDR, FAAD2/FDK-AAC, mpg123,
+## config.h binary dir, input/ and audiorec/ source dirs) since they were all registered
+## via directory-scoped include_directories() calls earlier in this file.
+if(NOT ANDROID)
+    qt_add_executable(AbracaDABra-cli
+        cli/main.cpp
+        cli/dabcliapp.h
+        cli/dabcliapp.cpp
+        cli/audiostreamer.h
+        cli/audiostreamer.cpp
+        cli/webserver.h
+        cli/webserver.cpp
+        ${MP3ENCODER_SOURCES}
+        ${TUI_SOURCES}
+        ${CLI_AUDIO_SOURCES}
+        ${LINUX_SOURCES}
+
+        ${CMAKE_CURRENT_BINARY_DIR}/config.h
+        dabtables.h
+        dabtables.cpp
+        radiocontrol.h
+        radiocontrol.cpp
+        audiofifo.h
+        audiofifo.cpp
+        audiodecoder.h
+        audiodecoder.cpp
+        ${FAAD_SOURCES}
+        ${FDKAAC_SOURCES}
+
+        audiorec/audiorecorder.h
+        audiorec/audiorecorder.cpp
+
+        androidfilehelper.h
+        androidfilehelper.cpp
+
+        data/dldecoder.h
+        data/dldecoder.cpp
+        data/mscdatagroup.h
+        data/mscdatagroup.cpp
+        data/motdecoder.h
+        data/motdecoder.cpp
+        data/motobject.h
+        data/motobject.cpp
+        data/userapplication.h
+        data/userapplication.cpp
+        data/slideshowapp.h
+        data/slideshowapp.cpp
+
+        input/inputdevice.h
+        input/inputdevice.cpp
+        input/rtlsdrinput.h
+        input/rtlsdrinput.cpp
+        input/rtltcpinput.h
+        input/rtltcpinput.cpp
+    )
+
+    target_include_directories(AbracaDABra-cli PRIVATE cli)
+
+    target_link_libraries(AbracaDABra-cli PRIVATE
+        Qt${QT_VERSION_MAJOR}::Core
+        Qt${QT_VERSION_MAJOR}::Network
+        Qt${QT_VERSION_MAJOR}::Gui
+        Qt${QT_VERSION_MAJOR}::Positioning
+    )
+    target_link_libraries(AbracaDABra-cli PRIVATE ${DAB_LINK_LIBRARIES})
+    target_link_libraries(AbracaDABra-cli PRIVATE "${RTL_SDR_LINK_LIBRARIES}")
+    target_link_libraries(AbracaDABra-cli PRIVATE "${LIBMPG123_LINK_LIBRARIES}")
+    target_link_libraries(AbracaDABra-cli PRIVATE ${ZLIB})  # needed by data/motobject.cpp for MOT decompression
+    if(HAVE_FDKAAC)
+        target_link_libraries(AbracaDABra-cli PRIVATE "${LIBFDKAAC_LINK_LIBRARIES}")
+    endif(HAVE_FDKAAC)
+    if(HAVE_FAAD)
+        target_link_libraries(AbracaDABra-cli PRIVATE "${LIBFAAD2_LINK_LIBRARIES}")
+    endif(HAVE_FAAD)
+    if(HAVE_MP3LAME)
+        target_include_directories(AbracaDABra-cli PRIVATE ${LIBMP3LAME_INCLUDE_DIRS})
+        target_link_libraries(AbracaDABra-cli PRIVATE "${LIBMP3LAME_LINK_LIBRARIES}")
+    endif(HAVE_MP3LAME)
+    if(HAVE_FTXUI)
+        target_link_libraries(AbracaDABra-cli PRIVATE ftxui::screen ftxui::dom ftxui::component)
+    endif(HAVE_FTXUI)
+    if(HAVE_PORTAUDIO)
+        target_include_directories(AbracaDABra-cli PRIVATE ${PORTAUDIO_INCLUDE_DIRS})
+        target_link_libraries(AbracaDABra-cli PRIVATE "${PORTAUDIO_LINK_LIBRARIES}")
+    endif(HAVE_PORTAUDIO)
+    if(UNIX AND HAVE_LINUX_DBUS AND Qt${QT_VERSION_MAJOR}DBus_FOUND)
+        target_link_libraries(AbracaDABra-cli PRIVATE Qt${QT_VERSION_MAJOR}::DBus)
+    endif()
+    if(WIN32)
+        target_link_libraries(AbracaDABra-cli PRIVATE ws2_32)
+    endif(WIN32)
+
+    install(TARGETS AbracaDABra-cli RUNTIME DESTINATION bin)
+endif(NOT ANDROID)
