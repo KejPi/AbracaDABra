@@ -66,6 +66,7 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override { return m_itemList.count(); }
     QHash<int, QByteArray> roleNames() const override;
     bool addItem(EPGModelItem *item);
+    int pruneOlderThan(const QDate &cutoffDate);
     ServiceListId serviceId() const;
     void setServiceId(const ServiceListId &newServiceId);
 

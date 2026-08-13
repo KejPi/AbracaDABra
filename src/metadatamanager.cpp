@@ -38,11 +38,17 @@
 #include <QRegularExpression>
 #include <QStandardPaths>
 #include <QThread>
+#include <QTimer>
 
 #include "epgtime.h"
 #include "spiapp.h"
 
 Q_LOGGING_CATEGORY(metadataManager, "MetadataManager", QtInfoMsg)
+
+// delay between processing ensembles during bulk SI/EPG fetch (triggered when RadioDNS becomes
+// available) to avoid flooding SPIApp's RadioDNS/download queue when the service list contains
+// many ensembles/services
+static constexpr int METADATA_MANAGER_ENSEMBLE_FETCH_DELAY_MS = 1000;
 
 MetadataManager::MetadataManager(const ServiceList *serviceList, QObject *parent)
     : QObject(parent),
@@ -355,6 +361,11 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
                         {
                             valid = parseProgramme(child, id) || valid;
                             child = child.nextSiblingElement("programme");
+                        }
+
+                        if (m_epgList.value(id, nullptr) != nullptr)
+                        {  // bound memory growth: drop past programme events once new data is added
+                            m_epgList[id]->pruneOlderThan(EPGTime::getInstance()->currentDate().addDays(-1));
                         }
 
                         if (!m_isLoadingFromCache && valid)
@@ -927,39 +938,131 @@ void MetadataManager::loadEpg(const ServiceListId &servId, const QList<uint32_t>
 
 void MetadataManager::getSiData()
 {
-    for (ServiceListConstIterator sIt = m_serviceList->serviceListBegin(); sIt != m_serviceList->serviceListEnd(); ++sIt)
+    if (m_siFetchInProgress)
+    {  // bulk SI fetch already running, do not stack another full pass on top of it
+        return;
+    }
+
+    m_siFetchEnsembleQueue.clear();
+    m_siFetchProcessedServices.clear();
+    for (EnsembleListConstIterator eIt = m_serviceList->ensembleListBegin(); eIt != m_serviceList->ensembleListEnd(); ++eIt)
     {
-        QList<uint32_t> ueidList;
-        for (int e = 0; e < (*sIt)->numEnsembles(); ++e)
+        m_siFetchEnsembleQueue.append(eIt.key());
+    }
+
+    if (m_siFetchEnsembleQueue.isEmpty())
+    {
+        return;
+    }
+
+    m_siFetchInProgress = true;
+    processNextSiEnsemble();
+}
+
+void MetadataManager::processNextSiEnsemble()
+{
+    if (m_siFetchEnsembleQueue.isEmpty())
+    {
+        m_siFetchInProgress = false;
+        m_siFetchProcessedServices.clear();
+        return;
+    }
+
+    ServiceListId ensId = m_siFetchEnsembleQueue.takeFirst();
+    EnsembleListConstIterator eIt = m_serviceList->findEnsemble(ensId);
+    if (eIt != m_serviceList->ensembleListEnd())
+    {
+        const EnsembleListItem *ens = eIt.value();
+        for (int s = 0; s < ens->numServices(); ++s)
         {
-            uint32_t ueid = (*sIt)->getEnsemble(e)->id().ueid();
-            if (!ueidList.contains(ueid))
+            const ServiceListItem *serv = ens->getService(s);
+            if (nullptr == serv || m_siFetchProcessedServices.contains(serv->id()))
+            {  // service already processed for this ensemble or in a previously processed ensemble
+                continue;
+            }
+            m_siFetchProcessedServices.insert(serv->id());
+
+            QList<uint32_t> ueidList;
+            for (int e = 0; e < serv->numEnsembles(); ++e)
             {
-                ueidList.append(ueid);
+                uint32_t ueid = serv->getEnsemble(e)->id().ueid();
+                if (!ueidList.contains(ueid))
+                {
+                    ueidList.append(ueid);
+                }
+            }
+            for (const auto &ueid : ueidList)
+            {
+                emit getSI(serv->id(), ueid);
             }
         }
-        for (const auto &ueid : ueidList)
-        {
-            emit getSI((*sIt)->id(), ueid);
-        }
     }
+
+    // process remaining ensembles one at a time to avoid flooding the RadioDNS/download queue
+    QTimer::singleShot(METADATA_MANAGER_ENSEMBLE_FETCH_DELAY_MS, this, [this]() { processNextSiEnsemble(); });
 }
 
 void MetadataManager::getEpgData()
 {
-    for (ServiceListConstIterator sIt = m_serviceList->serviceListBegin(); sIt != m_serviceList->serviceListEnd(); ++sIt)
-    {
-        QList<uint32_t> ueidList;
-        for (int e = 0; e < (*sIt)->numEnsembles(); ++e)
-        {
-            uint32_t ueid = (*sIt)->getEnsemble(e)->id().ueid();
-            if (!ueidList.contains(ueid))
-            {
-                ueidList.append(ueid);
-            }
-        }
-        loadEpg((*sIt)->id(), ueidList);
+    if (m_epgFetchInProgress)
+    {  // bulk EPG fetch already running, do not stack another full pass on top of it
+        return;
     }
+
+    m_epgFetchEnsembleQueue.clear();
+    m_epgFetchProcessedServices.clear();
+    for (EnsembleListConstIterator eIt = m_serviceList->ensembleListBegin(); eIt != m_serviceList->ensembleListEnd(); ++eIt)
+    {
+        m_epgFetchEnsembleQueue.append(eIt.key());
+    }
+
+    if (m_epgFetchEnsembleQueue.isEmpty())
+    {
+        return;
+    }
+
+    m_epgFetchInProgress = true;
+    processNextEpgEnsemble();
+}
+
+void MetadataManager::processNextEpgEnsemble()
+{
+    if (m_epgFetchEnsembleQueue.isEmpty())
+    {
+        m_epgFetchInProgress = false;
+        m_epgFetchProcessedServices.clear();
+        return;
+    }
+
+    ServiceListId ensId = m_epgFetchEnsembleQueue.takeFirst();
+    EnsembleListConstIterator eIt = m_serviceList->findEnsemble(ensId);
+    if (eIt != m_serviceList->ensembleListEnd())
+    {
+        const EnsembleListItem *ens = eIt.value();
+        for (int s = 0; s < ens->numServices(); ++s)
+        {
+            const ServiceListItem *serv = ens->getService(s);
+            if (nullptr == serv || m_epgFetchProcessedServices.contains(serv->id()))
+            {  // service already processed for this ensemble or in a previously processed ensemble
+                continue;
+            }
+            m_epgFetchProcessedServices.insert(serv->id());
+
+            QList<uint32_t> ueidList;
+            for (int e = 0; e < serv->numEnsembles(); ++e)
+            {
+                uint32_t ueid = serv->getEnsemble(e)->id().ueid();
+                if (!ueidList.contains(ueid))
+                {
+                    ueidList.append(ueid);
+                }
+            }
+            loadEpg(serv->id(), ueidList);
+        }
+    }
+
+    // process remaining ensembles one at a time to avoid flooding the RadioDNS/download queue
+    QTimer::singleShot(METADATA_MANAGER_ENSEMBLE_FETCH_DELAY_MS, this, [this]() { processNextEpgEnsemble(); });
 }
 
 void MetadataManager::onEnsembleInformation(const RadioControlEnsemble &ens)

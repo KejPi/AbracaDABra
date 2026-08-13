@@ -99,6 +99,15 @@ private:
     QNetworkAccessManager *m_networkManager;
     mutable QSet<QString> m_pendingFlagDownloads;
 
+    // bulk SI/EPG fetch is spread over ensembles (with a delay in between) to avoid flooding
+    // the RadioDNS/download queue when the service list contains many ensembles/services
+    QList<ServiceListId> m_siFetchEnsembleQueue;
+    QSet<ServiceListId> m_siFetchProcessedServices;
+    bool m_siFetchInProgress = false;
+    QList<ServiceListId> m_epgFetchEnsembleQueue;
+    QSet<ServiceListId> m_epgFetchProcessedServices;
+    bool m_epgFetchInProgress = false;
+
     bool parseProgramme(const QDomElement &element, const ServiceListId &id);
     void parseDescription(const QDomElement &element, EPGModelItem *progItem);
 
@@ -106,6 +115,8 @@ private:
 
     void loadEpg(const ServiceListId &servId, const QList<uint32_t> &ueidList);
     void addEpgDate(const QDate &date);
+    void processNextSiEnsemble();
+    void processNextEpgEnsemble();
 };
 
 #endif  // METADATAMANAGER_H
