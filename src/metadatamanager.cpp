@@ -357,6 +357,11 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
                             child = child.nextSiblingElement("programme");
                         }
 
+                        if (m_epgList.value(id, nullptr) != nullptr)
+                        {  // bound memory growth: drop past programme events once new data is added
+                            m_epgList[id]->pruneOlderThan(EPGTime::getInstance()->currentDate().addDays(-3));
+                        }
+
                         if (!m_isLoadingFromCache && valid)
                         {  // save parsed file to the cache
                             // "20140805_e1c221.0_PI.xml"

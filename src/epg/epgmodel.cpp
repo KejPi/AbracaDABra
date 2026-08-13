@@ -192,3 +192,22 @@ bool EPGModel::addItem(EPGModelItem *item)
     }
     return false;
 }
+
+int EPGModel::pruneOlderThan(const QDate &cutoffDate)
+{  // bound memory growth: past programme events are never needed again once they are over
+    int numRemoved = 0;
+    for (int row = m_itemList.size() - 1; row >= 0; --row)
+    {
+        EPGModelItem *item = m_itemList.at(row);
+        if (item->endTime().date() < cutoffDate)
+        {
+            beginRemoveRows(QModelIndex(), row, row);
+            m_startTimeList.remove(item->startTime());
+            m_itemList.removeAt(row);
+            endRemoveRows();
+            delete item;
+            ++numRemoved;
+        }
+    }
+    return numRemoved;
+}
