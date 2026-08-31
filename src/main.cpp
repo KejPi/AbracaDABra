@@ -33,6 +33,8 @@
 
 #include "application.h"
 #include "config.h"
+#include "cli/clioptions.h"
+#include "cli/clirunner.h"
 
 #if HAVE_QTWIDGETS
 #include <QApplication>
@@ -40,16 +42,52 @@
 #include <QGuiApplication>
 #endif
 
+namespace
+{
+// Cheap pre-scan of the raw arguments for "--cli", done before QApplication/QGuiApplication is
+// constructed: if headless CLI mode is requested we need "offscreen" as the QPA platform (used
+// headlessly by SlideShowApp's QPixmap-based MOT slide decoding) set *before* the app object is
+// created. A full QCommandLineParser can't run yet at this point since it needs a QCoreApplication.
+bool argvRequestsCliMode(int argc, char *argv[])
+{
+    for (int i = 1; i < argc; ++i)
+    {
+        if (QString::fromLocal8Bit(argv[i]) == QLatin1String("--cli"))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+}  // namespace
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setApplicationName("AbracaDABra");
     QCoreApplication::setApplicationVersion(PROJECT_VER);
+
+    const bool cliMode = argvRequestsCliMode(argc, argv);
+    if (cliMode && qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM"))
+    {
+        qputenv("QT_QPA_PLATFORM", "offscreen");
+    }
 
 #if HAVE_QTWIDGETS
     QApplication guiApp(argc, argv);
 #else
     QGuiApplication guiApp(argc, argv);
 #endif
+
+    if (cliMode)
+    {
+        CliConfig cliConfig;
+        int exitCode = parseCliArguments(guiApp, &cliConfig);
+        if (exitCode >= 0)
+        {
+            return exitCode;
+        }
+        return runCliApplication(guiApp, cliConfig);
+    }
 #if 0
     // Load and set custom fonts
     // int fontId = QFontDatabase::addApplicationFont(":/resources/fonts/OpenSans-VariableFont.ttf");
@@ -96,6 +134,11 @@ int main(int argc, char *argv[])
         parser.setApplicationDescription(QObject::tr("Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)"));
         parser.addHelpOption();
         parser.addVersionOption();
+
+        QCommandLineOption cliOption(
+            "cli", QObject::tr("Run in headless CLI mode (web UI / terminal dashboard / commandline-only) instead of the GUI. "
+                                "Run with --cli --help to see CLI-specific options."));
+        parser.addOption(cliOption);
 
         // An option with a value
         QCommandLineOption iniFileOption(QStringList() << "i" << "ini",
