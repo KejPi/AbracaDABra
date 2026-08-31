@@ -1100,7 +1100,7 @@ void ScannerBackend::scanStep()
     if (m_frequency != m_channelIt.key())
     {
         m_frequency = m_channelIt.key();
-        m_numServicesFound = 0;
+        m_servicesSet.clear();
         m_rfLevel = NAN;
         m_ensemble.reset();
         m_state = ScannerState::WaitForTune;
@@ -1195,11 +1195,11 @@ void ScannerBackend::onEnsembleInformation(const RadioControlEnsemble &ens)
     }
 }
 
-void ScannerBackend::onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &)
+void ScannerBackend::onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &comp)
 {
     if (m_state > ScannerState::WaitForEnsemble)
     {
-        m_numServicesFound += 1;
+        m_servicesSet.insert(ServiceListId(comp));
     }
 }
 
@@ -1250,7 +1250,7 @@ void ScannerBackend::storeEnsembleData(const RadioControlTIIData &tiiData, const
 
         const bool ueidChanged = !baseline.hasData || (baseline.ueid != currentEnsId.ueid());
         const bool labelChanged = baseline.hasData && (baseline.ensLabel != m_ensemble.label);
-        const bool numServicesChanged = baseline.hasData && (baseline.numServices != m_numServicesFound);
+        const bool numServicesChanged = baseline.hasData && (baseline.numServices != m_servicesSet.size());
 
         QList<dabsdrTii_t> newTiiCodes;
         for (const auto &tii : tiiData.idList)
@@ -1266,7 +1266,7 @@ void ScannerBackend::storeEnsembleData(const RadioControlTIIData &tiiData, const
         if (ueidChanged || labelChanged || numServicesChanged || newTiiDetected)
         {
             const QList<dabsdrTii_t> &toStore = (ueidChanged || labelChanged || numServicesChanged) ? tiiData.idList : newTiiCodes;
-            m_model->appendEnsData(QDateTime::currentDateTime(), toStore, currentEnsId, m_ensemble.label, conf, csvConf, m_numServicesFound,
+            m_model->appendEnsData(QDateTime::currentDateTime(), toStore, currentEnsId, m_ensemble.label, conf, csvConf, m_servicesSet.size(),
                                    m_snr / m_snrCntr, m_rfLevel);
             // qCInfo(scanner) << "Incremental: storing" << toStore.size() << "row(s) @" << m_frequency << "ueidChanged" << ueidChanged <<
             // "labelChanged"
@@ -1281,7 +1281,7 @@ void ScannerBackend::storeEnsembleData(const RadioControlTIIData &tiiData, const
         baseline.hasData = true;
         baseline.ueid = currentEnsId.ueid();
         baseline.ensLabel = m_ensemble.label;
-        baseline.numServices = m_numServicesFound;
+        baseline.numServices = m_servicesSet.size();
         if (ueidChanged)
         {
             // UEID changed — old TII codes belong to a different ensemble, start fresh
@@ -1295,7 +1295,7 @@ void ScannerBackend::storeEnsembleData(const RadioControlTIIData &tiiData, const
     else
     {
         m_model->appendEnsData(QDateTime::currentDateTime(), tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf,
-                               m_numServicesFound, m_snr / m_snrCntr, m_rfLevel);
+                               m_servicesSet.size(), m_snr / m_snrCntr, m_rfLevel);
     }
 
     int lastNewRow = m_model->rowCount() - 1;

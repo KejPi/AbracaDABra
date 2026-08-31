@@ -133,7 +133,7 @@ public:
     void onTuneDone(uint32_t freq);
     void onSignalState(uint8_t sync, float snr);
     void onEnsembleInformation(const RadioControlEnsemble &ens) override;
-    void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
+    void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &comp);
     void onTiiData(const RadioControlTIIData &data) override;
     void onEnsembleConfigurationAndCSV(const QString &config, const QString &csvString);
     void onInputDeviceError(const InputDevice::ErrorCode);
@@ -197,7 +197,7 @@ private:
 
     uint32_t m_frequency;
     RadioControlEnsemble m_ensemble;
-    int m_numServicesFound = 0;
+    QSet<ServiceListId> m_servicesSet;  // set of all known services for current channel
     dabChannelList_t::ConstIterator m_channelIt;
     int m_numSelectedChannels = 0;
     uint m_tiiCntr = 0;
