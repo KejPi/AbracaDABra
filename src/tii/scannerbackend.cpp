@@ -1310,14 +1310,6 @@ void ScannerBackend::storeEnsembleData(const RadioControlTIIData &tiiData, const
         m_isTiiActive = false;
     }
 
-    // handle selection
-    int id = -1;
-    QModelIndexList selectedList = m_tableSelectionModel->selectedRows();
-    if (!selectedList.isEmpty())
-    {
-        QModelIndex currentIndex = selectedList.at(0);
-    }
-
     // forcing update of UI
     onSelectionChanged(QItemSelection(), QItemSelection());
 

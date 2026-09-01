@@ -332,7 +332,7 @@ Item {
                 selectionModel: scannerBackend.tableSelectionModel
                 shrinkColumnIndex: model.rfLevelFilter ? TxTableModel.ColLocation-1 : TxTableModel.ColLocation
                 onShrinkColumnIndexChanged: {
-                    autoAdjustColumns();
+                    scheduleRecalcColumns();
                 }
                 contextMenuModel: scannerBackend.contextMenuModel
                 sortingEnabled: true

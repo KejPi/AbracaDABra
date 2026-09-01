@@ -30,6 +30,20 @@
 
 // ========== TxTableProxyModel ==========
 
+namespace
+{
+// data(ItemRole) returns the item by value through a QVariant - too expensive for the sort/filter hot path
+const TxTableModelItem *sourceItem(const QAbstractItemModel *model, int row)
+{
+    const TxTableModel *txModel = qobject_cast<const TxTableModel *>(model);
+    if (txModel == nullptr || row < 0 || row >= txModel->rowCount())
+    {
+        return nullptr;
+    }
+    return &txModel->itemAt(row);
+}
+}  // namespace
+
 TxTableProxyModel::TxTableProxyModel(QObject *parent) : QSortFilterProxyModel(parent)
 {
     connect(this, &QSortFilterProxyModel::rowsInserted, this, &TxTableProxyModel::rowCountChanged);
@@ -114,8 +128,14 @@ bool TxTableProxyModel::lessThan(const QModelIndex &left, const QModelIndex &rig
 {
     int sourceCol = left.column();
 
-    TxTableModelItem itemL = sourceModel()->data(left, TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
-    TxTableModelItem itemR = sourceModel()->data(right, TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
+    const TxTableModelItem *itemLptr = sourceItem(sourceModel(), left.row());
+    const TxTableModelItem *itemRptr = sourceItem(sourceModel(), right.row());
+    if (itemLptr == nullptr || itemRptr == nullptr)
+    {
+        return true;
+    }
+    const TxTableModelItem &itemL = *itemLptr;
+    const TxTableModelItem &itemR = *itemRptr;
 
     switch (sourceCol)
     {
@@ -253,8 +273,8 @@ bool TxTableProxyModel::filterAcceptsRow(int source_row, const QModelIndex &sour
     }
     else
     {
-        auto item = sourceModel()->data(idx, TxTableModel::TxTableModelRoles::ItemRole).value<TxTableModelItem>();
-        return sourceModel()->data(idx, TxTableModel::TxTableModelRoles::IsActiveRole).toBool() == true || item.hasTxData();
+        const TxTableModelItem *item = sourceItem(sourceModel(), source_row);
+        return sourceModel()->data(idx, TxTableModel::TxTableModelRoles::IsActiveRole).toBool() == true || (item != nullptr && item->hasTxData());
     }
     return true;
 }

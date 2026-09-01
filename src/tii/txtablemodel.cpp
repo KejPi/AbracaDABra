@@ -680,6 +680,9 @@ void TxTableModel::removeInactive(qint64 timeoutSec)
 void TxTableModel::appendEnsData(const QDateTime &time, const QList<dabsdrTii_t> &data, const ServiceListId &ensId, const QString &ensLabel,
                                  const QString &ensConfig, const QString &ensCSV, int numServices, float snr, float rfLevel)
 {
+    QList<TxTableModelItem> newItems;
+    newItems.reserve(data.empty() ? 1 : data.size());
+
     if (!data.empty())
     {
         for (auto it = data.cbegin(); it != data.cend(); ++it)
@@ -690,16 +693,7 @@ void TxTableModel::appendEnsData(const QDateTime &time, const QList<dabsdrTii_t>
             item.setEnsConfig(ensConfig, ensCSV);
             item.setRfLevel(rfLevel);
             item.setRxTime(time);
-            if (m_loadingFromFile)
-            {
-                m_modelData.append(item);
-            }
-            else
-            {
-                beginInsertRows(QModelIndex(), m_modelData.size(), m_modelData.size());
-                m_modelData.append(item);
-                endInsertRows();
-            }
+            newItems.append(item);
         }
     }
     else
@@ -710,16 +704,18 @@ void TxTableModel::appendEnsData(const QDateTime &time, const QList<dabsdrTii_t>
         item.setEnsConfig(ensConfig, ensCSV);
         item.setRfLevel(rfLevel);
         item.setRxTime(time);
-        if (m_loadingFromFile)
-        {
-            m_modelData.append(item);
-        }
-        else
-        {
-            beginInsertRows(QModelIndex(), m_modelData.size(), m_modelData.size());
-            m_modelData.append(item);
-            endInsertRows();
-        }
+        newItems.append(item);
+    }
+
+    if (m_loadingFromFile)
+    {
+        m_modelData.append(newItems);
+    }
+    else
+    {  // single insert for the whole batch - views and proxies are updated only once
+        beginInsertRows(QModelIndex(), m_modelData.size(), m_modelData.size() + newItems.size() - 1);
+        m_modelData.append(newItems);
+        endInsertRows();
     }
 }
 

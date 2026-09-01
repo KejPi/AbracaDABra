@@ -267,6 +267,7 @@ Item {
                 }
                 cellsLeftAligned: false
                 maxColumnWidth: 200
+                hScrollBarEnabled: false
 
                 height: map.width > 3*width ? infoBox.y - map.y - 20 : Math.min(infoBox.y - map.y - 20, map.height * 0.4)
                 width: Math.min(preferedWidth, map.width - 20)
@@ -277,8 +278,7 @@ Item {
             function onTxTableColChanged() {
                 if (tiiTableLoader.item && tiiTableLoader.item.visible) {
                     backend.selectTx(-1); // deselection of transmitter
-                    tiiTableLoader.item.calculatePreferedWidth();
-                    tiiTableLoader.item.autoAdjustColumns();
+                    tiiTableLoader.item.scheduleRecalcColumns();
                 }
             }
         }

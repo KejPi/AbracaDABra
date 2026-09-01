@@ -45,6 +45,7 @@ Item {
     property bool sortingEnabled: false
     property bool cellsLeftAligned: true
     property int preferedWidth: 100
+    property bool hScrollBarEnabled: true
 
     signal doubleClickedRow(int row)
     signal populateContextMenu(int row)
@@ -65,66 +66,38 @@ Item {
 
     // when width changes, columns are adjusted automatically
     onWidthChanged: {
-        tableItem.autoAdjustColumns();
+        tableItem.scheduleRecalcColumns();
     }
     onHeightChanged: {
         // scrollbar can disappear/appear when height changes
-        tableItem.autoAdjustColumns();
+        tableItem.scheduleRecalcColumns();
     }
 
-    function calculatePreferedWidth() {
-        // compute preferred widths from headers/content
-        var totalPref = 0;          // sum of preferred widths
+    // Coalesces a burst of geometry/model changes into a single measurement pass. Measuring is
+    // O(columns x rows), so doing it per inserted row stalls the GUI thread for seconds.
+    // Timer {
+    //     id: recalcColumnsTimer
+    //     interval: 20
+    //     repeat: false
+    //     onTriggered: tableItem.recalcColumns()
+    // }
 
+    function scheduleRecalcColumns() {
+        //recalcColumnsTimer.restart();
+        Qt.callLater(tableItem.recalcColumns);
+    }
+
+    // Measures header and content widths - this is the expensive part and must run only once per recalculation.
+    function measureColumns() {
         var cols = tableView.model ? tableView.model.columnCount() : 0;
 
         if (cols === 0)
-            return;
+            return null;
 
-        for (var c = 0; c < cols; ++c) {
-            // header width
-            var header = tableView.model.headerData(c, Qt.Horizontal, Qt.DisplayRole);
-            var hdrw = Math.ceil(fontMetrics.boundingRect(header).width);
-            // define minimum width per column as header width + small padding
-            var minw = Math.max(tableItem.minColumnWidth, hdrw + 2*UI.standardMargin + fontMetrics.font.pointSize * 0.5);
-            var maxw = tableView.maxColumnWidth > 0 ? Math.min(hdrw, tableView.maxColumnWidth) : hdrw;
-            // measure content up to sampleLimit rows
-            var rows = tableView.model.rowCount;
-            var sampleLimit = Math.min(rows, 200);
-            for (var r = 0; r < sampleLimit; ++r) {
-                var idx = tableView.model.index(r, c);
-                var val = tableView.model.data ? tableView.model.data(idx, Qt.DisplayRole) : undefined;
-                if (val !== undefined && val !== null) {
-                    var s = String(val);
-                    var w = Math.ceil(fontMetrics.boundingRect(s).width);
-                    if (tableView.maxColumnWidth > 0) {
-                        w = Math.min(w, tableView.maxColumnWidth)
-                    }
-                    if (w > maxw) {
-                        maxw = w;
-                    }
-                }
-            }
-            // add padding depending on column (first columns may need less)
-            totalPref += Math.max(minw, maxw + 2*UI.standardMargin);
-        }
-        if (tableItem.preferedWidth !== totalPref) {
-            tableItem.preferedWidth = totalPref;
-        }
-    }
-
-    // Call from C++: find the QML object and invoke this method to auto-adjust columns
-    function autoAdjustColumns() {
-        // compute preferred widths from headers/content
         var totalPref = 0;          // sum of preferred widths
         var pref = [];              // array of preferred widths for each column (these are calculated from header and contents)
         var totalMin = 0;           // sum of header widths
-        var minColumnWidths = [];   // array of minimum widths for the columns defined by header
-
-        var cols = tableView.model ? tableView.model.columnCount() : 0;
-
-        if (cols === 0)
-            return;
+        var minWidths = [];         // array of minimum widths for the columns defined by header
 
         for (var c = 0; c < cols; ++c) {
             // header width
@@ -132,7 +105,7 @@ Item {
             var hdrw = Math.ceil(fontMetrics.boundingRect(header).width);
             // define minimum width per column as header width + small padding
             var minw = Math.max(tableItem.minColumnWidth, hdrw + 2*UI.standardMargin + fontMetrics.font.pointSize * 0.5);
-            minColumnWidths[c] = minw;
+            minWidths[c] = minw;
             totalMin += minw;
             var maxw = tableView.maxColumnWidth > 0 ? Math.min(hdrw, tableView.maxColumnWidth) : hdrw;
             // measure content up to sampleLimit rows
@@ -155,6 +128,35 @@ Item {
             // add padding depending on column (first columns may need less)
             pref[c] = Math.max(minw, maxw + 2*UI.standardMargin);
             totalPref += pref[c];
+        }
+
+        return { "cols": cols, "pref": pref, "minWidths": minWidths, "totalPref": totalPref, "totalMin": totalMin };
+    }
+
+    function calculatePreferedWidth() {
+        tableItem.recalcColumns();
+    }
+
+    // Call from C++: find the QML object and invoke this method to auto-adjust columns
+    function autoAdjustColumns() {
+        tableItem.recalcColumns();
+    }
+
+    function recalcColumns() {
+        var measurement = tableItem.measureColumns();
+        if (measurement === null)
+            return;
+
+        var cols = measurement.cols;
+        var pref = measurement.pref;
+        var minColumnWidths = measurement.minWidths;
+        var totalPref = measurement.totalPref;
+        var totalMin = measurement.totalMin;
+
+        // some users bind their width to preferedWidth, so this can change tableItem.width below;
+        // onWidthChanged only schedules a new pass, so it never re-enters this function
+        if (tableItem.preferedWidth !== totalPref) {
+            tableItem.preferedWidth = totalPref;
         }
 
         // If a vertical scrollbar is visible, reduce available width accordingly
@@ -252,9 +254,8 @@ Item {
             tableItem.columnWidths[n] = Math.max(minColumnWidth, Math.ceil(fontMetrics.boundingRect(hdr).width) + UI.standardMargin);
         }
         Qt.callLater(tableView.forceLayout);
-        tableItem.calculatePreferedWidth()
-        // ensure sizes account for content and scrollbars
-        tableItem.autoAdjustColumns();
+        // ensure sizes account for content and scrollbar
+        tableItem.scheduleRecalcColumns();
     }
 
     // Header and content area
@@ -452,13 +453,13 @@ Item {
             }
 
             ScrollBar.horizontal: AbracaScrollBar {
-                 id: hbar
+                id: hbar
                 parent: tableView.parent
                 anchors.top: tableView.bottom
                 anchors.left: tableView.left
                 anchors.right: tableView.right
                 anchors.rightMargin: vbar.visible ? vbar.width : 0
-                policy: tableView.contentWidth > tableView.width ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+                policy: tableItem.hScrollBarEnabled && (tableView.contentWidth > tableView.width) ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
             }
 
             // expose vertical scrollbar width for layout calculations
@@ -477,8 +478,7 @@ Item {
                 // target the underlying model object exposed to the TableView
                 target: tableView.model
                 function onRowCountChanged() {
-                    tableItem.calculatePreferedWidth();
-                    tableItem.autoAdjustColumns();                    
+                    tableItem.scheduleRecalcColumns();
                 }
             }
 
