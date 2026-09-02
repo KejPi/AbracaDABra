@@ -53,6 +53,77 @@ struct SdrPlayGainStruct
     bool ifAgcEna;
 };
 
+// Worker thread that owns the SW-AGC feedback loop (full Software AGC and the
+// Manual+IF-AGC level feedback) so that blocking SoapySDR::Device::setGain()
+// calls never run on the GUI thread. Manual gain (no IF-AGC) is still applied
+// synchronously by SdrPlayInput on the GUI thread; this worker only takes
+// over gain control while a feedback mode is active, and keeps emitting
+// telemetry (rfLevel/agcGain/gainIdx/ifGain) at all times so the UI keeps
+// getting periodic level updates in every gain mode.
+class SdrPlayWorker : public SoapySdrWorker
+{
+    Q_OBJECT
+public:
+    enum class FeedbackMode
+    {
+        Off,          // plain manual gain, no feedback loop
+        IfOnly,       // Manual mode + IF-AGC enabled: adjust IFGR only
+        SoftwareFull  // Software AGC mode: full RFGR+IFGR state machine
+    };
+
+    explicit SdrPlayWorker(SoapySDR::Device *device, double sampleRate, int rxChannel, const QList<float> &rfGainList, QObject *parent = nullptr);
+
+    // called from GUI thread only; lock-free, no device I/O (mirrors
+    // m_captureStartCntr/m_isRecording convention used by SoapySdrWorker,
+    // required because this worker's run() loop never calls QThread::exec())
+    void setFeedbackMode(FeedbackMode mode);
+    void requestAgcReset();
+    // called by SdrPlayInput (GUI thread) after it applies a manual RFGR/IFGR
+    // change directly, so the worker's telemetry (and IfOnly's fixed RFGR)
+    // stays in sync with the channel not currently owned by the feedback loop
+    void syncManualRfGain(int rfGR);
+    void syncManualIfGain(int ifGR);
+
+signals:
+    void agcGainChanged(float gain);
+    void rfLevelChanged(float level, float gain);
+    void ifGainChanged(int ifGain);
+    void gainIdxChanged(int idx);
+
+protected:
+    void onSignalLevel(float level) override;
+
+private:
+    enum SwAgcState
+    {
+        Idle = -1,
+        Converging = 0,
+        Running
+    };
+    SwAgcState m_agcState = Idle;
+
+    const QList<float> m_rfGainList;
+    // owned by this worker while its feedback mode is active for the given
+    // channel (RFGR: SoftwareFull only; IFGR: SoftwareFull or IfOnly);
+    // otherwise written by SdrPlayInput via syncManualRfGain()/syncManualIfGain()
+    // so telemetry stays correct in every mode. atomic because writer differs
+    // depending on mode (GUI thread vs this worker thread).
+    std::atomic<int> m_rfGR{-1};
+    std::atomic<int> m_ifGR{-1};
+    const int m_ifGRmin = 20;
+    const int m_ifGRmax = 59;
+    int m_rfGRchangeCntr = 0;
+    int m_levelEmitCntr = 0;
+
+    std::atomic<FeedbackMode> m_feedbackMode{FeedbackMode::Off};
+    std::atomic<bool> m_resetRequested{false};
+
+    void doReset(FeedbackMode mode);
+    void setRFGR(int gain);
+    float getRFGain() const { return m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR.load()); }
+    void setIFGR(int gain);
+};
+
 class SdrPlayInput : public SoapySdrInput
 {
     Q_OBJECT
@@ -74,21 +145,11 @@ signals:
     void ifGain(int ifGain);
 
 private:
-    enum SwAgcState
-    {
-        Idle = -1,
-        Converging = 0,
-        Running
-    };
-    SwAgcState m_agcState = Idle;
-
     QVariant m_hwId;
-    float m_rfGR;
-    float m_ifGR;
+    float m_rfGR = -1;  // -1 forces first setRFGR() call to apply
+    float m_ifGR = -1;  // -1 forces first setIFGR() call to apply
     const float m_ifGRmin = 20;
     const float m_ifGRmax = 59;
-    int m_rfGRchangeCntr;
-    int m_levelEmitCntr;
     bool m_biasT;
 
     QList<float> m_rfGainList;
@@ -102,8 +163,11 @@ private:
     float getRFGain() const { return m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR); }
     void setIFGR(int gain);
 
-    // used by worker
-    void onAgcLevel(float agcLevel) override;
+    SdrPlayWorker::FeedbackMode currentFeedbackMode() const;
+
+    // worker factory / signal wiring hooks (SoapySdrInput)
+    SoapySdrWorker *createWorker(SoapySDR::Device *device, double sampleRate, int rxChannel, QObject *parent) override;
+    void connectWorkerSignals(SoapySdrWorker *worker) override;
 };
 
 #endif  // SDRPLAYINPUT_H

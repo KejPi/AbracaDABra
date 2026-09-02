@@ -73,9 +73,16 @@ protected:
     uint_fast8_t m_signalLevelEmitPeriod;
     void run() override;
 
-private:
+    // reused by subclasses that need direct device access (e.g. SdrPlayWorker)
     SoapySDR::Device *m_device;
     int m_rxChannel;
+
+    // hook called every time a new signal level sample is available; default
+    // behavior emits agcLevel(). Subclasses can override to process the level
+    // (e.g. run a gain feedback loop) without touching the stream/SRC pipeline.
+    virtual void onSignalLevel(float level) { emit agcLevel(level); }
+
+private:
     std::atomic<bool> m_isRecording;
     std::atomic<bool> m_watchdogFlag;
     std::atomic<bool> m_doReadIQ;
@@ -140,6 +147,14 @@ protected:
 
     // used by worker
     virtual void onAgcLevel(float agcLevel);
+
+    // factory + extra signal wiring hooks so subclasses can plug in a
+    // specialized worker (e.g. SdrPlayWorker) while reusing run()/stop()
+    virtual SoapySdrWorker *createWorker(SoapySDR::Device *device, double sampleRate, int rxChannel, QObject *parent)
+    {
+        return new SoapySdrWorker(device, sampleRate, rxChannel, parent);
+    }
+    virtual void connectWorkerSignals(SoapySdrWorker *worker) { Q_UNUSED(worker) }
 
     void onReadThreadStopped();
     void onWatchdogTimeout();

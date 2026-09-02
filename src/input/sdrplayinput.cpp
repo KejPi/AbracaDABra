@@ -197,6 +197,38 @@ bool SdrPlayInput::openDevice(const QVariant &hwId, bool fallbackConnection)
     return false;
 }
 
+SdrPlayWorker::FeedbackMode SdrPlayInput::currentFeedbackMode() const
+{
+    if (SdrPlayGainMode::Software == m_gainMode)
+    {
+        return SdrPlayWorker::FeedbackMode::SoftwareFull;
+    }
+    return m_ifAgcEna ? SdrPlayWorker::FeedbackMode::IfOnly : SdrPlayWorker::FeedbackMode::Off;
+}
+
+SoapySdrWorker *SdrPlayInput::createWorker(SoapySDR::Device *device, double sampleRate, int rxChannel, QObject *parent)
+{
+    auto *worker = new SdrPlayWorker(device, sampleRate, rxChannel, m_rfGainList, parent);
+
+    // seed initial feedback state (handles the very first tune() -> resetAgc()
+    // call that happens before this worker exists); safe here because the
+    // worker thread has not been started yet
+    worker->syncManualRfGain(m_rfGR);
+    worker->syncManualIfGain(m_ifGR);
+    worker->setFeedbackMode(currentFeedbackMode());
+
+    return worker;
+}
+
+void SdrPlayInput::connectWorkerSignals(SoapySdrWorker *worker)
+{
+    auto *sdrPlayWorker = static_cast<SdrPlayWorker *>(worker);
+    connect(sdrPlayWorker, &SdrPlayWorker::agcGainChanged, this, &SdrPlayInput::agcGain, Qt::QueuedConnection);
+    connect(sdrPlayWorker, &SdrPlayWorker::rfLevelChanged, this, &SdrPlayInput::rfLevel, Qt::QueuedConnection);
+    connect(sdrPlayWorker, &SdrPlayWorker::ifGainChanged, this, &SdrPlayInput::ifGain, Qt::QueuedConnection);
+    connect(sdrPlayWorker, &SdrPlayWorker::gainIdxChanged, this, &SdrPlayInput::gainIdx, Qt::QueuedConnection);
+}
+
 void SdrPlayInput::setGainMode(const SdrPlayGainStruct &gain)
 {
     switch (gain.mode)
@@ -214,7 +246,10 @@ void SdrPlayInput::setGainMode(const SdrPlayGainStruct &gain)
 #if SOAPYSDR_TIMING_DEBUG
             qDebug() << "---> setGainMode (false)" << m_elapsedTimer.restart();
 #endif
-            resetAgc();
+            if (m_worker)
+            {
+                static_cast<SdrPlayWorker *>(m_worker)->setFeedbackMode(currentFeedbackMode());
+            }
             break;
         case SdrPlayGainMode::Manual:
             m_gainMode = gain.mode;
@@ -227,13 +262,13 @@ void SdrPlayInput::setGainMode(const SdrPlayGainStruct &gain)
 #endif
             setRFGR(m_rfGainList.size() - 1 - gain.rfGain);
             m_ifAgcEna = gain.ifAgcEna;
+            if (m_worker)
+            {
+                static_cast<SdrPlayWorker *>(m_worker)->setFeedbackMode(currentFeedbackMode());
+            }
             if (!m_ifAgcEna)
             {
                 setIFGR(-gain.ifGain);
-            }
-            else
-            {
-                resetAgc();
             }
             emit agcGain(getRFGain() - m_ifGR);
             break;
@@ -271,31 +306,12 @@ void SdrPlayInput::setAntenna(const QString &antenna)
 
 void SdrPlayInput::resetAgc()
 {
-    if (SdrPlayGainMode::Software == m_gainMode)
+    // actual SW-AGC / IF-AGC reset math now runs on the worker thread (see
+    // SdrPlayWorker::doReset()) so it never blocks the GUI thread
+    if (m_worker)
     {
-        int idx = 0;
-        do
-        {
-            if (m_rfGainList.at(idx) > -40.0)
-            {
-                break;
-            }
-        } while (++idx > 0);
-
-        m_rfGR = -1;  // this is to force RF gain settings
-        m_ifGR = -1;  // this is to force IF gain settings
-
-        setRFGR(m_rfGainList.size() - 1 - idx);
-        setIFGR(40);
-        m_agcState = SwAgcState::Converging;
-        m_rfGRchangeCntr = 2;
-        emit agcGain(getRFGain() - m_ifGR);
+        static_cast<SdrPlayWorker *>(m_worker)->requestAgcReset();
     }
-    else if (m_ifAgcEna)
-    {
-        setIFGR(40);
-    }
-    m_levelEmitCntr = 0;
     emit rfLevel(NAN, NAN);
 }
 
@@ -323,6 +339,10 @@ void SdrPlayInput::setRFGR(int rfGR)
 #endif
             qCDebug(sdrPlayInput) << "RF gain =" << getRFGain();
             emit gainIdx(m_rfGainList.size() - 1 - m_rfGR);
+            if (m_worker)
+            {
+                static_cast<SdrPlayWorker *>(m_worker)->syncManualRfGain(m_rfGR);
+            }
         }
         catch (const std::exception &ex)
         {
@@ -356,6 +376,10 @@ void SdrPlayInput::setIFGR(int ifGR)
 #endif
             qCDebug(sdrPlayInput) << "IF gain =" << -m_ifGR;
             emit ifGain(-m_ifGR);
+            if (m_worker)
+            {
+                static_cast<SdrPlayWorker *>(m_worker)->syncManualIfGain(m_ifGR);
+            }
         }
         catch (const std::exception &ex)
         {
@@ -365,59 +389,180 @@ void SdrPlayInput::setIFGR(int ifGR)
     }
 }
 
-void SdrPlayInput::onAgcLevel(float agcLevel)
+// ---------------------------------------------------------------------------
+// SdrPlayWorker - owns the SW-AGC / IF-AGC feedback loop on the worker thread
+// ---------------------------------------------------------------------------
+
+SdrPlayWorker::SdrPlayWorker(SoapySDR::Device *device, double sampleRate, int rxChannel, const QList<float> &rfGainList,
+                             QObject *parent)
+    : SoapySdrWorker(device, sampleRate, rxChannel, parent), m_rfGainList(rfGainList)
 {
-#if SOAPYSDR_TIMING_DEBUG
-    qDebug() << "-----------------------------------------------" << m_elapsedTimer.elapsed();
-#endif
+}
+
+void SdrPlayWorker::setFeedbackMode(FeedbackMode mode)
+{
+    m_feedbackMode = mode;
+    if (FeedbackMode::Off != mode)
+    {
+        // (re)entering a feedback mode always starts from a well-defined
+        // state, matching the original resetAgc() semantics
+        m_resetRequested = true;
+    }
+}
+
+void SdrPlayWorker::requestAgcReset()
+{
+    m_resetRequested = true;
+}
+
+void SdrPlayWorker::syncManualRfGain(int rfGR)
+{
+    m_rfGR = rfGR;
+}
+
+void SdrPlayWorker::syncManualIfGain(int ifGR)
+{
+    m_ifGR = ifGR;
+}
+
+void SdrPlayWorker::doReset(FeedbackMode mode)
+{
+    if (FeedbackMode::SoftwareFull == mode)
+    {
+        int idx = 0;
+        do
+        {
+            if (m_rfGainList.at(idx) > -40.0)
+            {
+                break;
+            }
+        } while (++idx > 0);
+
+        m_rfGR = -1;  // this is to force RF gain settings
+        m_ifGR = -1;  // this is to force IF gain settings
+
+        setRFGR(m_rfGainList.size() - 1 - idx);
+        setIFGR(40);
+        m_agcState = SwAgcState::Converging;
+        m_rfGRchangeCntr = 2;
+        emit agcGainChanged(getRFGain() - m_ifGR.load());
+    }
+    else if (FeedbackMode::IfOnly == mode)
+    {
+        setIFGR(40);
+    }
+    m_levelEmitCntr = 0;
+}
+
+void SdrPlayWorker::setRFGR(int rfGR)
+{
+    if (rfGR < 0)
+    {
+        rfGR = 0;
+    }
+    if (rfGR >= m_rfGainList.count())
+    {
+        rfGR = m_rfGainList.count() - 1;
+    }
+    if (rfGR != m_rfGR.load())
+    {
+        m_rfGR = rfGR;
+        try
+        {
+            m_device->setGain(SOAPY_SDR_RX, m_rxChannel, "RFGR", rfGR);
+            emit gainIdxChanged(m_rfGainList.size() - 1 - rfGR);
+        }
+        catch (const std::exception &ex)
+        {
+            qCWarning(sdrPlayInput) << "Failed to set RFGR to" << rfGR << ex.what();
+            return;
+        }
+    }
+}
+
+void SdrPlayWorker::setIFGR(int ifGR)
+{
+    if (ifGR < m_ifGRmin)
+    {
+        ifGR = m_ifGRmin;
+    }
+    if (ifGR > m_ifGRmax)
+    {
+        ifGR = m_ifGRmax;
+    }
+    if (ifGR != m_ifGR.load())
+    {
+        m_ifGR = ifGR;
+        try
+        {
+            m_device->setGain(SOAPY_SDR_RX, m_rxChannel, "IFGR", ifGR);
+            emit ifGainChanged(-ifGR);
+        }
+        catch (const std::exception &ex)
+        {
+            qCWarning(sdrPlayInput) << "Failed to set IFGR to" << ifGR << ex.what();
+            return;
+        }
+    }
+}
+
+void SdrPlayWorker::onSignalLevel(float agcLevel)
+{
+    if (m_resetRequested.exchange(false))
+    {
+        doReset(m_feedbackMode.load());
+    }
+
     m_rfGRchangeCntr = (m_rfGRchangeCntr > 0 ? m_rfGRchangeCntr - 1 : 0);
-    if (SdrPlayGainMode::Software == m_gainMode)
+
+    const FeedbackMode mode = m_feedbackMode.load();
+    if (FeedbackMode::SoftwareFull == mode)
     {
         if (m_agcState == SwAgcState::Running)
         {
             if (agcLevel > SDRPLAY_LEVEL_THR_MAX)
             {  // decrease gain
-                if (qMin(m_ifGR + 1, m_ifGRmax) > SDRPLAY_RFGR_UP_THR && m_rfGRchangeCntr <= 0)
+                if (qMin(m_ifGR.load() + 1, m_ifGRmax) > SDRPLAY_RFGR_UP_THR && m_rfGRchangeCntr <= 0)
                 {
                     m_rfGRchangeCntr = 2;
                     float gain = getRFGain();
-                    setRFGR(m_rfGR + 1);
-                    setIFGR(m_ifGR - (gain - getRFGain()));
+                    setRFGR(m_rfGR.load() + 1);
+                    setIFGR(m_ifGR.load() - (gain - getRFGain()));
                 }
                 else
                 {
-                    setIFGR(m_ifGR + 1);
+                    setIFGR(m_ifGR.load() + 1);
                 }
             }
             else if (agcLevel < SDRPLAY_LEVEL_THR_MIN)
             {
-                if (qMax(m_ifGR + 1, m_ifGRmin) < SDRPLAY_RFGR_DOWN_THR && (m_rfGR > 0) && (m_rfGRchangeCntr <= 0))
+                if (qMax(m_ifGR.load() + 1, m_ifGRmin) < SDRPLAY_RFGR_DOWN_THR && (m_rfGR.load() > 0) && (m_rfGRchangeCntr <= 0))
                 {
                     m_rfGRchangeCntr = 2;
                     float gain = getRFGain();
-                    setRFGR(m_rfGR - 1);
-                    setIFGR(m_ifGR + (gain - getRFGain()));
+                    setRFGR(m_rfGR.load() - 1);
+                    setIFGR(m_ifGR.load() + (gain - getRFGain()));
                 }
                 else
                 {
-                    setIFGR(m_ifGR - 1);
+                    setIFGR(m_ifGR.load() - 1);
                 }
             }
             else if (m_rfGRchangeCntr <= 0)
             {  // maintenance
-                if (m_ifGR >= SDRPLAY_RFGR_UP_THR)
+                if (m_ifGR.load() >= SDRPLAY_RFGR_UP_THR)
                 {
                     m_rfGRchangeCntr = 4;
                     float gain = getRFGain();
-                    setRFGR(m_rfGR + 1);
-                    setIFGR(m_ifGR - (gain - getRFGain()));
+                    setRFGR(m_rfGR.load() + 1);
+                    setIFGR(m_ifGR.load() - (gain - getRFGain()));
                 }
-                else if ((m_ifGR < SDRPLAY_RFGR_DOWN_THR) && (m_rfGR > 0))
+                else if ((m_ifGR.load() < SDRPLAY_RFGR_DOWN_THR) && (m_rfGR.load() > 0))
                 {
                     m_rfGRchangeCntr = 4;
                     float gain = getRFGain();
-                    setRFGR(m_rfGR - 1);
-                    setIFGR(m_ifGR + (gain - getRFGain()));
+                    setRFGR(m_rfGR.load() - 1);
+                    setIFGR(m_ifGR.load() + (gain - getRFGain()));
                 }
             }
         }
@@ -437,9 +582,6 @@ void SdrPlayInput::onAgcLevel(float agcLevel)
                 {  // found
                     break;
                 }
-                else
-                {  // not found
-                }
                 idx += 1;
             } while (idx < m_rfGainList.count());
 
@@ -448,30 +590,23 @@ void SdrPlayInput::onAgcLevel(float agcLevel)
             m_agcState = SwAgcState::Running;
         }
     }
-    else if (m_ifAgcEna)
-    {  // IF gain control
+    else if (FeedbackMode::IfOnly == mode)
+    {  // IF gain control only
         if (agcLevel > SDRPLAY_LEVEL_THR_MAX)
         {  // decrease gain
-            setIFGR(m_ifGR + 1);
+            setIFGR(m_ifGR.load() + 1);
         }
         else if (agcLevel < SDRPLAY_LEVEL_THR_MIN)
         {
-            setIFGR(m_ifGR - 1);
+            setIFGR(m_ifGR.load() - 1);
         }
     }
-
-    // qDebug() << agcLevel << -m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) << -m_ifGR
-    //          << 10 * std::log10(2 * agcLevel / (SDRPLAY_LEVEL_THR_MAX - SDRPLAY_LEVEL_THR_MIN));
-
-    // qDebug() << Q_FUNC_INFO << agcLevel << -m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) << m_ifGR << 10 * std::log10(agcLevel)
-    //          << m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) - m_ifGR
-    //          << 10 * std::log10(agcLevel) - m_rfGainList.at(m_rfGainList.size() - 1 - m_rfGR) + m_ifGR - 114;
 
     if (++m_levelEmitCntr > 4)
     {
         m_levelEmitCntr = 0;
-        float gain = 112 + getRFGain() - m_ifGR;
-        emit agcGain(gain);
-        emit rfLevel(10 * std::log10(agcLevel) - gain, gain);
+        float gain = 112 + getRFGain() - m_ifGR.load();
+        emit agcGainChanged(gain);
+        emit rfLevelChanged(10 * std::log10(agcLevel) - gain, gain);
     }
 }

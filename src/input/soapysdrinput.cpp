@@ -350,13 +350,14 @@ void SoapySdrInput::tune(uint32_t frequency)
 
 void SoapySdrInput::run()
 {
-    m_worker = new SoapySdrWorker(m_device, m_sampleRate, m_rxChannel, this);
+    m_worker = createWorker(m_device, m_sampleRate, m_rxChannel, this);
     connect(m_worker, &SoapySdrWorker::agcLevel, this, &SoapySdrInput::onAgcLevel, Qt::QueuedConnection);
     connect(m_worker, &SoapySdrWorker::dataReady, this, [=]() { emit tuned(m_frequency); }, Qt::QueuedConnection);
     connect(m_worker, &SoapySdrWorker::recordBuffer, this, &InputDevice::recordBuffer, Qt::DirectConnection);
     connect(m_worker, &SoapySdrWorker::finished, this, &SoapySdrInput::onReadThreadStopped, Qt::QueuedConnection);
     connect(m_worker, &SoapySdrWorker::finished, m_worker, &QObject::deleteLater);
     connect(m_worker, &SoapySdrWorker::destroyed, this, [=]() { m_worker = nullptr; });
+    connectWorkerSignals(m_worker);
 
     m_worker->start();
     m_watchdogTimer.start(1000 * INPUTDEVICE_WDOG_TIMEOUT_SEC);
@@ -842,7 +843,7 @@ void SoapySdrWorker::processInputData(std::complex<float> buff[], size_t numSamp
     if (--m_signalLevelEmitCntr <= 0)
     {
         m_signalLevelEmitCntr = m_signalLevelEmitPeriod;
-        emit agcLevel(m_src->signalLevel());
+        onSignalLevel(m_src->signalLevel());
     }
 
     if (m_isRecording)
