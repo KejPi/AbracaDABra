@@ -359,7 +359,7 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
 
                         if (m_epgList.value(id, nullptr) != nullptr)
                         {  // bound memory growth: drop past programme events once new data is added
-                            m_epgList[id]->pruneOlderThan(EPGTime::getInstance()->currentDate().addDays(-3));
+                            m_epgList[id]->pruneOlderThan(EPGTime::getInstance()->currentDate().addDays(-1));
                         }
 
                         if (!m_isLoadingFromCache && valid)
