@@ -203,12 +203,16 @@ void MetadataManager::processXML(const QString &xml, const QString &scopeId, uin
                                                             if (((widthVal == 320) && (heightVal == 240)) ||
                                                                 ((widthVal == 32) && (heightVal == 32)) || ((widthVal == 128) && (heightVal == 128)))
                                                             {
-                                                                for (const QString &sidStr : sidList)
-                                                                {  // ask for logo for each SId (actually there should be only one valid DAB SId)
-                                                                    QString filename = QString("%1/%2x%3.%4").arg(sidStr, width, height, ext);
-                                                                    qCDebug(metadataManager) << url << "===>" << filename;
-
-                                                                    emit getFile(decoderId, url, filename);
+                                                                // create single request for multiple files
+                                                                if (sidList.isEmpty() == false)
+                                                                {
+                                                                    QString fileNames;
+                                                                    for (const QString &sidStr : sidList)
+                                                                    {  // ask for logo for each SId (actually there should be only one valid DAB SId)
+                                                                        fileNames.append(QString("%1/%2x%3.%4|").arg(sidStr, width, height, ext));
+                                                                    }
+                                                                    qCDebug(metadataManager) << url << "===>" << fileNames;
+                                                                    emit getFile(decoderId, url, fileNames.chopped(1));  // remove last |
                                                                 }
                                                             }
                                                         }
@@ -560,32 +564,92 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
         return;
     }
 
-    QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + requestId;
-    qCDebug(metadataManager) << requestId << filename;
+    // requestId contiaing multiple filenames separated by |
+    QStringList fileNames = requestId.split("|");
 
-    // service:  "e21234.0/e22139/320x240.jpg"
-    // ensemble: "e24321/320x240.jpg"
-    static const QRegularExpression re("([0-9a-f]{6})(\\.(\\d+))?(/[0-9a-f]{6})?/(\\d+x\\d+)\\..*", QRegularExpression::CaseInsensitiveOption);
-
-    QDir dir;
-    dir.mkpath(QFileInfo(filename).absolutePath());
-
-    QFile file(filename);
-    if (file.exists())
+    for (const auto &fname : std::as_const(fileNames))
     {
-        QCryptographicHash md5gen(QCryptographicHash::Md5);
-        QFile file(filename);
-        if (file.open(QIODevice::ReadOnly))
+        if (fname.isEmpty())
         {
-            md5gen.addData(file.readAll());
-            file.close();
+            continue;
         }
 
-        QByteArray md5FileInCache = md5gen.result();
-        md5gen.reset();
-        md5gen.addData(data);
-        if (md5gen.result() != md5FileInCache)
-        {  // different file => overwrite
+        qCDebug(metadataManager) << fname;
+
+        QString filename = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/" + fname;
+
+        // service:  "e21234.0/e22139/320x240.jpg"
+        // ensemble: "e24321/320x240.jpg"
+        static const QRegularExpression re("([0-9a-f]{6})(\\.(\\d+))?(/[0-9a-f]{6})?/(\\d+x\\d+)\\..*", QRegularExpression::CaseInsensitiveOption);
+
+        QDir dir;
+        dir.mkpath(QFileInfo(filename).absolutePath());
+
+        QFile file(filename);
+        if (file.exists())
+        {
+            QCryptographicHash md5gen(QCryptographicHash::Md5);
+            QFile file(filename);
+            if (file.open(QIODevice::ReadOnly))
+            {
+                md5gen.addData(file.readAll());
+                file.close();
+            }
+
+            QByteArray md5FileInCache = md5gen.result();
+            md5gen.reset();
+            md5gen.addData(data);
+            if (md5gen.result() != md5FileInCache)
+            {  // different file => overwrite
+                if (file.open(QIODevice::WriteOnly))
+                {
+                    file.write(data);
+                    file.close();
+                }
+
+                QRegularExpressionMatch match = re.match(requestId);
+                if (match.hasMatch())
+                {
+                    if (match.captured(2).isEmpty())
+                    {  // ensemble
+                        uint32_t ueid = match.captured(1).toUInt(nullptr, 16);
+                        QString size = match.captured(5);
+                        MetadataRole role = MetadataRole::SLSLogo;
+                        if (size == "32x32")
+                        {
+                            role = MetadataRole::SmallLogo;
+                        }
+                        else if (size == "128x128")
+                        {
+                            role = MetadataRole::SquareLogo;
+                        }
+                        emit dataUpdated(ServiceListId(174928, ueid), role);  // using some frequency (5A)
+                    }
+                    else
+                    {
+                        uint32_t sid = match.captured(1).toUInt(nullptr, 16);
+                        uint8_t scids = match.captured(3).toUInt();
+                        QString size = match.captured(5);
+                        MetadataRole role = MetadataRole::SLSLogo;
+                        if (size == "32x32")
+                        {
+                            role = MetadataRole::SmallLogo;
+                        }
+                        else if (size == "128x128")
+                        {
+                            role = MetadataRole::SquareLogo;
+                        }
+                        emit dataUpdated(ServiceListId(sid, scids), role);
+                    }
+                }
+            }
+            else
+            { /* do nothing, file is the same */
+                qCDebug(metadataManager) << filename << "is the same";
+            }
+        }
+        else
+        {
             if (file.open(QIODevice::WriteOnly))
             {
                 file.write(data);
@@ -628,56 +692,9 @@ void MetadataManager::onFileReceived(const QByteArray &data, const QString &requ
                 }
             }
         }
-        else
-        { /* do nothing, file is the same */
-            qCDebug(metadataManager) << filename << "is the same";
-        }
-    }
-    else
-    {
-        if (file.open(QIODevice::WriteOnly))
-        {
-            file.write(data);
-            file.close();
-        }
-
-        QRegularExpressionMatch match = re.match(requestId);
-        if (match.hasMatch())
-        {
-            if (match.captured(2).isEmpty())
-            {  // ensemble
-                uint32_t ueid = match.captured(1).toUInt(nullptr, 16);
-                QString size = match.captured(5);
-                MetadataRole role = MetadataRole::SLSLogo;
-                if (size == "32x32")
-                {
-                    role = MetadataRole::SmallLogo;
-                }
-                else if (size == "128x128")
-                {
-                    role = MetadataRole::SquareLogo;
-                }
-                emit dataUpdated(ServiceListId(174928, ueid), role);  // using some frequency (5A)
-            }
-            else
-            {
-                uint32_t sid = match.captured(1).toUInt(nullptr, 16);
-                uint8_t scids = match.captured(3).toUInt();
-                QString size = match.captured(5);
-                MetadataRole role = MetadataRole::SLSLogo;
-                if (size == "32x32")
-                {
-                    role = MetadataRole::SmallLogo;
-                }
-                else if (size == "128x128")
-                {
-                    role = MetadataRole::SquareLogo;
-                }
-                emit dataUpdated(ServiceListId(sid, scids), role);
-            }
-        }
     }
 }
+
 QString MetadataManager::squareLogoFilePath(uint32_t ueid, uint32_t sid, uint8_t SCIdS) const
 {
     ServiceListId ensId(0, ueid);
