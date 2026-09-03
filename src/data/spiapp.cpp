@@ -1909,8 +1909,8 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
     {
         m_downloadReqQueue.dequeue();
         if (m_downloadReqQueue.isEmpty() == false)
-        {
-            downloadFile();
+        {   // shift download to event loop
+            QTimer::singleShot(1, this, [this](){ downloadFile(); });
         }
     }
 
