@@ -224,6 +224,7 @@ void ScannerBackend::loadFile(const QUrl &fileUrl)
     isLoading(true);
     if (fileName.endsWith(".json", Qt::CaseInsensitive))
     {
+        m_settings->scanner.lastFileFormat = Settings::ScannerFileFormat::JSON;
         if (m_jsonFutureWatcher == nullptr)
         {
             m_jsonFutureWatcher = new QFutureWatcher<JsonParseResult>(this);
@@ -233,6 +234,7 @@ void ScannerBackend::loadFile(const QUrl &fileUrl)
     }
     else
     {
+        m_settings->scanner.lastFileFormat = Settings::ScannerFileFormat::CSV;
         if (m_csvFutureWatcher == nullptr)
         {
             m_csvFutureWatcher = new QFutureWatcher<CsvParseResult>(this);

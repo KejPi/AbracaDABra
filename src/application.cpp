@@ -3377,6 +3377,8 @@ void Application::loadSettings()
     m_settings->scanner.mapZoom = settings->value("Scanner/mapZoom", 9.0).toFloat();
     m_settings->scanner.txTableSortCol = settings->value("Scanner/txTableSortCol", 0).toInt();
     m_settings->scanner.txTableSortOrder = settings->value("Scanner/txTableSortOrder", Qt::AscendingOrder).toInt();
+    m_settings->scanner.lastFileFormat =
+        static_cast<Settings::ScannerFileFormat>(settings->value("Scanner/lastFileFormat", Settings::ScannerFileFormat::JSON).toInt());
     int numCh = settings->beginReadArray("Scanner/channels");
     for (int ch = 0; ch < numCh; ++ch)
     {
@@ -3715,6 +3717,7 @@ void Application::saveSettings()
     settings->setValue("Scanner/mapZoom", m_settings->scanner.mapZoom);
     settings->setValue("Scanner/txTableSortCol", m_settings->scanner.txTableSortCol);
     settings->setValue("Scanner/txTableSortOrder", m_settings->scanner.txTableSortOrder);
+    settings->setValue("Scanner/lastFileFormat", m_settings->scanner.lastFileFormat);
 
     settings->beginWriteArray("Scanner/channels");
     int ch = 0;

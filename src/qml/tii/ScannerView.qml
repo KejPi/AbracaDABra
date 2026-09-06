@@ -503,7 +503,8 @@ Item {
             fileMode: FileDialog.OpenFile
             // On Android, avoid using nameFilters as they don't work reliably with extensions
             // Leave empty on Android to allow all files to be selectable
-            nameFilters: UI.isAndroid ? [] : [qsTr("JSON files") + " (*.json)", qsTr("CSV files") + " (*.csv)"]
+            nameFilters: UI.isAndroid ? [] : (scannerBackend.lastFileFormat === 0 ? [qsTr("JSON files") + " (*.json)", qsTr("CSV files") + " (*.csv)"]
+                                                                                  : [qsTr("CSV files") + " (*.csv)", qsTr("JSON files") + " (*.json)"])
             options: UI.isAndroid ? FileDialog.DontResolveSymlinks : 0
             // currentFolder doesn't work well on Android with content:// URIs
             currentFolder: UI.isAndroid ? "" : fileDialogLoader.filepath

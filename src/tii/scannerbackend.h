@@ -109,6 +109,7 @@ class ScannerBackend : public TxMapBackend
     UI_PROPERTY_SETTINGS(int, numCycles, m_settings->scanner.numCycles)
     UI_PROPERTY_SETTINGS(int, txTableSortCol, m_settings->scanner.txTableSortCol)
     UI_PROPERTY_SETTINGS(int, txTableSortOrder, m_settings->scanner.txTableSortOrder)
+    UI_PROPERTY_SETTINGS(int, lastFileFormat, m_settings->scanner.lastFileFormat)
 
 public:
     explicit ScannerBackend(Settings *settings, QObject *parent = nullptr);

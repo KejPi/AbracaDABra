@@ -84,6 +84,11 @@ public:
         FAAD = 0,
         FDKAAC = 1
     };
+    enum ScannerFileFormat
+    {
+        JSON = 0,
+        CSV = 1
+    };
 
     Settings() {};
 
@@ -323,6 +328,7 @@ public:
         float mapZoom;
         int txTableSortCol;
         int txTableSortOrder;
+        int lastFileFormat;
     } scanner;
 };
 
