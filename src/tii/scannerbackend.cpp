@@ -1250,7 +1250,7 @@ void ScannerBackend::storeEnsembleData(const RadioControlTIIData &tiiData, const
 
         const bool ueidChanged = !baseline.hasData || (baseline.ueid != currentEnsId.ueid());
         const bool labelChanged = baseline.hasData && (baseline.ensLabel != m_ensemble.label);
-        const bool numServicesChanged = baseline.hasData && (baseline.numServices != m_servicesSet.size());
+        const bool numServicesChanged = baseline.hasData && (baseline.numServices != m_servicesSet.size()) && !m_servicesSet.isEmpty();
 
         QList<dabsdrTii_t> newTiiCodes;
         for (const auto &tii : tiiData.idList)
