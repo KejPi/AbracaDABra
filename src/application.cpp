@@ -3443,6 +3443,7 @@ void Application::loadSettings()
     m_settings->rtltcp.tcpPort = settings->value("RTL-TCP/port", 1234).toInt();
     m_settings->rtltcp.controlSocketEna = settings->value("RTL-TCP/controlSocket", true).toBool();
     m_settings->rtltcp.agcLevelMax = settings->value("RTL-TCP/agcLevelMax", 0).toInt();
+    m_settings->rtltcp.bandwidth = settings->value("RTL-TCP/bandwidth", 0).toUInt();
     m_settings->rtltcp.ppm = settings->value("RTL-TCP/ppm", 0).toInt();
     m_settings->rtltcp.rfLevelOffset = settings->value("RTL-TCP/rfLevelOffset", 0.0).toFloat();
     m_settings->rtltcp.useNativeSocket = settings->value("RTL-TCP/useNativeSocket", true).toBool();
@@ -3831,6 +3832,7 @@ void Application::saveSettings()
     settings->setValue("RTL-TCP/port", m_settings->rtltcp.tcpPort);
     settings->setValue("RTL-TCP/controlSocket", m_settings->rtltcp.controlSocketEna);
     settings->setValue("RTL-TCP/agcLevelMax", m_settings->rtltcp.agcLevelMax);
+    settings->setValue("RTL-TCP/bandwidth", m_settings->rtltcp.bandwidth);
     settings->setValue("RTL-TCP/ppm", m_settings->rtltcp.ppm);
     settings->setValue("RTL-TCP/rfLevelOffset", m_settings->rtltcp.rfLevelOffset);
     settings->setValue("RTL-TCP/useNativeSocket", m_settings->rtltcp.useNativeSocket);

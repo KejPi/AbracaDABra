@@ -114,6 +114,7 @@ class SettingsBackend : public UIControlProvider
     UI_PROPERTY(QString, rtlTcpGainLabel)
     UI_PROPERTY_DEFAULT(int, rtlTcpGainIndexMax, -1)
     UI_PROPERTY_DEFAULT(int, rtlTcpGainMode, 0)
+    UI_PROPERTY_DEFAULT(int, rtlTcpBandWidth, 0)
     UI_PROPERTY_DEFAULT(int, rtlTcpFreqCorrection, 0)
     UI_PROPERTY_DEFAULT(float, rtlTcpRfLevelCorrection, 0)
 

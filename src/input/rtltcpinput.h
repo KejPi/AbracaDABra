@@ -147,7 +147,8 @@ class RtlTcpInput : public InputDevice
         SET_RTL_XTAL_FREQ = 0x0B,
         SET_TUNER_XTAL_FREQ = 0x0C,
         SET_GAIN_IDX = 0x0D,
-        SET_BIAS_TEE = 0x0E
+        SET_BIAS_TEE = 0x0E,
+        SET_BANDWIDTH = 0x40  // supported only by some servers
     };
 
     /* taken from rtlsdr_get_tuner_gains() implementation */
@@ -170,6 +171,7 @@ public:
     void setTcpIp(const QString &address, int port, bool controlSockEna);
     void setGainMode(RtlGainMode gainMode, int gainIdx = 0);
     void setAgcLevelMax(float agcLevelMax);
+    void setBW(uint32_t bw) override;
     void setPPM(int ppm) override;
     void setRfLevelOffset(float offset) override { m_rfLevelOffset = offset; }
     void setDAGC(bool ena);
@@ -178,6 +180,7 @@ public:
 
 private:
     uint32_t m_frequency;
+    uint32_t m_bandwidth;
     QString m_address;
     int m_port;
     QTcpSocket *m_controlSocket;

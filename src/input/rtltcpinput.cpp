@@ -85,6 +85,7 @@ RtlTcpInput::RtlTcpInput(bool useNativeSocket, QObject *parent) : InputDevice(pa
     m_rfLevelOffset = 0.0;
 
     m_frequency = 0;
+    m_bandwidth = 0;
     m_address = "127.0.0.1";
     m_port = 1234;
 
@@ -397,6 +398,24 @@ void RtlTcpInput::setAgcLevelMax(float agcLevelMax)
     else
     {
         m_agcLevelMin = 0.6 * agcLevelMax;
+    }
+}
+
+void RtlTcpInput::setBW(uint32_t bw)
+{
+    if (bw <= 0)
+    {                                // setting default BW
+        bw = INPUTDEVICE_BANDWIDTH;  // 1.53 MHz
+    }
+    else
+    { /* BW set by user */
+    }
+
+    if (bw != m_bandwidth)
+    {
+        sendCommand(RtlTcpCommand::SET_BANDWIDTH, bw);
+        qCInfo(rtlTcpInput) << "Setting bandwidth" << bw / 1000.0 << "kHz";
+        m_bandwidth = bw;
     }
 }
 

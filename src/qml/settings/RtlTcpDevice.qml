@@ -152,7 +152,7 @@ Item {
                 }
             }
         }
-        RowLayout {            
+        RowLayout {
             Layout.fillWidth: true
             spacing: appUI.isPortraitView ? UI.standardMargin : 30
             AbracaLabel {
@@ -175,11 +175,6 @@ Item {
                 id: gainValueLabel
                 text: settingsBackend.rtlTcpGainLabel
                 horizontalAlignment: Text.AlignRight
-                Layout.preferredWidth: fontMetrics.boundingRect("155.5 dB").width
-                FontMetrics {
-                    id: fontMetrics
-                    font: gainValueLabel.font
-                }
             }
         }
         AbracaLine {
@@ -301,6 +296,47 @@ Item {
                         display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
                         enabled: settingsBackend.rtlTcpRfLevelCorrection !== 0.0
                         onClicked: settingsBackend.rtlTcpRfLevelCorrection = 0.0
+                    }
+                    AbracaLabel {
+                        text: qsTr("Bandwidth:")
+                    }
+                    AbracaSpinBox {
+                        id: bandwidthSpinBox
+                        Layout.fillWidth: true
+                        from: 0
+                        to: 3000
+                        stepSize: 100
+                        value: settingsBackend.rtlTcpBandWidth
+                        onValueChanged: if (settingsBackend.rtlTcpBandWidth !== value) {
+                            settingsBackend.rtlTcpBandWidth = value
+                        }
+                        editable: true
+                        suffix: " kHz"
+                        specialValue: 0
+                        specialValueString: qsTr("Default")
+                    }
+                    AbracaButton {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
+                        // Layout.minimumWidth: implicitWidth
+                        text: qsTr("Set default")
+                        icon {
+                            source: UI.imagesUrl + "reload.svg"
+                            width: UI.iconSize
+                            height: UI.iconSize
+                            color: enabled ? UI.colors.icon : UI.colors.iconDisabled
+                        }
+                        display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
+                        enabled: settingsBackend.rtlTcpBandWidth > 0
+                        onClicked: settingsBackend.rtlTcpBandWidth = 0
+                    }
+                    AbracaLabel {
+                        Layout.columnSpan: 3
+                        Layout.fillWidth: true
+                        role: UI.LabelRole.Secondary
+                        font.italic: true
+                        wrapMode: Text.WordWrap
+                        text: qsTr("Only some RTL-TCP servers support bandwidth selection.")
                     }
                 }
             }

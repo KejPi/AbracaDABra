@@ -116,6 +116,7 @@ public:
         int tcpPort;
         bool controlSocketEna;
         int agcLevelMax;
+        uint32_t bandwidth;
         int ppm;
         float rfLevelOffset;
         bool useNativeSocket;

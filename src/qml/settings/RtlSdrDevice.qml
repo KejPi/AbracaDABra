@@ -173,11 +173,6 @@ Item {
                 id: gainValueLabel
                 text: settingsBackend.rtlSdrGainLabel
                 horizontalAlignment: Text.AlignRight
-                Layout.preferredWidth: fontMetrics.boundingRect("155.5 dB").width
-                FontMetrics {
-                    id: fontMetrics
-                    font: gainValueLabel.font
-                }
             }
         }
         AbracaLine {

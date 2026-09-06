@@ -223,12 +223,7 @@ Item {
                 AbracaLabel {
                     id: gainValueLabel
                     text: settingsBackend.sdrplayRfGainLabel
-                    Layout.preferredWidth: fontMetrics.boundingRect("155.5 dB").width
                     horizontalAlignment: Text.AlignRight
-                    FontMetrics {
-                        id: fontMetrics
-                        font: gainValueLabel.font
-                    }
                 }
                 Item {}
 

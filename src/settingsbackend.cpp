@@ -127,6 +127,7 @@ SettingsBackend::SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *pare
     connect(this, &SettingsBackend::rtlTcpGainIndexMaxChanged, this, &SettingsBackend::updateRtlTcpGainLabel);
     connect(this, &SettingsBackend::rtlTcpFreqCorrectionChanged, this, &SettingsBackend::onFrequencyCorrectionChanged);
     connect(this, &SettingsBackend::rtlTcpRfLevelCorrectionChanged, this, &SettingsBackend::onRfLevelOffsetChanged);
+    connect(this, &SettingsBackend::rtlTcpBandWidthChanged, this, &SettingsBackend::onBandwidthChanged);
 
 #if HAVE_AIRSPY
     connect(m_airspyDevicesModel, &ItemModel::currentIndexChanged, this, [this]() { setConnectButton(ConnectButtonAuto); });
@@ -415,6 +416,7 @@ void SettingsBackend::init(Settings *settings)
     isRtlTcpControlSocketChecked(m_settings->rtltcp.controlSocketEna);
     setRtlTcpGainIndex(m_settings->rtltcp.gainIdx);
     updateRtlTcpGainLabel();
+    rtlTcpBandWidth(m_settings->rtltcp.bandwidth / 1000);
     switch (m_settings->rtltcp.gainMode)
     {
         case RtlGainMode::Software:
@@ -705,6 +707,12 @@ void SettingsBackend::onBandwidthChanged()
 #endif
             break;
         case InputDevice::Id::RTLTCP:
+            m_settings->rtltcp.bandwidth = m_rtlTcpBandWidth * 1000;
+            if (m_device)
+            {
+                m_device->setBW(m_settings->rtltcp.bandwidth);
+            }
+            break;
         case InputDevice::Id::AIRSPY:
         case InputDevice::Id::RARTTCP:
         default:
@@ -1086,6 +1094,7 @@ void SettingsBackend::setInputDevice(InputDevice::Id id, InputDevice *device)
             break;
         case InputDevice::Id::RTLTCP:
             setGainValues(dynamic_cast<RtlTcpInput *>(m_device)->getGainList());
+            m_device->setBW(m_settings->rtltcp.bandwidth);
             m_device->setPPM(m_settings->rtltcp.ppm);
             m_device->setRfLevelOffset(m_settings->rtltcp.rfLevelOffset);
             dynamic_cast<RtlTcpInput *>(m_device)->setGainMode(m_settings->rtltcp.gainMode, m_settings->rtltcp.gainIdx);
