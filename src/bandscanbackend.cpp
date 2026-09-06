@@ -33,7 +33,7 @@
 BandScanBackend::BandScanBackend(bool autoStart, Settings *settings, QObject *parent) : QObject(parent), m_settings(settings)
 {
     ensemblesFound(QString("%1").arg(m_numEnsemblesFound));
-    servicesFound(QString("%1").arg(m_numServicesFound));
+    servicesFound(QString("%1").arg(m_servicesSet.size()));
     if (m_settings->cableChannelsEna)
     {
         m_numChannels = DabTables::channelList.size();
@@ -199,11 +199,12 @@ void BandScanBackend::onEnsembleFound(const RadioControlEnsemble &)
     m_timer->start(8000);
 }
 
-void BandScanBackend::onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &)
+void BandScanBackend::onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &comp)
 {
     if (isScanning())
     {
-        servicesFound(QString("%1").arg(++m_numServicesFound));
+        m_servicesSet.insert(ServiceListId(comp));
+        servicesFound(QString("%1").arg(m_servicesSet.size()));
     }
 }
 

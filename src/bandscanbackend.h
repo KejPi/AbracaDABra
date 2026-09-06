@@ -76,7 +76,7 @@ public:
     void onSyncStatus(uint8_t sync, float);
     void onEnsembleFound(const RadioControlEnsemble &ens);
     void onServiceListComplete(const RadioControlEnsemble &);
-    void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &);
+    void onServiceListEntry(const RadioControlEnsemble &, const RadioControlServiceComponent &comp);
 signals:
     void done(int result);
     void scanStarts();
@@ -91,7 +91,7 @@ private:
     int m_numChannels = 0;
     int m_channelCounter = 0;
     int m_numEnsemblesFound = 0;
-    int m_numServicesFound = 0;
+    QSet<ServiceListId> m_servicesSet;  // set of all known services
     dabChannelList_t::ConstIterator m_channelIt;
 
     void scanStep();
