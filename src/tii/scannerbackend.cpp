@@ -165,7 +165,7 @@ void ScannerBackend::stopScan()
 
 void ScannerBackend::importAction()
 {
-    if (m_model->rowCount() > 0)
+    if (m_model->rowCount() > 0 && m_dataLoadedFromFile == false)
     {
         m_messageBoxBackend->showQuestion(
             tr("Replace data in the table?"), tr("Current data in the table will be deleted. This action is irreversible."),
