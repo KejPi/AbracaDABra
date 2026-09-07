@@ -34,6 +34,10 @@ Item {
     property int yTickCount: 0
     property bool showButton: false
     property bool decimationEnabled: chart.decimationEnabled
+    property alias topMargin: chart.plotTopMargin
+    property alias rightMargin: chart.plotRightMargin
+    property alias bottomMargin: chart.plotBottomMargin
+    property alias leftMargin: chart.plotLeftMargin
 
     width: 400
     height: 300

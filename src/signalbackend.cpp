@@ -43,6 +43,8 @@ SignalBackend::SignalBackend(Settings *settings, int freq, QObject *parent) : UI
     m_spectYViewMin = m_spectYRangeMin;
     m_spectYViewMax = m_spectYRangeMax;
 
+    resetSnrStats();
+
     m_timer = new QTimer;
     m_timer->setInterval(1500);
     connect(m_timer, &QTimer::timeout, this, [this]() { setSignalState(0, 0.0); });
@@ -171,6 +173,13 @@ void SignalBackend::unregisterWaterfallPlot(QQuickItem *item)
     m_waterfallPlotItems.removeAll(dynamic_cast<WaterfallItem *>(item));
 }
 
+void SignalBackend::resetSnrStats()
+{
+    m_snrMax = m_snrMin = 0.0;
+    snrValueMin("0.0 dB");
+    snrValueMax("0.0 dB");
+}
+
 void SignalBackend::registerSnrPlot(QQuickItem *item)
 {
     if (item == nullptr)
@@ -282,6 +291,17 @@ void SignalBackend::setSignalState(uint8_t sync, float snr)
     snrValue(QString("%1 dB").arg(snr, 0, 'f', 1));
     addToPlot(snr);
     m_timer->start();
+
+    if (snr > m_snrMax)
+    {
+        m_snrMax = snr;
+        snrValueMax(QString("%1 dB").arg(m_snrMax, 0, 'f', 1));
+    }
+    if (snr < m_snrMin || m_snrMin == 0.0)
+    {
+        m_snrMin = snr;
+        snrValueMin(QString("%1 dB").arg(m_snrMin, 0, 'f', 1));
+    }
 }
 
 void SignalBackend::setFreqRange()
@@ -331,6 +351,7 @@ void SignalBackend::reset()
     setGainVisible(false);
     setSignalState(0, 0.0);
     frequencyOffsetLabel(tr("N/A"));
+    resetSnrStats();
 }
 
 void SignalBackend::setSpectrumUpdate()

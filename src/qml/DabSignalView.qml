@@ -119,6 +119,7 @@ Rectangle {
             SplitView.fillWidth: true
             SplitView.preferredHeight: 150
             SplitView.minimumHeight: 0
+            spacing: 0
             ChartView {
                 id: snrPlot
                 Layout.fillWidth: true
@@ -134,21 +135,98 @@ Rectangle {
                     mainItem.signalBackend.registerSnrPlot(null);
                 }
             }
-            AbracaLabel {
-                id: snrValueLabel
-                // Layout.minimumWidth: snrMetrics.boundingRect(" 36 dB").width
-                Layout.preferredWidth: textMetrics.width * 1.5
-                text: signalBackend.snrValue
-                font.pointSize: UI.largeFontPointSize * 3
-                font.bold: true
-                color: signalSpectrumView.labelTextColor
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+            Item {
                 visible: signalBackend.showSNR
-                TextMetrics {
-                    id: textMetrics
-                    font: snrValueLabel.font
-                    text: " 36 dB"
+                Layout.preferredWidth: textMetrics.width * 1.5
+                Layout.fillHeight: true
+                ColumnLayout {
+                    spacing: 0
+                    anchors.top: parent.top
+                    anchors.topMargin: snrPlot.topMargin + 10
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: snrPlot.bottomMargin + 10
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    Row {
+                        Layout.alignment: Qt.AlignHCenter
+                        AbracaLabel {
+                            font.pointSize: UI.biggerFontPointSize
+                            color: signalSpectrumView.labelTextColor
+                            text: "Max: "
+                        }
+                        AbracaLabel {
+                            font.pointSize: UI.biggerFontPointSize
+                            color: signalSpectrumView.labelTextColor
+                            font.bold: true
+                            text: signalBackend.snrValueMax
+                        }
+                    }
+                    AbracaLabel {
+                        id: snrValueLabel
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.bottomMargin: 2
+                        text: signalBackend.snrValue
+                        font.pointSize: UI.largeFontPointSize * 3
+                        font.bold: true
+                        color: signalSpectrumView.labelTextColor
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        TextMetrics {
+                            id: textMetrics
+                            font: snrValueLabel.font
+                            text: " 36 dB"
+                        }
+                        // Rectangle {
+                        //     border.color: "red"
+                        //     border.width: 1
+                        //     color: "transparent"
+                        //     anchors.fill: parent
+                        // }
+                    }
+                    Row {
+                        Layout.alignment: Qt.AlignHCenter
+                        AbracaLabel {
+                            font.pointSize: UI.biggerFontPointSize
+                            color: signalSpectrumView.labelTextColor
+                            text: "Min: "
+                        }
+                        AbracaLabel {
+                            font.pointSize: UI.biggerFontPointSize
+                            color: signalSpectrumView.labelTextColor
+                            font.bold: true
+                            text: signalBackend.snrValueMin
+                        }
+                    }
+                }
+
+                Rectangle {
+                    id: resetStats
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 6
+                    anchors.right: parent.right
+                    anchors.rightMargin: snrPlot.rightMargin
+                    width: 64
+                    height: 22
+                    radius: 4
+                    color: "#2e7d32"
+                    border.color: "#4caf50"
+                    border.width: 1
+                    z: 100
+                    Text {
+                        anchors.centerIn: parent
+                        text: qsTr("Reset")
+                        color: "#fff"
+                        font.pixelSize: 12
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        acceptedButtons: Qt.LeftButton
+                        onClicked: {
+                            signalBackend.resetSnrStats()
+                        }
+                    }
                 }
             }
         }

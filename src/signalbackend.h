@@ -48,6 +48,8 @@ class SignalBackend : public UIControlProvider
     UI_PROPERTY(QString, rfLevelLabel)
     UI_PROPERTY(QString, gainLabel)
     UI_PROPERTY(QString, snrValue)
+    UI_PROPERTY(QString, snrValueMax)
+    UI_PROPERTY(QString, snrValueMin)
     UI_PROPERTY_SETTINGS(int, spectrumUpdate, m_settings->signal.spectrumUpdate)
     UI_PROPERTY_SETTINGS(bool, showSNR, m_settings->signal.showSNR)
     UI_PROPERTY_SETTINGS(bool, showNULL, m_settings->signal.showNULL)
@@ -63,6 +65,7 @@ public:
     Q_INVOKABLE void registerSnrPlot(QQuickItem *item);
     Q_INVOKABLE void registerWaterfallPlot(QQuickItem *item);
     Q_INVOKABLE void unregisterWaterfallPlot(QQuickItem *item);
+    Q_INVOKABLE void resetSnrStats();
 
     void setIsUndocked(bool isUndocked);
     bool isUndocked() const { return m_isUndocked; }
@@ -129,6 +132,8 @@ private:
     int m_signalAvrgCntr = 0;
     int m_numAvrg = 10;
     float m_avrgFactor_dB = -10.0;
+    float m_snrMax = 0.0;
+    float m_snrMin = 0.0;
 
     void addToPlot(float snr);
     void setFreqRange();
