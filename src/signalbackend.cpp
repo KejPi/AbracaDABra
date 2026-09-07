@@ -178,6 +178,7 @@ void SignalBackend::resetSnrStats()
     m_snrMax = m_snrMin = 0.0;
     snrValueMin("0.0 dB");
     snrValueMax("0.0 dB");
+    snrTooltip("");
 }
 
 void SignalBackend::registerSnrPlot(QQuickItem *item)
@@ -295,12 +296,16 @@ void SignalBackend::setSignalState(uint8_t sync, float snr)
     if (snr > m_snrMax)
     {
         m_snrMax = snr;
+        m_snrMaxTime = QDateTime::currentDateTime();
         snrValueMax(QString("%1 dB").arg(m_snrMax, 0, 'f', 1));
+        updateSnrToolTip();
     }
     if (snr < m_snrMin || m_snrMin == 0.0)
     {
         m_snrMin = snr;
+        m_snrMinTime = QDateTime::currentDateTime();
         snrValueMin(QString("%1 dB").arg(m_snrMin, 0, 'f', 1));
+        updateSnrToolTip();
     }
 }
 
@@ -387,6 +392,15 @@ void SignalBackend::setGainVisible(bool visible)
     {
         spectrumPlot->setYAxisTitle(visible ? "dBm" : "dBFS");
     }
+}
+
+void SignalBackend::updateSnrToolTip()
+{
+    snrTooltip(QString("SNR minimum: %1 dB at %2\nSNR maximum: %3 dB at %4")
+                   .arg(m_snrMin, 0, 'f', 1)
+                   .arg(m_snrMinTime.toString("hh:mm:ss"))
+                   .arg(m_snrMax, 0, 'f', 1)
+                   .arg(m_snrMaxTime.toString("hh:mm:ss")));
 }
 
 void SignalBackend::onTuneDone(uint32_t freq)

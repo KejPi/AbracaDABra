@@ -140,6 +140,7 @@ Rectangle {
                 Layout.preferredWidth: textMetrics.width * 1.5
                 Layout.fillHeight: true
                 ColumnLayout {
+                    id: snrValueLayout
                     spacing: 0
                     anchors.top: parent.top
                     anchors.topMargin: snrPlot.topMargin + 10
@@ -199,7 +200,16 @@ Rectangle {
                         }
                     }
                 }
-
+                AbracaToolTip {
+                    text: signalBackend.snrTooltip
+                    hoverMouseArea: mouseArea
+                }
+                MouseArea {
+                    id: mouseArea
+                    anchors.fill: snrValueLayout
+                    enabled: signalBackend.snrTooltip.length > 0
+                    hoverEnabled: true
+                }
                 Rectangle {
                     id: resetStats
                     anchors.bottom: parent.bottom

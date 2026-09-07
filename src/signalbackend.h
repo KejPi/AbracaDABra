@@ -50,6 +50,7 @@ class SignalBackend : public UIControlProvider
     UI_PROPERTY(QString, snrValue)
     UI_PROPERTY(QString, snrValueMax)
     UI_PROPERTY(QString, snrValueMin)
+    UI_PROPERTY(QString, snrTooltip)
     UI_PROPERTY_SETTINGS(int, spectrumUpdate, m_settings->signal.spectrumUpdate)
     UI_PROPERTY_SETTINGS(bool, showSNR, m_settings->signal.showSNR)
     UI_PROPERTY_SETTINGS(bool, showNULL, m_settings->signal.showNULL)
@@ -134,13 +135,15 @@ private:
     float m_avrgFactor_dB = -10.0;
     float m_snrMax = 0.0;
     float m_snrMin = 0.0;
+    QDateTime m_snrMaxTime;
+    QDateTime m_snrMinTime;
 
     void addToPlot(float snr);
     void setFreqRange();
     void reset();
     void setSpectrumUpdate();
-
     void setGainVisible(bool visible);
+    void updateSnrToolTip();
 };
 
 #endif  // SIGNALBACKEND_H
