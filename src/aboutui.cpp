@@ -86,6 +86,9 @@ AboutUI::AboutUI(QObject *parent) : QObject(parent)
                   tr("Italian") +
                   ": Michele Rizzelli</li>"
                   "<li>" +
+                  tr("French") +
+                  ": Lucas Gallone</li>"
+                  "<li>" +
                   tr("Polish") +
                   ": Marek Schirmer</li>"
                   "</ul>" +
