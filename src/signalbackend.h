@@ -133,10 +133,14 @@ private:
     int m_signalAvrgCntr = 0;
     int m_numAvrg = 10;
     float m_avrgFactor_dB = -10.0;
+
     float m_snrMax = 0.0;
     float m_snrMin = 0.0;
+    uint8_t m_lastSyncLevel = 0;
     QDateTime m_snrMaxTime;
     QDateTime m_snrMinTime;
+    QDateTime m_snrResetTime;
+    QDateTime m_lastSyncTime;
 
     void addToPlot(float snr);
     void setFreqRange();

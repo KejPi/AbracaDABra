@@ -176,6 +176,8 @@ void SignalBackend::unregisterWaterfallPlot(QQuickItem *item)
 void SignalBackend::resetSnrStats()
 {
     m_snrMax = m_snrMin = 0.0;
+    m_snrResetTime = m_snrMinTime = m_snrMaxTime = QDateTime::currentDateTime();
+    m_lastSyncLevel = static_cast<uint8_t>(DabSyncLevel::NoSync);
     snrValueMin("0.0 dB");
     snrValueMax("0.0 dB");
     snrTooltip("");
@@ -293,18 +295,30 @@ void SignalBackend::setSignalState(uint8_t sync, float snr)
     addToPlot(snr);
     m_timer->start();
 
+    bool updateSnrStats = false;
+    if (sync >= m_lastSyncLevel || sync == static_cast<uint8_t>(DabSyncLevel::FullSync))
+    {
+        m_lastSyncLevel = sync;
+        m_lastSyncTime = QDateTime::currentDateTime();
+        updateSnrStats = true;
+    }
+
     if (snr > m_snrMax)
     {
         m_snrMax = snr;
         m_snrMaxTime = QDateTime::currentDateTime();
         snrValueMax(QString("%1 dB").arg(m_snrMax, 0, 'f', 1));
-        updateSnrToolTip();
+        updateSnrStats = true;
     }
-    if (snr < m_snrMin || m_snrMin == 0.0)
+    if (snr > 0 && (snr < m_snrMin || m_snrMin == 0.0))
     {
         m_snrMin = snr;
         m_snrMinTime = QDateTime::currentDateTime();
         snrValueMin(QString("%1 dB").arg(m_snrMin, 0, 'f', 1));
+        updateSnrStats = true;
+    }
+    if (updateSnrStats)
+    {
         updateSnrToolTip();
     }
 }
@@ -396,11 +410,32 @@ void SignalBackend::setGainVisible(bool visible)
 
 void SignalBackend::updateSnrToolTip()
 {
-    snrTooltip(QString("SNR minimum: %1 dB at %2\nSNR maximum: %3 dB at %4")
+    QString syncStr;
+    switch (static_cast<DabSyncLevel>(m_lastSyncLevel))
+    {
+        case DabSyncLevel::NullSync:
+            syncStr = tr("Signal found at %1").arg(m_lastSyncTime.toString("dd.MM. hh:mm"));
+            break;
+        case DabSyncLevel::FullSync:
+            syncStr = tr("Last sync at %1").arg(m_lastSyncTime.toString("dd.MM. hh:mm"));
+            break;
+        default:
+            syncStr = tr("No signal found");
+            break;
+    }
+
+    snrTooltip(QString(tr("<b>%1</b><br><br>"
+                          "%2 <b>%3 dB</b> (%4)<br>"
+                          "%5 <b>%6 dB</b> (%7)<br>"
+                          "<i>%8</i>"))
+                   .arg(tr("Signal since %1").arg(m_snrResetTime.toString("dd.MM. hh:mm")))
+                   .arg(tr("SNR minimum:"))
                    .arg(m_snrMin, 0, 'f', 1)
-                   .arg(m_snrMinTime.toString("hh:mm:ss"))
+                   .arg(m_snrMinTime.toString("dd.MM. hh:mm"))
+                   .arg(tr("SNR maximum:"))
                    .arg(m_snrMax, 0, 'f', 1)
-                   .arg(m_snrMaxTime.toString("hh:mm:ss")));
+                   .arg(m_snrMaxTime.toString("dd.MM. hh:mm"))
+                   .arg(syncStr));
 }
 
 void SignalBackend::onTuneDone(uint32_t freq)
