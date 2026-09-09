@@ -3264,6 +3264,9 @@ void Application::loadSettings()
     m_settings->updateCheckEna = settings->value("updateCheckEna", true).toBool();
     m_settings->updateCheckTime = settings->value("updateCheckTime", QDateTime::currentDateTime().addDays(-1)).value<QDateTime>();
     m_settings->uploadEnsembleInfo = settings->value("uploadEnsembleInfoEna", true).toBool();
+    m_settings->slsScaling =
+        static_cast<Settings::SlsScaling>(settings->value("slsScaling", static_cast<int>(Settings::SlsScaling::SlsScalingDefault)).toInt());
+
 #ifdef Q_OS_ANDROID
     m_settings->dataStoragePath = settings->value("dataStoragePath", QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)).toString();
 #else
@@ -3646,6 +3649,7 @@ void Application::saveSettings()
     settings->setValue("cableChannelsEna", m_settings->cableChannelsEna);
     settings->setValue("showServicePageWidget", m_settings->showServicePageWidget);
     settings->setValue("servicePageWidget", static_cast<int>(m_ui->servicePageWidget()));
+    settings->setValue("slsScaling", static_cast<int>(m_settings->slsScaling));
 #ifdef Q_OS_ANDROID
     settings->setValue("keepScreenOn", m_settings->keepScreenOn);
 #endif

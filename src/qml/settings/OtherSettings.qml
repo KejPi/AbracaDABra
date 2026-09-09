@@ -250,6 +250,28 @@ Item {
                                     }
                                     Item { Layout.columnSpan: 2; Layout.fillWidth: true }
                                     AbracaLabel {
+                                        text: qsTr("Slideshow scaling:")
+                                    }
+                                    AbracaComboBox {
+                                        id: slsScalingComboBox
+                                        property int w: -1
+                                        Layout.preferredWidth: w > 0 ? w : implicitWidth
+                                        model: settingsBackend.slsScalingModel
+                                        textRole: "itemName"
+                                        currentIndex: settingsBackend.slsScalingModel.currentIndex
+                                        onActivated: {
+                                            if (settingsBackend.slsScalingModel.currentIndex !== currentIndex) {
+                                                settingsBackend.slsScalingModel.currentIndex = currentIndex;
+                                            }
+                                        }
+                                        onImplicitWidthChanged: {
+                                            if (implicitWidth > w) {
+                                                w = implicitWidth
+                                            }
+                                        }
+                                    }
+                                    Item { Layout.columnSpan: 2; Layout.fillWidth: true }
+                                    AbracaLabel {
                                         text: qsTr("Language:")
                                     }
                                     AbracaComboBox {

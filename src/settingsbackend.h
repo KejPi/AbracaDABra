@@ -60,6 +60,7 @@ class SettingsBackend : public UIControlProvider
     Q_PROPERTY(ItemModel *locationSourceModel READ locationSourceModel CONSTANT FINAL)
     Q_PROPERTY(ItemModel *serialPortBaudrateModel READ serialPortBaudrateModel CONSTANT FINAL)
     Q_PROPERTY(ItemModel *languageSelectionModel READ languageSelectionModel CONSTANT FINAL)
+    Q_PROPERTY(ItemModel *slsScalingModel READ slsScalingModel CONSTANT FINAL)
     Q_PROPERTY(ItemModel *proxyConfigModel READ proxyConfigModel CONSTANT FINAL)
     Q_PROPERTY(TiiTableColsSettingsModel *tiiTableColsModel READ tiiTableColsModel CONSTANT FINAL)
     Q_PROPERTY(SoapySdrGainModel *soapySdrGainModel READ soapySdrGainModel CONSTANT FINAL)
@@ -226,6 +227,7 @@ class SettingsBackend : public UIControlProvider
     UI_PROPERTY_SETTINGS(QString, dataStoragePath, m_settings->dataStoragePath)
     UI_PROPERTY_SETTINGS(bool, keepScreenOn, m_settings->keepScreenOn)
     UI_PROPERTY_SETTINGS(bool, showServicePageWidget, m_settings->showServicePageWidget)
+    UI_PROPERTY_DEFAULT(int, slsScaling, -1)
 
 public:
     SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *parent = nullptr);
@@ -271,6 +273,7 @@ public:
     ItemModel *locationSourceModel() const { return m_locationSourceModel; }
     ItemModel *serialPortBaudrateModel() const { return m_serialPortBaudrateModel; }
     ItemModel *languageSelectionModel() const { return m_languageSelectionModel; }
+    ItemModel *slsScalingModel() const { return m_slsScalingModel; }
     ItemModel *proxyConfigModel() const { return m_proxyConfigModel; }
     TiiTableColsSettingsModel *tiiTableColsModel() const { return m_tiiTableColsModel; }
 
@@ -450,6 +453,7 @@ private:
     void onAudioOutChanged();
     void onAudioDecChanged();
     void onGeolocationSourceChanged();
+    void onSlsScalingChanged();
 
 #if HAVE_AIRSPY
     void activateAirspyControls(bool en);
@@ -471,6 +475,7 @@ private:
     ItemModel *m_sdrplayDevicesModel = nullptr;
     ItemModel *m_sdrplayChannelModel = nullptr;
     ItemModel *m_sdrplayAntennaModel = nullptr;
+    ItemModel *m_slsScalingModel = nullptr;
 
     int m_rawFileProgressValue = 0;
     int m_rtlSdrGainIndex = -1;

@@ -271,7 +271,7 @@ Item {
                                 id: slsView
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: width / 4 * 3
-                                Layout.maximumWidth: 400
+                                Layout.maximumWidth: (settingsBackend.slsScaling === 0 ? 320 : (settingsBackend.slsScaling === 1 ? 640 : 400))
                                 Layout.alignment: Qt.AlignHCenter
                                 backend: sls
                                 slsSource: slsPath

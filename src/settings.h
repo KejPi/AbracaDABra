@@ -89,6 +89,12 @@ public:
         JSON = 0,
         CSV = 1
     };
+    enum SlsScaling
+    {
+        SlsScalingDefault = -1,
+        SlsScalingOriginal = 0,
+        SlsScalingDouble = 1,
+    };
 
     Settings() {};
 
@@ -172,6 +178,7 @@ public:
     QLocale::Language lang;
     AudioFramework audioFramework;
     AudioDecoder audioDecoder;
+    SlsScaling slsScaling;
     bool keepServiceListOnScan;
     bool dlPlusEna;
     int noiseConcealmentLevel;

@@ -266,6 +266,12 @@ SettingsBackend::SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *pare
     }
     connect(m_languageSelectionModel, &ItemModel::currentIndexChanged, this, &SettingsBackend::onLanguageChanged);
 
+    m_slsScalingModel = new ItemModel(this);
+    m_slsScalingModel->addItem(tr("Default"), static_cast<int>(Settings::SlsScaling::SlsScalingDefault));
+    m_slsScalingModel->addItem(tr("Fixed"), static_cast<int>(Settings::SlsScaling::SlsScalingOriginal));
+    m_slsScalingModel->addItem(tr("Double"), static_cast<int>(Settings::SlsScaling::SlsScalingDouble));
+    connect(m_slsScalingModel, &ItemModel::currentIndexChanged, this, &SettingsBackend::onSlsScalingChanged);
+
     m_proxyConfigModel = new ItemModel(this);
     m_proxyConfigModel->addItem(tr("No proxy"), QVariant::fromValue(Settings::ProxyConfig::NoProxy));
     m_proxyConfigModel->addItem(tr("System"), QVariant::fromValue(Settings::ProxyConfig::System));
@@ -549,6 +555,12 @@ void SettingsBackend::init(Settings *settings)
                                .arg(m_settings->tii.coordinates.longitude(), 0, 'g', QLocale::FloatingPointShortest));
 
     applicationTheme(static_cast<int>(m_settings->applicationStyle));
+
+    if (false == m_slsScalingModel->setCurrentData(QVariant(m_settings->slsScaling)))
+    {  // first item as fallback
+        m_slsScalingModel->setCurrentIndex(0);
+    }
+    slsScaling(m_settings->slsScaling);
 
     if (false == m_languageSelectionModel->setCurrentData(QVariant(m_settings->lang)))
     {  // first item as fallback
@@ -1391,6 +1403,16 @@ void SettingsBackend::onGeolocationSourceChanged()
     auto src = static_cast<Settings::GeolocationSource>(m_locationSourceModel->currentData().toInt());
     m_settings->tii.locationSource = src;
     emit tiiSettingsChanged();
+}
+
+void SettingsBackend::onSlsScalingChanged()
+{
+    Settings::SlsScaling slsScalingValue = static_cast<Settings::SlsScaling>(m_slsScalingModel->currentData().toInt());
+    if (slsScalingValue != m_settings->slsScaling)
+    {
+        m_settings->slsScaling = slsScalingValue;
+        slsScaling(slsScalingValue);
+    }
 }
 
 void SettingsBackend::requestTiiDbUpdate()
