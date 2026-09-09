@@ -267,9 +267,9 @@ SettingsBackend::SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *pare
     connect(m_languageSelectionModel, &ItemModel::currentIndexChanged, this, &SettingsBackend::onLanguageChanged);
 
     m_slsScalingModel = new ItemModel(this);
-    m_slsScalingModel->addItem(tr("Default"), static_cast<int>(Settings::SlsScaling::SlsScalingDefault));
-    m_slsScalingModel->addItem(tr("Fixed"), static_cast<int>(Settings::SlsScaling::SlsScalingOriginal));
-    m_slsScalingModel->addItem(tr("Double"), static_cast<int>(Settings::SlsScaling::SlsScalingDouble));
+    m_slsScalingModel->addItem(tr("Optimal"), static_cast<int>(Settings::SlsScaling::SlsScalingDefault));
+    m_slsScalingModel->addItem(tr("Original"), static_cast<int>(Settings::SlsScaling::SlsScalingOriginal));
+    m_slsScalingModel->addItem(tr("2x Original"), static_cast<int>(Settings::SlsScaling::SlsScalingDouble));
     connect(m_slsScalingModel, &ItemModel::currentIndexChanged, this, &SettingsBackend::onSlsScalingChanged);
 
     m_proxyConfigModel = new ItemModel(this);
