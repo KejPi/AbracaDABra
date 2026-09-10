@@ -48,6 +48,12 @@ endif(HAVE_FAAD)
 if (HAVE_FDKAAC)
     set(FDKAAC_SOURCES audiodecoderfdkaac.cpp audiodecoderfdkaac.h)
 endif(HAVE_FDKAAC)
+if (HAVE_MP3LAME)
+    set(MP3ENCODER_SOURCES cli/mp3encoder.cpp cli/mp3encoder.h)
+endif(HAVE_MP3LAME)
+if (HAVE_FTXUI)
+    set(TUI_SOURCES cli/clitui.cpp cli/clitui.h)
+endif(HAVE_FTXUI)
 if (HAVE_AIRSPY)
     set(AIRSPY_SOURCES input/airspyinput.h input/airspyinput.cpp)
 endif(HAVE_AIRSPY)
@@ -56,6 +62,7 @@ if (HAVE_SOAPYSDR)
 endif(HAVE_SOAPYSDR)
 if (HAVE_PORTAUDIO)
     set(PORTAUDIO_SOURCES audiooutputpa.h audiooutputpa.cpp)
+    set(CLI_AUDIO_SOURCES cli/cliaudiooutput.h cli/cliaudiooutput.cpp)
 endif(HAVE_PORTAUDIO)
 
 
@@ -81,6 +88,22 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
     main.cpp
     application.cpp
     application.h
+
+    # Headless CLI mode (--cli): reuses RadioControl/AudioDecoder/InputDevice/
+    # DLDecoder/SlideShowApp directly, independent of Application/QML.
+    cli/clioptions.h
+    cli/clioptions.cpp
+    cli/clirunner.h
+    cli/clirunner.cpp
+    cli/dabcliapp.h
+    cli/dabcliapp.cpp
+    cli/audiostreamer.h
+    cli/audiostreamer.cpp
+    cli/webserver.h
+    cli/webserver.cpp
+    ${MP3ENCODER_SOURCES}
+    ${TUI_SOURCES}
+    ${CLI_AUDIO_SOURCES}
 
     dabtables.h
     dabtables.cpp
@@ -178,6 +201,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/charts)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/input)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tii)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/scanner)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cli)
 
 # QML
 if(QT_VERSION_MINOR GREATER_EQUAL 8)
@@ -469,6 +493,17 @@ if (USE_PORTAUDIO)
     include_directories ( ${PORTAUDIO_INCLUDE_DIRS} )
     target_link_libraries(${TARGET} PRIVATE "${PORTAUDIO_LINK_LIBRARIES}" )
 endif(USE_PORTAUDIO)
+
+# MP3LAME (optional, used by --cli's web UI to encode a live MP3 stream)
+if (HAVE_MP3LAME)
+    include_directories ( ${LIBMP3LAME_INCLUDE_DIRS} )
+    target_link_libraries(${TARGET} PRIVATE "${LIBMP3LAME_LINK_LIBRARIES}" )
+endif(HAVE_MP3LAME)
+
+# FTXUI (optional, used by --cli's interactive terminal dashboard)
+if (HAVE_FTXUI)
+    target_link_libraries(${TARGET} PRIVATE ftxui::screen ftxui::dom ftxui::component)
+endif(HAVE_FTXUI)
 
 # AIRSPY
 if (HAVE_AIRSPY)

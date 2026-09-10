@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +24,23 @@
  * SOFTWARE.
  */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef CLIOPTIONS_H
+#define CLIOPTIONS_H
 
-#define PROJECT_VER  "@PROJECT_GIT_VERSION@"
-#define PROJECT_VER_MAJOR  @VER_MAJOR@
-#define PROJECT_VER_MINOR  @VER_MINOR@
-#define PROJECT_VER_PATCH  @VER_PATCH@
-#define PROJECT_VER_GIT    @VER_GIT@
+#include <QCoreApplication>
 
-#cmakedefine01 HAVE_FAAD
-#cmakedefine01 HAVE_FDKAAC
-#cmakedefine01 HAVE_MP3LAME
-#cmakedefine01 HAVE_FTXUI
-#cmakedefine01 HAVE_PORTAUDIO
-#cmakedefine01 HAVE_QTWIDGETS
-#cmakedefine01 HAVE_LINUX_DBUS
-#cmakedefine01 HAVE_FMLIST_INTERFACE
+#include "dabcliapp.h"
 
+// Parses the process's command-line arguments for --cli mode into *config (extends CliConfig
+// with the resolved verboseLevel/commandlineOnly flags). Mirrors the option set of the original
+// standalone AbracaDABra-cli tool (device/serial/rtltcp-host/port/channel/frequency/sid/scids/
+// service/bind/port/gain/hardware-agc/list-channels/commandline-only/verbose), plus --cli itself
+// and the shared --help.
+//
+// Returns -1 if the caller should proceed to start DabCliApp with *config populated; otherwise
+// returns the process exit code the caller should return immediately (e.g. 0 after --help,
+// --list-channels or a bare -v/--version; 1 on an invalid option/value). QCommandLineParser
+// itself handles --help and unknown-option errors by exiting the process directly.
+int parseCliArguments(QCoreApplication &app, CliConfig *config);
 
-/* Optional devices */
-#cmakedefine01 HAVE_AIRSPY
-#cmakedefine01 HAVE_SOAPYSDR
-#cmakedefine01 HAVE_RARTTCP
-
-#endif // CONFIG_H
-
-
-
-
+#endif  // CLIOPTIONS_H

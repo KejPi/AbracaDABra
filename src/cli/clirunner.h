@@ -3,7 +3,7 @@
  *
  * MIT License
  *
-  * Copyright (c) 2019-2023 Petr Kopecký <xkejpi (at) gmail (dot) com>
+ * Copyright (c) 2019-2026 Petr Kopecký <xkejpi (at) gmail (dot) com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +24,16 @@
  * SOFTWARE.
  */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef CLIRUNNER_H
+#define CLIRUNNER_H
 
-#define PROJECT_VER  "@PROJECT_GIT_VERSION@"
-#define PROJECT_VER_MAJOR  @VER_MAJOR@
-#define PROJECT_VER_MINOR  @VER_MINOR@
-#define PROJECT_VER_PATCH  @VER_PATCH@
-#define PROJECT_VER_GIT    @VER_GIT@
+#include <QCoreApplication>
 
-#cmakedefine01 HAVE_FAAD
-#cmakedefine01 HAVE_FDKAAC
-#cmakedefine01 HAVE_MP3LAME
-#cmakedefine01 HAVE_FTXUI
-#cmakedefine01 HAVE_PORTAUDIO
-#cmakedefine01 HAVE_QTWIDGETS
-#cmakedefine01 HAVE_LINUX_DBUS
-#cmakedefine01 HAVE_FMLIST_INTERFACE
+#include "dabcliapp.h"
 
+// Starts DabCliApp with the given (already-parsed) config, shows the FTXUI dashboard or plain
+// commandline logging as appropriate, wires up Ctrl+C/SIGTERM graceful shutdown, and runs the Qt
+// event loop until quit. Returns the process exit code.
+int runCliApplication(QCoreApplication &app, const CliConfig &config);
 
-/* Optional devices */
-#cmakedefine01 HAVE_AIRSPY
-#cmakedefine01 HAVE_SOAPYSDR
-#cmakedefine01 HAVE_RARTTCP
-
-#endif // CONFIG_H
-
-
-
-
+#endif  // CLIRUNNER_H
