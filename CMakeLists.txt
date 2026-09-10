@@ -40,6 +40,9 @@ option (RARTTCP               "Enable RaRT TCP device"               OFF)
 # FMLIST
 option (FMLIST                "Enable FMLIST interface"               ON)
 
+# CLI
+option (CLI                   "Enable commanline interface"           ON)
+
 # Android OpenSSL
 set(ANDROID_OPENSSL_DIR "" CACHE PATH "Path to Android OpenSSL cmake directory (e.g., /path/to/android_openssl). If not set, will auto-derive from ANDROID_SDK_ROOT")
 
@@ -468,7 +471,7 @@ endif (USE_SYSTEM_MPG123)
 ## as MP3 for standard <audio> playback / Icecast-style clients. Not required
 ## for the main GUI application; if not found, --cli's web UI falls back to
 ## raw PCM streaming.)
-if (NOT ANDROID)
+if (NOT ANDROID AND CLI)
     if (USE_SYSTEM_MP3LAME)
         find_library (LIBMP3LAME_LINK_LIBRARIES mp3lame)
         find_path(LIBMP3LAME_INCLUDE_DIRS lame/lame.h)
@@ -502,15 +505,15 @@ if (NOT ANDROID)
             set(HAVE_MP3LAME OFF)
         endif()
     endif (USE_SYSTEM_MP3LAME)
-else(NOT ANDROID)
+else(NOT ANDROID AND CLI)
     set(HAVE_MP3LAME OFF)
-endif(NOT ANDROID)
+endif(NOT ANDROID AND CLI)
 
 #########################################################
 ## FTXUI (optional - used by --cli to show an interactive terminal
 ## dashboard instead of the web UI when --bind/--port are not given. If not
 ## found, --cli falls back to plain log output in that case.)
-if (NOT ANDROID)
+if (NOT ANDROID AND CLI)
     if (USE_SYSTEM_FTXUI)
         find_package(ftxui CONFIG QUIET)
         if (NOT ftxui_FOUND)
@@ -527,9 +530,9 @@ if (NOT ANDROID)
         message (STATUS "FTXUI not found. --cli interactive terminal UI will not be available.")
         set(HAVE_FTXUI OFF)
     endif()
-else(NOT ANDROID)
+else(NOT ANDROID AND CLI)
     set(HAVE_FTXUI OFF)
-endif(NOT ANDROID)
+endif(NOT ANDROID AND CLI)
 
 #########################################################
 ## PORTAUDIO
