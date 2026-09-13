@@ -42,6 +42,12 @@
 #include <QGuiApplication>
 #endif
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#include <cstdio>
+#include <iostream>
+#endif
+
 namespace
 {
 // Cheap pre-scan of the raw arguments for "--cli", done before QApplication/QGuiApplication is
@@ -70,6 +76,33 @@ int main(int argc, char *argv[])
     if (cliMode && qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM"))
     {
         qputenv("QT_QPA_PLATFORM", "offscreen");
+#ifdef Q_OS_WIN
+        if (AttachConsole(ATTACH_PARENT_PROCESS) || AllocConsole()) {
+            // Fix CRT streams (needed for printf / std::cout / std::cin)
+            FILE* fp = nullptr;
+            freopen_s(&fp, "CONIN$",  "r", stdin);
+            freopen_s(&fp, "CONOUT$", "w", stdout);
+            freopen_s(&fp, "CONOUT$", "w", stderr);
+
+                    // Fix the raw Win32 standard handles too — needed for anything
+                    // (like ftxui) that calls GetStdHandle() directly instead of
+                    // going through the CRT FILE* layer.
+            HANDLE hIn = CreateFileW(L"CONIN$", GENERIC_READ | GENERIC_WRITE,
+                                     FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
+                                     OPEN_EXISTING, 0, nullptr);
+            HANDLE hOut = CreateFileW(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
+                                      FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
+                                      OPEN_EXISTING, 0, nullptr);
+            SetStdHandle(STD_INPUT_HANDLE,  hIn);
+            SetStdHandle(STD_OUTPUT_HANDLE, hOut);
+            SetStdHandle(STD_ERROR_HANDLE,  hOut);
+
+            std::ios::sync_with_stdio(true);
+            std::cin.clear();
+            std::cout.clear();
+            std::cerr.clear();
+        }
+#endif
     }
 
 #if HAVE_QTWIDGETS

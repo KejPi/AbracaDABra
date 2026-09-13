@@ -527,8 +527,23 @@ endif(HAVE_FMLIST_INTERFACE)
 
 # Set some Win32 Specific Settings
 if(WIN32)
-    # required fro sockets
+    # required for sockets
     target_link_libraries(${TARGET} PRIVATE ws2_32)
+
+    if (CLI)
+        #########################################################
+        ## Windows console launcher (AbracaDABra.com)
+        ##
+        ## See src/cli/win_console_launcher.cpp for why this exists: it lets
+        ## "AbracaDABra --cli ..." work correctly from cmd.exe/PowerShell without
+        ## affecting the GUI double-click experience via AbracaDABra.exe.
+        add_executable(${TARGET}_cli_launcher cli/win_console_launcher.cpp)
+        set_target_properties(${TARGET}_cli_launcher PROPERTIES
+            OUTPUT_NAME "${TARGET}"
+            SUFFIX ".com"
+            RUNTIME_OUTPUT_DIRECTORY "$<TARGET_FILE_DIR:${TARGET}>"
+        )
+    endif(CLI)
 endif(WIN32)
 
 include_directories ( ${CMAKE_SOURCE_DIR} )

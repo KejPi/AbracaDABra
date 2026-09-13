@@ -768,6 +768,10 @@ else ()
     install(TARGETS ${TARGET})
     #install(FILES ${qm_files} DESTINATION ${INSTALL_EXAMPLEDIR})
 
+    if(WIN32 AND CLI)
+        install(TARGETS ${TARGET}_cli_launcher)
+    endif(WIN32 AND CLI)
+
     if(UNIX AND NOT APPLE)        
         include(GNUInstallDirs)
         INSTALL (FILES ${PROJECT_SOURCE_DIR}/src/resources/AbracaDABra.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications/ RENAME ${TARGET}.desktop)
