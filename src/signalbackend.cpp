@@ -377,7 +377,7 @@ void SignalBackend::reset()
     setSignalState(0, 0.0);
     frequencyOffsetLabel(tr("N/A"));
     resetSnrStats();
-    m_snrTuneResetCntr = 5;
+    m_snrTuneResetCntr = 6;
 }
 
 void SignalBackend::setSpectrumUpdate()
