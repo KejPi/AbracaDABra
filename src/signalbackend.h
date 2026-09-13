@@ -134,6 +134,7 @@ private:
     int m_numAvrg = 10;
     float m_avrgFactor_dB = -10.0;
 
+    int m_snrTuneResetCntr = 5;
     float m_snrMax = 0.0;
     float m_snrMin = 0.0;
     uint8_t m_lastSyncLevel = 0;

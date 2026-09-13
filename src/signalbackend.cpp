@@ -295,32 +295,37 @@ void SignalBackend::setSignalState(uint8_t sync, float snr)
     addToPlot(snr);
     m_timer->start();
 
-    bool updateSnrStats = false;
-    if (sync >= m_lastSyncLevel || sync == static_cast<uint8_t>(DabSyncLevel::FullSync))
+    if (m_snrTuneResetCntr <= 0)
     {
-        m_lastSyncLevel = sync;
-        m_lastSyncTime = QDateTime::currentDateTime();
-        updateSnrStats = true;
-    }
+        bool updateSnrStats = false;
+        if (sync >= m_lastSyncLevel || sync == static_cast<uint8_t>(DabSyncLevel::FullSync))
+        {
+            m_lastSyncLevel = sync;
+            m_lastSyncTime = QDateTime::currentDateTime();
+            updateSnrStats = true;
+        }
 
-    if (snr > m_snrMax)
-    {
-        m_snrMax = snr;
-        m_snrMaxTime = QDateTime::currentDateTime();
-        snrValueMax(QString("%1 dB").arg(m_snrMax, 0, 'f', 1));
-        updateSnrStats = true;
+        if (snr > m_snrMax)
+        {
+            m_snrMax = snr;
+            m_snrMaxTime = QDateTime::currentDateTime();
+            snrValueMax(QString("%1 dB").arg(m_snrMax, 0, 'f', 1));
+            updateSnrStats = true;
+        }
+        if (snr > 0 && (snr < m_snrMin || m_snrMin == 0.0))
+        {
+            m_snrMin = snr;
+            m_snrMinTime = QDateTime::currentDateTime();
+            snrValueMin(QString("%1 dB").arg(m_snrMin, 0, 'f', 1));
+            updateSnrStats = true;
+        }
+        if (updateSnrStats)
+        {
+            updateSnrToolTip();
+        }
+        return;
     }
-    if (snr > 0 && (snr < m_snrMin || m_snrMin == 0.0))
-    {
-        m_snrMin = snr;
-        m_snrMinTime = QDateTime::currentDateTime();
-        snrValueMin(QString("%1 dB").arg(m_snrMin, 0, 'f', 1));
-        updateSnrStats = true;
-    }
-    if (updateSnrStats)
-    {
-        updateSnrToolTip();
-    }
+    m_snrTuneResetCntr -= 1;
 }
 
 void SignalBackend::setFreqRange()
@@ -371,6 +376,7 @@ void SignalBackend::reset()
     setSignalState(0, 0.0);
     frequencyOffsetLabel(tr("N/A"));
     resetSnrStats();
+    m_snrTuneResetCntr = 5;
 }
 
 void SignalBackend::setSpectrumUpdate()
