@@ -1269,7 +1269,7 @@ void ScannerBackend::storeEnsembleData(const RadioControlTIIData &tiiData, const
         {
             const QList<dabsdrTii_t> &toStore = (ueidChanged || labelChanged || numServicesChanged) ? tiiData.idList : newTiiCodes;
             m_model->appendEnsData(QDateTime::currentDateTime(), toStore, currentEnsId, m_ensemble.label, conf, csvConf, m_servicesSet.size(),
-                                   m_snr / m_snrCntr, m_rfLevel);
+                                   m_snrCntr > 0 ? (m_snr / m_snrCntr) : 0.0, m_rfLevel);
             // qCInfo(scanner) << "Incremental: storing" << toStore.size() << "row(s) @" << m_frequency << "ueidChanged" << ueidChanged <<
             // "labelChanged"
             //                 << labelChanged << "numServicesChanged" << numServicesChanged << "newTiiDetected" << newTiiDetected;
@@ -1297,7 +1297,7 @@ void ScannerBackend::storeEnsembleData(const RadioControlTIIData &tiiData, const
     else
     {
         m_model->appendEnsData(QDateTime::currentDateTime(), tiiData.idList, ServiceListId(m_ensemble), m_ensemble.label, conf, csvConf,
-                               m_servicesSet.size(), m_snr / m_snrCntr, m_rfLevel);
+                               m_servicesSet.size(), m_snrCntr > 0 ? (m_snr / m_snrCntr) : 0.0, m_rfLevel);
     }
 
     int lastNewRow = m_model->rowCount() - 1;
