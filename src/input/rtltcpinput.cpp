@@ -661,7 +661,7 @@ void RtlTcpWorker::run()
     m_dcQ = 0.0;
     m_agcLevel = 0.0;
     m_agcLevelEmitCntr = 0;
-    m_watchdogFlag = false;
+    m_watchdogFlag = true;
 
     if (m_useNativeSocket)
     {
