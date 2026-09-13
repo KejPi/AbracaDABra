@@ -39,10 +39,10 @@ mkdir -p $APPDIR/usr/lib/SoapySDR/
 cp ../../AbracaDABra-libs/lib/SoapySDR/modules0.8/libsdrPlaySupport.so $APPDIR/usr/lib/SoapySDR/
 
 if [ -z ${QT_PATH+x} ]; then
-	QML_SOURCES_PATHS=$QML_DIR QMAKE=$(which qmake6) VERSION=$VER EXTRA_QT_PLUGINS=location DEPLOY_PLATFORM_THEMES=true \
+	QML_SOURCES_PATHS=$QML_DIR QMAKE=$(which qmake6) VERSION=$VER EXTRA_QT_PLUGINS=location DEPLOY_PLATFORM_THEMES=true EXTRA_PLATFORM_PLUGINS=libqoffscreen.so \
 		linuxdeploy --appdir $APPDIR -d ${RESOURCES_DIR}/AbracaDABra.desktop -i $ICON_DIR/AbracaDABra.png --plugin qt --output appimage	
 else
-	QML_SOURCES_PATHS=$QML_DIR QMAKE=$QT_PATH/bin/qmake VERSION=$VER EXTRA_QT_PLUGINS=location DEPLOY_PLATFORM_THEMES=true \
+	QML_SOURCES_PATHS=$QML_DIR QMAKE=$QT_PATH/bin/qmake VERSION=$VER EXTRA_QT_PLUGINS=location DEPLOY_PLATFORM_THEMES=true EXTRA_PLATFORM_PLUGINS=libqoffscreen.so \
 		linuxdeploy --appdir $APPDIR -d ${RESOURCES_DIR}/AbracaDABra.desktop -i $ICON_DIR/AbracaDABra.png --plugin qt --output appimage
 fi
 
