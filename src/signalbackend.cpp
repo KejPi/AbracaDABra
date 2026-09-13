@@ -326,6 +326,7 @@ void SignalBackend::setSignalState(uint8_t sync, float snr)
         return;
     }
     m_snrTuneResetCntr -= 1;
+    m_snrResetTime = QDateTime::currentDateTime();
 }
 
 void SignalBackend::setFreqRange()
