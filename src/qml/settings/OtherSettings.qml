@@ -560,55 +560,67 @@ Item {
                         Layout.fillWidth: true
                         isVertical: false
                         Layout.topMargin: UI.standardMargin
-                        Layout.bottomMargin: 2*UI.standardMargin
+                        Layout.bottomMargin: UI.standardMargin
                     }
-                    AbracaSwitch {
+                    AbracaGroupBox {
+                        id: othersGroupbox
                         Layout.fillWidth: true
-                        //Layout.minimumWidth: implicitWidth
-                        text: qsTr("Restore application windows on start")
-                        wrapMode: Text.WordWrap
-                        checked: settingsBackend.restoreWindowsOnStart
-                        onCheckedChanged: {
-                            if (settingsBackend.restoreWindowsOnStart !== checked) {
-                                settingsBackend.restoreWindowsOnStart = checked
-                            }
-                        }
-                        visible: UI.isAndroid === false
-                    }
-                    AbracaSwitch {
-                        Layout.fillWidth: true
-                        //Layout.minimumWidth: implicitWidth
-                        text: qsTr("Check for application update on start")
-                        wrapMode: Text.WordWrap
-                        checked: settingsBackend.isCheckForUpdatesEnabled
-                        onCheckedChanged: {
-                            if (settingsBackend.isCheckForUpdatesEnabled !== checked) {
-                                settingsBackend.isCheckForUpdatesEnabled = checked
-                            }
-                        }
-                    }
+                        Item {
+                            width: othersGroupbox.width
+                            implicitHeight: othersLayout.implicitHeight
+                            ColumnLayout {
+                                id: othersLayout
+                                anchors.fill: parent
+                                AbracaSwitch {
+                                    Layout.fillWidth: true
+                                    //Layout.minimumWidth: implicitWidth
+                                    text: qsTr("Restore application windows on start")
+                                    wrapMode: Text.WordWrap
+                                    checked: settingsBackend.restoreWindowsOnStart
+                                    onCheckedChanged: {
+                                        if (settingsBackend.restoreWindowsOnStart !== checked) {
+                                            settingsBackend.restoreWindowsOnStart = checked
+                                        }
+                                    }
+                                    visible: UI.isAndroid === false
+                                }
+                                AbracaSwitch {
+                                    Layout.fillWidth: true
+                                    //Layout.minimumWidth: implicitWidth
+                                    text: qsTr("Check for application update on start")
+                                    wrapMode: Text.WordWrap
+                                    checked: settingsBackend.isCheckForUpdatesEnabled
+                                    onCheckedChanged: {
+                                        if (settingsBackend.isCheckForUpdatesEnabled !== checked) {
+                                            settingsBackend.isCheckForUpdatesEnabled = checked
+                                        }
+                                    }
+                                }
 
-                    AbracaSwitch {
-                        Layout.fillWidth: true
-                        //Layout.minimumWidth: implicitWidth
-                        text: qsTr("Include XML header in raw data recording")
-                        wrapMode: Text.WordWrap
-                        checked: settingsBackend.isXmlHeaderEnabled
-                        onCheckedChanged: {
-                            if (settingsBackend.isXmlHeaderEnabled !== checked) {
-                                settingsBackend.isXmlHeaderEnabled = checked
-                            }
-                        }
-                    }
-                    AbracaSwitch {
-                        Layout.fillWidth: true
-                        //Layout.minimumWidth: implicitWidth
-                        text: qsTr("DAB cable channels (16A - 17D)")
-                        wrapMode: Text.WordWrap
-                        checked: settingsBackend.cableChannelsEna
-                        onCheckedChanged: {
-                            if (settingsBackend.cableChannelsEna !== checked) {
-                                settingsBackend.cableChannelsEna = checked
+                                AbracaSwitch {
+                                    Layout.fillWidth: true
+                                    //Layout.minimumWidth: implicitWidth
+                                    text: qsTr("Include XML header in raw data recording")
+                                    wrapMode: Text.WordWrap
+                                    checked: settingsBackend.isXmlHeaderEnabled
+                                    onCheckedChanged: {
+                                        if (settingsBackend.isXmlHeaderEnabled !== checked) {
+                                            settingsBackend.isXmlHeaderEnabled = checked
+                                        }
+                                    }
+                                }
+                                AbracaSwitch {
+                                    Layout.fillWidth: true
+                                    //Layout.minimumWidth: implicitWidth
+                                    text: qsTr("DAB cable channels (16A - 17D)")
+                                    wrapMode: Text.WordWrap
+                                    checked: settingsBackend.cableChannelsEna
+                                    onCheckedChanged: {
+                                        if (settingsBackend.cableChannelsEna !== checked) {
+                                            settingsBackend.cableChannelsEna = checked
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
