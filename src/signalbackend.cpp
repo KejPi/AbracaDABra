@@ -43,7 +43,7 @@ SignalBackend::SignalBackend(Settings *settings, int freq, QObject *parent) : UI
     m_spectYViewMin = m_spectYRangeMin;
     m_spectYViewMax = m_spectYRangeMax;
 
-    resetSnrStats();
+    resetSnrStats(true);
 
     m_timer = new QTimer;
     m_timer->setInterval(1500);
@@ -68,6 +68,11 @@ SignalBackend::~SignalBackend()
 {
     m_timer->stop();
     delete m_timer;
+    if (m_snrStatsDeadtimeTimer)
+    {
+        m_snrStatsDeadtimeTimer->stop();
+        delete m_snrStatsDeadtimeTimer;
+    }
 }
 
 void SignalBackend::registerSpectrumPlot(QQuickItem *item)
@@ -173,7 +178,7 @@ void SignalBackend::unregisterWaterfallPlot(QQuickItem *item)
     m_waterfallPlotItems.removeAll(dynamic_cast<WaterfallItem *>(item));
 }
 
-void SignalBackend::resetSnrStats()
+void SignalBackend::resetSnrStats(bool setDeadTime)
 {
     m_snrMax = m_snrMin = 0.0;
     m_snrResetTime = m_snrMinTime = m_snrMaxTime = QDateTime::currentDateTime();
@@ -181,6 +186,28 @@ void SignalBackend::resetSnrStats()
     snrValueMin("0.0 dB");
     snrValueMax("0.0 dB");
     snrTooltip("");
+    m_snrStatsActive = !setDeadTime;
+    if (setDeadTime)
+    {  // Set a deadtime to avoid immediate reset of SNR stats after switching to another frequency
+        if (m_snrStatsDeadtimeTimer)
+        {
+            m_snrStatsDeadtimeTimer->stop();
+            m_snrStatsDeadtimeTimer->deleteLater();
+            m_snrStatsDeadtimeTimer = nullptr;
+        }
+        m_snrStatsDeadtimeTimer = new QTimer(this);
+        m_snrStatsDeadtimeTimer->setSingleShot(true);
+        connect(m_snrStatsDeadtimeTimer, &QTimer::timeout, this,
+                [this]()
+                {
+                    m_snrStatsActive = true;
+                    m_snrStatsDeadtimeTimer->deleteLater();
+                    m_snrStatsDeadtimeTimer = nullptr;
+
+                    m_snrResetTime = QDateTime::currentDateTime();
+                });
+        m_snrStatsDeadtimeTimer->start(snrStatsDeadtime);
+    }
 }
 
 void SignalBackend::registerSnrPlot(QQuickItem *item)
@@ -295,7 +322,7 @@ void SignalBackend::setSignalState(uint8_t sync, float snr)
     addToPlot(snr);
     m_timer->start();
 
-    if (m_snrTuneResetCntr <= 0)
+    if (m_snrStatsActive)
     {
         bool updateSnrStats = false;
         if (sync >= m_lastSyncLevel || sync == static_cast<uint8_t>(DabSyncLevel::FullSync))
@@ -323,10 +350,7 @@ void SignalBackend::setSignalState(uint8_t sync, float snr)
         {
             updateSnrToolTip();
         }
-        return;
     }
-    m_snrTuneResetCntr -= 1;
-    m_snrResetTime = QDateTime::currentDateTime();
 }
 
 void SignalBackend::setFreqRange()
@@ -376,8 +400,7 @@ void SignalBackend::reset()
     setGainVisible(false);
     setSignalState(0, 0.0);
     frequencyOffsetLabel(tr("N/A"));
-    resetSnrStats();
-    m_snrTuneResetCntr = 6;
+    resetSnrStats(true);
 }
 
 void SignalBackend::setSpectrumUpdate()

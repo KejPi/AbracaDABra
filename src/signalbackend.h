@@ -66,7 +66,7 @@ public:
     Q_INVOKABLE void registerSnrPlot(QQuickItem *item);
     Q_INVOKABLE void registerWaterfallPlot(QQuickItem *item);
     Q_INVOKABLE void unregisterWaterfallPlot(QQuickItem *item);
-    Q_INVOKABLE void resetSnrStats();
+    Q_INVOKABLE void resetSnrStats(bool setDeadTime = false);
 
     void setIsUndocked(bool isUndocked);
     bool isUndocked() const { return m_isUndocked; }
@@ -97,12 +97,14 @@ public:
 private:
     enum
     {
-        xPlotRange = 60  // 60 seconds
+        xPlotRange = 60,         // 60 seconds
+        snrStatsDeadtime = 2500  // 2.5 seconds
     };
 
     Settings *m_settings = nullptr;
     qint64 m_startTimeMsec = 0;
     QTimer *m_timer = nullptr;
+    QTimer *m_snrStatsDeadtimeTimer = nullptr;
 
     bool m_isUndocked = false;  // this flag holds the information if the page is undocked
 
@@ -134,7 +136,7 @@ private:
     int m_numAvrg = 10;
     float m_avrgFactor_dB = -10.0;
 
-    int m_snrTuneResetCntr = 6;
+    bool m_snrStatsActive = false;
     float m_snrMax = 0.0;
     float m_snrMin = 0.0;
     uint8_t m_lastSyncLevel = 0;
