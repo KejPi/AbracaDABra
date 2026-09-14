@@ -1283,7 +1283,10 @@ void ScannerBackend::storeEnsembleData(const RadioControlTIIData &tiiData, const
         baseline.hasData = true;
         baseline.ueid = currentEnsId.ueid();
         baseline.ensLabel = m_ensemble.label;
-        baseline.numServices = m_servicesSet.size();
+        if (numServicesChanged)
+        {  // this condition excludes saving 0 services as new baseline
+            baseline.numServices = m_servicesSet.size();
+        }
         if (ueidChanged)
         {
             // UEID changed — old TII codes belong to a different ensemble, start fresh
