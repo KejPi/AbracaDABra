@@ -1283,7 +1283,7 @@ void ScannerBackend::storeEnsembleData(const RadioControlTIIData &tiiData, const
         baseline.hasData = true;
         baseline.ueid = currentEnsId.ueid();
         baseline.ensLabel = m_ensemble.label;
-        if (numServicesChanged)
+        if ((baseline.numServices != m_servicesSet.size()) && !m_servicesSet.isEmpty())
         {  // this condition excludes saving 0 services as new baseline
             baseline.numServices = m_servicesSet.size();
         }
