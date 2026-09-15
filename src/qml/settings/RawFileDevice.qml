@@ -67,7 +67,7 @@ Item {
                     }
                 }
                 property int w: -1
-                Layout.preferredWidth: w > 0 ? 1.5*w : 1.5*implicitWidth
+                Layout.preferredWidth: UI.isMobile ? implicitWidth : (w > 0 ? 1.5*w : 1.5*implicitWidth)
                 onImplicitWidthChanged: {
                     if (implicitWidth > w) {
                         w = implicitWidth
@@ -144,46 +144,54 @@ Item {
                 }
             }
         }
-
         Item {
             Layout.fillWidth: true
             Layout.preferredHeight: UI.standardMargin
         }
-        GridLayout {
-            id: deviceInfoLayout
-            visible: settingsBackend.rawFileXmlHeader.length > 0
-            Layout.alignment: Qt.AlignHCenter
-            rows: 8
-            flow: GridLayout.TopToBottom
-            AbracaLabel {
-                text: qsTr("Recording date:")
-            }
-            AbracaLabel {
-                text: qsTr("Recorder:")
-            }
-            AbracaLabel {
-                text: qsTr("Device:")
-            }
-            AbracaLabel {
-                text: qsTr("Model:")
-            }
-            AbracaLabel {
-                text: qsTr("Sample rate [Hz]:")
-            }
-            AbracaLabel {
-                text: qsTr("Frequency [kHz]:")
-            }
-            AbracaLabel {
-                text: qsTr("Recording length [sec]:")
-            }
-            AbracaLabel {
-                text: qsTr("Sample format:")
-            }
-            Repeater {
-                model: settingsBackend.rawFileXmlHeader
+        Item {
+            Layout.fillWidth: true
+            implicitHeight: deviceInfoLayout.implicitHeight
+            GridLayout {
+                id: deviceInfoLayout
+                visible: settingsBackend.rawFileXmlHeader.length > 0
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                rows: 8
+                flow: GridLayout.TopToBottom
                 AbracaLabel {
-                    required property string modelData
-                    text: modelData
+                    text: qsTr("Recording date:")
+                }
+                AbracaLabel {
+                    text: qsTr("Recorder:")
+                }
+                AbracaLabel {
+                    text: qsTr("Device:")
+                }
+                AbracaLabel {
+                    text: qsTr("Model:")
+                }
+                AbracaLabel {
+                    text: qsTr("Sample rate [Hz]:")
+                }
+                AbracaLabel {
+                    text: qsTr("Frequency [kHz]:")
+                }
+                AbracaLabel {
+                    text: qsTr("Recording length [sec]:")
+                }
+                AbracaLabel {
+                    text: qsTr("Sample format:")
+                }
+                Repeater {
+                    model: settingsBackend.rawFileXmlHeader
+                    Label {
+                        required property string modelData
+                        Layout.fillWidth: true
+                        elide: Text.ElideRight
+                        text: modelData
+                    }
                 }
             }
         }
