@@ -138,17 +138,31 @@ QModelIndex SLTreeModel::index(int row, int column, const QModelIndex &parent) c
         return QModelIndex();
     }
 
-    SLModelItem *parentItem;
-
     if (!parent.isValid())
-    {
-        parentItem = m_rootItem;
-    }
-    else
-    {
-        parentItem = static_cast<SLModelItem *>(parent.internalPointer());
+    {  // ensemble level -> row must be resolved against visible ensembles when filtering
+        SLModelItem *childItem = nullptr;
+        if (!m_filterCurrentEnsemble)
+        {
+            childItem = m_rootItem->child(row);
+        }
+        else
+        {
+            int visibleRow = -1;
+            for (int i = 0; i < m_rootItem->childCount(); ++i)
+            {
+                SLModelItem *candidate = m_rootItem->child(i);
+                if (isEnsembleVisible(candidate) && (++visibleRow == row))
+                {
+                    childItem = candidate;
+                    break;
+                }
+            }
+        }
+
+        return childItem ? createIndex(row, column, childItem) : QModelIndex();
     }
 
+    SLModelItem *parentItem = static_cast<SLModelItem *>(parent.internalPointer());
     SLModelItem *childItem = parentItem->child(row);
     if (childItem)
     {
@@ -175,7 +189,9 @@ QModelIndex SLTreeModel::parent(const QModelIndex &index) const
         return QModelIndex();
     }
 
-    return createIndex(parentItem->row(), 0, parentItem);
+    int row = (m_filterCurrentEnsemble && parentItem->parentItem() == m_rootItem) ? visibleRootRow(parentItem) : parentItem->row();
+
+    return createIndex(row, 0, parentItem);
 }
 
 int SLTreeModel::rowCount(const QModelIndex &parent) const
@@ -195,11 +211,90 @@ int SLTreeModel::rowCount(const QModelIndex &parent) const
         parentItem = static_cast<SLModelItem *>(parent.internalPointer());
     }
 
+    if (parentItem == m_rootItem && m_filterCurrentEnsemble)
+    {
+        int count = 0;
+        for (int i = 0; i < m_rootItem->childCount(); ++i)
+        {
+            if (isEnsembleVisible(m_rootItem->child(i)))
+            {
+                ++count;
+            }
+        }
+        return count;
+    }
+
     return parentItem->childCount();
+}
+
+bool SLTreeModel::isEnsembleVisible(SLModelItem *ensItem) const
+{
+    return !m_filterCurrentEnsemble || (ensItem->id() == m_currentEnsembleId);
+}
+
+int SLTreeModel::visibleRootRow(SLModelItem *item) const
+{
+    int row = -1;
+    for (int i = 0; i < m_rootItem->childCount(); ++i)
+    {
+        SLModelItem *candidate = m_rootItem->child(i);
+        if (isEnsembleVisible(candidate))
+        {
+            ++row;
+        }
+        if (candidate == item)
+        {
+            return isEnsembleVisible(candidate) ? row : -1;
+        }
+    }
+    return -1;
 }
 
 void SLTreeModel::addEnsembleService(const ServiceListId &ensId, const ServiceListId &servId)
 {  // new service in service list
+
+    if (m_filterCurrentEnsemble)
+    {  // filtered row numbers do not match real child indices -> reset instead of fine-grained signalling
+        beginResetModel();
+
+        SLModelItem *ensChild = m_rootItem->findChildId(ensId);
+        if (nullptr == ensChild)
+        {
+            ensChild = new SLModelItem(m_slPtr, m_metadataMgrPtr, ensId, m_rootItem);
+            m_rootItem->appendChild(ensChild);
+        }
+
+        if (servId.scids() != 0)
+        {
+            ServiceListId id(servId.sid(), uint8_t(0));
+            SLModelItem *serviceChild = ensChild->findChildId(id);
+            if (nullptr != serviceChild)
+            {
+                serviceChild->appendChild(new SLModelItem(m_slPtr, m_metadataMgrPtr, servId, serviceChild));
+            }
+            else
+            {
+                qCInfo(serviceList, "Adding %6.6X : %d as primary service [old DAB standard]", servId.sid(), servId.scids());
+                serviceChild = ensChild->findChildId(servId);
+                if (nullptr == serviceChild)
+                {
+                    ensChild->appendChild(new SLModelItem(m_slPtr, m_metadataMgrPtr, servId, ensChild));
+                }
+            }
+        }
+        else
+        {
+            SLModelItem *serviceChild = ensChild->findChildId(servId);
+            if (nullptr == serviceChild)
+            {
+                ensChild->appendChild(new SLModelItem(m_slPtr, m_metadataMgrPtr, servId, ensChild));
+            }
+        }
+
+        endResetModel();
+        sort(0);
+        return;
+    }
 
     SLModelItem *ensChild = m_rootItem->findChildId(ensId);
     if (nullptr == ensChild)
@@ -264,13 +359,23 @@ void SLTreeModel::removeEnsembleService(const ServiceListId &ensId, const Servic
 
     // search for servId recursively (it can be secondary service)
     SLModelItem *serviceChild = ensChild->findChildId(servId, true);
-    if (nullptr != serviceChild)
-    {  // found
-        // beginRemoveRows(index(ensChild->row(), 0, QModelIndex()), serviceChild->row(), serviceChild->row());
-        beginRemoveRows(index(serviceChild->parentItem()->row(), 0, QModelIndex()), serviceChild->row(), serviceChild->row());
-        serviceChild->parentItem()->removeChildId(servId);
-        endRemoveRows();
+    if (nullptr == serviceChild)
+    {
+        return;
     }
+
+    if (m_filterCurrentEnsemble)
+    {  // filtered row numbers do not match real child indices -> reset instead of fine-grained signalling
+        beginResetModel();
+        serviceChild->parentItem()->removeChildId(servId);
+        endResetModel();
+        return;
+    }
+
+    // beginRemoveRows(index(ensChild->row(), 0, QModelIndex()), serviceChild->row(), serviceChild->row());
+    beginRemoveRows(index(serviceChild->parentItem()->row(), 0, QModelIndex()), serviceChild->row(), serviceChild->row());
+    serviceChild->parentItem()->removeChildId(servId);
+    endRemoveRows();
 }
 
 void SLTreeModel::removeEnsemble(const ServiceListId &ensId)
@@ -281,9 +386,48 @@ void SLTreeModel::removeEnsemble(const ServiceListId &ensId)
         return;
     }
 
+    if (m_filterCurrentEnsemble)
+    {  // filtered row numbers do not match real child indices -> reset instead of fine-grained signalling
+        beginResetModel();
+        m_rootItem->removeChildId(ensId);
+        endResetModel();
+        return;
+    }
+
     beginRemoveRows(QModelIndex(), ensChild->row(), ensChild->row());
     m_rootItem->removeChildId(ensId);
     endRemoveRows();
+}
+
+void SLTreeModel::setFilterCurrentEnsembleOnly(bool enabled)
+{
+    if (m_filterCurrentEnsemble == enabled)
+    {
+        return;
+    }
+
+    beginResetModel();
+    m_filterCurrentEnsemble = enabled;
+    endResetModel();
+}
+
+void SLTreeModel::setCurrentEnsembleId(const ServiceListId &ensId)
+{
+    if (m_currentEnsembleId == ensId)
+    {
+        return;
+    }
+
+    if (m_filterCurrentEnsemble)
+    {
+        beginResetModel();
+        m_currentEnsembleId = ensId;
+        endResetModel();
+    }
+    else
+    {
+        m_currentEnsembleId = ensId;
+    }
 }
 
 void SLTreeModel::clear()

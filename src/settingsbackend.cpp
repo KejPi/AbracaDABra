@@ -604,6 +604,7 @@ void SettingsBackend::init(Settings *settings)
     emit compactUiChanged();
     emit cableChannelsEnaChanged();
     emit showServicePageWidgetChanged();
+    emit filterServiceTreeByEnsembleChanged();
 }
 
 void SettingsBackend::setRawFileLength(int msec)

@@ -227,6 +227,7 @@ class SettingsBackend : public UIControlProvider
     UI_PROPERTY_SETTINGS(QString, dataStoragePath, m_settings->dataStoragePath)
     UI_PROPERTY_SETTINGS(bool, keepScreenOn, m_settings->keepScreenOn)
     UI_PROPERTY_SETTINGS(bool, showServicePageWidget, m_settings->showServicePageWidget)
+    UI_PROPERTY_SETTINGS(bool, filterServiceTreeByEnsemble, m_settings->filterServiceTreeByEnsemble)
     UI_PROPERTY_DEFAULT(int, slsScaling, -1)
 
 public:

@@ -201,6 +201,7 @@ public:
     bool cableChannelsEna;
     QString dataStoragePath;
     bool showServicePageWidget;
+    bool filterServiceTreeByEnsemble;
     bool keepScreenOn;  // Keep screen on (Android only)
 
     struct

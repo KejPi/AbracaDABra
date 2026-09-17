@@ -188,6 +188,18 @@ Item {
                                 }
                                 AbracaSwitch {
                                     Layout.fillWidth: true
+                                    text: qsTr("Show only current ensemble in service tree")
+                                    checked: settingsBackend.filterServiceTreeByEnsemble
+                                    onCheckedChanged: {
+                                        if (settingsBackend.filterServiceTreeByEnsemble !== checked) {
+                                            settingsBackend.filterServiceTreeByEnsemble = checked
+                                        }
+                                    }
+                                    wrapMode: Text.WordWrap
+                                    elideMode: Text.ElideNone
+                                }
+                                AbracaSwitch {
+                                    Layout.fillWidth: true
                                     text: qsTr("Show system time when DAB time is not available")
                                     checked: settingsBackend.showSystemTime
                                     onCheckedChanged: {

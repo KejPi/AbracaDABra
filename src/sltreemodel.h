@@ -60,11 +60,18 @@ public slots:
     void removeEnsembleService(const ServiceListId &ensId, const ServiceListId &servId);
     void removeEnsemble(const ServiceListId &ensId);
     void clear();
+    void setFilterCurrentEnsembleOnly(bool enabled);
+    void setCurrentEnsembleId(const ServiceListId &ensId);
 
 private:
+    bool isEnsembleVisible(SLModelItem *ensItem) const;
+    int visibleRootRow(SLModelItem *item) const;
+
     SLModelItem *m_rootItem;
     const ServiceList *m_slPtr;
     const MetadataManager *m_metadataMgrPtr;
+    bool m_filterCurrentEnsemble = false;
+    ServiceListId m_currentEnsembleId = ServiceListId(0);
 };
 
 #endif  // SLTREEMODEL_H

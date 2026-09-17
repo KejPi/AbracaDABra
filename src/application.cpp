@@ -432,6 +432,10 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     m_slTreeModel = new SLTreeModel(m_serviceList, m_metadataManager, this);
     m_slTreeSelectionModel = new QItemSelectionModel(m_slTreeModel, this);
 
+    m_slTreeModel->setFilterCurrentEnsembleOnly(m_settings->filterServiceTreeByEnsemble);
+    connect(m_settingsBackend, &SettingsBackend::filterServiceTreeByEnsembleChanged, this,
+            [this]() { m_slTreeModel->setFilterCurrentEnsembleOnly(m_settings->filterServiceTreeByEnsemble); });
+
     connect(m_serviceList, &ServiceList::serviceAddedToEnsemble, m_slTreeModel, &SLTreeModel::addEnsembleService);
     connect(m_serviceList, &ServiceList::serviceUpdatedInEnsemble, m_slTreeModel, &SLTreeModel::updateEnsembleService);
     connect(m_serviceList, &ServiceList::serviceRemovedFromEnsemble, m_slTreeModel, &SLTreeModel::removeEnsembleService);
@@ -993,6 +997,7 @@ void Application::onEnsembleInfo(const RadioControlEnsemble &ens)
     m_ueid = ens.ueid;
 
     m_ui->ensembleId(ServiceListId(ens.frequency, ens.ueid));
+    m_slTreeModel->setCurrentEnsembleId(ServiceListId(ens.frequency, ens.ueid));
 
     QPixmap logo = m_metadataManager->data(ServiceListId(ens.frequency, ens.ueid), ServiceListId(), MetadataManager::SmallLogo).value<QPixmap>();
     if (!logo.isNull())
@@ -3309,6 +3314,7 @@ void Application::loadSettings()
     m_settings->showEnsFlag = settings->value("showEnsembleCountryFlag", false).toBool();
     m_settings->showServiceFlag = settings->value("showServiceCountryFlag", false).toBool();
     m_settings->showServicePageWidget = settings->value("showServicePageWidget", false).toBool();
+    m_settings->filterServiceTreeByEnsemble = settings->value("filterServiceListByEnsemble", false).toBool();
     m_ui->servicePageWidget(static_cast<ApplicationUI::ServicePageWidget>(
         settings->value("servicePageWidget", static_cast<int>(ApplicationUI::ServicePageWidget::TII)).toInt()));
 #ifdef Q_OS_ANDROID
@@ -3648,6 +3654,7 @@ void Application::saveSettings()
     settings->setValue("compactUi", m_settings->compactUi);
     settings->setValue("cableChannelsEna", m_settings->cableChannelsEna);
     settings->setValue("showServicePageWidget", m_settings->showServicePageWidget);
+    settings->setValue("filterServiceListByEnsemble", m_settings->filterServiceTreeByEnsemble);
     settings->setValue("servicePageWidget", static_cast<int>(m_ui->servicePageWidget()));
     settings->setValue("slsScaling", static_cast<int>(m_settings->slsScaling));
 #ifdef Q_OS_ANDROID
