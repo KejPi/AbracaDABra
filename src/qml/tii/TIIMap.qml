@@ -428,7 +428,7 @@ Item {
             }
             Item {
                 id: logButtonItem
-                readonly property int spacing: 7
+                readonly property int spacing: 5
                 Layout.preferredHeight: mainItem.buttonsSize
                 Layout.preferredWidth: Math.max(logText.width + recSymbol.width + 2*spacing + (logText.visible ? spacing : 0), mainItem.buttonsSize)
                 visible: backend.isTii
@@ -437,12 +437,6 @@ Item {
                     anchors.fill: parent
                     radius: UI.controlRadius
                     color: UI.colors.background
-                    opacity: logMouseArea.containsMouse ? 1.0 : 0.75
-                    Behavior on opacity {
-                        SmoothedAnimation {
-                            velocity: 100
-                        }
-                    }
                     AbracaLabel {
                         id: logText
                         anchors.verticalCenter: parent.verticalCenter
@@ -452,31 +446,63 @@ Item {
                         visible: logMouseArea.containsMouse && UI.isDesktop
                     }
                 }
+                MouseArea {
+                    id: logMouseArea
+                    enabled: true
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    // cursorShape: Qt.PointingHandCursor
+                    propagateComposedEvents: true
+                    onClicked: {
+                        // recSymbol.opacity = 1.0
+                        backend.startStopLog();
+                    }
+                }
+                Timer {
+                    id: recSymbolBlinkTimer
+                    interval: 1000
+                    repeat: true
+                    running: backend.isRecordingLog
+                    onRunningChanged: {
+                        if (!running) {
+                            redCircle.opacity = 1.0
+                        }
+                    }
+                    onTriggered: {
+                        redCircle.opacity = redCircle.opacity === 1.0 ? 0.2 : 1.0
+                    }
+                }
                 Rectangle {
-                    id: recSymbol
-                    color: backend.isRecordingLog ? "#ff4b4b" : logMouseArea.containsMouse ? UI.colors.textPrimary : UI.colors.textSecondary
+                    id: redCircle
                     height: mainItem.buttonsSize / 2
                     width: height
-                    radius: 50
+                    radius: width / 2
+
                     anchors.verticalCenter: logButton.verticalCenter
                     anchors.left: logButton.left
                     anchors.leftMargin: (mainItem.buttonsSize- height) / 2
-                    SequentialAnimation on opacity {
-                        loops: Animation.Infinite
-                        PropertyAnimation { from: 1.0; to: 0.5; duration: 1000 }
-                        PropertyAnimation { from: 0.5; to: 1.0; duration: 1000 }
-                        running: backend.isRecordingLog
+                    color: backend.isRecordingLog ? "red" : (logMouseArea.containsMouse ? UI.colors.textPrimary : UI.colors.textSecondary)
+                    opacity: 1.0
+
+                    // Smooth opacity transition
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 100
+                            easing.type: Easing.InOutQuad
+                        }
                     }
                 }
-                MouseArea {
-                    id: logMouseArea
-                    hoverEnabled: true
-                    anchors.fill: parent
-                    propagateComposedEvents: true
-                    onClicked: {
-                        recSymbol.opacity = 1.0
-                        backend.startStopLog();
-                    }
+
+                Rectangle {
+                    id: recSymbol
+                    anchors.centerIn: redCircle
+                    width: redCircle.width + 4
+                    height: redCircle.height + 4
+                    radius: width / 2
+                    color: "transparent"
+                    border.color: "red"
+                    border.width: 2
+                    opacity: backend.isRecordingLog ? redCircle.opacity * 0.3 : 0.0
                 }
             }
         }
