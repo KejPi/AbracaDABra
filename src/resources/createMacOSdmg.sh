@@ -51,6 +51,14 @@ mkdir -p $BUILD_DIR/src/AbracaDABra.app/Contents/Plugins/SoapySDR
 cp $DIR/../AbracaDABra-libs-aarch64/lib/SoapySDR/modules0.8-3/libsdrPlaySupport.so $BUILD_DIR/src/AbracaDABra.app/Contents/Plugins/SoapySDR/
 install_name_tool -change libsdrplay_api.so.3 /usr/local/lib/libsdrplay_api.so.3 $BUILD_DIR/src/AbracaDABra.app/Contents/Plugins/SoapySDR/libsdrPlaySupport.so
 
+# Deploy offsreen
+mkdir -p $BUILD_DIR/src/AbracaDABra.app/Contents/PlugIns/platforms/
+cp $QT_PATH/plugins/platforms/libqoffscreen.dylib  $BUILD_DIR/src/AbracaDABra.app/Contents/PlugIns/platforms/
+chmod +w $BUILD_DIR/src/AbracaDABra.app/Contents/PlugIns/platforms/libqoffscreen.dylib
+install_name_tool -change $QT_DIR/lib/QtCore.framework/Versions/A/QtCore @loader_path/../../Frameworks/QtCore.framework/Versions/A/QtCore $BUILD_DIR/src/AbracaDABra.app/Contents/PlugIns/platforms/libqoffscreen.dylib
+install_name_tool -change $QT_DIR/lib/QtGui.framework/Versions/A/QtGui @loader_path/../../Frameworks/QtGui.framework/Versions/A/QtGui $BUILD_DIR/src/AbracaDABra.app/Contents/PlugIns/platforms/libqoffscreen.dylib
+# codesign --force --deep --sign "-" AbracaDABra.app
+
 cd $BUILD_DIR/src
 $QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/src/qml -libpath=$DIR/../AbracaDABra-libs-aarch64/lib/ -codesign="-" # -dmg
 
@@ -76,6 +84,14 @@ cmake --build $BUILD_DIR --config Release
 mkdir -p $BUILD_DIR/src/AbracaDABra.app/Contents/Plugins/SoapySDR
 cp $DIR/../AbracaDABra-libs-x86/lib/SoapySDR/modules0.8-3/libsdrPlaySupport.so $BUILD_DIR/src/AbracaDABra.app/Contents/Plugins/SoapySDR/
 install_name_tool -change libsdrplay_api.so.3 /usr/local/lib/libsdrplay_api.so.3 $BUILD_DIR/src/AbracaDABra.app/Contents/Plugins/SoapySDR/libsdrPlaySupport.so
+
+# Deploy offsreen
+mkdir -p $BUILD_DIR/src/AbracaDABra.app/Contents/PlugIns/platforms/
+cp $QT_PATH/plugins/platforms/libqoffscreen.dylib  $BUILD_DIR/src/AbracaDABra.app/Contents/PlugIns/platforms/
+chmod +w $BUILD_DIR/src/AbracaDABra.app/Contents/PlugIns/platforms/libqoffscreen.dylib
+install_name_tool -change $QT_DIR/lib/QtCore.framework/Versions/A/QtCore @loader_path/../../Frameworks/QtCore.framework/Versions/A/QtCore $BUILD_DIR/src/AbracaDABra.app/Contents/PlugIns/platforms/libqoffscreen.dylib
+install_name_tool -change $QT_DIR/lib/QtGui.framework/Versions/A/QtGui @loader_path/../../Frameworks/QtGui.framework/Versions/A/QtGui $BUILD_DIR/src/AbracaDABra.app/Contents/PlugIns/platforms/libqoffscreen.dylib
+# codesign --force --deep --sign "-" AbracaDABra.app
 
 cd $BUILD_DIR/src
 $QT_PATH/bin/macdeployqt AbracaDABra.app -qmldir=$DIR/src/qml  -libpath=$DIR/../AbracaDABra-libs-x86/lib/ -codesign="-" # -dmg
