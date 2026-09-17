@@ -97,8 +97,8 @@ public:
 private:
     enum
     {
-        xPlotRange = 60,         // 60 seconds
-        snrStatsDeadtime = 3000  // 3 seconds
+        xPlotRange = 60,         // 60 sec
+        snrStatsDeadtime = 2800  // 2.8 sec
     };
 
     Settings *m_settings = nullptr;
