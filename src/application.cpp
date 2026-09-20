@@ -3314,7 +3314,7 @@ void Application::loadSettings()
     m_settings->showEnsFlag = settings->value("showEnsembleCountryFlag", false).toBool();
     m_settings->showServiceFlag = settings->value("showServiceCountryFlag", false).toBool();
     m_settings->showServicePageWidget = settings->value("showServicePageWidget", false).toBool();
-    m_settings->filterServiceTreeByEnsemble = settings->value("filterServiceListByEnsemble", false).toBool();
+    m_settings->filterServiceTreeByEnsemble = settings->value("filterServiceTreeByEnsemble", false).toBool();
     m_ui->servicePageWidget(static_cast<ApplicationUI::ServicePageWidget>(
         settings->value("servicePageWidget", static_cast<int>(ApplicationUI::ServicePageWidget::TII)).toInt()));
 #ifdef Q_OS_ANDROID
@@ -3654,7 +3654,7 @@ void Application::saveSettings()
     settings->setValue("compactUi", m_settings->compactUi);
     settings->setValue("cableChannelsEna", m_settings->cableChannelsEna);
     settings->setValue("showServicePageWidget", m_settings->showServicePageWidget);
-    settings->setValue("filterServiceListByEnsemble", m_settings->filterServiceTreeByEnsemble);
+    settings->setValue("filterServiceTreeByEnsemble", m_settings->filterServiceTreeByEnsemble);
     settings->setValue("servicePageWidget", static_cast<int>(m_ui->servicePageWidget()));
     settings->setValue("slsScaling", static_cast<int>(m_settings->slsScaling));
 #ifdef Q_OS_ANDROID
