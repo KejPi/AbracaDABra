@@ -758,7 +758,7 @@ void RtlTcpWorker::runNativeSocket()
         }
         else
         {  // -1 is error, 0 is timeout
-            qCCritical(rtlTcpInput) << "Unable to connect";
+            qCCritical(rtlTcpInput) << "Unable to connect:" << strerror(errno);
         }
 #else  // (_WIN32_WINNT < 0x0600)
        // poll API does not exist :-(
@@ -786,7 +786,7 @@ void RtlTcpWorker::runNativeSocket()
         }
         else
         {  // -1 is error, 0 is timeout
-            qCCritical(rtlTcpInput) << "Unable to connect";
+            qCCritical(rtlTcpInput) << "Unable to connect:" << strerror(errno);
         }
 #endif
 
@@ -838,7 +838,7 @@ void RtlTcpWorker::runNativeSocket()
         }
         else
         {  // -1 is error, 0 is timeout
-            qCCritical(rtlTcpInput) << "Unable to connect";
+            qCCritical(rtlTcpInput) << "Unable to connect:" << strerror(errno);
         }
 #endif
 
