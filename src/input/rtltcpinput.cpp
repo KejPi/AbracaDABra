@@ -734,7 +734,7 @@ void RtlTcpWorker::runNativeSocket()
         struct pollfd pfd;
         pfd.fd = sfd;
         pfd.events = POLLOUT;
-        if (WSAPoll(&pfd, 1, 5000) > 0)
+        if (WSAPoll(&pfd, 1, RTLTCP_CONNECTION_TIMEOUT_MSEC) > 0)
         {
             int sockErr = 0;
             int sockErrLen = sizeof(sockErr);
@@ -769,7 +769,7 @@ void RtlTcpWorker::runNativeSocket()
 
         // check if the socket is ready
         TIMEVAL connTimeout;
-        connTimeout.tv_sec = 2;
+        connTimeout.tv_sec = RTLTCP_CONNECTION_TIMEOUT_SEC;
         connTimeout.tv_usec = 0;
         if (::select(sfd + 1, nullptr, &connFd, nullptr, &connTimeout) > 0)
         {
@@ -809,7 +809,7 @@ void RtlTcpWorker::runNativeSocket()
         struct pollfd pfd;
         pfd.fd = sfd;
         pfd.events = POLLOUT;
-        if (poll(&pfd, 1, 5000) > 0)
+        if (poll(&pfd, 1, RTLTCP_CONNECTION_TIMEOUT_MSEC) > 0)
         {
             int sockErr = 0;
             socklen_t sockErrLen = sizeof(sockErr);
@@ -872,7 +872,7 @@ void RtlTcpWorker::runNativeSocket()
     struct pollfd fd;
     fd.fd = sock;
     fd.events = POLLIN;
-    if (WSAPoll(&fd, 1, 10000) > 0)
+    if (WSAPoll(&fd, 1, RTLTCP_CONNECTION_TIMEOUT_MSEC) > 0)
     {
         ::recv(sock, (char *)&dongleInfo, sizeof(dongleInfo), 0);
     }
@@ -889,7 +889,7 @@ void RtlTcpWorker::runNativeSocket()
 
     // check if the socket is ready
     TIMEVAL Timeout;
-    Timeout.tv_sec = 2;
+    Timeout.tv_sec = RTLTCP_CONNECTION_TIMEOUT_SEC;
     Timeout.tv_usec = 0;
     if (::select(sock + 1, nullptr, &readFd, nullptr, &Timeout) > 0)
     {
@@ -905,7 +905,7 @@ void RtlTcpWorker::runNativeSocket()
     struct pollfd fd;
     fd.fd = sock;
     fd.events = POLLIN;
-    if (poll(&fd, 1, 10000) > 0)
+    if (poll(&fd, 1, RTLTCP_CONNECTION_TIMEOUT_MSEC) > 0)
     {
         if (::recv(sock, (char *)&dongleInfo, sizeof(dongleInfo), 0) <= 0)
         {
@@ -1051,7 +1051,7 @@ void RtlTcpWorker::runQtSocket()
 
     qCInfo(rtlTcpInput) << "Connecting to server...";
     socket.connectToHost(QHostAddress(m_address), m_port);
-    if (socket.waitForConnected(10000) == false)
+    if (socket.waitForConnected(RTLTCP_CONNECTION_TIMEOUT_MSEC) == false)
     {
         qCCritical(rtlTcpInput) << "Unable to connect";
         return;
@@ -1074,7 +1074,7 @@ void RtlTcpWorker::runQtSocket()
 
     while (socket.bytesAvailable() < (qint64)sizeof(dongleInfo))
     {
-        if (!socket.waitForReadyRead(10000))
+        if (!socket.waitForReadyRead(RTLTCP_CONNECTION_TIMEOUT_MSEC))
         {
             qCCritical(rtlTcpInput) << "Server not responding.";
             return;
