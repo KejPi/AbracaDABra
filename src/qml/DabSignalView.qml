@@ -187,7 +187,7 @@ Rectangle {
                             Layout.fillHeight: true
                             Layout.bottomMargin: 2
                             text: signalBackend.snrValue
-                            font.pointSize: UI.largeFontPointSize * 3
+                            font.pointSize: UI.largeFontPointSize * (UI.isMobile ? 2 : 3)
                             font.bold: true
                             color: signalSpectrumView.labelTextColor
                             horizontalAlignment: Text.AlignHCenter
