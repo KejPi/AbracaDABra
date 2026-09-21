@@ -237,10 +237,14 @@ void SignalBackend::registerSnrPlot(QQuickItem *item)
         m_snrPlot->setXAxisTitle(tr("Time"));
         m_snrPlot->setYAxisTitle(tr("SNR [dB]"));
 
-        m_snrPlot->setXMin(0);                    // start at 0
-        m_snrPlot->setXMax(xPlotRange);           // show initial range
-        m_snrPlot->setXLabelFormat("time_mmss");  // Format as mm:ss
-        m_snrPlot->setMajorTickStepX(10);         // Tick every 10 seconds
+        m_snrPlot->setXMin(0);                        // start at 0
+        m_snrPlot->setXMax(xPlotRange);                // show initial range
+        m_snrPlot->setMajorTickStepX(snrTickStepSec);  // Tick every 10 seconds
+        m_snrPlot->setXLabelFormatter(
+            [this](double x) -> QString
+            {  // x is seconds since m_startTimeMsec; render as absolute local time
+                return QDateTime::fromMSecsSinceEpoch(m_startTimeMsec + qint64(x * 1000.0)).toString("HH:mm:ss");
+            });
         // m_snrPlot->setMaxXSpan(600);
         m_snrPlot->setHistoryCapacity(10 * xPlotRange);  // 10 minutes history
 
@@ -258,7 +262,9 @@ void SignalBackend::registerSnrPlot(QQuickItem *item)
         // m_snrPlot->addMarkerLine(false, static_cast<double>(DabSnrThreshold::LowSNR), "LowSNR", Qt::white, 1.0);
         // m_snrPlot->addMarkerLine(false, static_cast<double>(DabSnrThreshold::GoodSNR), "GoodSNR", Qt::white, 1.0);
 
-        m_startTimeMsec = 0;
+        // Align start time to a tick boundary so X labels land on wall-clock multiples of snrTickStepSec
+        const qint64 stepMsec = qint64(snrTickStepSec) * 1000;
+        m_startTimeMsec = (QDateTime::currentMSecsSinceEpoch() / stepMsec) * stepMsec;
         m_timer->start();
     }
 }
@@ -699,15 +705,6 @@ void SignalBackend::addToPlot(float snr)
     {
         return;
     }
-    double key = 0.0;
-    if (m_startTimeMsec == 0)
-    {
-        m_startTimeMsec = QDateTime::currentMSecsSinceEpoch();
-    }
-    else
-    {
-        key = (QDateTime::currentMSecsSinceEpoch() - m_startTimeMsec) * 0.001;  // convert to seconds
-    }
-
+    double key = (QDateTime::currentMSecsSinceEpoch() - m_startTimeMsec) * 0.001;  // seconds since aligned start
     m_snrPlot->appendPoints(m_snrSeriesId, {QPointF(key, snr)});
 }

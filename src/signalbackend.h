@@ -98,6 +98,7 @@ private:
     enum
     {
         xPlotRange = 60,         // 60 sec
+        snrTickStepSec = 10,     // SNR plot X axis major tick step
         snrStatsDeadtime = 2800  // 2.8 sec
     };
 
