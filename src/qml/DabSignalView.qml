@@ -120,16 +120,18 @@ Rectangle {
             SplitView.preferredHeight: 150
             SplitView.minimumHeight: 0
 
-            AbracaToolTip {
-                text: signalBackend.snrTooltip
-                hoverMouseArea: mouseArea
-            }
-            MouseArea {
-                id: mouseArea
-                anchors.fill: snrItem
-                enabled: signalBackend.snrTooltip.length > 0
-                hoverEnabled: true
-            }
+            // AbracaToolTip {
+            //     text: signalBackend.snrTooltip
+            //     hoverMouseArea: mouseArea
+            //     x: mouseArea.mouseX + 15 + width > snrItem.width ? mouseArea.mouseX - width - 10 : mouseArea.mouseX + 10
+            //     y: mouseArea.mouseY + 15 + height > snrItem.height ? mouseArea.mouseY - height - 10 : mouseArea.mouseY + 10
+            // }
+            // MouseArea {
+            //     id: mouseArea
+            //     anchors.fill: snrItem
+            //     enabled: signalBackend.snrTooltip.length > 0
+            //     hoverEnabled: true
+            // }
 
 
             RowLayout {
@@ -152,11 +154,12 @@ Rectangle {
                     }
                 }
                 Item {
-                    id: snrValueItem
+                    id: snrValueItem                    
                     readonly property bool showMinMax: snrLayout.height > 180
                     visible: signalBackend.showSNR
                     Layout.preferredWidth: textMetrics.width * 1.5
                     Layout.fillHeight: true
+                    clip: true
                     ColumnLayout {
                         id: snrValueLayout
                         spacing: 0
@@ -214,6 +217,40 @@ Rectangle {
                             }
                         }
                     }
+                    AbracaColorizedImage {
+                        id: infoButton
+                        anchors.right: resetStats.left
+                        anchors.rightMargin: 2*UI.standardMargin
+                        // anchors.left: snrValueItem.left
+                        // anchors.leftMargin: snrPlot.rightMargin
+                        anchors.verticalCenter: resetStats.verticalCenter
+
+                        readonly property string toolTipText: signalBackend.snrTooltip
+                        readonly property bool toolTipAvailable: signalBackend.snrTooltip.length > 0
+
+                        colorizationColor: toolTipAvailable ? signalSpectrumView.labelTextColor : UI.colors.iconDisabled
+                        source: UI.imagesUrl + "icon-info.svg"
+                        width: resetStats.height
+                        height: resetStats.height
+
+                        MouseArea {
+                            id: mouseArea
+                            anchors.fill: parent
+                            hoverEnabled: infoButton.toolTipAvailable
+                            acceptedButtons: Qt.LeftButton
+                            cursorShape: infoButton.toolTipAvailable ? Qt.PointingHandCursor : Qt.ArrowCursor
+                            enabled: infoButton.toolTipAvailable
+                        }
+                        AbracaToolTip {
+                            id: toolTip
+                            text: infoButton.toolTipText
+                            delay: 0
+                            y: -height - UI.controlHeight/2
+                            hoverMouseArea: mouseArea
+                            visible: infoButton.toolTipAvailable && (mouseArea.pressed || mouseArea.containsMouse)
+                        }
+                    }
+
                     Rectangle {
                         id: resetStats
                         anchors.bottom: parent.bottom
@@ -241,7 +278,7 @@ Rectangle {
                                 signalBackend.resetSnrStats()
                             }
                         }
-                    }
+                    }                    
                 }
             }
         }

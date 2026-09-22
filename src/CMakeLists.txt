@@ -245,7 +245,7 @@ qt_add_qml_module(${TARGET}
         qml/images/icon-recording.svg
         qml/images/trayIcon.svg
         qml/images/icon-service.svg
-        qml/images/icon-info.svg
+        qml/images/icon-ensinfo.svg
         qml/images/icon-signal-overview.svg
         qml/images/icon-scanner.svg
         qml/images/icon-tii.svg
@@ -269,6 +269,7 @@ qt_add_qml_module(${TARGET}
         qml/images/placeholder-undocked.svg
         qml/images/icon-sidebar-left.svg
         qml/images/icon-cross.svg
+        qml/images/icon-info.svg
 
         resources/appIcon.png
     QML_FILES

@@ -41,7 +41,7 @@ NavigationModel::NavigationModel(QObject *parent) : QAbstractListModel{parent}
                                     NavigationOption::PortraitOption |
                                     NavigationOption::LandscapeSmallOption |
                                     NavigationOption::PortraitSmallOption)),
-        new NavigationModelItem(NavigationId::EnsembleInfo, tr("Info"), tr("Ensemble information"), "EnsembleInfoView.qml", "icon-info.svg",
+        new NavigationModelItem(NavigationId::EnsembleInfo, tr("Info"), tr("Ensemble information"), "EnsembleInfoView.qml", "icon-ensinfo.svg",
                                 (NavigationOption::EnabledOption | NavigationOption::UndockableOption |
                                     NavigationOption::Landscape1Option |
                                     NavigationOption::PortraitOption |
