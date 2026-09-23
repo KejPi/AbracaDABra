@@ -224,7 +224,7 @@ Item {
                 }
                 StackLayout {
                     Layout.maximumWidth: startStopButton.implicitWidth
-                    Layout.maximumHeight: startStopButton.implicitHeight
+                    Layout.maximumHeight: UI.controlHeight
                     currentIndex: ((scannerBackend.numCycles === 0) && (scannerBackend.isScanning || scannerBackend.isPaused)) ? 1 : 0
                     AbracaButton {
                         id: startStopButton
@@ -238,6 +238,7 @@ Item {
                         AbracaButton {
                             id: pausePlayButton
                             Layout.fillWidth: true
+                            Layout.fillHeight: true
                             iconSource: UI.imagesUrl + (scannerBackend.isPaused ? "icon-play.svg" : "icon-pause.svg")
                             iconColor: scannerBackend.isPaused ? UI.colors.buttonPrimary : UI.colors.buttonTextNeutral
                             display: AbstractButton.IconOnly
@@ -248,6 +249,7 @@ Item {
                         AbracaButton {
                             id: stopButton
                             Layout.fillWidth: true
+                            Layout.fillHeight: true
                             iconSource: UI.imagesUrl + "icon-stop.svg"
                             iconColor: UI.colors.buttonNegative
                             display: AbstractButton.IconOnly
