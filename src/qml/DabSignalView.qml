@@ -285,7 +285,7 @@ Rectangle {
     }
     Rectangle {
         id: signalInfo
-        color: signalInfoRowUndocked.visible ? UI.colors.statusbarBackground : UI.colors.background
+        color: UI.colors.background
         height: signalInfoRowUndocked.visible ? signalInfoRowUndocked.implicitHeight
                                               : (signalInfoRow.visible ? signalInfoRow.implicitHeight
                                                                        : (signalInfoRowNoGain.visible ? signalInfoRowNoGain.implicitHeight
