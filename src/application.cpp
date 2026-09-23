@@ -4531,6 +4531,24 @@ QObject *Application::createScannerBackend()
                         onBandScanFinished(BandScanBackendResult::Done);
                     }
                 });
+
+        connect(m_scannerBackend, &ScannerBackend::scanPaused, this,
+                [this]()
+                {
+                    // allow free tuning / normal service discovery while scan is paused
+                    m_isScannerRunning = false;
+                    m_ui->tuneEnabled(true);
+                    m_ui->serviceSelectionEnabled(true);
+                });
+
+        connect(m_scannerBackend, &ScannerBackend::scanResumed, this,
+                [this]()
+                {
+                    m_isScannerRunning = true;
+                    m_ui->tuneEnabled(false);
+                    m_ui->serviceSelectionEnabled(false);
+                });
+
         if (m_inputDevice)
         {
             connect(m_inputDevice, &InputDevice::rfLevel, m_scannerBackend, &ScannerBackend::onRfLevel);
@@ -4686,6 +4704,24 @@ void Application::onBandScanFinished(int result)
 
 void Application::onTuneChannel(uint32_t freq)
 {
+    if (freq == m_frequency)
+    {  // already tuned there (e.g. scanner resume without free-tuning in between) -> tuneService() would be a no-op and never emit tuneDone
+        QObject *s = sender();
+        QTimer::singleShot(0, this,
+                            [s, freq]()
+                            {
+                                if (auto *scanner = qobject_cast<ScannerBackend *>(s))
+                                {
+                                    scanner->onTuneDone(freq);
+                                }
+                                else if (auto *bandScan = qobject_cast<BandScanBackend *>(s))
+                                {
+                                    bandScan->onTuneDone(freq);
+                                }
+                            });
+        return;
+    }
+
     // change combo - find combo index
     setChannelIndex(m_channelListModel->findFrequency(freq));
 }

@@ -95,26 +95,33 @@ ScannerBackend::~ScannerBackend()
 
 void ScannerBackend::startStopAction()
 {
-    if (m_isScanning)
+    if (m_isScanning || m_isPaused)
     {  // stop pressed
         isStartStopEnabled(false);
         isScanning(false);
         m_ensemble.reset();
 
-        // the state machine has 4 possible states
-        // 1. wait for tune (event)
-        // 2. wait for sync (timer or event)
-        // 4. wait for ensemble (timer or event)
-        // 5. wait for tii (timer)
-        if (m_timer->isActive())
-        {  // state 2, 3, 4
-            m_timer->stop();
+        if (isPaused())
+        {
             stopScan();
         }
         else
         {
-            // timer not running -> state 1
-            m_state = ScannerState::Interrupted;  // ==> it will be finished when tune is complete
+            // the state machine has 4 possible states
+            // 1. wait for tune (event)
+            // 2. wait for sync (timer or event)
+            // 4. wait for ensemble (timer or event)
+            // 5. wait for tii (timer)
+            if (m_timer->isActive())
+            {  // state 2, 3, 4
+                m_timer->stop();
+                stopScan();
+            }
+            else
+            {
+                // timer not running -> state 1
+                m_state = ScannerState::Interrupted;  // ==> it will be finished when tune is complete
+            }
         }
     }
     else
@@ -130,6 +137,18 @@ void ScannerBackend::startStopAction()
             progressMax(m_numSelectedChannels);
         }
         startScan();
+    }
+}
+
+void ScannerBackend::pauseResumeAction()
+{
+    if (m_isPaused)
+    {
+        resumeScan();
+    }
+    else
+    {
+        pauseScan();
     }
 }
 
@@ -149,6 +168,7 @@ void ScannerBackend::stopScan()
 
     // restore UI
     isScanning(false);
+    isPaused(false);
     scanningLabel(tr("Scanning finished"));
     progressValue(0);
     progressChannel("");
@@ -161,6 +181,47 @@ void ScannerBackend::stopScan()
     m_state = ScannerState::Idle;
 
     emit scanFinished();
+}
+
+void ScannerBackend::pauseScan()
+{
+    if (m_timer->isActive())
+    {
+        m_timer->stop();
+    }
+
+    isPaused(true);
+    isScanning(false);
+    scanningLabel(tr("Scanning paused"));
+
+    // adding timeout to avoid timing issues due to double click on start button
+    isStartStopEnabled(false);
+    QTimer::singleShot(2500, this, [this]() { isStartStopEnabled(true); });
+
+    qCInfo(scanner) << "Scanning paused @" << m_frequency;
+
+    emit scanPaused();
+}
+
+void ScannerBackend::resumeScan()
+{
+    isPaused(false);
+    isScanning(true);
+    scanningLabel(tr("Channel:"));
+
+    // restart data collection for the channel that was interrupted
+    m_servicesSet.clear();
+    m_rfLevel = NAN;
+    m_ensemble.reset();
+    m_snr = 0.0;
+    m_snrCntr = 0;
+    m_tiiCntr = 0;
+    m_state = ScannerState::WaitForTune;
+
+    qCInfo(scanner) << "Resuming scan, tune:" << m_frequency;
+    emit tuneChannel(m_frequency);
+
+    emit scanResumed();
 }
 
 void ScannerBackend::importAction()
@@ -1118,6 +1179,11 @@ void ScannerBackend::scanStep()
 
 void ScannerBackend::onTuneDone(uint32_t freq)
 {
+    if (m_isPaused)
+    {  // ignore stray events while paused, resumeScan() will re-drive the state machine
+        return;
+    }
+
     switch (m_state)
     {
         case ScannerState::Init:
@@ -1146,6 +1212,11 @@ void ScannerBackend::onTuneDone(uint32_t freq)
 
 void ScannerBackend::onSignalState(uint8_t sync, float snr)
 {
+    if (m_isPaused)
+    {  // ignore stray events while paused, resumeScan() will re-drive the state machine
+        return;
+    }
+
     if (DabSyncLevel::NullSync <= DabSyncLevel(sync))
     {
         if (ScannerState::WaitForSync == m_state)
@@ -1165,6 +1236,11 @@ void ScannerBackend::onSignalState(uint8_t sync, float snr)
 
 void ScannerBackend::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
+    if (m_isPaused)
+    {  // ignore stray events while paused, resumeScan() will re-drive the state machine
+        return;
+    }
+
     if (ScannerState::WaitForEnsemble != m_state)
     {  // do nothing
         return;
@@ -1221,6 +1297,11 @@ void ScannerBackend::setDeviceHasRfLevel(bool hasRfLevel)
 
 void ScannerBackend::onTiiData(const RadioControlTIIData &data)
 {
+    if (m_isPaused)
+    {  // ignore stray events while paused, resumeScan() will re-drive the state machine
+        return;
+    }
+
     if ((ScannerState::WaitForTII == m_state) && m_ensemble.isValid())
     {
         qCDebug(scanner) << "TII data @" << m_frequency;

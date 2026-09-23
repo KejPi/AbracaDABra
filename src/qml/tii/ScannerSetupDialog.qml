@@ -73,7 +73,7 @@ AbracaDialog {
             }
             textRole: "text"
             valueRole: "mode"
-            enabled: !scannerBackend.isScanning
+            enabled: !scannerBackend.isScanning && !scannerBackend.isPaused
             currentIndex: {
                 switch (scannerBackend.mode) {
                     case 1: return 0;
@@ -102,7 +102,7 @@ AbracaDialog {
             from: 0
             to: 99
             editable: true
-            enabled: !scannerBackend.isScanning
+            enabled: !scannerBackend.isScanning && !scannerBackend.isPaused
             specialValue: 0
             specialValueString: qsTr("Inf")
         }

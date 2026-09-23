@@ -95,7 +95,7 @@ AbracaDrawer {
                             }
                             textRole: "text"
                             valueRole: "mode"
-                            enabled: !scannerBackend.isScanning
+                            enabled: !scannerBackend.isScanning && !scannerBackend.isPaused
                             currentIndex: {
                                 switch (scannerBackend.mode) {
                                     case 1: return 0;
@@ -124,7 +124,7 @@ AbracaDrawer {
                             from: 0
                             to: 99
                             editable: true
-                            enabled: !scannerBackend.isScanning
+                            enabled: !scannerBackend.isScanning && !scannerBackend.isPaused
                             specialValue: 0
                             specialValueString: qsTr("Inf")
                         }
@@ -201,7 +201,7 @@ AbracaDrawer {
                 AbracaMenuItem {
                     text: qsTr("Incremental scan")
                     checkable: true
-                    enabled: !scannerBackend.isScanning
+                    enabled: !(scannerBackend.isScanning || scannerBackend.isPaused)
                     onTriggered: scannerBackend.incrementalScan = checked
                     Component.onCompleted: checked = scannerBackend.incrementalScan
                 }
@@ -220,14 +220,14 @@ AbracaDrawer {
                 AbracaMenuItem {
                     text: qsTr("AutoSave JSON")
                     checkable: true
-                    enabled: !scannerBackend.isScanning
+                    enabled: !(scannerBackend.isScanning || scannerBackend.isPaused)
                     onTriggered: scannerBackend.autoSaveJSON = checked
                     Component.onCompleted: checked = scannerBackend.autoSaveJSON
                 }
                 AbracaMenuItem {
                     text: qsTr("AutoSave CSV")                    
                     checkable: true
-                    enabled: !scannerBackend.isScanning
+                    enabled: !(scannerBackend.isScanning || scannerBackend.isPaused)
                     onTriggered: scannerBackend.autoSave = checked
                     Component.onCompleted: checked = scannerBackend.autoSave
                 }
@@ -255,7 +255,7 @@ AbracaDrawer {
                 }
                 AbracaMenuItem {
                     text: qsTr("Load from file...")
-                    enabled: !scannerBackend.isScanning
+                    enabled: !(scannerBackend.isScanning || scannerBackend.isPaused)
                     onTriggered: {
                         scannerBackend.importAction()
                         drawer.close()

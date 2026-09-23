@@ -270,6 +270,9 @@ qt_add_qml_module(${TARGET}
         qml/images/icon-sidebar-left.svg
         qml/images/icon-cross.svg
         qml/images/icon-info.svg
+        qml/images/icon-play.svg
+        qml/images/icon-pause.svg
+        qml/images/icon-stop.svg
 
         resources/appIcon.png
     QML_FILES

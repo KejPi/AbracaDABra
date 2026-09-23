@@ -177,7 +177,7 @@ Item {
                             }
                             textRole: "text"
                             valueRole: "mode"
-                            enabled: !scannerBackend.isScanning
+                            enabled: !scannerBackend.isScanning && !scannerBackend.isPaused
                             currentIndex: {
                                 switch (scannerBackend.mode) {
                                     case 1: return 0;
@@ -207,26 +207,55 @@ Item {
                             from: 0
                             to: 99
                             editable: true
-                            enabled: !scannerBackend.isScanning
+                            enabled: !scannerBackend.isScanning && !scannerBackend.isPaused
                             specialValue: 0
                             specialValueString: qsTr("Inf")
                         }
                     }
                 }
+
                 AbracaButton {
                     id: channelSelectButton
                     Layout.leftMargin: UI.standardMargin
                     text: qsTr("Select channels")
-                    enabled: !scannerBackend.isScanning
+                    enabled: !scannerBackend.isScanning && !scannerBackend.isPaused
                     onClicked: channelSelectionDialogLoader.active = true
                     visible: appUI.isPortraitView === false && UI.isMobile === false
                 }
-                AbracaButton {
-                    id: startStopButton
-                    text: scannerBackend.isScanning ? qsTr("Stop") : qsTr("Start")
-                    enabled: scannerBackend.isStartStopEnabled && scannerBackend.isScanningEnabled
-                    onClicked: scannerBackend.startStopAction()
-                    buttonRole: UI.ButtonRole.Primary
+                StackLayout {
+                    Layout.maximumWidth: startStopButton.implicitWidth
+                    Layout.maximumHeight: startStopButton.implicitHeight
+                    currentIndex: ((scannerBackend.numCycles === 0) && (scannerBackend.isScanning || scannerBackend.isPaused)) ? 1 : 0
+                    AbracaButton {
+                        id: startStopButton
+                        text: scannerBackend.isScanning ? qsTr("Stop") : qsTr("Start")
+                        enabled: scannerBackend.isStartStopEnabled && scannerBackend.isScanningEnabled
+                        onClicked: scannerBackend.startStopAction()
+                        buttonRole: UI.ButtonRole.Primary
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        AbracaButton {
+                            id: pausePlayButton
+                            Layout.fillWidth: true
+                            iconSource: UI.imagesUrl + (scannerBackend.isPaused ? "icon-play.svg" : "icon-pause.svg")
+                            iconColor: scannerBackend.isPaused ? UI.colors.buttonPrimary : UI.colors.buttonTextNeutral
+                            display: AbstractButton.IconOnly
+                            buttonRole: UI.ButtonRole.Neutral
+                            enabled: scannerBackend.isStartStopEnabled && scannerBackend.isScanningEnabled
+                            onClicked: scannerBackend.pauseResumeAction()
+                        }
+                        AbracaButton {
+                            id: stopButton
+                            Layout.fillWidth: true
+                            iconSource: UI.imagesUrl + "icon-stop.svg"
+                            iconColor: UI.colors.buttonNegative
+                            display: AbstractButton.IconOnly
+                            buttonRole: UI.ButtonRole.Neutral
+                            enabled: scannerBackend.isStartStopEnabled && scannerBackend.isScanningEnabled
+                            onClicked: scannerBackend.startStopAction()
+                        }
+                    }
                 }
                 AbracaImgButton {
                     id: menuButton
@@ -256,7 +285,7 @@ Item {
                         AbracaMenuItem {
                             text: qsTr("Incremental scan")
                             checkable: true
-                            enabled: !scannerBackend.isScanning
+                            enabled: !(scannerBackend.isScanning || scannerBackend.isPaused)
                             onTriggered: scannerBackend.incrementalScan = checked
                             Component.onCompleted: checked = scannerBackend.incrementalScan
                         }
@@ -276,14 +305,14 @@ Item {
                             text: qsTr("AutoSave JSON")
                             checkable: true
                             onTriggered: scannerBackend.autoSaveJSON = checked
-                            enabled: !scannerBackend.isScanning
+                            enabled: !(scannerBackend.isScanning || scannerBackend.isPaused)
                             Component.onCompleted: checked = scannerBackend.autoSaveJSON
                         }
                         AbracaMenuItem {
                             text: qsTr("AutoSave CSV")
                             checkable: true
                             onTriggered: scannerBackend.autoSave = checked
-                            enabled: !scannerBackend.isScanning
+                            enabled: !(scannerBackend.isScanning || scannerBackend.isPaused)
                             Component.onCompleted: checked = scannerBackend.autoSave
                         }
                         AbracaMenuSeparator {}
@@ -299,7 +328,7 @@ Item {
                         }
                         AbracaMenuItem {
                             text: qsTr("Load from file...")
-                            enabled: !scannerBackend.isScanning
+                            enabled: !(scannerBackend.isScanning || scannerBackend.isPaused)
                             onTriggered: scannerBackend.importAction()
                         }
                         AbracaMenuItem {

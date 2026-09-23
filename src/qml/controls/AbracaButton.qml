@@ -38,7 +38,9 @@ Button {
     property int buttonRole: UI.ButtonRole.Neutral
     property int buttonType: UI.ButtonType.Normal
     property bool hasBackground: true
+    property bool customIconColor: false
     property string iconSource: ""
+    property color iconColor: textColor
 
     hoverEnabled: true
 
@@ -152,7 +154,7 @@ Button {
         icon.source: control.iconSource
         icon.height: UI.iconSize
         icon.width: UI.iconSize
-        icon.color: control.enabled ? control.textColor : UI.colors.iconDisabled
+        icon.color: control.enabled ? control.iconColor : UI.colors.iconDisabled
         text: control.text
 
         font.pointSize: control.font.pointSize

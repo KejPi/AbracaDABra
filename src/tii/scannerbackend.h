@@ -89,6 +89,7 @@ class ScannerBackend : public TxMapBackend
 
     UI_PROPERTY_DEFAULT(bool, isLoading, false)
     UI_PROPERTY_DEFAULT(bool, isScanning, false)
+    UI_PROPERTY_DEFAULT(bool, isPaused, false)
     UI_PROPERTY_DEFAULT(bool, isStartStopEnabled, true)
     UI_PROPERTY_DEFAULT(bool, isScanningEnabled, true)
     UI_PROPERTY(QString, scanningLabel)
@@ -121,6 +122,7 @@ public:
     Q_INVOKABLE void clearLocalTxAction();
 
     Q_INVOKABLE void startStopAction();
+    Q_INVOKABLE void pauseResumeAction();
     Q_INVOKABLE QUrl csvPath() const;
     Q_INVOKABLE void saveCSV();
     Q_INVOKABLE void saveJSON();
@@ -153,6 +155,8 @@ public:
 signals:
     void scanStarts();
     void scanFinished();
+    void scanPaused();
+    void scanResumed();
     void tuneChannel(uint32_t freq);
     void requestEnsembleConfiguration();
     void openFileDialog();
@@ -215,6 +219,8 @@ private:
     void startScan();
     void scanStep();
     void stopScan();
+    void pauseScan();
+    void resumeScan();
     void saveToFileCSV(const QString &fileName);
     void storeEnsembleData(const RadioControlTIIData &tiiData, const QString &conf, const QString &csvConf);
     void handleContextMenuAction(int actionId, const QVariant &data);
