@@ -301,12 +301,7 @@ Item {
                     Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                     // Layout.minimumWidth: implicitWidth
                     text: qsTr("Reset")
-                    icon {
-                        source: UI.imagesUrl + "reload.svg"
-                        width: UI.iconSize
-                        height: UI.iconSize
-                        color: enabled ? UI.colors.icon : UI.colors.iconDisabled
-                    }
+                    iconSource: UI.imagesUrl + "reload.svg"
                     display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
                     enabled: settingsBackend.sdrplayFreqCorrection !== 0
                     onClicked: settingsBackend.sdrplayFreqCorrection = 0

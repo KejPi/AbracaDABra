@@ -223,12 +223,7 @@ Item {
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
                         text: qsTr("Set default")
-                        icon {
-                            source: UI.imagesUrl + "reload.svg"
-                            width: UI.iconSize
-                            height: UI.iconSize
-                            color: enabled ? UI.colors.icon : UI.colors.iconDisabled
-                        }
+                        iconSource: UI.imagesUrl + "reload.svg"
                         display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
                         enabled: settingsBackend.rtlTcpBandWidth > 0
                         onClicked: settingsBackend.rtlTcpBandWidth = 0
@@ -264,12 +259,7 @@ Item {
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
                         text: qsTr("Set default")
-                        icon {
-                            source: UI.imagesUrl + "reload.svg"
-                            width: UI.iconSize
-                            height: UI.iconSize
-                            color: enabled ? UI.colors.icon : UI.colors.iconDisabled
-                        }
+                        iconSource: UI.imagesUrl + "reload.svg"
                         display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
                         enabled: settingsBackend.rtlTcpAgcLevelThr > 0
                         onClicked: settingsBackend.rtlTcpAgcLevelThr = 0
@@ -295,12 +285,7 @@ Item {
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
                         text: qsTr("Reset")
-                        icon {
-                            source: UI.imagesUrl + "reload.svg"
-                            width: UI.iconSize
-                            height: UI.iconSize
-                            color: enabled ? UI.colors.icon : UI.colors.iconDisabled
-                        }
+                        iconSource: UI.imagesUrl + "reload.svg"
                         display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
                         enabled: settingsBackend.rtlTcpFreqCorrection !== 0
                         onClicked: settingsBackend.rtlTcpFreqCorrection = 0
@@ -329,12 +314,7 @@ Item {
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
                         text: qsTr("Reset")
-                        icon {
-                            source: UI.imagesUrl + "reload.svg"
-                            width: UI.iconSize
-                            height: UI.iconSize
-                            color: enabled ? UI.colors.icon : UI.colors.iconDisabled
-                        }
+                        iconSource: UI.imagesUrl + "reload.svg"
                         display: expertSettingsLayout.showIcon ? AbstractButton.IconOnly : AbstractButton.TextOnly
                         enabled: settingsBackend.rtlTcpRfLevelCorrection !== 0.0
                         onClicked: settingsBackend.rtlTcpRfLevelCorrection = 0.0
