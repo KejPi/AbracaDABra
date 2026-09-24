@@ -6064,21 +6064,26 @@ Seleziona la cartella in cui archiviare i dati e concedi le autorizzazioni.</tra
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="317"/>
+        <source>DAB timestamp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/UaSettings.qml" line="327"/>
         <source>content name</source>
         <translation>nome del contenuto</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="327"/>
+        <location filename="../qml/settings/UaSettings.qml" line="337"/>
         <source>content name with extension (only SLS)</source>
         <translation>nome del contenuto con estensione (solo SLS)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="337"/>
+        <location filename="../qml/settings/UaSettings.qml" line="347"/>
         <source>transport ID of directory (only SPI)</source>
         <translation>ID di trasporto della directory (solo SPI)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="347"/>
+        <location filename="../qml/settings/UaSettings.qml" line="357"/>
         <source>service component ID (only SPI)</source>
         <translation>ID del canale (solo SPI)</translation>
     </message>

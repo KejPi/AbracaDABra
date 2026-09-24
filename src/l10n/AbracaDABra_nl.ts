@@ -6053,21 +6053,26 @@ Please select data storage folder and grant permissions.</source>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="317"/>
-        <source>content name</source>
+        <source>DAB timestamp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="327"/>
-        <source>content name with extension (only SLS)</source>
+        <source>content name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="337"/>
-        <source>transport ID of directory (only SPI)</source>
+        <source>content name with extension (only SLS)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="347"/>
+        <source>transport ID of directory (only SPI)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/UaSettings.qml" line="357"/>
         <source>service component ID (only SPI)</source>
         <translation type="unfinished"></translation>
     </message>

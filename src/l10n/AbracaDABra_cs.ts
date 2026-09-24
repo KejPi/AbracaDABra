@@ -6062,21 +6062,26 @@ Vyberte adresář pro ukládání dat and schvalte přístupová práva.</transl
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="317"/>
+        <source>DAB timestamp</source>
+        <translation>DAB časová značka</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/UaSettings.qml" line="327"/>
         <source>content name</source>
         <translation>jméno MOT objektu</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="327"/>
+        <location filename="../qml/settings/UaSettings.qml" line="337"/>
         <source>content name with extension (only SLS)</source>
         <translation>jméno MOT objektu s příponou (jen SLS)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="337"/>
+        <location filename="../qml/settings/UaSettings.qml" line="347"/>
         <source>transport ID of directory (only SPI)</source>
         <translation>transport ID MOT adresáře (jen SPI)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="347"/>
+        <location filename="../qml/settings/UaSettings.qml" line="357"/>
         <source>service component ID (only SPI)</source>
         <translation>service component ID (jen SPI)</translation>
     </message>

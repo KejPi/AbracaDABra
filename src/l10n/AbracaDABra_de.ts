@@ -6061,21 +6061,26 @@ Bitte den Speicherort auswählen und Rechte gewähren.</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="317"/>
+        <source>DAB timestamp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/UaSettings.qml" line="327"/>
         <source>content name</source>
         <translation>Inhaltsname</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="327"/>
+        <location filename="../qml/settings/UaSettings.qml" line="337"/>
         <source>content name with extension (only SLS)</source>
         <translation>Inhaltsname mit Erweiterung (nur SLS)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="337"/>
+        <location filename="../qml/settings/UaSettings.qml" line="347"/>
         <source>transport ID of directory (only SPI)</source>
         <translation>transport ID des Verzeichnisses (nur SPI)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="347"/>
+        <location filename="../qml/settings/UaSettings.qml" line="357"/>
         <source>service component ID (only SPI)</source>
         <translation>Dienstkomponenten ID (nur SPI)</translation>
     </message>
