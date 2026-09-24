@@ -33,6 +33,7 @@
 
 #include "androidfilehelper.h"
 #include "dabtables.h"
+#include "epgtime.h"
 
 Q_LOGGING_CATEGORY(slideShowApp, "SlideShowApp", QtInfoMsg)
 
@@ -523,6 +524,7 @@ void SlideShowApp::dumpSlide(const Slide &slide)
     filenameWithPath.replace("{ensId}", QString("%1").arg(m_ueid, 6, 16, QChar('0')));
     filenameWithPath.replace("{serviceId}", QString("%1").arg(m_SId.value(), 6, 16, QChar('0')));
     filenameWithPath.replace("{transportId}", QString().setNum(slide.getTransportID()));
+    filenameWithPath.replace("{timestamp}", EPGTime::getInstance()->dabTime().toString("yyyyMMdd_hhmmss"));
 
     QString contentName = slide.getContentName();
     // remove problematic characters

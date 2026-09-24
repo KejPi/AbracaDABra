@@ -38,6 +38,7 @@
 #include <QStandardPaths>
 
 #include "androidfilehelper.h"
+#include "epgtime.h"
 
 Q_LOGGING_CATEGORY(spiApp, "SPIApp", QtInfoMsg)
 
@@ -353,6 +354,7 @@ void SPIApp::dumpFile(uint16_t decoderId, int transportId, QString contentName, 
     filenameWithPath.replace("{transportId}", QString().setNum(transportId));
     filenameWithPath.replace("{scId}", QString().setNum(decoderId));
     filenameWithPath.replace("{directoryId}", QString().setNum(m_decoderMap[decoderId]->getDirectoryId()));
+    filenameWithPath.replace("{timestamp}", EPGTime::getInstance()->dabTime().toString("yyyyMMdd_hhmmss"));
 
     // remove problematic characters
     static const QRegularExpression regexp("[" + QRegularExpression::escape("/:*?\"<>|") + "]");
@@ -1909,8 +1911,8 @@ void SPIApp::onFileDownloaded(QNetworkReply *reply)
     {
         m_downloadReqQueue.dequeue();
         if (m_downloadReqQueue.isEmpty() == false)
-        {   // shift download to event loop
-            QTimer::singleShot(1, this, [this](){ downloadFile(); });
+        {  // shift download to event loop
+            QTimer::singleShot(1, this, [this]() { downloadFile(); });
         }
     }
 

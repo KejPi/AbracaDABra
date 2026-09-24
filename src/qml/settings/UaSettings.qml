@@ -310,6 +310,16 @@ Item {
                                             wrapMode: Text.WordWrap
                                         }
                                         AbracaLabel {
+                                            text: "{timestamp}"
+                                            Layout.alignment: Qt.AlignTop
+                                        }
+                                        AbracaLabel {
+                                            text: qsTr("current DAB timestamp")
+                                            role: UI.LabelRole.Secondary
+                                            Layout.fillWidth: true
+                                            wrapMode: Text.WordWrap
+                                        }
+                                        AbracaLabel {
                                             text: "{contentName}"
                                             Layout.alignment: Qt.AlignTop
                                         }
