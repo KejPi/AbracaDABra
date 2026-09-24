@@ -67,7 +67,7 @@ Item {
     }
     AbracaToolTip {
         text: toolTipText
-        hoverMouseArea: mouseArea
+        visible: mouseArea.containsMouse
     }
     MouseArea {
         id: mouseArea

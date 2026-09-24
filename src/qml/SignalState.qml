@@ -77,7 +77,7 @@ Item {
                                   qsTr("Synchronized to DAB signal")
                                 : qsTr("Found DAB signal,<br>trying to synchronize...")
                             )
-                hoverMouseArea: hoverArea
+                visible: hoverArea.containsMouse
             }
         }
         AbracaLabel {

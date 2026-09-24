@@ -44,7 +44,6 @@ Rectangle {
         AbracaToolTip {
             text: backend.toolTip
             visible: slsMouseArea.containsMouse && !contextMenu.visible
-            hoverMouseArea: slsMouseArea
         }
         AbracaMenu {
             id: contextMenu

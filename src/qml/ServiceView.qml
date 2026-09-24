@@ -183,7 +183,7 @@ Item {
                         }
                         AbracaToolTip {
                             text: appUI.serviceFlagToolTip
-                            hoverMouseArea: hoverArea
+                            visible: hoverArea.containsMouse
                         }
                     }
                     AbracaLabel {

@@ -246,7 +246,6 @@ Rectangle {
                             text: infoButton.toolTipText
                             delay: 0
                             y: -height - UI.controlHeight/2
-                            hoverMouseArea: mouseArea
                             visible: infoButton.toolTipAvailable && (mouseArea.pressed || mouseArea.containsMouse)
                         }
                     }

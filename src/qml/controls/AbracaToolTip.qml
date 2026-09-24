@@ -35,9 +35,6 @@ import abracaComponents
 ToolTip {
     id: control
 
-    property var hoverMouseArea: undefined
-
-    visible: hoverMouseArea.containsMouse
     delay: Application.styleHints.mousePressAndHoldInterval
 
     leftPadding: UI.standardMargin

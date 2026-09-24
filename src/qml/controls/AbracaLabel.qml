@@ -50,7 +50,7 @@ Label {
 
     AbracaToolTip {
         text: toolTipText
-        hoverMouseArea: mouseArea
+        visible: mouseArea.containsMouse && toolTipText.length > 0
     }
 
     MouseArea {

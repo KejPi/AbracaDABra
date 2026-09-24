@@ -85,7 +85,7 @@ ColumnLayout {
 
                    AbracaToolTip {
                         text: qsTr("Subchannel ") + subchId
-                        hoverMouseArea: mouseArea
+                        visible: mouseArea.containsMouse
                     }
 
                     MouseArea {

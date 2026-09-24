@@ -97,7 +97,7 @@ Item {
                 }
                 AbracaToolTip {
                     text: appUI.ensembleFlagToolTip
-                    hoverMouseArea: hoverArea
+                    visible: hoverArea.containsMouse
                 }
             }
             Item {

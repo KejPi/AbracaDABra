@@ -218,7 +218,7 @@ FocusScope {
             }
             AbracaToolTip {
                 text: longLabel
-                hoverMouseArea: mouseArea
+                visible: mouseArea.containsMouse
             }
 
             function selectItem() {

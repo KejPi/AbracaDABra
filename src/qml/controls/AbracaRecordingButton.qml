@@ -58,7 +58,7 @@ Item {
         }
         AbracaToolTip {
             text: qsTr("Stop recording")
-            hoverMouseArea: mouseArea
+            visible: mouseArea.containsMouse
         }
         MouseArea {
             id: mouseArea
