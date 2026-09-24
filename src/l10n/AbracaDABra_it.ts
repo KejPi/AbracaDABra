@@ -5085,23 +5085,28 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="502"/>
-        <location filename="../qml/ServiceList.qml" line="746"/>
+        <location filename="../qml/ServiceList.qml" line="779"/>
         <source>Remove service from favorites</source>
         <translation>Rimuovi canale dai preferiti</translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="503"/>
-        <location filename="../qml/ServiceList.qml" line="747"/>
+        <location filename="../qml/ServiceList.qml" line="780"/>
         <source>Add service to favorites</source>
         <translation>Aggiungi canale nei preferiti</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="967"/>
+        <location filename="../qml/ServiceList.qml" line="736"/>
+        <source>Remove ensemble</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="1000"/>
         <source>Services</source>
         <translation>Canali</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="970"/>
+        <location filename="../qml/ServiceList.qml" line="1003"/>
         <source>Ensembles</source>
         <translation>Provider</translation>
     </message>

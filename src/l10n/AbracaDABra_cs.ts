@@ -5084,23 +5084,28 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="502"/>
-        <location filename="../qml/ServiceList.qml" line="746"/>
+        <location filename="../qml/ServiceList.qml" line="779"/>
         <source>Remove service from favorites</source>
         <translation>Odebraz stanici z oblíbených</translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="503"/>
-        <location filename="../qml/ServiceList.qml" line="747"/>
+        <location filename="../qml/ServiceList.qml" line="780"/>
         <source>Add service to favorites</source>
         <translation>Přidat stanici k oblíbeným</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="967"/>
+        <location filename="../qml/ServiceList.qml" line="736"/>
+        <source>Remove ensemble</source>
+        <translation>Odstranit multiplex</translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="1000"/>
         <source>Services</source>
         <translation>Stanice</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="970"/>
+        <location filename="../qml/ServiceList.qml" line="1003"/>
         <source>Ensembles</source>
         <translation>Multiplexy</translation>
     </message>
