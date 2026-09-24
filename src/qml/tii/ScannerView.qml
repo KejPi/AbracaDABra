@@ -243,6 +243,7 @@ Item {
                             iconColor: scannerBackend.isPaused ? UI.colors.buttonPrimary : UI.colors.buttonTextNeutral
                             display: AbstractButton.IconOnly
                             buttonRole: UI.ButtonRole.Neutral
+                            toolTipText: scannerBackend.isPaused ? qsTr("Resume scanning") : qsTr("Pause scanning")
                             enabled: scannerBackend.isStartStopEnabled && scannerBackend.isScanningEnabled
                             onClicked: scannerBackend.pauseResumeAction()
                         }
@@ -251,9 +252,10 @@ Item {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             iconSource: UI.imagesUrl + "icon-stop.svg"
-                            iconColor: UI.colors.buttonNegative
+                            iconColor: UI.colors.buttonNegative                            
                             display: AbstractButton.IconOnly
                             buttonRole: UI.ButtonRole.Neutral
+                            toolTipText: qsTr("Stop scanning")
                             enabled: scannerBackend.isStartStopEnabled && scannerBackend.isScanningEnabled
                             onClicked: scannerBackend.startStopAction()
                         }

@@ -41,6 +41,7 @@ Button {
     property bool customIconColor: false
     property string iconSource: ""
     property color iconColor: textColor
+    property string toolTipText: ""
 
     hoverEnabled: true
 
@@ -162,20 +163,10 @@ Button {
         font.weight: Font.Medium
         color: control.textColor
     }
-    // Text {
-    //     id: textItem
-    //     anchors.verticalCenter: parent.verticalCenter
-    //     anchors.right: parent.right
-    //     text: control.text
-    //     //font: control.font
-    //     font.pointSize: control.font.pointSize
-    //     font.family: control.font.family
-    //     //font.bold: true
-    //     font.weight: Font.Medium
-    //     color: control.textColor
-    //     horizontalAlignment: Text.AlignHCenter
-    //     verticalAlignment: Text.AlignVCenter
-    //     elide: Text.ElideRight
-    // }
+
+    AbracaToolTip {
+        text: toolTipText
+        visible: control.toolTipText !== "" && control.hovered
+    }
 }
 
