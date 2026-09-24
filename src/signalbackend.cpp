@@ -237,7 +237,7 @@ void SignalBackend::registerSnrPlot(QQuickItem *item)
         m_snrPlot->setXAxisTitle(tr("Time"));
         m_snrPlot->setYAxisTitle(tr("SNR [dB]"));
 
-        m_snrPlot->setXMin(0);                        // start at 0
+        m_snrPlot->setXMin(0);                         // start at 0
         m_snrPlot->setXMax(xPlotRange);                // show initial range
         m_snrPlot->setMajorTickStepX(snrTickStepSec);  // Tick every 10 seconds
         m_snrPlot->setXLabelFormatter(
@@ -460,10 +460,10 @@ void SignalBackend::updateSnrToolTip()
             break;
     }
 
-    snrTooltip(QString(tr("<b>%1</b><br><br>"
-                          "%2 <b>%3 dB</b> (%4)<br>"
-                          "%5 <b>%6 dB</b> (%7)<br>"
-                          "<i>%8</i>"))
+    snrTooltip(QString("<b>%1</b><br><br>"
+                       "%2 <b>%3 dB</b> (%4)<br>"
+                       "%5 <b>%6 dB</b> (%7)<br>"
+                       "<i>%8</i>")
                    .arg(tr("Signal since %1").arg(m_snrResetTime.toString("dd.MM. hh:mm")))
                    .arg(tr("SNR minimum:"))
                    .arg(m_snrMin, 0, 'f', 1)

@@ -55,21 +55,26 @@
     </message>
     <message>
         <location filename="../aboutui.cpp" line="89"/>
+        <source>French</source>
+        <translation type="unfinished">Français</translation>
+    </message>
+    <message>
+        <location filename="../aboutui.cpp" line="92"/>
         <source>Polish</source>
         <translation>Polonais</translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="92"/>
+        <location filename="../aboutui.cpp" line="95"/>
         <source>AbracaDABra uses some artwork created by</source>
         <translation>AbracaDABra utilise certaines oeuvres artistiques crées par</translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="94"/>
+        <location filename="../aboutui.cpp" line="97"/>
         <source>DAB transmitter database provided by</source>
         <translation>Base de données des émetteurs DAB fournie par</translation>
     </message>
     <message>
-        <location filename="../aboutui.cpp" line="95"/>
+        <location filename="../aboutui.cpp" line="98"/>
         <source>and country flags provided by</source>
         <translation>et drapeaux des pays fournis par</translation>
     </message>
@@ -265,401 +270,401 @@
         <translation>Rétablir l&apos;audio</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="476"/>
+        <location filename="../application.cpp" line="480"/>
         <source>Audio coding</source>
         <translation>Encodage audio</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="481"/>
+        <location filename="../application.cpp" line="485"/>
         <source>Ongoing announcement</source>
         <translation>Annonce en cours</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="983"/>
+        <location filename="../application.cpp" line="990"/>
         <source>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %5</source>
         <translation>&lt;b&gt;Multiplex  :&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Label court : &lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Pays :&lt;/b&gt; %5</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1189"/>
+        <location filename="../application.cpp" line="1197"/>
         <source>System time</source>
         <translation>Heure du système</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1199"/>
-        <location filename="../application.cpp" line="4581"/>
+        <location filename="../application.cpp" line="1207"/>
+        <location filename="../application.cpp" line="4622"/>
         <source>DAB time</source>
         <translation>Heure DAB</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1209"/>
+        <location filename="../application.cpp" line="1217"/>
         <source>&lt;b&gt;DAB audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;Encodage audio DAB&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1209"/>
+        <location filename="../application.cpp" line="1217"/>
         <source>MPEG-1 layer 2</source>
         <translation>MPEG-1 layer 2</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1213"/>
-        <location filename="../application.cpp" line="1217"/>
         <location filename="../application.cpp" line="1221"/>
+        <location filename="../application.cpp" line="1225"/>
+        <location filename="../application.cpp" line="1229"/>
         <source>&lt;b&gt;DAB+ audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;Encodage audio DAB+&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1213"/>
+        <location filename="../application.cpp" line="1221"/>
         <source>MPEG-4 Low Complexity AAC</source>
         <translation>MPEG-4 Low Complexity AAC</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1217"/>
+        <location filename="../application.cpp" line="1225"/>
         <source>MPEG-4 High Efficiency AAC</source>
         <translation>MPEG-4 High Efficiency AAC</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1221"/>
+        <location filename="../application.cpp" line="1229"/>
         <source>MPEG-4 High Efficiency AAC v2</source>
         <translation>MPEG-4 High Efficiency AAC v2</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1238"/>
+        <location filename="../application.cpp" line="1246"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Sample rate: %2 kHz</source>
         <translation>&lt;b&gt;Signal audio&lt;/b&gt;&lt;br&gt;%1Stéréo&lt;br&gt;Taux d&apos;échantillonnage : %2 kHz</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1242"/>
+        <location filename="../application.cpp" line="1250"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Sample rate: %2 kHz (SBR %3)</source>
         <translation>&lt;b&gt;Signal audio&lt;/b&gt;&lt;br&gt;Stéréo (PS %1)&lt;br&gt;Taux d&apos;échantillonnage : %2 kHz (SBR %3)</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1243"/>
-        <location filename="../application.cpp" line="1245"/>
+        <location filename="../application.cpp" line="1251"/>
+        <location filename="../application.cpp" line="1253"/>
         <source>on</source>
         <translation>on</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1243"/>
-        <location filename="../application.cpp" line="1245"/>
+        <location filename="../application.cpp" line="1251"/>
+        <location filename="../application.cpp" line="1253"/>
         <source>off</source>
         <translation>off</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1253"/>
+        <location filename="../application.cpp" line="1261"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz</source>
         <translation>&lt;b&gt;Signal audio&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Taux d&apos;échantillonnage : %1 kHz</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1258"/>
+        <location filename="../application.cpp" line="1266"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz (SBR: %2)</source>
         <translation>&lt;b&gt;Signal audio&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Taux d&apos;échantillonnage : %1 kHz (SBR: %2)</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1279"/>
+        <location filename="../application.cpp" line="1287"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1 (dynamic)</source>
         <translation>&lt;b&gt;Type de programme&lt;/b&gt;&lt;br&gt;%1 (dynamique)</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1286"/>
+        <location filename="../application.cpp" line="1294"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;Type de programme&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1306"/>
+        <location filename="../application.cpp" line="1314"/>
         <source>Tuning...  </source>
         <translation>Recherche...  </translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1372"/>
-        <location filename="../application.cpp" line="1384"/>
+        <location filename="../application.cpp" line="1380"/>
+        <location filename="../application.cpp" line="1392"/>
         <source>Tune to %1</source>
         <translation>Syntonisation de %1</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1540"/>
+        <location filename="../application.cpp" line="1548"/>
         <source>End of file</source>
         <translation>Fin du fichier</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1541"/>
+        <location filename="../application.cpp" line="1549"/>
         <source>Select any service to restart</source>
         <translation>Sélectionner n&apos;importe quel service à redémarrer</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1555"/>
+        <location filename="../application.cpp" line="1563"/>
         <source>Input device error: Device disconnected</source>
         <translation>Erreur de périphérique d&apos;entrée : Périphérique déeconnecté</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1556"/>
-        <location filename="../application.cpp" line="1568"/>
+        <location filename="../application.cpp" line="1564"/>
+        <location filename="../application.cpp" line="1576"/>
         <source>Try to reconnect the device or choose another device in Settings</source>
         <translation>Essayez de reconnecter l&apos;appareil ou choisissez-en un autre dans les paramètres</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1567"/>
+        <location filename="../application.cpp" line="1575"/>
         <source>Input device error: No data</source>
         <translation>Erreur de périphérique d&apos;entrée : Aucune donnée</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1591"/>
+        <location filename="../application.cpp" line="1599"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you change DAB channel.</source>
         <translation>Un enregistrement audio est en cours. Il sera interrompu et enregistré si vous changez de canal DAB.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1594"/>
+        <location filename="../application.cpp" line="1602"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you switch current service.</source>
         <translation>Un enregistrement audio est en cours. Il sera interrompu et enregistré si vous changez de service.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1599"/>
+        <location filename="../application.cpp" line="1607"/>
         <source>Stop audio recording?</source>
         <translation>Arrêter l&apos;enregistrement audio ?</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1616"/>
+        <location filename="../application.cpp" line="1624"/>
         <source>Keep recording</source>
         <translation>Continuer l&apos;enregistrement</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1617"/>
+        <location filename="../application.cpp" line="1625"/>
         <source>Stop recording and do not ask again</source>
         <translation>Arrêter l&apos;enregistrement et ne plus demander</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1618"/>
+        <location filename="../application.cpp" line="1626"/>
         <source>Stop recording</source>
         <translation>Arrêter l&apos;enregistrement</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1863"/>
+        <location filename="../application.cpp" line="1871"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
         <translation>&lt;b&gt;Service :&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Label court :&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Langage :&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Pays :&lt;/b&gt; %6</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1931"/>
+        <location filename="../application.cpp" line="1939"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Capacity units: %4 CU</source>
         <translation>&lt;B&gt;Protection contre les erreurs&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Taux d&apos;encodage : %2/%3&lt;br&gt;Unités de capacité : %4 CU</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1942"/>
+        <location filename="../application.cpp" line="1950"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Protection level: %2&lt;br&gt;Capacity units: %3 CU</source>
         <translation>&lt;B&gt;Protection contre les erreurs&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Niveau de protection : %2&lt;br&gt;Unités de capacité : %3 CU</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1952"/>
+        <location filename="../application.cpp" line="1960"/>
         <source>%1 kbps</source>
         <translation>%1 kbps</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1954"/>
+        <location filename="../application.cpp" line="1962"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
         <translation>&lt;b&gt;Débit du service&lt;/b&gt;&lt;br&gt;Audio &amp; donnée : %1</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2004"/>
+        <location filename="../application.cpp" line="2012"/>
         <source>Service currently unavailable</source>
         <translation>Service actuellement indisponible</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2005"/>
+        <location filename="../application.cpp" line="2013"/>
         <source>Service was removed from ensemble</source>
         <translation>Le service a été supprimé du multiplex</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2037"/>
+        <location filename="../application.cpp" line="2045"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;on current service</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Annonce en cours&lt;br&gt;sur le service actuel</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2051"/>
+        <location filename="../application.cpp" line="2059"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Annonce en cours&lt;br&gt;Service source : &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Cliquez pour suspendre l&apos;annonce</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2068"/>
+        <location filename="../application.cpp" line="2076"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Annonce suspendue&lt;br&gt;Service source : &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Cliquez pour reprendre l&apos;annonce</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2113"/>
+        <location filename="../application.cpp" line="2121"/>
         <source>Default audio device</source>
         <translation>Périphérique audio par défaut</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2190"/>
+        <location filename="../application.cpp" line="2198"/>
         <source>Stop audio recording</source>
         <translation>Arrêter l&apos;enregistrement audio</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2196"/>
+        <location filename="../application.cpp" line="2204"/>
         <source>Start audio recording</source>
         <translation>Démarrer l&apos;enregistrement audio</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2206"/>
+        <location filename="../application.cpp" line="2214"/>
         <source>Audio recording ongoing (%2 kBytes recorded)
 File: %1</source>
         <translation>Enregistrement audio en cours (%2 kilo-octets enregistrés)
         Fichier : %1</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2214"/>
+        <location filename="../application.cpp" line="2222"/>
         <source>Scheduled audio recording is getting ready</source>
         <translation>Préparation de l&apos;enregistrement programmé</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2226"/>
+        <location filename="../application.cpp" line="2234"/>
         <source>Scheduled recording should start in %1 seconds</source>
         <translation>Début de l&apos;enregistrement programmé dans %1 secondes</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2229"/>
+        <location filename="../application.cpp" line="2237"/>
         <source>Ongoing recording now prevents the start of a scheduled recording. The schedule will be cancelled if you do not choose otherwise. If you select to keep the schedule, the service might be switched.</source>
         <translation>L&apos;enregistrement audio en cours empêche le démarrage de l&apos;enregistrement planifié. La planification sera annulée sans choix de votre part. Le maintien de la planification peut entraîner un changement de service.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2242"/>
+        <location filename="../application.cpp" line="2250"/>
         <source>Keep current recording</source>
         <translation>Conserver l&apos;enregistrement en cours</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2243"/>
+        <location filename="../application.cpp" line="2251"/>
         <source>Keep schedule</source>
         <translation>Conserver la programmation</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2252"/>
+        <location filename="../application.cpp" line="2260"/>
         <source>Scheduled recording starts in %1 seconds</source>
         <translation>L&apos;enregistrement planifié va démarrer dans %1 secondes</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2255"/>
+        <location filename="../application.cpp" line="2263"/>
         <source>Recording is going to start according to the schedule. The service might be switched if it differs from the current one.</source>
         <translation>L&apos;enregistrement va commencer conformément à la planification. Le service pourrait être changé s&apos;il diffère de l&apos;actuel.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2266"/>
+        <location filename="../application.cpp" line="2274"/>
         <source>Continue as planned</source>
         <translation>Continuer comme planifié</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2267"/>
+        <location filename="../application.cpp" line="2275"/>
         <source>Cancel plan</source>
         <translation>Annuler la planification</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2433"/>
+        <location filename="../application.cpp" line="2445"/>
         <source>SPI MOT directory not complete
 Decoded %1 / %2 MOT objects</source>
         <translation>Répertoire SPI MOT incomplet
         %1 / %2 objet(s) MOT décodé(s)</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2437"/>
+        <location filename="../application.cpp" line="2449"/>
         <source>SPI MOT directory complete
 %1 MOT objects decoded</source>
         <translation>Répertoire SPI MOT complet
         %1 objet(s) MOT décodé(s)</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2442"/>
+        <location filename="../application.cpp" line="2454"/>
         <source>SPI MOT directory decoding started</source>
         <translation>Le décodage du répertoire SPI MOT a commencé</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2641"/>
+        <location filename="../application.cpp" line="2653"/>
         <source>No ensemble</source>
         <translation>Aucun multiplex</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2642"/>
+        <location filename="../application.cpp" line="2654"/>
         <source>No ensemble tuned</source>
         <translation>Aucun multiplex syntonisé</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2653"/>
+        <location filename="../application.cpp" line="2665"/>
         <source>No service</source>
         <translation>Aucun service</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2659"/>
+        <location filename="../application.cpp" line="2671"/>
         <source>No service playing</source>
         <translation>Aucun service syntonisé</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="445"/>
+        <location filename="../application.cpp" line="449"/>
         <source>Service list exported</source>
         <translation>Liste des services exportée</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="449"/>
+        <location filename="../application.cpp" line="453"/>
         <source>Failed to export service list</source>
         <translation>Échec de l&apos;exportation de la liste des services</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4691"/>
+        <location filename="../application.cpp" line="4750"/>
         <source>Clear service list?</source>
         <translation>Effacer la liste des services ?</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4691"/>
+        <location filename="../application.cpp" line="4750"/>
         <source>Current service list including favorites will be deleted. This action is irreversible.</source>
         <translation>La liste actuelle des services ainsi que les favoris seront supprimés.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4705"/>
+        <location filename="../application.cpp" line="4764"/>
         <source>Clear</source>
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4706"/>
-        <location filename="../application.cpp" line="4937"/>
+        <location filename="../application.cpp" line="4765"/>
+        <location filename="../application.cpp" line="4996"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4745"/>
-        <location filename="../application.cpp" line="4795"/>
+        <location filename="../application.cpp" line="4804"/>
+        <location filename="../application.cpp" line="4854"/>
         <source>Failed to create backup</source>
         <translation>Échec de la création de la sauvegarde</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4790"/>
+        <location filename="../application.cpp" line="4849"/>
         <source>Settings backup created successfully</source>
         <translation>Sauvegarde des paramètres créée avec succès</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4821"/>
+        <location filename="../application.cpp" line="4880"/>
         <source>Restore settings?</source>
         <translation>Restaurer les paramtères ?</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4821"/>
+        <location filename="../application.cpp" line="4880"/>
         <source>Settings will be restored from backup.
 Application will restart after restore.</source>
         <translation>Les paramètres seront restaurés depuis la sauvegarde.
         L&apos;application redémarrera après la restauration.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4834"/>
-        <location filename="../application.cpp" line="4879"/>
+        <location filename="../application.cpp" line="4893"/>
+        <location filename="../application.cpp" line="4938"/>
         <source>Failed to restore settings</source>
         <translation>Échec de la restauration des paramètres</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4844"/>
-        <location filename="../application.cpp" line="4852"/>
+        <location filename="../application.cpp" line="4903"/>
+        <location filename="../application.cpp" line="4911"/>
         <source>Invalid backup file</source>
         <translation>Fichier de sauvegarde invalide</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4924"/>
+        <location filename="../application.cpp" line="4983"/>
         <source>Settings restored, restarting...</source>
         <translation>Paramètres restaurés, redémarrage en cours...</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4936"/>
+        <location filename="../application.cpp" line="4995"/>
         <source>Restore</source>
         <translation>Restaurer</translation>
     </message>
@@ -901,17 +906,17 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
 <context>
     <name>ChartView</name>
     <message>
-        <location filename="../qml/charts/ChartView.qml" line="296"/>
+        <location filename="../qml/charts/ChartView.qml" line="300"/>
         <source>Reset</source>
         <translation>Réinitialiser</translation>
     </message>
     <message>
-        <location filename="../qml/charts/ChartView.qml" line="324"/>
+        <location filename="../qml/charts/ChartView.qml" line="328"/>
         <source>Live</source>
         <translation>Direct</translation>
     </message>
     <message>
-        <location filename="../qml/charts/ChartView.qml" line="324"/>
+        <location filename="../qml/charts/ChartView.qml" line="328"/>
         <source>Paused</source>
         <translation>En pause</translation>
     </message>
@@ -935,77 +940,82 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
 <context>
     <name>DabSignalView</name>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="225"/>
+        <location filename="../qml/DabSignalView.qml" line="269"/>
+        <source>Reset</source>
+        <translation type="unfinished">Réinitialiser</translation>
+    </message>
+    <message>
+        <location filename="../qml/DabSignalView.qml" line="355"/>
         <source>RF level </source>
         <translation>Niveau RF </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="226"/>
+        <location filename="../qml/DabSignalView.qml" line="356"/>
         <source>Estimated RF level</source>
         <translation>Niveau RF estimé</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="243"/>
+        <location filename="../qml/DabSignalView.qml" line="373"/>
         <source>Gain </source>
         <translation>Gain </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="244"/>
+        <location filename="../qml/DabSignalView.qml" line="374"/>
         <source>Tuner gain</source>
         <translation>Gain du récepteur</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="261"/>
+        <location filename="../qml/DabSignalView.qml" line="391"/>
         <source>Frequency </source>
         <translation>Fréquence </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="262"/>
+        <location filename="../qml/DabSignalView.qml" line="392"/>
         <source>Tuned frequency</source>
         <translation>Fréquence syntonisée</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="279"/>
+        <location filename="../qml/DabSignalView.qml" line="409"/>
         <source>Offset </source>
         <translation>Décalage </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="280"/>
+        <location filename="../qml/DabSignalView.qml" line="410"/>
         <source>Estimated frequency offset</source>
         <translation>Décalage de fréquence estimé</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="312"/>
+        <location filename="../qml/DabSignalView.qml" line="442"/>
         <source>Show NULL spectrum</source>
         <translation>Afficher le spectre &quot;NULL&quot;</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="319"/>
+        <location filename="../qml/DabSignalView.qml" line="449"/>
         <source>Show waterfall</source>
         <translation>Afficher le spectrogramme</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="326"/>
+        <location filename="../qml/DabSignalView.qml" line="456"/>
         <source>Slow update (1.4 sec)</source>
         <translation>Rafraîchissement lent (1.4 sec)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="332"/>
+        <location filename="../qml/DabSignalView.qml" line="462"/>
         <source>Normal update (1 sec)</source>
         <translation>Rafraîchissement standard (1 sec)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="338"/>
+        <location filename="../qml/DabSignalView.qml" line="468"/>
         <source>Fast update (600 msec)</source>
         <translation>Rafraîchissement rapide (600 msec)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="344"/>
+        <location filename="../qml/DabSignalView.qml" line="474"/>
         <source>Very fast update (400 msec)</source>
         <translation>Rafraîchissement très rapide (400 msec)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="351"/>
+        <location filename="../qml/DabSignalView.qml" line="481"/>
         <source>Show SNR value</source>
         <translation>Afficher la valeur SNR</translation>
     </message>
@@ -1861,178 +1871,188 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="191"/>
+        <source>Show only current ensemble in service tree</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/OtherSettings.qml" line="203"/>
         <source>Show system time when DAB time is not available</source>
         <translation>Afficher l&apos;heure système lorsque l&apos;heure DAB n&apos;est pas disponible</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="203"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="215"/>
         <source>Show ensemble country flag (internet connection required)</source>
         <translation>Afficher le drapeau du pays du multiplex (connexion Internet requise)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="215"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="227"/>
         <source>Show service country flag (internet connection required)</source>
         <translation>Afficher le drapeau du pays de service (connexion Internet requise)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="231"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="243"/>
         <source>Slideshow background:</source>
         <translation>Arrière-plan du diaporama :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="253"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="265"/>
+        <source>Slideshow scaling:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/OtherSettings.qml" line="287"/>
         <source>Language:</source>
         <translation>Langage :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="275"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="309"/>
         <source>Restart</source>
         <translation>Redémarrer</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="283"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="317"/>
         <source>Language change will take effect after application restart.</source>
         <translation>La modification du langage prendra effet au redémarrage de l&apos;application.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="299"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="333"/>
         <source>Data storage</source>
         <translation>Stockage des données</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="316"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="350"/>
         <source>Folder:</source>
         <translation>Dossier :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="327"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="361"/>
         <source>Data storage folder...</source>
         <translation>Dossier du stockage des données...</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="337"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="371"/>
         <source>Application uses this folder to store all data like audio recording, IQ recording and logs, etc.</source>
         <translation>L&apos;application utilise ce dossier pour conserver toutes les données comme les enregistrements audio, les enregistrements IQ et les journaux, etc.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="344"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="378"/>
         <source>Backup settings</source>
         <translation>Sauvegarder les réglages</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="348"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="382"/>
         <source>Restore settings...</source>
         <translation>Restaurer les paramètres...</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="359"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="393"/>
         <source>Backup includes application settings, service list and audio recording schedule. Backup file is stored in data storage folder.</source>
         <translation>La sauvegarde inclut les paramètres d&apos;application, la liste des serivces et la planification des enregistrements audio. Le fichier de sauvegarde est conservé dans le dossier de stockage des données.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="373"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="407"/>
         <source>Network proxy configuration</source>
         <translation>Configuration du proxy réseau</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="385"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="419"/>
         <source>Proxy type:</source>
         <translation>Type de proxy :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="401"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="435"/>
         <source>Apply</source>
         <translation>Appliquer</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="410"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="444"/>
         <source>Server:</source>
         <translation>Serveur :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="426"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="460"/>
         <source>Port:</source>
         <translation>Port :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="447"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="481"/>
         <source>Username:</source>
         <translation>Nom d&apos;utilisateur :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="463"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="497"/>
         <source>Password:</source>
         <translation>Mot de passe :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="489"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="523"/>
         <source>FMLIST</source>
         <translation>FMLIST</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="500"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="534"/>
         <source>Upload ensemble information</source>
         <translation>Envoyer les informations du multiplex</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="515"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="549"/>
         <source>Ensemble information is a small CSV file with list of services in the ensemble,
 it is anonymous and contains no personal data.</source>
         <translation>Les informations du multiplex sont exportées dans un petit fichier CSV contenant la liste des services du multiplex,
         ce fichier est anonyme et ne contient aucune donnée personnelle.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="522"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="556"/>
         <source>Application automatically uploads ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</source>
         <translation>L&apos;application envoie automatiquement les données du multiplex à&lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="523"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="557"/>
         <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
         <translation>L&apos;envoi des informations du multiplex à &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; est actuellement désactivé.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="531"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="565"/>
         <source>Thank you for supporting the community!</source>
         <translation>Merci de soutenir la communauté !</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="532"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="566"/>
         <source>Please consider enabling this option to help the community.</source>
         <translation>S&apos;il vous plaît, envisagez d&apos;activer cette option pour aider la communauté.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="546"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="589"/>
         <source>Restore application windows on start</source>
         <translation>Restaurer les fenêtres de l&apos;application au démarrage</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="559"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="602"/>
         <source>Check for application update on start</source>
         <translation>Vérifier si une mise à jour de l&apos;application est disponible au démarrage</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="572"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="615"/>
         <source>Include XML header in raw data recording</source>
         <translation>Inclure l&apos;en-tête XML dans l&apos;enregistrement des données brutes</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="584"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="627"/>
         <source>DAB cable channels (16A - 17D)</source>
         <translation>Canaux DAB pour réseaux câblés (16A - 17D)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="620"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="666"/>
         <source>Select SLS Background Color</source>
         <translation>Sélectionner la couleur d&apos;arrière-plan SLS</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="634"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="680"/>
         <source>Data storage folder</source>
         <translation>Dossier de stockage des données</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="658"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="704"/>
         <source>JSON files</source>
         <translation>Fichiers JSON</translation>
     </message>
@@ -2040,17 +2060,22 @@ it is anonymous and contains no personal data.</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../main.cpp" line="96"/>
+        <location filename="../main.cpp" line="166"/>
         <source>Abraca DAB radio: DAB/DAB+ Software Defined Radio (SDR)</source>
         <translation>Abraca DAB radio : radio logicielle (SDR) DAB/DAB+</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="102"/>
+        <location filename="../main.cpp" line="171"/>
+        <source>Run in headless CLI mode (web UI / terminal dashboard / commandline-only) instead of the GUI. Run with --cli --help to see CLI-specific options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="177"/>
         <source>Optional INI file. If not specified AbracaDABra.ini in system directory will be used.</source>
         <translation>Fichier INI facultatif. Si non spécifié, AbracaDABra.ini situé dans le répertoire système sera utilisé.</translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="107"/>
+        <location filename="../main.cpp" line="182"/>
         <source>Optional service list JSON file. If not specified ServiceList.json in system directory will be used.</source>
         <translation>Fichier JSON de liste de services facultatif. Si non spécifié, SerivceList.json dans le répertoire système sera utilisé.</translation>
     </message>
@@ -4173,47 +4198,47 @@ it is anonymous and contains no personal data.</source>
         <translation>Activer la répétition</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="159"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="164"/>
         <source>Recording date:</source>
         <translation>Date d&apos;enregistrement :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="162"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="167"/>
         <source>Recorder:</source>
         <translation>Enregistreur :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="165"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="170"/>
         <source>Device:</source>
         <translation>Périphérique :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="168"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="173"/>
         <source>Model:</source>
         <translation>Modèle :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="171"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="176"/>
         <source>Sample rate [Hz]:</source>
         <translation>Taux d&apos;échantillonnage [Hz] :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="174"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="179"/>
         <source>Frequency [kHz]:</source>
         <translation>Fréquence [kHz] :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="177"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="182"/>
         <source>Recording length [sec]:</source>
         <translation>Durée d&apos;enregistrement [sec] :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="180"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="185"/>
         <source>Sample format:</source>
         <translation>Format d&apos;échantillonnage :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="203"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="211"/>
         <source>Binary files</source>
         <translation>Fichiers binaires</translation>
     </message>
@@ -4281,55 +4306,55 @@ it is anonymous and contains no personal data.</source>
         <translation>Gain</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="191"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="186"/>
         <source>Expert settings</source>
         <translation>Paramètres experts</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="207"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="201"/>
         <source>Bandwidth:</source>
         <translation>Largeur de bande :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="222"/>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="254"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="216"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="243"/>
         <source>Default</source>
         <translation>Défaut</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="228"/>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="260"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="222"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="249"/>
         <source>Set default</source>
         <translation>Définir par défaut</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="240"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="229"/>
         <source>SW AGC level threshold:</source>
         <translation>Seuil de niveau AGC logiciel :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="272"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="256"/>
         <source>Frequency correction:</source>
         <translation>Correction de fréquence :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="292"/>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="343"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="276"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="325"/>
         <source>Reset</source>
         <translation>Réinitialiser</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="304"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="283"/>
         <source>RF level estimation:</source>
         <translation>Estimation du niveau RF :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="318"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="300"/>
         <source>RF level correction:</source>
         <translation>Correction du niveau RF :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="356"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="333"/>
         <source>Bias Tee:</source>
         <translation>Bias Tee :</translation>
     </message>
@@ -4397,38 +4422,50 @@ it is anonymous and contains no personal data.</source>
         <translation>Gain</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="193"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="188"/>
         <source>Expert settings</source>
         <translation>Paramètres experts</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="206"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="204"/>
+        <source>Bandwidth:</source>
+        <translation type="unfinished">Largeur de bande :</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="237"/>
+        <source>Only some RTL-TCP servers support bandwidth selection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="241"/>
         <source>SW AGC level threshold:</source>
         <translation>Seuil de niveau AGC logiciel :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="220"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="219"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="255"/>
         <source>Default</source>
         <translation>Défaut</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="226"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="225"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="261"/>
         <source>Set default</source>
         <translation>Définir par défaut</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="238"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="268"/>
         <source>Frequency correction:</source>
         <translation>Correction de fréquence :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="257"/>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="291"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="287"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="316"/>
         <source>Reset</source>
         <translation>Réinitialiser</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="269"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="294"/>
         <source>RF level correction:</source>
         <translation>Correction du niveau RF :</translation>
     </message>
@@ -4490,184 +4527,190 @@ it is anonymous and contains no personal data.</source>
 <context>
     <name>ScannerBackend</name>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="148"/>
+        <location filename="../tii/scannerbackend.cpp" line="172"/>
         <source>Scanning finished</source>
         <translation>Scan terminé</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="167"/>
+        <location filename="../tii/scannerbackend.cpp" line="232"/>
         <source>Replace data in the table?</source>
         <translation>Remplacer les données dans le tableau ?</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="167"/>
+        <location filename="../tii/scannerbackend.cpp" line="232"/>
         <source>Current data in the table will be deleted. This action is irreversible.</source>
         <translation>Les données actuelles dans le tableau seront supprimées. Cette action est irréversible.</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="178"/>
+        <location filename="../tii/scannerbackend.cpp" line="243"/>
         <source>Replace</source>
         <translation>Remplacer</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="179"/>
-        <location filename="../tii/scannerbackend.cpp" line="1555"/>
-        <location filename="../tii/scannerbackend.cpp" line="1575"/>
+        <location filename="../tii/scannerbackend.cpp" line="244"/>
+        <location filename="../tii/scannerbackend.cpp" line="1670"/>
+        <location filename="../tii/scannerbackend.cpp" line="1690"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="271"/>
-        <location filename="../tii/scannerbackend.cpp" line="283"/>
-        <location filename="../tii/scannerbackend.cpp" line="292"/>
-        <location filename="../tii/scannerbackend.cpp" line="304"/>
+        <location filename="../tii/scannerbackend.cpp" line="341"/>
+        <location filename="../tii/scannerbackend.cpp" line="353"/>
+        <location filename="../tii/scannerbackend.cpp" line="362"/>
+        <location filename="../tii/scannerbackend.cpp" line="374"/>
         <source>Failed to save JSON file</source>
         <translation>Échec de l&apos;enregistrement du fichier JSON</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="755"/>
-        <location filename="../tii/scannerbackend.cpp" line="767"/>
-        <location filename="../tii/scannerbackend.cpp" line="776"/>
-        <location filename="../tii/scannerbackend.cpp" line="788"/>
-        <location filename="../tii/scannerbackend.cpp" line="807"/>
-        <location filename="../tii/scannerbackend.cpp" line="815"/>
-        <location filename="../tii/scannerbackend.cpp" line="866"/>
-        <location filename="../tii/scannerbackend.cpp" line="874"/>
+        <location filename="../tii/scannerbackend.cpp" line="846"/>
+        <location filename="../tii/scannerbackend.cpp" line="858"/>
+        <location filename="../tii/scannerbackend.cpp" line="867"/>
+        <location filename="../tii/scannerbackend.cpp" line="879"/>
+        <location filename="../tii/scannerbackend.cpp" line="898"/>
+        <location filename="../tii/scannerbackend.cpp" line="906"/>
+        <location filename="../tii/scannerbackend.cpp" line="957"/>
+        <location filename="../tii/scannerbackend.cpp" line="965"/>
         <source>Failed to save log</source>
         <translation>Échec de l&apos;enregistrement du journal</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="762"/>
-        <location filename="../tii/scannerbackend.cpp" line="783"/>
+        <location filename="../tii/scannerbackend.cpp" line="853"/>
+        <location filename="../tii/scannerbackend.cpp" line="874"/>
         <source>Log saved to CSV file</source>
         <translation>Journal enregistré en tant que fichier CSV</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="858"/>
-        <location filename="../tii/scannerbackend.cpp" line="917"/>
+        <location filename="../tii/scannerbackend.cpp" line="949"/>
+        <location filename="../tii/scannerbackend.cpp" line="1008"/>
         <source>Auto-save CSV started</source>
         <translation>Enregistrement auto CSV démarré</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="991"/>
+        <location filename="../tii/scannerbackend.cpp" line="210"/>
+        <location filename="../tii/scannerbackend.cpp" line="1082"/>
         <source>Channel:</source>
         <translation>Canal :</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1069"/>
+        <location filename="../tii/scannerbackend.cpp" line="1160"/>
         <source>%1  (cycle %2)</source>
         <translation>%1  (cycle %2)</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1319"/>
+        <location filename="../tii/scannerbackend.cpp" line="1425"/>
         <source>Mark as local (known) transmitter</source>
         <translation>Marquer en tant qu&apos;émetteur local (connu)</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1319"/>
+        <location filename="../tii/scannerbackend.cpp" line="1425"/>
         <source>Unmark local (known) transmitter</source>
         <translation>Démarquer l&apos;émetteurt local (connu)</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1321"/>
+        <location filename="../tii/scannerbackend.cpp" line="1427"/>
         <source>Show ensemble information</source>
         <translation>Afficher les informations du multiplex</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1392"/>
-        <location filename="../tii/scannerbackend.cpp" line="1416"/>
+        <location filename="../tii/scannerbackend.cpp" line="1498"/>
+        <location filename="../tii/scannerbackend.cpp" line="1522"/>
         <source>Ensemble information exported</source>
         <translation>Informations du multiplex exportées</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1382"/>
-        <location filename="../tii/scannerbackend.cpp" line="1397"/>
-        <location filename="../tii/scannerbackend.cpp" line="1406"/>
-        <location filename="../tii/scannerbackend.cpp" line="1421"/>
+        <location filename="../tii/scannerbackend.cpp" line="1488"/>
+        <location filename="../tii/scannerbackend.cpp" line="1503"/>
+        <location filename="../tii/scannerbackend.cpp" line="1512"/>
+        <location filename="../tii/scannerbackend.cpp" line="1527"/>
         <source>Failed to export ensemble information</source>
         <translation>Erreurs lors de l&apos;export des informations du multiplex</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="278"/>
-        <location filename="../tii/scannerbackend.cpp" line="299"/>
+        <location filename="../tii/scannerbackend.cpp" line="195"/>
+        <source>Scanning paused</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tii/scannerbackend.cpp" line="348"/>
+        <location filename="../tii/scannerbackend.cpp" line="369"/>
         <source>Data saved to JSON file</source>
         <translation>Données enregistrées dans le fichier JSON</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="317"/>
-        <location filename="../tii/scannerbackend.cpp" line="397"/>
-        <location filename="../tii/scannerbackend.cpp" line="424"/>
-        <location filename="../tii/scannerbackend.cpp" line="433"/>
-        <location filename="../tii/scannerbackend.cpp" line="441"/>
-        <location filename="../tii/scannerbackend.cpp" line="450"/>
-        <location filename="../tii/scannerbackend.cpp" line="465"/>
-        <location filename="../tii/scannerbackend.cpp" line="479"/>
-        <location filename="../tii/scannerbackend.cpp" line="487"/>
-        <location filename="../tii/scannerbackend.cpp" line="495"/>
-        <location filename="../tii/scannerbackend.cpp" line="534"/>
-        <location filename="../tii/scannerbackend.cpp" line="551"/>
-        <location filename="../tii/scannerbackend.cpp" line="561"/>
+        <location filename="../tii/scannerbackend.cpp" line="387"/>
+        <location filename="../tii/scannerbackend.cpp" line="467"/>
+        <location filename="../tii/scannerbackend.cpp" line="494"/>
+        <location filename="../tii/scannerbackend.cpp" line="503"/>
+        <location filename="../tii/scannerbackend.cpp" line="511"/>
+        <location filename="../tii/scannerbackend.cpp" line="520"/>
+        <location filename="../tii/scannerbackend.cpp" line="535"/>
+        <location filename="../tii/scannerbackend.cpp" line="549"/>
+        <location filename="../tii/scannerbackend.cpp" line="557"/>
+        <location filename="../tii/scannerbackend.cpp" line="565"/>
+        <location filename="../tii/scannerbackend.cpp" line="604"/>
+        <location filename="../tii/scannerbackend.cpp" line="621"/>
+        <location filename="../tii/scannerbackend.cpp" line="631"/>
         <source>Failed to load CSV file</source>
         <translation>Échec de chargement du fichier CSV</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="615"/>
+        <location filename="../tii/scannerbackend.cpp" line="687"/>
         <source>Failed to load JSON file</source>
         <translation>Échec de chargement du fichier JSON</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="628"/>
+        <location filename="../tii/scannerbackend.cpp" line="700"/>
         <source>Failed to parse JSON file</source>
         <translation>Échec de l&apos;analyse du fichier JSON</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="636"/>
+        <location filename="../tii/scannerbackend.cpp" line="708"/>
         <source>Invalid JSON structure</source>
         <translation>Structure JSON invalide</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1457"/>
+        <location filename="../tii/scannerbackend.cpp" line="1567"/>
         <source>Scanning failed</source>
         <translation>Scan échoué</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1509"/>
+        <location filename="../tii/scannerbackend.cpp" line="1624"/>
         <source>ERP: &lt;b&gt;%1 kW&lt;/b&gt;</source>
         <translation>PAR : &lt;b&gt;%1 kW&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1516"/>
+        <location filename="../tii/scannerbackend.cpp" line="1631"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</source>
         <translation>Altitude : &lt;b&gt;%1 m&lt;/b&gt; + &lt;b&gt;%2 m&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1520"/>
+        <location filename="../tii/scannerbackend.cpp" line="1635"/>
         <source>Altitude: &lt;b&gt;%1 m&lt;/b&gt;</source>
         <translation>Altitude : &lt;b&gt;%1 m&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1537"/>
+        <location filename="../tii/scannerbackend.cpp" line="1652"/>
         <source>Clear scan results?</source>
         <translation>Effacer les résultats du scan ?</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1537"/>
+        <location filename="../tii/scannerbackend.cpp" line="1652"/>
         <source>You will loose current scan results, this action is irreversible.</source>
         <translation>Les résultats du scan actuel seront perdus, cette action est irréversible.</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1554"/>
-        <location filename="../tii/scannerbackend.cpp" line="1574"/>
+        <location filename="../tii/scannerbackend.cpp" line="1669"/>
+        <location filename="../tii/scannerbackend.cpp" line="1689"/>
         <source>Clear</source>
         <translation>Effacer</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1563"/>
+        <location filename="../tii/scannerbackend.cpp" line="1678"/>
         <source>Clear local (known) transmitter database?</source>
         <translation>Effacer la base de données des émetteurs locaux (connus) ?</translation>
     </message>
     <message>
-        <location filename="../tii/scannerbackend.cpp" line="1563"/>
+        <location filename="../tii/scannerbackend.cpp" line="1678"/>
         <source>You will loose all records in the database, this action is irreversible.</source>
         <translation>Les enregistrements dans la base de données seront perdus, cette action est irréversible.</translation>
     </message>
@@ -4846,77 +4889,79 @@ it is anonymous and contains no personal data.</source>
         <translation>Infini</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="219"/>
+        <location filename="../qml/tii/ScannerView.qml" line="220"/>
         <source>Select channels</source>
         <translation>Sélection des canaux</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="226"/>
+        <location filename="../qml/tii/ScannerView.qml" line="231"/>
         <source>Stop</source>
         <translation>Arrêter</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="226"/>
+        <location filename="../qml/tii/ScannerView.qml" line="231"/>
         <source>Start</source>
         <translation>Démarrer</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="257"/>
+        <location filename="../qml/tii/ScannerView.qml" line="288"/>
         <source>Incremental scan</source>
         <translation>Scan incremental</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="264"/>
+        <location filename="../qml/tii/ScannerView.qml" line="295"/>
         <source>Clear scan results on start</source>
         <translation>Supprimer les résultats du scan au démarrage</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="270"/>
+        <location filename="../qml/tii/ScannerView.qml" line="301"/>
         <source>Hide local (known) transmitters</source>
         <translation>Masquer les émetteurs locaux (connus)</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="276"/>
+        <location filename="../qml/tii/ScannerView.qml" line="307"/>
         <source>AutoSave JSON</source>
         <translation>Sauvegarde automatique du JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="283"/>
+        <location filename="../qml/tii/ScannerView.qml" line="314"/>
         <source>AutoSave CSV</source>
         <translation>Sauvegarde automatique du CSV</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="291"/>
+        <location filename="../qml/tii/ScannerView.qml" line="322"/>
         <source>Save as JSON</source>
         <translation>Enregistrer en tant que fichier JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="296"/>
+        <location filename="../qml/tii/ScannerView.qml" line="327"/>
         <source>Save as CSV</source>
         <translation>Enregistrer en tant que fichier CSV</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="301"/>
+        <location filename="../qml/tii/ScannerView.qml" line="332"/>
         <source>Load from file...</source>
         <translation>Charger à partir d&apos;un fichier...</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="505"/>
+        <location filename="../qml/tii/ScannerView.qml" line="537"/>
+        <location filename="../qml/tii/ScannerView.qml" line="538"/>
         <source>JSON files</source>
         <translation>Fichiers JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="306"/>
+        <location filename="../qml/tii/ScannerView.qml" line="337"/>
         <source>Clear scan results</source>
         <translation>Effacer les résultats du scan</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="311"/>
+        <location filename="../qml/tii/ScannerView.qml" line="342"/>
         <source>Clear local (known) transmitter database</source>
         <translation>Effacer la base de données des émetteurs locaux (connus)</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="505"/>
+        <location filename="../qml/tii/ScannerView.qml" line="537"/>
+        <location filename="../qml/tii/ScannerView.qml" line="538"/>
         <source>CSV files</source>
         <translation>Fichiers CSV</translation>
     </message>
@@ -4974,37 +5019,37 @@ it is anonymous and contains no personal data.</source>
         <translation>Gain RF</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="236"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="231"/>
         <source>IF gain</source>
         <translation>Gain IF</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="254"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="249"/>
         <source>N/A</source>
         <translation>Non disponible</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="258"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="253"/>
         <source>AGC</source>
         <translation>AGC</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="275"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="270"/>
         <source>Expert settings</source>
         <translation>Paramètres experts</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="289"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="284"/>
         <source>Frequency correction:</source>
         <translation>Correction de fréquence :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="308"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="303"/>
         <source>Reset</source>
         <translation>Réinitialiser</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="320"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="310"/>
         <source>Bias Tee:</source>
         <translation>Bias Tee :</translation>
     </message>
@@ -5147,96 +5192,111 @@ it is anonymous and contains no personal data.</source>
         <translation>16 bits signé</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="158"/>
+        <location filename="../settingsbackend.cpp" line="159"/>
         <source>Disabled</source>
         <translation>Désactivé</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="219"/>
-        <location filename="../settingsbackend.cpp" line="270"/>
+        <location filename="../settingsbackend.cpp" line="220"/>
+        <location filename="../settingsbackend.cpp" line="277"/>
         <source>System</source>
         <translation>Système</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="220"/>
-        <location filename="../settingsbackend.cpp" line="271"/>
+        <location filename="../settingsbackend.cpp" line="221"/>
+        <location filename="../settingsbackend.cpp" line="278"/>
         <source>Manual</source>
         <translation>Manuel</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="222"/>
+        <location filename="../settingsbackend.cpp" line="223"/>
         <source>Serial port</source>
         <translation>Port de série</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="260"/>
+        <location filename="../settingsbackend.cpp" line="261"/>
         <source>System language</source>
         <translation>Langue du système</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="269"/>
+        <location filename="../settingsbackend.cpp" line="270"/>
+        <source>Optimal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsbackend.cpp" line="271"/>
+        <source>Original</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsbackend.cpp" line="272"/>
+        <source>2x Original</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsbackend.cpp" line="276"/>
         <source>No proxy</source>
         <translation>Aucun proxy</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="871"/>
-        <location filename="../settingsbackend.cpp" line="909"/>
-        <location filename="../settingsbackend.cpp" line="2070"/>
+        <location filename="../settingsbackend.cpp" line="892"/>
+        <location filename="../settingsbackend.cpp" line="930"/>
+        <location filename="../settingsbackend.cpp" line="2102"/>
         <source>N/A</source>
         <translation>Non disponible</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="924"/>
+        <location filename="../settingsbackend.cpp" line="945"/>
         <source>RTL SDR device connected</source>
         <translation>Périphérique RTL SDR connecté</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="927"/>
+        <location filename="../settingsbackend.cpp" line="948"/>
         <source>RTL TCP device connected</source>
         <translation>Périphérique RTL TCP connecté</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="930"/>
+        <location filename="../settingsbackend.cpp" line="951"/>
         <source>No device connected</source>
         <translation>Aucun périphérique connecté</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="933"/>
+        <location filename="../settingsbackend.cpp" line="954"/>
         <source>Raw file connected</source>
         <translation>Fichier brut connecté</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="936"/>
+        <location filename="../settingsbackend.cpp" line="957"/>
         <source>Airspy device connected</source>
         <translation>Périphérique Airspy connecté</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="939"/>
+        <location filename="../settingsbackend.cpp" line="960"/>
         <source>Soapy SDR device connected</source>
         <translation>Périphérique Soapy SDR connecté</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1402"/>
+        <location filename="../settingsbackend.cpp" line="1434"/>
         <source>Update failed</source>
         <translation>Mise à jour échouée</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1412"/>
+        <location filename="../settingsbackend.cpp" line="1444"/>
         <source>Last update: </source>
         <translation>Dernière mise à jour : </translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1416"/>
+        <location filename="../settingsbackend.cpp" line="1448"/>
         <source>Data not available</source>
         <translation>Données non disponibles</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1778"/>
+        <location filename="../settingsbackend.cpp" line="1810"/>
         <source>sec</source>
         <translation>sec</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.h" line="408"/>
+        <location filename="../settingsbackend.h" line="413"/>
         <source>No file selected</source>
         <translation>Aucun fichier sélectionné</translation>
     </message>
@@ -5244,29 +5304,59 @@ it is anonymous and contains no personal data.</source>
 <context>
     <name>SignalBackend</name>
     <message>
-        <location filename="../signalbackend.cpp" line="100"/>
+        <location filename="../signalbackend.cpp" line="107"/>
         <source>Frequency [MHz]</source>
         <translation>Fréquence [MHz]</translation>
     </message>
     <message>
-        <location filename="../signalbackend.cpp" line="101"/>
+        <location filename="../signalbackend.cpp" line="108"/>
         <source>dBFS</source>
         <translation>dBFS</translation>
     </message>
     <message>
-        <location filename="../signalbackend.cpp" line="198"/>
+        <location filename="../signalbackend.cpp" line="237"/>
         <source>Time</source>
         <translation>Heure</translation>
     </message>
     <message>
-        <location filename="../signalbackend.cpp" line="199"/>
+        <location filename="../signalbackend.cpp" line="238"/>
         <source>SNR [dB]</source>
         <translation>SNR [dB]</translation>
     </message>
     <message>
-        <location filename="../signalbackend.cpp" line="333"/>
+        <location filename="../signalbackend.cpp" line="408"/>
         <source>N/A</source>
         <translation>Non disponible</translation>
+    </message>
+    <message>
+        <location filename="../signalbackend.cpp" line="453"/>
+        <source>Signal found at %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../signalbackend.cpp" line="456"/>
+        <source>Last sync at %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../signalbackend.cpp" line="459"/>
+        <source>No signal found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../signalbackend.cpp" line="467"/>
+        <source>Signal since %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../signalbackend.cpp" line="468"/>
+        <source>SNR minimum:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../signalbackend.cpp" line="471"/>
+        <source>SNR maximum:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5360,12 +5450,12 @@ it is anonymous and contains no personal data.</source>
         <translation>Définir par défaut</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="261"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="256"/>
         <source>Frequency correction:</source>
         <translation>Correction de fréquence :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="280"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="275"/>
         <source>Reset</source>
         <translation>Réinitialiser</translation>
     </message>
@@ -5485,12 +5575,12 @@ Please select data storage folder and grant permissions.</source>
 <context>
     <name>TIIMap</name>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="422"/>
+        <location filename="../qml/tii/TIIMap.qml" line="445"/>
         <source>Stop logging</source>
         <translation>Arrêter l&apos;enregistrement</translation>
     </message>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="422"/>
+        <location filename="../qml/tii/TIIMap.qml" line="445"/>
         <source>Record CSV log</source>
         <translation>Enregistrer le journal au format CSV</translation>
     </message>
@@ -5548,82 +5638,82 @@ Please select data storage folder and grant permissions.</source>
         <translation>Entrez les coordonnées au format &quot;latitude, longitude&quot;, par exemple : 1.234,-5.678&lt;/p&gt;&lt;br&gt;&lt;p&gt;Astuce : &lt;i&gt;Rendez-vous sur &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google Maps&lt;/a&gt;, faites un clic droit sur votre localisation, cliquez sur les coordonnées dans le menu contextuel pour les copier et collez les valeurs telles quelles ici.&lt;/i&gt;&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="237"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="238"/>
         <source>Altitude source:</source>
         <translation>Source pour l&apos;altitude :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="242"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="243"/>
         <source>Manual</source>
         <translation>Manuel</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="275"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="278"/>
         <source>Logging</source>
         <translation>Enregistrement des logs</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="289"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="292"/>
         <source>Folder:</source>
         <translation>Dossier :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="305"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="308"/>
         <source>Timestamp in UTC</source>
         <translation>Horodatage au format UTC</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="316"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="319"/>
         <source>Column names in English</source>
         <translation>Noms des colonnes en Anglais</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="327"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="330"/>
         <source>GPS coordinates</source>
         <translation>Coordonnées GPS</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="338"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="341"/>
         <source>No TII (signal monitoring)</source>
         <translation>Aucun TII (surveillance du signal)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="358"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="361"/>
         <source>Detector</source>
         <translation>Détecteur</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="364"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="367"/>
         <source>Reliable</source>
         <translation>Fiable</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="380"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="383"/>
         <source>Sensitive</source>
         <translation>Sensible</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="392"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="395"/>
         <source>User interface</source>
         <translation>Interface utilisateur</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="405"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="408"/>
         <source>Show spectrum plot</source>
         <translation>Afficher le graphique du spectre</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="417"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="420"/>
         <source>Keep no longer detected transmitters on map (grey marker)</source>
         <translation>Conserver les émetteurs qui ne sont plus détectés sur la carte (marqueur gris)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="435"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="438"/>
         <source>Remove after:</source>
         <translation>Supprimer après :</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="468"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="471"/>
         <source>Transmitter table columns</source>
         <translation>Colonnes du tableau des émetteurs</translation>
     </message>
@@ -5687,166 +5777,166 @@ Please select data storage folder and grant permissions.</source>
 <context>
     <name>TxTableModel</name>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="349"/>
+        <location filename="../tii/txtablemodel.cpp" line="357"/>
         <source>Time (UTC)</source>
         <translation>Heure (UTC)</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="353"/>
-        <location filename="../tii/txtablemodel.cpp" line="398"/>
-        <location filename="../tii/txtablemodel.cpp" line="402"/>
+        <location filename="../tii/txtablemodel.cpp" line="361"/>
+        <location filename="../tii/txtablemodel.cpp" line="406"/>
+        <location filename="../tii/txtablemodel.cpp" line="410"/>
         <source>Time</source>
         <translation>Heure</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="356"/>
-        <location filename="../tii/txtablemodel.cpp" line="405"/>
+        <location filename="../tii/txtablemodel.cpp" line="364"/>
+        <location filename="../tii/txtablemodel.cpp" line="413"/>
         <source>Channel</source>
         <translation>Canal</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="358"/>
+        <location filename="../tii/txtablemodel.cpp" line="366"/>
         <source>Frequency</source>
         <translation>Fréquence</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="360"/>
-        <location filename="../tii/txtablemodel.cpp" line="409"/>
+        <location filename="../tii/txtablemodel.cpp" line="368"/>
+        <location filename="../tii/txtablemodel.cpp" line="417"/>
         <source>UEID</source>
         <translation>UEID</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="362"/>
-        <location filename="../tii/txtablemodel.cpp" line="411"/>
+        <location filename="../tii/txtablemodel.cpp" line="370"/>
+        <location filename="../tii/txtablemodel.cpp" line="419"/>
         <source>Label</source>
         <translation>Label</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="364"/>
-        <location filename="../tii/txtablemodel.cpp" line="413"/>
+        <location filename="../tii/txtablemodel.cpp" line="372"/>
+        <location filename="../tii/txtablemodel.cpp" line="421"/>
         <source>Services</source>
         <translation>Services</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="366"/>
+        <location filename="../tii/txtablemodel.cpp" line="374"/>
         <source>SNR</source>
         <translation>SNR</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="368"/>
+        <location filename="../tii/txtablemodel.cpp" line="376"/>
         <source>RF Level</source>
         <translation>Niveau RF</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="370"/>
-        <location filename="../tii/txtablemodel.cpp" line="419"/>
+        <location filename="../tii/txtablemodel.cpp" line="378"/>
+        <location filename="../tii/txtablemodel.cpp" line="427"/>
         <source>Main</source>
         <translation>Principal</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="372"/>
-        <location filename="../tii/txtablemodel.cpp" line="421"/>
+        <location filename="../tii/txtablemodel.cpp" line="380"/>
+        <location filename="../tii/txtablemodel.cpp" line="429"/>
         <source>Sub</source>
         <translation>Secondaire</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="374"/>
+        <location filename="../tii/txtablemodel.cpp" line="382"/>
         <source>Code</source>
         <translation>Code</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="376"/>
+        <location filename="../tii/txtablemodel.cpp" line="384"/>
         <source>Level</source>
         <translation>Niveau</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="378"/>
-        <location filename="../tii/txtablemodel.cpp" line="425"/>
+        <location filename="../tii/txtablemodel.cpp" line="386"/>
+        <location filename="../tii/txtablemodel.cpp" line="433"/>
         <source>Location</source>
         <translation>Localisation</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="380"/>
+        <location filename="../tii/txtablemodel.cpp" line="388"/>
         <source>Power</source>
         <translation>Puissance</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="382"/>
+        <location filename="../tii/txtablemodel.cpp" line="390"/>
         <source>Distance</source>
         <translation>Distance</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="384"/>
+        <location filename="../tii/txtablemodel.cpp" line="392"/>
         <source>Azimuth</source>
         <translation>Azimut</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="407"/>
+        <location filename="../tii/txtablemodel.cpp" line="415"/>
         <source>Frequency [kHz]</source>
         <translation>Fréquence [kHz]</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="415"/>
+        <location filename="../tii/txtablemodel.cpp" line="423"/>
         <source>SNR [dB]</source>
         <translation>SNR [dB]</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="417"/>
+        <location filename="../tii/txtablemodel.cpp" line="425"/>
         <source>RF Level [dBm]</source>
         <translation>Niveau RF [dBm]</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="423"/>
+        <location filename="../tii/txtablemodel.cpp" line="431"/>
         <source>Level [dB]</source>
         <translation>Niveau [dB]</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="427"/>
+        <location filename="../tii/txtablemodel.cpp" line="435"/>
         <source>Power [kW]</source>
         <translation>Puissance [kW]</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="429"/>
+        <location filename="../tii/txtablemodel.cpp" line="437"/>
         <source>Distance [km]</source>
         <translation>Distance [km]</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="431"/>
+        <location filename="../tii/txtablemodel.cpp" line="439"/>
         <source>Azimuth [deg]</source>
         <translation>Azimut [deg]</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="433"/>
+        <location filename="../tii/txtablemodel.cpp" line="441"/>
         <source>Latitude (TX)</source>
         <translation>Latitude (TX)</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="435"/>
+        <location filename="../tii/txtablemodel.cpp" line="443"/>
         <source>Longitude (TX)</source>
         <translation>Longitude (TX)</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="437"/>
+        <location filename="../tii/txtablemodel.cpp" line="445"/>
         <source>Altitude (TX)</source>
         <translation>Altitude (TX)</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="439"/>
+        <location filename="../tii/txtablemodel.cpp" line="447"/>
         <source>Antenna Height (TX)</source>
         <translation>Hauteur d&apos;antenne (TX)</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="441"/>
+        <location filename="../tii/txtablemodel.cpp" line="449"/>
         <source>Latitude (RX)</source>
         <translation>Latitude (RX)</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="443"/>
+        <location filename="../tii/txtablemodel.cpp" line="451"/>
         <source>Longitude (RX)</source>
         <translation>Longitude (RX)</translation>
     </message>
     <message>
-        <location filename="../tii/txtablemodel.cpp" line="445"/>
+        <location filename="../tii/txtablemodel.cpp" line="453"/>
         <source>Altitude (RX)</source>
         <translation>Altitude (RX)</translation>
     </message>
