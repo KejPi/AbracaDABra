@@ -941,82 +941,82 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
 <context>
     <name>DabSignalView</name>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="269"/>
+        <location filename="../qml/DabSignalView.qml" line="268"/>
         <source>Reset</source>
         <translation type="unfinished">Resetta</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="355"/>
+        <location filename="../qml/DabSignalView.qml" line="354"/>
         <source>RF level </source>
         <translation>Livello RF </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="356"/>
+        <location filename="../qml/DabSignalView.qml" line="355"/>
         <source>Estimated RF level</source>
         <translation>Livello RF stimato</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="373"/>
+        <location filename="../qml/DabSignalView.qml" line="372"/>
         <source>Gain </source>
         <translation>Guadagno </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="374"/>
+        <location filename="../qml/DabSignalView.qml" line="373"/>
         <source>Tuner gain</source>
         <translation>Guadagno Sintonizzatore</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="391"/>
+        <location filename="../qml/DabSignalView.qml" line="390"/>
         <source>Frequency </source>
         <translation>Frequenza </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="392"/>
+        <location filename="../qml/DabSignalView.qml" line="391"/>
         <source>Tuned frequency</source>
         <translation>Frequenza sintonizzata</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="409"/>
+        <location filename="../qml/DabSignalView.qml" line="408"/>
         <source>Offset </source>
         <translation>Compensazione </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="410"/>
+        <location filename="../qml/DabSignalView.qml" line="409"/>
         <source>Estimated frequency offset</source>
         <translation>Sfasamento di frequenza stimato</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="442"/>
+        <location filename="../qml/DabSignalView.qml" line="441"/>
         <source>Show NULL spectrum</source>
         <translation>Mostra lo spettro NULL</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="449"/>
+        <location filename="../qml/DabSignalView.qml" line="448"/>
         <source>Show waterfall</source>
         <translation>Mostra cascata</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="456"/>
+        <location filename="../qml/DabSignalView.qml" line="455"/>
         <source>Slow update (1.4 sec)</source>
         <translation>Aggiornamento lento (1,4 sec)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="462"/>
+        <location filename="../qml/DabSignalView.qml" line="461"/>
         <source>Normal update (1 sec)</source>
         <translation>Aggiornamento normale (1 sec)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="468"/>
+        <location filename="../qml/DabSignalView.qml" line="467"/>
         <source>Fast update (600 msec)</source>
         <translation>Aggiornamento veloce (600 ms)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="474"/>
+        <location filename="../qml/DabSignalView.qml" line="473"/>
         <source>Very fast update (400 msec)</source>
         <translation>Aggiornamento molto veloce (400 ms)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="481"/>
+        <location filename="../qml/DabSignalView.qml" line="480"/>
         <source>Show SNR value</source>
         <translation>Mostra valore SNR</translation>
     </message>
@@ -4507,12 +4507,12 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
 <context>
     <name>SLSView</name>
     <message>
-        <location filename="../qml/SLSView.qml" line="52"/>
+        <location filename="../qml/SLSView.qml" line="51"/>
         <source>Save to file</source>
         <translation>Salva su file</translation>
     </message>
     <message>
-        <location filename="../qml/SLSView.qml" line="56"/>
+        <location filename="../qml/SLSView.qml" line="55"/>
         <source>Copy to clipboard</source>
         <translation>Copia negli appunti</translation>
     </message>
@@ -4905,65 +4905,80 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
         <translation>Avvia</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="288"/>
+        <location filename="../qml/tii/ScannerView.qml" line="246"/>
+        <source>Resume scanning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/tii/ScannerView.qml" line="246"/>
+        <source>Pause scanning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/tii/ScannerView.qml" line="258"/>
+        <source>Stop scanning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/tii/ScannerView.qml" line="290"/>
         <source>Incremental scan</source>
         <translation>Scansione incrementale</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="295"/>
+        <location filename="../qml/tii/ScannerView.qml" line="297"/>
         <source>Clear scan results on start</source>
         <translation>Cancella risultati della scansione all&apos;avvio</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="301"/>
+        <location filename="../qml/tii/ScannerView.qml" line="303"/>
         <source>Hide local (known) transmitters</source>
         <translation>Nascondi i trasmettitori locali (noti)</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="307"/>
+        <location filename="../qml/tii/ScannerView.qml" line="309"/>
         <source>AutoSave JSON</source>
         <translation>Salvataggio automatico su file JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="314"/>
+        <location filename="../qml/tii/ScannerView.qml" line="316"/>
         <source>AutoSave CSV</source>
         <translation>Salvataggio automatico su file CSV</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="322"/>
+        <location filename="../qml/tii/ScannerView.qml" line="324"/>
         <source>Save as JSON</source>
         <translation>Salva come JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="327"/>
+        <location filename="../qml/tii/ScannerView.qml" line="329"/>
         <source>Save as CSV</source>
         <translation>Salva come file CSV</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="332"/>
+        <location filename="../qml/tii/ScannerView.qml" line="334"/>
         <source>Load from file...</source>
         <translation>Carica dal file...</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="537"/>
-        <location filename="../qml/tii/ScannerView.qml" line="538"/>
+        <location filename="../qml/tii/ScannerView.qml" line="539"/>
+        <location filename="../qml/tii/ScannerView.qml" line="540"/>
         <source>JSON files</source>
         <translatorcomment>File JSON</translatorcomment>
         <translation>File JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="337"/>
+        <location filename="../qml/tii/ScannerView.qml" line="339"/>
         <source>Clear scan results</source>
         <translation>Cancella risultati scansione</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="342"/>
+        <location filename="../qml/tii/ScannerView.qml" line="344"/>
         <source>Clear local (known) transmitter database</source>
         <translation>Cancella il database dei trasmettitori locali (noti)</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="537"/>
-        <location filename="../qml/tii/ScannerView.qml" line="538"/>
+        <location filename="../qml/tii/ScannerView.qml" line="539"/>
+        <location filename="../qml/tii/ScannerView.qml" line="540"/>
         <source>CSV files</source>
         <translation>File CSV</translation>
     </message>
