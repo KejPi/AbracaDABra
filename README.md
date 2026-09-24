@@ -309,6 +309,7 @@ The subfolder template for each application can be created individually. Followi
 | :---: | :---: | :---- | :-----------| :-------|
 | * | * | `{serviceId}` | Current audio service ID (ECC+SID) as hexadecimal number | `e01234` |
 | * | * | `{ensId}`     | Current ensemble ID (ECC+UEID) as hexadecimal number | `e0eeee` |
+| * | * | `{timestamp}` | Current DAB timestamp as YYYYMMDD_HHMMSS | `20260102_030405` |
 |   | * | `{scId}`      | Data service component ID as 12bit decimal number | `47` |
 | * | * | `{transportId}` | MOT Object transport ID as 16bit decimal number, it shall uniquely identify a "file" within a single data MOT channel. [[EN 301 234 7.2.7.4](http://www.etsi.org/deliver/etsi_en/301200_301299/301234/02.01.01_60/en_301234v020101p.pdf)]  | `123456` |
 |   | * | `{directoryId}` | Directory ID is transport ID of MOT directory. | `654321` |
@@ -449,7 +450,7 @@ The scanning tool can be configured to run in one of 3 different modes:
 
 _Note:_ Ensemble configuration is acquired in all scanning modes but it might be incomplete in Fast and Normal mode.
 
-The number of scan cycles can be configured. One scan cycle means scanning all selected channels once. You can let the Scanning tool run "forever" by setting number of cycles to be infinite (value 0). 
+The number of scan cycles can be configured. One scan cycle means scanning all selected channels once. You can let the Scanning tool run "forever" by setting number of cycles to be infinite (value 0). In this case, it is possible to pause scan and then resume later. Application alows service or channel selection while current scan is paused.
 
 By default, all the channels in band III are scanned (5A-13F, 38 channels in total) but you can only scan some channels using the "Select channels" option.
 
