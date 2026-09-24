@@ -706,7 +706,40 @@ Item {
                     serviceTree.forceActiveFocus();
 
                     serviceTree.restartTreeHighlightAnimation();
-                    //serviceList.currentIndex = index
+                    //serviceList.currentIndex = index                                                            
+                }
+                MouseArea {
+                    id: rightClickArea
+                    enabled: UI.isAndroid === false && depth === 0
+                    anchors.fill: parent
+                    acceptedButtons: Qt.RightButton
+                    onClicked: (mouse)=>{
+                        if (mouse.button === Qt.RightButton) {
+                            contextMenu.x = mouse.x + 5
+                            contextMenu.y = mouse.y + 5
+                            contextMenu.open();
+                        }
+                    }
+                    AbracaMenu {
+                        id: contextMenu
+                        width: {
+                            var result = 0;
+                            var padding = 0;
+                            for (var i = 0; i < count; ++i) {
+                                var item = itemAt(i);
+                                result = Math.max(item.contentItem.implicitWidth, result);
+                                padding = Math.max(item.padding, padding);
+                            }
+                            return result + padding * 2;
+                        }
+                        AbracaMenuItem {
+                            text: qsTr("Remove ensemble")
+                            iconSource: UI.imagesUrl + "icon-cross.svg"
+                            onTriggered: {
+                                application.deleteEnsembleFromServiceList(serviceId, channel);
+                            }
+                        }
+                    }
                 }
 
                 contentItem: Item {
