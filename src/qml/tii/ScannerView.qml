@@ -388,7 +388,7 @@ Item {
                         scannerBackend.txTableSortOrder = sortIndicatorOrder;
                     }
                 }
-                // minColumnWidth: 50
+                stickToLastRow: true
             }
 
         }

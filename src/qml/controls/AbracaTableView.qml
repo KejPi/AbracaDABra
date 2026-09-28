@@ -46,6 +46,7 @@ Item {
     property bool cellsLeftAligned: true
     property int preferedWidth: 100
     property bool hScrollBarEnabled: true
+    property bool stickToLastRow: false
 
     signal doubleClickedRow(int row)
     signal populateContextMenu(int row)
@@ -342,6 +343,26 @@ Item {
 
             property int anchorRow: -1
 
+            state: ""
+            states: [
+                State {
+                    name: "autoscroll"
+                    PropertyChanges {
+                        target: tableView
+                        contentY: tableView.contentHeight - tableView.height
+                    }
+                }
+            ]
+            onContentYChanged: {
+                if (tableItem.stickToLastRow) {
+                    if (tableView.contentY >= tableView.contentHeight - tableView.height) {
+                        tableView.state = "autoscroll";
+                    } else {
+                        tableView.state = "";
+                    }
+                }
+            }
+
             delegate: Rectangle {
                 required property string display
                 required property bool selected
@@ -450,6 +471,11 @@ Item {
             ScrollBar.vertical: AbracaScrollBar {
                 id: vbar
                 policy: tableView.contentHeight > tableView.height ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+                onPolicyChanged: {
+                    if (tableItem.stickToLastRow && (vbar.policy === ScrollBar.AlwaysOn)) {
+                        tableView.state = "autoscroll";
+                    }
+                }
             }
 
             ScrollBar.horizontal: AbracaScrollBar {
