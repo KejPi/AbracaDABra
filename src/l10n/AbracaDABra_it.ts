@@ -57,7 +57,7 @@
     <message>
         <location filename="../aboutui.cpp" line="89"/>
         <source>French</source>
-        <translation type="unfinished">Francese</translation>
+        <translation>Francese</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="92"/>
@@ -622,7 +622,7 @@ Oggetti MOT decodificati: %1 / %2</translation>
         <location filename="../application.cpp" line="4765"/>
         <location filename="../application.cpp" line="4996"/>
         <source>Cancel</source>
-        <translation>Cancella</translation>
+        <translation>Annulla</translation>
     </message>
     <message>
         <location filename="../application.cpp" line="4804"/>
@@ -695,7 +695,7 @@ L&apos;applicazione si riavvierà al termine del ripristino.</translation>
     <message>
         <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="220"/>
         <source>Cancel</source>
-        <translation>Cancella</translation>
+        <translation>Annula</translation>
     </message>
 </context>
 <context>
@@ -735,7 +735,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/audiorec/AudioRecordingView.qml" line="164"/>
         <source>Delete all</source>
-        <translation>Cancella tutto</translation>
+        <translation>Cancella tutte</translation>
     </message>
 </context>
 <context>
@@ -901,7 +901,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/tii/ChannelSelectionDialog.qml" line="117"/>
         <source>Cancel</source>
-        <translation>Cancella</translation>
+        <translation>Annulla</translation>
     </message>
 </context>
 <context>
@@ -943,7 +943,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/DabSignalView.qml" line="268"/>
         <source>Reset</source>
-        <translation type="unfinished">Resetta</translation>
+        <translation>Resetta</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="354"/>
@@ -1637,7 +1637,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../messageboxbackend.cpp" line="183"/>
         <source>Cancel</source>
-        <translation>Cancella</translation>
+        <translation>Annulla</translation>
     </message>
     <message>
         <location filename="../messageboxbackend.cpp" line="185"/>
@@ -1873,7 +1873,7 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="191"/>
         <source>Show only current ensemble in service tree</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra solo questa ensemble nell&apos;albero</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="203"/>
@@ -1893,12 +1893,12 @@ Clicca aggiungi per creare una nuova registrazione.</translation>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="243"/>
         <source>Slideshow background:</source>
-        <translation>Sfondo copertina:</translation>
+        <translation>Sfondo presentazione:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="265"/>
         <source>Slideshow scaling:</source>
-        <translation type="unfinished"></translation>
+        <translation>Adattamento presentazione:</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="287"/>
@@ -2068,7 +2068,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../main.cpp" line="171"/>
         <source>Run in headless CLI mode (web UI / terminal dashboard / commandline-only) instead of the GUI. Run with --cli --help to see CLI-specific options.</source>
-        <translation type="unfinished"></translation>
+        <translation>Esegui in headless CLI mode (web UI / terminal dashboard / commandline-only) instead of the GUI. Run with --cli --help to see CLI-specific options.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="177"/>
@@ -4430,12 +4430,12 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="204"/>
         <source>Bandwidth:</source>
-        <translation type="unfinished">Larghezza di banda:</translation>
+        <translation>Larghezza di banda:</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="237"/>
         <source>Only some RTL-TCP servers support bandwidth selection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Solo alcuni server &apos;RTL-TCP&apos; permettono di selezionare la larghezza di banda.</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="241"/>
@@ -4535,7 +4535,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../tii/scannerbackend.cpp" line="195"/>
         <source>Scanning paused</source>
-        <translation type="unfinished"></translation>
+        <translation>Pausa Scansione</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="232"/>
@@ -4557,7 +4557,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
         <location filename="../tii/scannerbackend.cpp" line="1670"/>
         <location filename="../tii/scannerbackend.cpp" line="1690"/>
         <source>Cancel</source>
-        <translation>Cancella</translation>
+        <translation>Annulla</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="348"/>
@@ -4692,7 +4692,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1652"/>
         <source>Clear scan results?</source>
-        <translation>Cancellare i risultati della scansione?</translation>
+        <translation>Eliminare i risultati della scansione?</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1652"/>
@@ -4703,7 +4703,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
         <location filename="../tii/scannerbackend.cpp" line="1669"/>
         <location filename="../tii/scannerbackend.cpp" line="1689"/>
         <source>Clear</source>
-        <translation>Cancella</translation>
+        <translation>Elimina</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="1678"/>
@@ -4907,17 +4907,17 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="246"/>
         <source>Resume scanning</source>
-        <translation type="unfinished"></translation>
+        <translation>Riprendi scansione</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="246"/>
         <source>Pause scanning</source>
-        <translation type="unfinished"></translation>
+        <translation>Pausa scansione</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="258"/>
         <source>Stop scanning</source>
-        <translation type="unfinished"></translation>
+        <translation>Interrimpi scansione</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="290"/>
@@ -5098,7 +5098,7 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../qml/ServiceList.qml" line="736"/>
         <source>Remove ensemble</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi ensemble</translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="1000"/>
@@ -5244,17 +5244,17 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../settingsbackend.cpp" line="270"/>
         <source>Optimal</source>
-        <translation type="unfinished"></translation>
+        <translation>Ottimale</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="271"/>
         <source>Original</source>
-        <translation type="unfinished"></translation>
+        <translation>Originale</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="272"/>
         <source>2x Original</source>
-        <translation type="unfinished"></translation>
+        <translation>Doppia</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="276"/>
@@ -5354,32 +5354,32 @@ si tratta di dati anonimi che non contengono informazioni personali.</translatio
     <message>
         <location filename="../signalbackend.cpp" line="453"/>
         <source>Signal found at %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Segnale rilevato a %1</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="456"/>
         <source>Last sync at %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ultima sincronizzazione %1</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="459"/>
         <source>No signal found</source>
-        <translation type="unfinished"></translation>
+        <translation>Nessun segnale rilevato</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="467"/>
         <source>Signal since %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricevuto da %1</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="468"/>
         <source>SNR minimum:</source>
-        <translation type="unfinished"></translation>
+        <translation>SNR Minimo:</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="471"/>
         <source>SNR maximum:</source>
-        <translation type="unfinished"></translation>
+        <translation>SNR Massimo:</translation>
     </message>
 </context>
 <context>
@@ -5513,7 +5513,7 @@ Seleziona la cartella in cui archiviare i dati e concedi le autorizzazioni.</tra
     <message>
         <location filename="../qml/StorageAccessDialog.qml" line="67"/>
         <source>Cancel</source>
-        <translation>Cancella</translation>
+        <translation>Annulla</translation>
     </message>
     <message>
         <location filename="../qml/StorageAccessDialog.qml" line="73"/>
@@ -6065,7 +6065,7 @@ Seleziona la cartella in cui archiviare i dati e concedi le autorizzazioni.</tra
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="317"/>
         <source>DAB timestamp</source>
-        <translation type="unfinished"></translation>
+        <translation>Data/Ora DAB</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="327"/>
