@@ -56,7 +56,7 @@
     <message>
         <location filename="../aboutui.cpp" line="89"/>
         <source>French</source>
-        <translation type="unfinished">Français</translation>
+        <translation>Français</translation>
     </message>
     <message>
         <location filename="../aboutui.cpp" line="92"/>
@@ -942,7 +942,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../qml/DabSignalView.qml" line="268"/>
         <source>Reset</source>
-        <translation type="unfinished">Réinitialiser</translation>
+        <translation>Réinitialiser</translation>
     </message>
     <message>
         <location filename="../qml/DabSignalView.qml" line="354"/>
@@ -1872,7 +1872,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="191"/>
         <source>Show only current ensemble in service tree</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher uniquement le multiplex actuel dans l&apos;arbre de services</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="203"/>
@@ -1897,7 +1897,7 @@ Cliquez sur &apos;Ajouter&apos; pour créer un nouvel enregistrement.</translati
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="265"/>
         <source>Slideshow scaling:</source>
-        <translation type="unfinished"></translation>
+        <translation>Mise à l&apos;échelle du diaporama :</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="287"/>
@@ -2067,7 +2067,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../main.cpp" line="171"/>
         <source>Run in headless CLI mode (web UI / terminal dashboard / commandline-only) instead of the GUI. Run with --cli --help to see CLI-specific options.</source>
-        <translation type="unfinished"></translation>
+        <translation>Exécuter en mode CLI sans interface graphique (UI web / tableau de bord terminal / ligne de commande uniquement) au lieu du mode GUI. Exécutez avec --cli --help pour voir les options spécifiques CLI.</translation>
     </message>
     <message>
         <location filename="../main.cpp" line="177"/>
@@ -4429,12 +4429,12 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="204"/>
         <source>Bandwidth:</source>
-        <translation type="unfinished">Largeur de bande :</translation>
+        <translation>Largeur de bande :</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="237"/>
         <source>Only some RTL-TCP servers support bandwidth selection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Seuls certains serveurs RTL-TCP prennent en charge la sélection de la bande passante.</translation>
     </message>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="241"/>
@@ -4628,7 +4628,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="195"/>
         <source>Scanning paused</source>
-        <translation type="unfinished"></translation>
+        <translation>Scan mis en pause</translation>
     </message>
     <message>
         <location filename="../tii/scannerbackend.cpp" line="348"/>
@@ -4906,17 +4906,17 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="246"/>
         <source>Resume scanning</source>
-        <translation type="unfinished"></translation>
+        <translation>Reprendre le scan</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="246"/>
         <source>Pause scanning</source>
-        <translation type="unfinished"></translation>
+        <translation>Mettre le scan en pause</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="258"/>
         <source>Stop scanning</source>
-        <translation type="unfinished"></translation>
+        <translation>Interrompre le scan</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="290"/>
@@ -5091,7 +5091,7 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../qml/ServiceList.qml" line="736"/>
         <source>Remove ensemble</source>
-        <translation type="unfinished"></translation>
+        <translation>Supprimer le multiplex</translation>
     </message>
     <message>
         <location filename="../qml/ServiceList.qml" line="1000"/>
@@ -5241,17 +5241,17 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../settingsbackend.cpp" line="270"/>
         <source>Optimal</source>
-        <translation type="unfinished"></translation>
+        <translation>Optimal</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="271"/>
         <source>Original</source>
-        <translation type="unfinished"></translation>
+        <translation>Original</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="272"/>
         <source>2x Original</source>
-        <translation type="unfinished"></translation>
+        <translation>2x Original</translation>
     </message>
     <message>
         <location filename="../settingsbackend.cpp" line="276"/>
@@ -5351,32 +5351,32 @@ it is anonymous and contains no personal data.</source>
     <message>
         <location filename="../signalbackend.cpp" line="453"/>
         <source>Signal found at %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Signal trouvé à %1</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="456"/>
         <source>Last sync at %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Dernière synchronisation à %1</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="459"/>
         <source>No signal found</source>
-        <translation type="unfinished"></translation>
+        <translation>Aucun signal détecté</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="467"/>
         <source>Signal since %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Signal depuis %1</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="468"/>
         <source>SNR minimum:</source>
-        <translation type="unfinished"></translation>
+        <translation>SNR minimal :</translation>
     </message>
     <message>
         <location filename="../signalbackend.cpp" line="471"/>
         <source>SNR maximum:</source>
-        <translation type="unfinished"></translation>
+        <translation>SNR maximal :</translation>
     </message>
 </context>
 <context>
@@ -6061,7 +6061,7 @@ Please select data storage folder and grant permissions.</source>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="317"/>
         <source>DAB timestamp</source>
-        <translation type="unfinished"></translation>
+        <translation>Horodatage DAB</translation>
     </message>
     <message>
         <location filename="../qml/settings/UaSettings.qml" line="327"/>
