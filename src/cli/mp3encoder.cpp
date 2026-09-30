@@ -28,7 +28,8 @@
 
 #include <lame/lame.h>
 
-Mp3Encoder::Mp3Encoder() {}
+Mp3Encoder::Mp3Encoder()
+{}
 
 Mp3Encoder::~Mp3Encoder()
 {
@@ -64,7 +65,7 @@ bool Mp3Encoder::init(int sampleRate, int numChannels)
     lame_set_in_samplerate(m_lame, sampleRate);
     lame_set_num_channels(m_lame, numChannels);
     lame_set_mode(m_lame, 1 == numChannels ? MONO : JOINT_STEREO);
-    lame_set_brate(m_lame, 1 == numChannels ? 128 : 192);
+    lame_set_brate(m_lame, 1 == numChannels ? 96 : 192);
     lame_set_quality(m_lame, 2);  // 2 = high quality, still fast enough for realtime encoding
 
     if (lame_init_params(m_lame) < 0)
@@ -93,8 +94,16 @@ QByteArray Mp3Encoder::encode(const QByteArray &pcm)
     QByteArray out(int(1.25 * numFrames) + 7200, Qt::Uninitialized);
 
     const short *pcmData = reinterpret_cast<const short *>(pcm.constData());
-    int written = lame_encode_buffer_interleaved(m_lame, const_cast<short *>(pcmData), numFrames,
-                                                  reinterpret_cast<unsigned char *>(out.data()), out.size());
+    int written = 0;
+    if (m_numChannels == 2)
+    {
+        written = lame_encode_buffer_interleaved(m_lame, const_cast<short *>(pcmData), numFrames, reinterpret_cast<unsigned char *>(out.data()),
+                                                 out.size());
+    }
+    else
+    {
+        written = lame_encode_buffer(m_lame, pcmData, nullptr, numFrames, reinterpret_cast<unsigned char *>(out.data()), out.size());
+    }
     if (written < 0)
     {
         return QByteArray();
