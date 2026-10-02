@@ -155,10 +155,7 @@ void EnsembleSubchModel::init(const QList<RadioControlServiceComponent> &scList)
     {
         if (subchannelMap.contains(sc.SubChId))
         {  // subchannel is reused for more services
-            if (!sc.label.isEmpty())
-            {
-                subchannelMap[sc.SubChId].services.append(sc.label);
-            }
+            subchannelMap[sc.SubChId].services.append(sc.label);
         }
         else
         {
@@ -223,10 +220,7 @@ void EnsembleSubchModel::init(const QList<RadioControlServiceComponent> &scList)
                     subchannel.content = Subchannel::Data;
                 }
             }
-            if (!sc.label.isEmpty())
-            {
-                subchannel.services = {sc.label};
-            }
+            subchannel.services = {sc.label};
 
             subchannelMap[sc.SubChId] = subchannel;
         }

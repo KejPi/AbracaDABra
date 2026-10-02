@@ -1091,7 +1091,7 @@ void Application::onSignalState(uint8_t sync, float snr)
 
 void Application::onServiceListEntry(const RadioControlEnsemble &ens, const RadioControlServiceComponent &slEntry)
 {
-    if ((slEntry.TMId != DabTMId::StreamAudio) || m_isScannerRunning)
+    if ((slEntry.TMId != DabTMId::StreamAudio) || slEntry.label.isEmpty() || m_isScannerRunning)
     {  // do nothing - data services not supported or scanning tool is running
         return;
     }
@@ -4708,17 +4708,17 @@ void Application::onTuneChannel(uint32_t freq)
     {  // already tuned there (e.g. scanner resume without free-tuning in between) -> tuneService() would be a no-op and never emit tuneDone
         QObject *s = sender();
         QTimer::singleShot(0, this,
-                            [s, freq]()
-                            {
-                                if (auto *scanner = qobject_cast<ScannerBackend *>(s))
-                                {
-                                    scanner->onTuneDone(freq);
-                                }
-                                else if (auto *bandScan = qobject_cast<BandScanBackend *>(s))
-                                {
-                                    bandScan->onTuneDone(freq);
-                                }
-                            });
+                           [s, freq]()
+                           {
+                               if (auto *scanner = qobject_cast<ScannerBackend *>(s))
+                               {
+                                   scanner->onTuneDone(freq);
+                               }
+                               else if (auto *bandScan = qobject_cast<BandScanBackend *>(s))
+                               {
+                                   bandScan->onTuneDone(freq);
+                               }
+                           });
         return;
     }
 
