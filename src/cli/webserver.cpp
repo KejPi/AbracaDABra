@@ -495,8 +495,7 @@ QString WebServer::indexHtml()
 
 <div class="card">
   <div class="row">
-    <select id="channelSelect"></select>
-    <button onclick="tune()">Tune</button>
+    <select id="channelSelect" onchange="tune()"></select>
   </div>
 </div>
 
@@ -568,6 +567,11 @@ async function loadChannels(){
   const j = await r.json();
   const sel = document.getElementById('channelSelect');
   sel.innerHTML = '';
+  const placeholder = document.createElement('option');
+  placeholder.textContent = 'Select channel';
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  sel.appendChild(placeholder);
   j.channels.forEach(c => {
     const opt = document.createElement('option');
     opt.value = c.channel;
@@ -577,6 +581,7 @@ async function loadChannels(){
 }
 async function tune(){
   const ch = document.getElementById('channelSelect').value;
+  if (!ch) return;
   await fetch('/api/tune', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({channel: ch})});
 }
 
@@ -826,6 +831,9 @@ async function refresh(){
     const s = await r.json();
     document.getElementById('ensemble').textContent = s.ensemble && s.ensemble.valid ? (s.ensemble.label || '(unnamed)') : '-';
     document.getElementById('channel').textContent = s.channel || '-';
+    if (s.channel) {
+      document.getElementById('channelSelect').value = s.channel;
+    }
     document.getElementById('freq').textContent = s.frequencyKHz ? (s.frequencyKHz/1000).toFixed(3) + ' MHz' : '-';
     const sync = document.getElementById('sync');
     sync.textContent = fmtSync(s.syncLevel);
