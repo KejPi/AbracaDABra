@@ -524,6 +524,11 @@ QString WebServer::indexHtml()
   </div>
 </details>
 
+<details class="card" id="ensembleConfigurationCard" hidden>
+  <summary>Ensemble configuration</summary>
+  <div id="ensembleConfiguration"></div>
+</details>
+
 <div class="card">
   <table>
     <thead><tr><th>Service</th><th>Sub-ch</th><th>Bitrate</th><th></th></tr></thead>
@@ -798,6 +803,13 @@ async function refresh(){
     document.getElementById('sync').textContent = fmtSync(s.syncLevel);
     document.getElementById('snr').textContent = (s.snr ?? 0).toFixed(1) + ' dB';
     document.getElementById('nowplaying').textContent = (s.current && s.current.playing) ? s.current.label : '(none)';
+    const ensembleConfigurationCard = document.getElementById('ensembleConfigurationCard');
+    const ensembleConfiguration = (s.ensemble && s.ensemble.configuration) || '';
+    const ensembleLocked = !!(s.ensemble && s.ensemble.valid);
+    ensembleConfigurationCard.hidden = !ensembleLocked || !ensembleConfiguration;
+    if (!ensembleConfigurationCard.hidden) {
+      document.getElementById('ensembleConfiguration').innerHTML = ensembleConfiguration;
+    }
     // prefer DL Plus title/artist over the raw DLS text, same precedence as the CLI's own
     // display (DabCliApp::buildCurrentSubtitleLocked()), so the page shows the same info
     const cur = s.current || {};

@@ -153,6 +153,7 @@ signals:
 
 private slots:
     void onEnsembleInformation(const RadioControlEnsemble &ens);
+    void onEnsembleConfiguration(const QString &configuration);
     void onServiceListEntry(const RadioControlEnsemble &ens, const RadioControlServiceComponent &s);
     void onServiceListComplete(const RadioControlEnsemble &ens);
     void onSignalState(uint8_t sync, float snr);
@@ -202,6 +203,7 @@ private:
 
     mutable QMutex m_mutex;
     RadioControlEnsemble m_ensemble;
+    QString m_ensembleConfiguration;
     QMap<quint64, CliServiceInfo> m_services;
     uint8_t m_syncLevel = 0;
     float m_snr = 0.0f;

@@ -257,8 +257,13 @@ bool DabCliApp::start()
     }
 #endif
 
-    connect(m_radioControl, &RadioControl::ensembleInformation, this, &DabCliApp::onEnsembleInformation, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleReconfiguration, this, &DabCliApp::onEnsembleInformation, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleInformation, this, &DabCliApp::onEnsembleInformation, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleReconfiguration, this, &DabCliApp::onEnsembleInformation, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleConfiguration, this, &DabCliApp::onEnsembleConfiguration, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleInformation, m_radioControl,
+            [this](const RadioControlEnsemble &) { m_radioControl->getEnsembleConfiguration(); }, Qt::QueuedConnection);
+            connect(m_radioControl, &RadioControl::ensembleReconfiguration, m_radioControl,
+                [this](const RadioControlEnsemble &) { m_radioControl->getEnsembleConfiguration(); }, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListEntry, this, &DabCliApp::onServiceListEntry, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListComplete, this, &DabCliApp::onServiceListComplete, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::signalState, this, &DabCliApp::onSignalState, Qt::QueuedConnection);
@@ -452,6 +457,7 @@ bool DabCliApp::requestTuneFrequency(uint32_t freqKHz, QString *errorOut)
         m_isPlaying = false;
         m_haveAudioParams = false;
         m_ensemble = RadioControlEnsemble{};
+        m_ensembleConfiguration.clear();
         m_dlsText.clear();
         m_dlPlusTitle.clear();
         m_dlPlusArtist.clear();
@@ -613,6 +619,12 @@ void DabCliApp::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
     QMutexLocker lock(&m_mutex);
     m_ensemble = ens;
+}
+
+void DabCliApp::onEnsembleConfiguration(const QString &configuration)
+{
+    QMutexLocker lock(&m_mutex);
+    m_ensembleConfiguration = configuration;
 }
 
 void DabCliApp::onServiceListEntry(const RadioControlEnsemble &ens, const RadioControlServiceComponent &s)
@@ -872,6 +884,7 @@ QJsonObject DabCliApp::statusJson() const
     ensembleObj["eid"] = m_ensemble.eid();
     ensembleObj["ecc"] = m_ensemble.ecc();
     ensembleObj["valid"] = m_ensemble.isValid();
+    ensembleObj["configuration"] = m_ensembleConfiguration;
     root["ensemble"] = ensembleObj;
 
     QJsonObject currentObj;
