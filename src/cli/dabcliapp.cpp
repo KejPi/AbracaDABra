@@ -877,6 +877,7 @@ QJsonObject DabCliApp::statusJson() const
     root["snr"] = double(m_snr);
     root["volumePercent"] = m_volumePercent;
     root["recording"] = m_recording;
+    root["recordingAllowed"] = m_config.allowRecording;
 
     QJsonObject ensembleObj;
     ensembleObj["label"] = m_ensemble.label;

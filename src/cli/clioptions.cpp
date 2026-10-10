@@ -81,6 +81,7 @@ int parseCliArguments(QCoreApplication &app, CliConfig *config)
 
     QCommandLineOption gainOpt("gain", "Manual RTL-SDR gain index (default: software AGC).", "index");
     QCommandLineOption hardwareAgcOpt("hardware-agc", "Use the RTL-SDR's own hardware AGC instead of software AGC (RTL-SDR only).");
+    QCommandLineOption allowRecordingOpt("allow-recording", "Allow server-side recording from the Web UI.");
 
     QCommandLineOption listChannelsOpt("list-channels", "Print the DAB channel table and exit.");
     QCommandLineOption commandlineOnlyOpt("commandline-only", "Disable the interactive terminal dashboard (TUI) and log to commandline instead, "
@@ -103,6 +104,7 @@ int parseCliArguments(QCoreApplication &app, CliConfig *config)
     parser.addOption(portOpt);
     parser.addOption(gainOpt);
     parser.addOption(hardwareAgcOpt);
+    parser.addOption(allowRecordingOpt);
     parser.addOption(listChannelsOpt);
     parser.addOption(commandlineOnlyOpt);
     parser.addOption(verboseOpt);
@@ -193,6 +195,7 @@ int parseCliArguments(QCoreApplication &app, CliConfig *config)
         config->manualGainIndex = parser.value(gainOpt).toInt();
     }
     config->hardwareAgc = parser.isSet(hardwareAgcOpt);
+    config->allowRecording = parser.isSet(allowRecordingOpt);
     config->verboseLevel = verboseLevel;
     config->commandlineOnly = forceCommandlineOnly;
 

@@ -256,6 +256,11 @@ void WebServer::handleRequest(QTcpSocket *socket, const QString &method, const Q
 
     if ("POST" == method && "/api/record" == p)
     {
+      if (!m_app->recordingAllowed())
+      {
+        sendError(socket, 403, "Forbidden", "Recording is disabled for the Web UI");
+        return;
+      }
         m_app->toggleRecording();
         QJsonObject res;
         res["ok"] = true;
@@ -849,15 +854,16 @@ async function refresh(){
     document.getElementById('snr').textContent = (s.snr ?? 0).toFixed(1) + ' dB';
     const serviceIsRunning = !!(s.current && s.current.playing);
     const isRecording = !!s.recording;
+    const recordingAllowed = !!s.recordingAllowed;
     const playbackIsActive = serviceIsRunning && !localPlaybackStopped;
     document.getElementById('nowplaying').textContent = serviceIsRunning ? s.current.label : '(none)';
     document.getElementById('playerStatus').textContent = playbackIsActive ? (isRecording ? 'Playing and recording' : 'Playing') : 'Not playing';
     const recordButton = document.getElementById('recordButton');
-    recordButton.hidden = !isRecording && !serviceIsRunning;
+    recordButton.hidden = !recordingAllowed || (!isRecording && !serviceIsRunning);
     recordButton.classList.toggle('recording', isRecording);
     recordButton.setAttribute('aria-label', isRecording ? 'Stop recording' : 'Start recording');
     recordButton.title = isRecording ? 'Stop recording' : 'Start recording';
-    recordButton.disabled = !isRecording && !serviceIsRunning;
+    recordButton.disabled = !recordingAllowed || (!isRecording && !serviceIsRunning);
     const ensembleConfigurationCard = document.getElementById('ensembleConfigurationCard');
     const ensembleConfiguration = (s.ensemble && s.ensemble.configuration) || '';
     const ensembleLocked = !!(s.ensemble && s.ensemble.valid);

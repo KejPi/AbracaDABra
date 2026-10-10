@@ -75,6 +75,7 @@ struct CliConfig
 
     QHostAddress bindAddress = QHostAddress::AnyIPv4;
     quint16 webPort = 7979;
+    bool allowRecording = false;
     // true if the user explicitly passed --bind and/or --port; otherwise the CLI shows the
     // interactive terminal UI (or, if stdout isn't a terminal, falls back to plain log output)
     bool webUiEnabled = false;
@@ -124,6 +125,7 @@ public:
     int volumePercent() const;
     void toggleRecording();
     bool recordingActive() const;
+    bool recordingAllowed() const { return m_config.allowRecording; }
 
     // toggles volumePercent() between 0 and the level it had before muting; invokable so it can
     // be triggered by desktop media-key/MPRIS Play-Pause commands (see linuxSetupMediaRemoteCommands)
