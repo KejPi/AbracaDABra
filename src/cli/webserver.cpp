@@ -614,6 +614,8 @@ slideImg.addEventListener('click', openSlideViewer);
 document.getElementById('closeSlideViewer').addEventListener('click', closeSlideViewer);
 slideViewer.addEventListener('click', (event) => { if (event.target === slideViewer) closeSlideViewer(); });
 document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeSlideViewer(); });
+
+let localPlaybackStopped = false;
 )HTML");
 
 #if HAVE_MP3LAME
@@ -636,6 +638,7 @@ function setVolume(percent){
 }
 
 function stopPlayback(){
+  localPlaybackStopped = true;
   player.pause();
   player.removeAttribute('src');
   player.load();
@@ -644,6 +647,7 @@ function stopPlayback(){
     navigator.mediaSession.playbackState = 'paused';
     navigator.mediaSession.setPositionState();
   }
+  refresh();
 }
 
 async function toggleRecording(){
@@ -655,6 +659,7 @@ async function playService(sid, scids){
   lastSid = sid;
   lastScids = scids;
   stopPlayback();
+  localPlaybackStopped = false;
   await fetch('/api/service', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({sid: sid, scids: scids})});
 
   document.getElementById('playerStatus').textContent = 'Playing...';
@@ -701,6 +706,7 @@ function setVolume(percent){
 }
 
 function stopPlayback(){
+  localPlaybackStopped = true;
   if (streamXhr) {
     const x = streamXhr;
     streamXhr = null;
@@ -711,6 +717,7 @@ function stopPlayback(){
   if ('mediaSession' in navigator) {
     navigator.mediaSession.playbackState = 'paused';
   }
+  refresh();
 }
 
 function feedPcm(chunk, numChannels, sampleRate){
@@ -769,6 +776,7 @@ async function playService(sid, scids){
   unlockSrc.start(0);
 
   stopPlayback();
+  localPlaybackStopped = false;
   await fetch('/api/service', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({sid: sid, scids: scids})});
 
   nextStartTime = 0;
@@ -841,8 +849,9 @@ async function refresh(){
     document.getElementById('snr').textContent = (s.snr ?? 0).toFixed(1) + ' dB';
     const serviceIsRunning = !!(s.current && s.current.playing);
     const isRecording = !!s.recording;
+    const playbackIsActive = serviceIsRunning && !localPlaybackStopped;
     document.getElementById('nowplaying').textContent = serviceIsRunning ? s.current.label : '(none)';
-    document.getElementById('playerStatus').textContent = serviceIsRunning ? (isRecording ? 'Playing and recording' : 'Playing') : 'Not playing';
+    document.getElementById('playerStatus').textContent = playbackIsActive ? (isRecording ? 'Playing and recording' : 'Playing') : 'Not playing';
     const recordButton = document.getElementById('recordButton');
     recordButton.hidden = !isRecording && !serviceIsRunning;
     recordButton.classList.toggle('recording', isRecording);
@@ -908,7 +917,7 @@ async function refresh(){
     const tbody = document.getElementById('services');
     tbody.innerHTML = '';
     (s.services || []).forEach(svc => {
-      const isPlaying = s.current && s.current.playing && s.current.sid === svc.sid && s.current.scids === svc.scids;
+      const isPlaying = playbackIsActive && s.current.sid === svc.sid && s.current.scids === svc.scids;
       const tr = document.createElement('tr');
       tr.innerHTML = '<td>' + svc.label + '</td><td>' + svc.subChId + '</td><td>' + svc.bitRate + ' kbps</td>' +
         '<td><button class="' + (isPlaying?'playing':'') + '" onclick="playService(\'' + svc.sid + '\',' + svc.scids + ')">' +
