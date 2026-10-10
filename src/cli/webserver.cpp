@@ -452,6 +452,10 @@ QString WebServer::indexHtml()
   .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:.75rem; }
   .stat label { display:block; font-size:.75rem; color:#999; text-transform:uppercase; letter-spacing:.05em; }
   .stat span { font-size:1.1rem; }
+  #sync.sync-no { color:#ff6b6b; }
+  #sync.sync-null { color:#ffd166; }
+  #sync.sync-full { color:#63e6be; }
+  #sync.sync-unknown { color:#eee; }
   table { width:100%; border-collapse: collapse; }
   th, td { text-align:left; padding:.4rem .5rem; border-bottom:1px solid #333; font-size:.9rem; }
   button, select { background:#2a2a2a; color:#eee; border:1px solid #444; border-radius:6px; padding:.4rem .7rem; cursor:pointer; }
@@ -793,6 +797,9 @@ async function playService(sid, scids){
 function fmtSync(level){
   return ({0:'No sync', 1:'Null sync', 2:'Full sync'})[level] ?? level;
 }
+function syncClass(level){
+  return ({0:'sync-no', 1:'sync-null', 2:'sync-full'})[level] || 'sync-unknown';
+}
 async function refresh(){
   try {
     const r = await fetch('/api/status');
@@ -800,7 +807,9 @@ async function refresh(){
     document.getElementById('ensemble').textContent = s.ensemble && s.ensemble.valid ? (s.ensemble.label || '(unnamed)') : '-';
     document.getElementById('channel').textContent = s.channel || '-';
     document.getElementById('freq').textContent = s.frequencyKHz ? (s.frequencyKHz/1000).toFixed(3) + ' MHz' : '-';
-    document.getElementById('sync').textContent = fmtSync(s.syncLevel);
+    const sync = document.getElementById('sync');
+    sync.textContent = fmtSync(s.syncLevel);
+    sync.className = syncClass(s.syncLevel);
     document.getElementById('snr').textContent = (s.snr ?? 0).toFixed(1) + ' dB';
     document.getElementById('nowplaying').textContent = (s.current && s.current.playing) ? s.current.label : '(none)';
     const ensembleConfigurationCard = document.getElementById('ensembleConfigurationCard');
