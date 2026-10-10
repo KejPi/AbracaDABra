@@ -254,6 +254,15 @@ void WebServer::handleRequest(QTcpSocket *socket, const QString &method, const Q
         return;
     }
 
+    if ("POST" == method && "/api/record" == p)
+    {
+        m_app->toggleRecording();
+        QJsonObject res;
+        res["ok"] = true;
+        sendJson(socket, QJsonDocument(res));
+        return;
+    }
+
     if ("GET" == method && "/stream/audio" == p)
     {
         const bool icyRequested = ("1" == headers.value("icy-metadata"));
@@ -461,6 +470,11 @@ QString WebServer::indexHtml()
   button, select { background:#2a2a2a; color:#eee; border:1px solid #444; border-radius:6px; padding:.4rem .7rem; cursor:pointer; }
   button:hover { background:#3a3a3a; }
   button.playing { background:#2e7d32; border-color:#2e7d32; }
+  #recordButton { width:32px; height:32px; padding:0; display:inline-flex; align-items:center; justify-content:center; }
+  #recordButton[hidden] { display:none; }
+  #recordButton .recordIcon { width:13px; height:13px; border-radius:50%; background:#e5484d; }
+  #recordButton.recording .recordIcon { border-radius:2px; background:#111; }
+  #recordButton.recording { border-color:#777; }
   #player { width:100%; margin-top:.5rem; }
   .row { display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
   .statusRow { display:flex; gap:1rem; align-items:flex-start; flex-wrap:wrap; }
@@ -540,6 +554,7 @@ QString WebServer::indexHtml()
   </table>
   <div class="row">
     <span id="playerStatus">Not playing</span>
+    <button id="recordButton" onclick="toggleRecording()" hidden disabled aria-label="Start recording" title="Start recording"><span class="recordIcon"></span></button>
     <button onclick="stopPlayback()">Stop</button>
     <label for="volume">Volume</label>
     <input type="range" id="volume" min="0" max="100" value="100" oninput="setVolume(this.value)">
@@ -624,6 +639,11 @@ function stopPlayback(){
     navigator.mediaSession.playbackState = 'paused';
     navigator.mediaSession.setPositionState();
   }
+}
+
+async function toggleRecording(){
+  await fetch('/api/record', {method:'POST'});
+  await refresh();
 }
 
 async function playService(sid, scids){
@@ -811,7 +831,16 @@ async function refresh(){
     sync.textContent = fmtSync(s.syncLevel);
     sync.className = syncClass(s.syncLevel);
     document.getElementById('snr').textContent = (s.snr ?? 0).toFixed(1) + ' dB';
-    document.getElementById('nowplaying').textContent = (s.current && s.current.playing) ? s.current.label : '(none)';
+    const serviceIsRunning = !!(s.current && s.current.playing);
+    const isRecording = !!s.recording;
+    document.getElementById('nowplaying').textContent = serviceIsRunning ? s.current.label : '(none)';
+    document.getElementById('playerStatus').textContent = serviceIsRunning ? (isRecording ? 'Playing and recording' : 'Playing') : 'Not playing';
+    const recordButton = document.getElementById('recordButton');
+    recordButton.hidden = !isRecording && !serviceIsRunning;
+    recordButton.classList.toggle('recording', isRecording);
+    recordButton.setAttribute('aria-label', isRecording ? 'Stop recording' : 'Start recording');
+    recordButton.title = isRecording ? 'Stop recording' : 'Start recording';
+    recordButton.disabled = !isRecording && !serviceIsRunning;
     const ensembleConfigurationCard = document.getElementById('ensembleConfigurationCard');
     const ensembleConfiguration = (s.ensemble && s.ensemble.configuration) || '';
     const ensembleLocked = !!(s.ensemble && s.ensemble.valid);
