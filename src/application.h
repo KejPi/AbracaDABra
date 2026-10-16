@@ -256,6 +256,7 @@ class SLSBackend;
 class EnsembleInfoBackend;
 class LogBackend;
 class AboutUI;
+class GeolocationBackend;
 
 class Application : public QObject
 {
@@ -415,6 +416,9 @@ private:
     // audio output
     QThread *m_audioOutputThread = nullptr;
     AudioOutput *m_audioOutput;
+
+    // Geolocation
+    GeolocationBackend *m_geolocationBackend = nullptr;
 
     // state variables
     QString m_iniFilename;

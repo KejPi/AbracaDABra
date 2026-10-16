@@ -66,6 +66,7 @@ public:
     virtual void onTiiData(const RadioControlTIIData &data) = 0;
     virtual void onEnsembleInformation(const RadioControlEnsemble &ens) = 0;
     virtual void onSettingsChanged();
+    void onPositionUpdated(const QGeoPositionInfo &position);
 
     QGeoCoordinate currentPosition() const;
     void setCurrentPosition(const QGeoCoordinate &newCurrentPosition);
@@ -119,6 +120,7 @@ signals:
     void txTableColChanged();
     void showSpetrumPlotChanged();
     void showInfoMessage(const QString &message, int type);
+    void doLocationUpdate(bool en);
 
 protected:
     void setIsActive(bool isActive);
@@ -142,9 +144,7 @@ protected:
     QStringList m_txInfo;
 
     void reset();
-    void positionUpdated(const QGeoPositionInfo &position);
     void onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
-    void doLocationUpdate(bool en);
     QModelIndex mapToSourceModel(const QModelIndex &proxyIndex) const;
     void setupSelectionModel();
 
@@ -153,7 +153,6 @@ protected:
     bool m_offlineMode = false;
 
 private:
-    QGeoPositionInfoSource *m_geopositionSource = nullptr;
     bool m_positionValid = false;
     const bool m_isTii;
     bool m_isRecordingLog = false;

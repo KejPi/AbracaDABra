@@ -76,19 +76,14 @@ QModelIndex TxMapBackend::mapToSourceModel(const QModelIndex &proxyIndex) const
     return idx;
 }
 
-void TxMapBackend::positionUpdated(const QGeoPositionInfo &position)
+void TxMapBackend::onPositionUpdated(const QGeoPositionInfo &position)
 {
-    QGeoCoordinate positionWithAlt = position.coordinate();
-    if (m_settings->tii.locationSource == Settings::GeolocationSource::Manual || m_settings->tii.manualAltitude)
-    {
-        positionWithAlt.setAltitude(m_settings->tii.altitude);
-    }
     if (m_offlineMode)
     {
-        m_currentPositionBackup = positionWithAlt;  // update backup position so when going back online, position is updated to the latest one
-        return;                                     // Ignore GPS updates in offline mode
+        m_currentPositionBackup = position.coordinate();  // update backup position so when going back online, position is updated to the latest one
+        return;                                           // Ignore GPS updates in offline mode
     }
-    setCurrentPosition(positionWithAlt);
+    setCurrentPosition(position.coordinate());
     m_model->setCoordinates(m_currentPosition);
     setPositionValid(true);
 }
@@ -145,117 +140,8 @@ void TxMapBackend::clearOfflineMode()
     }
 }
 
-void TxMapBackend::doLocationUpdate(bool ena)
-{
-    s_locUpdateCounter += ena ? 1 : -1;
-
-    if (s_locUpdateCounter > 0)
-    {  // start location update
-        switch (m_settings->tii.locationSource)
-        {
-            case Settings::GeolocationSource::System:
-            {
-                // ask for permission
-#if QT_CONFIG(permissions)
-                QLocationPermission locationsPermission;
-                locationsPermission.setAccuracy(QLocationPermission::Precise);
-                locationsPermission.setAvailability(QLocationPermission::WhenInUse);
-                switch (qApp->checkPermission(locationsPermission))
-                {
-                    case Qt::PermissionStatus::Undetermined:
-                        qApp->requestPermission(locationsPermission, this, [this]() { doLocationUpdate(true); });
-                        qCDebug(txMap) << "LocationPermission Undetermined";
-                        return;
-                    case Qt::PermissionStatus::Denied:
-                    {
-                        qCInfo(txMap) << "LocationPermission Denied";
-                        // QMessageBox msgBox(QMessageBox::Warning, tr("Warning"), tr("Device location access is denied."), {}, this);
-                        // msgBox.setInformativeText(
-                        //     tr("If you want to display current position on map, grant the location permission in Settings then open the app
-                        //     again."));
-                        // msgBox.exec();
-                    }
-                        return;
-                    case Qt::PermissionStatus::Granted:
-                        qCInfo(txMap) << "LocationPermission Granted";
-                        break;  // Proceed
-                }
-#endif
-                // start location update
-                if (m_geopositionSource == nullptr)
-                {
-                    m_geopositionSource = QGeoPositionInfoSource::createDefaultSource(this);
-                }
-                if (m_geopositionSource != nullptr)
-                {
-                    qCDebug(txMap) << "Start position update";
-                    connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TxMapBackend::positionUpdated);
-                    m_geopositionSource->startUpdates();
-                    qCInfo(txMap) << "Location source system";
-                }
-                else
-                {
-                    qCWarning(txMap) << "Failed to create location source: system";
-                }
-            }
-            break;
-            case Settings::GeolocationSource::Manual:
-                if (m_geopositionSource != nullptr)
-                {
-                    delete m_geopositionSource;
-                    m_geopositionSource = nullptr;
-                }
-                positionUpdated(QGeoPositionInfo(m_settings->tii.coordinates, QDateTime::currentDateTime()));
-                qCInfo(txMap) << "Location source manual: latitude" << m_settings->tii.coordinates.latitude() << "| longitude"
-                              << m_settings->tii.coordinates.longitude();
-                break;
-            case Settings::GeolocationSource::SerialPort:
-            {
-                // serial port
-                QVariantMap params;
-                params["nmea.source"] = "serial:" + m_settings->tii.serialPort;
-                params["nmea.baudrate"] = m_settings->tii.serialPortBaudrate;
-                m_geopositionSource = QGeoPositionInfoSource::createSource("nmea", params, this);
-                if (m_geopositionSource != nullptr)
-                {
-                    qCDebug(txMap) << "Start position update";
-                    connect(m_geopositionSource, &QGeoPositionInfoSource::positionUpdated, this, &TxMapBackend::positionUpdated);
-                    m_geopositionSource->startUpdates();
-                    qCInfo(txMap) << "Location source serial port" << m_settings->tii.serialPort << "@" << m_settings->tii.serialPortBaudrate;
-                }
-                else
-                {
-                    qCWarning(txMap) << "Failed to create location source: serial port" << m_settings->tii.serialPort << "@"
-                                     << m_settings->tii.serialPortBaudrate;
-                }
-            }
-            break;
-        }
-    }
-    else
-    {  // stop location update
-        if (m_geopositionSource != nullptr)
-        {
-            m_geopositionSource->stopUpdates();
-        }
-    }
-}
-
 void TxMapBackend::onSettingsChanged()
 {
-    if (m_geopositionSource != nullptr)
-    {
-        delete m_geopositionSource;
-        m_geopositionSource = nullptr;
-    }
-    if (m_isActive)
-    {
-        doLocationUpdate(true);
-    }
-    if (m_settings->tii.manualAltitude)
-    {
-        m_currentPosition.setAltitude(m_settings->tii.altitude);
-    }
     m_model->setDisplayTimeInUTC(m_settings->tii.timestampInUTC);
     m_sortedFilteredModel->setInactiveTxFilter(m_settings->tii.showInactiveTx == false);
 }
@@ -482,5 +368,5 @@ void TxMapBackend::setIsActive(bool isActive)
         return;
     }
     m_isActive = isActive;
-    doLocationUpdate(isActive);
+    emit doLocationUpdate(isActive);
 }

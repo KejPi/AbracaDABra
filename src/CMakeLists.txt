@@ -130,6 +130,8 @@ qt_add_executable(${TARGET} MANUAL_FINALIZATION
 
     settings.h
 
+    geolocationbackend.h geolocationbackend.cpp
+
     # Input devices
     ${AIRSPY_SOURCES}
     ${SOAPYSDR_SOURCES}

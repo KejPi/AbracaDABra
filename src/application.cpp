@@ -49,6 +49,8 @@
 #include <QtGlobal>
 #include <cstdlib>
 #include <iostream>
+
+#include "geolocationbackend.h"
 #ifdef Q_OS_ANDROID
 #include <android/log.h>
 #include <unistd.h>
@@ -300,6 +302,8 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_navigationModel, &NavigationModel::isUndockedChanged, this, &Application::pageUndocked);
     connect(m_navigationModel, &NavigationModel::isActiveChanged, this, &Application::pageActive);
 
+    m_geolocationBackend = new GeolocationBackend(m_settings, this);
+
     m_inputDeviceRecorder = new InputDeviceRecorder(m_settings);
 
     m_settingsBackend = new SettingsBackend(m_qmlEngine, this);
@@ -315,6 +319,7 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_settingsBackend, &SettingsBackend::spiIconSettingsChanged, this, &Application::onSpiProgressSettingsChanged);
     connect(m_settingsBackend, &SettingsBackend::applicationStyleChanged, this, &Application::setColorTheme);
     connect(m_settingsBackend, &SettingsBackend::compactUiChanged, this, [this]() { m_ui->isCompact(m_settings->compactUi); });
+    connect(m_settingsBackend, &SettingsBackend::tiiSettingsChanged, m_geolocationBackend, &GeolocationBackend::onSettingsChanged);
     connect(m_settingsBackend, &SettingsBackend::showServicePageWidgetChanged, this,
             [this]() { m_ui->showServicePageWidget(m_settings->showServicePageWidget); });
     connect(m_settingsBackend, &SettingsBackend::restartRequested, this,
@@ -4451,6 +4456,8 @@ QObject *Application::createTiiBackend()
         m_tiiBackend = new TIIBackend(m_settings, this);
         connect(m_settingsBackend, &SettingsBackend::tiiSettingsChanged, m_tiiBackend, &TIIBackend::onSettingsChanged);
         connect(m_settingsBackend, &SettingsBackend::tiiTableSettingsChanged, m_tiiBackend, &TIIBackend::onTxTableSettingsChanged);
+        connect(m_tiiBackend, &TIIBackend::doLocationUpdate, m_geolocationBackend, &GeolocationBackend::doLocationUpdate);
+        connect(m_geolocationBackend, &GeolocationBackend::positionUpdated, m_tiiBackend, &TIIBackend::onPositionUpdated);
         connect(m_tiiBackend, &TIIBackend::setTii, m_radioControl, &RadioControl::startTii, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::signalState, m_tiiBackend, &TIIBackend::onSignalState, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tiiData, m_tiiBackend, &TIIBackend::onTiiData, Qt::QueuedConnection);
@@ -4485,6 +4492,8 @@ QObject *Application::createScannerBackend()
         m_scannerBackend = new ScannerBackend(m_settings, this);
         connect(m_scannerBackend, &ScannerBackend::tuneChannel, this, &Application::onTuneChannel);
         connect(m_settingsBackend, &SettingsBackend::tiiSettingsChanged, m_scannerBackend, &ScannerBackend::onSettingsChanged);
+        connect(m_scannerBackend, &ScannerBackend::doLocationUpdate, m_geolocationBackend, &GeolocationBackend::doLocationUpdate);
+        connect(m_geolocationBackend, &GeolocationBackend::positionUpdated, m_scannerBackend, &ScannerBackend::onPositionUpdated);
         connect(m_radioControl, &RadioControl::signalState, m_scannerBackend, &ScannerBackend::onSignalState, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::ensembleInformation, m_scannerBackend, &ScannerBackend::onEnsembleInformation, Qt::QueuedConnection);
         connect(m_radioControl, &RadioControl::tuneDone, m_scannerBackend, &ScannerBackend::onTuneDone, Qt::QueuedConnection);
