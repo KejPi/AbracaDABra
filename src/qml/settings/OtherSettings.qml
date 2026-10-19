@@ -624,6 +624,19 @@ Item {
                                 AbracaSwitch {
                                     Layout.fillWidth: true
                                     //Layout.minimumWidth: implicitWidth
+                                    text: qsTr("Include geolocation in raw data recording")
+                                    wrapMode: Text.WordWrap
+                                    enabled: settingsBackend.isXmlHeaderEnabled
+                                    checked: settingsBackend.isRecordingGeolocationEnabled
+                                    onCheckedChanged: {
+                                        if (settingsBackend.isRecordingGeolocationEnabled !== checked) {
+                                            settingsBackend.isRecordingGeolocationEnabled = checked
+                                        }
+                                    }
+                                }
+                                AbracaSwitch {
+                                    Layout.fillWidth: true
+                                    //Layout.minimumWidth: implicitWidth
                                     text: qsTr("DAB cable channels (16A - 17D)")
                                     wrapMode: Text.WordWrap
                                     checked: settingsBackend.cableChannelsEna

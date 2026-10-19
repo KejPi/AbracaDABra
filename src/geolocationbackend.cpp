@@ -40,7 +40,6 @@ GeolocationBackend::GeolocationBackend(Settings *settings, QObject *parent) : QO
 void GeolocationBackend::doLocationUpdate(bool ena)
 {
     m_locUpdateCounter += ena ? 1 : -1;
-    // qDebug() << "GeolocationBackend::doLocationUpdate" << ena << "counter:" << m_locUpdateCounter;
 
     if (ena && m_locUpdateCounter == 1)
     {  // start location update
@@ -66,6 +65,25 @@ void GeolocationBackend::onSettingsChanged()
     if (m_locUpdateCounter > 0)
     {
         initGeolocationSource();
+    }
+}
+
+void GeolocationBackend::setCurrentCoordinates(const QGeoCoordinate &coord)
+{
+    if (coord.isValid())
+    {
+        m_externalLocationSource = true;
+        m_currentPosition = QGeoPositionInfo(coord, QDateTime::currentDateTime());
+        emit positionUpdated(m_currentPosition);
+    }
+    else
+    {
+        m_externalLocationSource = false;
+        m_currentPosition = m_currentPositionInternal;
+        if (m_currentPosition.isValid())
+        {
+            emit positionUpdated(m_currentPosition);
+        }
     }
 }
 
@@ -115,17 +133,20 @@ void GeolocationBackend::initGeolocationSource()
         }
         break;
         case Settings::GeolocationSource::Manual:
+        {
             if (m_geopositionSource != nullptr)
             {
                 delete m_geopositionSource;
                 m_geopositionSource = nullptr;
             }
-            m_currentPosition = m_settings->tii.coordinates;
-            m_currentPosition.setAltitude(m_settings->tii.altitude);
-            emit positionUpdated(QGeoPositionInfo(m_currentPosition, QDateTime::currentDateTime()));
-            qCInfo(geolocation) << "Location source manual: latitude" << m_currentPosition.latitude() << "| longitude"
-                                << m_currentPosition.longitude();
-            break;
+            QGeoCoordinate manualCoord = m_settings->tii.coordinates;
+            manualCoord.setAltitude(m_settings->tii.altitude);
+
+            onSourcePositionUpdated(QGeoPositionInfo(manualCoord, QDateTime::currentDateTime()));
+
+            qCInfo(geolocation) << "Location source manual: latitude" << manualCoord.latitude() << "| longitude" << manualCoord.longitude();
+        }
+        break;
         case Settings::GeolocationSource::SerialPort:
         {
             // serial port
@@ -152,14 +173,22 @@ void GeolocationBackend::initGeolocationSource()
 
 void GeolocationBackend::onSourcePositionUpdated(const QGeoPositionInfo &info)
 {
-    m_currentPosition = info.coordinate();
+    m_currentPositionInternal = info;
     if (m_settings->tii.manualAltitude)
     {  // modify altitude to the one set in settings
-        m_currentPosition.setAltitude(m_settings->tii.altitude);
-        QGeoPositionInfo infoWithManualAltitude = info;
-        infoWithManualAltitude.setCoordinate(m_currentPosition);
-        emit positionUpdated(infoWithManualAltitude);
+        QGeoCoordinate coord = m_currentPositionInternal.coordinate();
+        coord.setAltitude(m_settings->tii.altitude);
+        m_currentPositionInternal.setCoordinate(coord);
+        if (m_externalLocationSource == false)
+        {
+            m_currentPosition = m_currentPositionInternal;
+            emit positionUpdated(m_currentPositionInternal);
+        }
         return;
     }
-    emit positionUpdated(info);
+    if (m_externalLocationSource == false)
+    {
+        m_currentPosition = m_currentPositionInternal;
+        emit positionUpdated(info);
+    }
 }

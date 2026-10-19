@@ -158,7 +158,7 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
 
-                rows: 8
+                rows: settingsBackend.rawFileXmlHeader.length
                 flow: GridLayout.TopToBottom
                 AbracaLabel {
                     text: qsTr("Recording date:")
@@ -171,6 +171,9 @@ Item {
                 }
                 AbracaLabel {
                     text: qsTr("Model:")
+                }
+                AbracaLabel {
+                    text: qsTr("GNSS coordinates:")
                 }
                 AbracaLabel {
                     text: qsTr("Sample rate [Hz]:")

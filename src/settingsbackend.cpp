@@ -279,6 +279,8 @@ SettingsBackend::SettingsBackend(QQmlApplicationEngine *qmlEngine, QObject *pare
     connect(m_proxyConfigModel, &ItemModel::currentIndexChanged, this, [this]()
             { isProxyApplyEnabled(static_cast<Settings::ProxyConfig>(m_proxyConfigModel->currentData().toInt()) != m_settings->proxy.config); });
     connect(this, &SettingsBackend::isXmlHeaderEnabledChanged, this, [this]() { emit xmlHeaderToggled(m_settings->xmlHeaderEna); });
+    connect(this, &SettingsBackend::isRecordingGeolocationEnabledChanged, this,
+            [this]() { emit recordGeolocationToggled(m_settings->recordGeolocationEna); });
 
     m_tiiTableColsModel = new TiiTableColsSettingsModel(this);
     connect(m_tiiTableColsModel, &TiiTableColsSettingsModel::colSettingsChanged, this, &SettingsBackend::tiiTableSettingsChanged);
@@ -1476,7 +1478,8 @@ void SettingsBackend::setDeviceDescription(const InputDevice::Description &desc)
             if (desc.rawFile.hasXmlHeader)
             {
                 rawFileXmlHeader({desc.rawFile.time, desc.rawFile.recorder, desc.device.name, desc.device.model,
-                                  QString::number(desc.sample.sampleRate), QString::number(desc.rawFile.frequency_kHz),
+                                  desc.rawFile.hasCoordinates ? tr("yes") : tr("no"), QString::number(desc.sample.sampleRate),
+                                  QString::number(desc.rawFile.frequency_kHz),
                                   QString::number(desc.rawFile.numSamples * 1.0 / desc.sample.sampleRate), desc.sample.channelContainer});
 
                 switch (desc.sample.containerBits)

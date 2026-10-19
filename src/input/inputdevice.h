@@ -120,6 +120,7 @@ public:
         struct
         {
             bool hasXmlHeader;
+            bool hasCoordinates;
             QString recorder;
             QString time;
             uint32_t frequency_kHz;

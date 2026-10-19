@@ -28,12 +28,15 @@
 #define INPUTDEVICERECORDER_H
 
 #include <QDomDocument>
+#include <QGeoPositionInfo>
+#include <QJsonArray>
 #include <QObject>
 #include <mutex>
 
 #include "inputdevice.h"
 
 #define INPUTDEVICERECORDER_XML_PADDING 2048
+#define INPUTDEVICERECORDER_GPS_PADDING (1024 * 1024)  // 1 MB allows to store more than 5 hours of raw data with GPS
 
 class Settings;
 class InputDeviceRecorder : public QObject
@@ -50,9 +53,12 @@ public:
     void writeBuffer(const uint8_t *buf, uint32_t len);
     void setCurrentFrequency(uint32_t frequency) { m_frequency = frequency; }
     void setXmlHeaderEnabled(bool ena) { m_xmlHeaderEna = ena; }
+    void setGeolocationEnabled(bool ena) { m_geolocationEna = ena; }
+    void setCurrentPosition(const QGeoPositionInfo &position);
 signals:
     void recording(bool isActive);
     void bytesRecorded(uint64_t bytes, uint64_t ms);
+    void doLocationUpdate(bool en);
 
 private:
     InputDevice::Description m_deviceDescription;
@@ -65,9 +71,15 @@ private:
     uint64_t m_bytesPerSec;
     uint32_t m_frequency;
     bool m_xmlHeaderEna = true;
+    bool m_geolocationEna = true;
+    uint64_t m_nextLocationUpdate = 0;
     QDomDocument m_xmlHeader;
+    QJsonArray *m_geolocationArray = nullptr;
+    QGeoCoordinate m_currentPosition;
+
     void startXmlHeader();
     void finishXmlHeader();
+    inline void saveLocationToJson();
 };
 
 #endif  // INPUTDEVICERECORDER_H

@@ -315,6 +315,7 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_settingsBackend, &SettingsBackend::showServiceCountryFlagChanged, this, &Application::onShowCountryFlagChanged);
     connect(m_settingsBackend, &SettingsBackend::newAnnouncementSettings, this, &Application::onNewAnnouncementSettings);
     connect(m_settingsBackend, &SettingsBackend::xmlHeaderToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setXmlHeaderEnabled);
+    connect(m_settingsBackend, &SettingsBackend::recordGeolocationToggled, m_inputDeviceRecorder, &InputDeviceRecorder::setGeolocationEnabled);
     connect(m_settingsBackend, &SettingsBackend::proxySettingsChanged, this, &Application::setProxy);
     connect(m_settingsBackend, &SettingsBackend::spiIconSettingsChanged, this, &Application::onSpiProgressSettingsChanged);
     connect(m_settingsBackend, &SettingsBackend::applicationStyleChanged, this, &Application::setColorTheme);
@@ -336,6 +337,8 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_inputDeviceRecorder, &InputDeviceRecorder::recording, m_ensembleInfoBackend, &EnsembleInfoBackend::onRecording);
     connect(m_inputDeviceRecorder, &InputDeviceRecorder::bytesRecorded, m_ensembleInfoBackend, &EnsembleInfoBackend::updateRecordingStatus,
             Qt::QueuedConnection);
+    connect(m_inputDeviceRecorder, &InputDeviceRecorder::doLocationUpdate, m_geolocationBackend, &GeolocationBackend::doLocationUpdate);
+    connect(m_geolocationBackend, &GeolocationBackend::positionUpdated, m_inputDeviceRecorder, &InputDeviceRecorder::setCurrentPosition);
 
 #if HAVE_FMLIST_INTERFACE
     m_fmlistInterface = new FMListInterface(PROJECT_VER, TxDataLoader::dbfile());
@@ -2741,6 +2744,9 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
     // metadata & EPG
     EPGTime::getInstance()->setIsLiveBroadcasting(false);
 
+    // GeoLocation backend => forcing online mode by setting invalid coordinates
+    m_geolocationBackend->setCurrentCoordinates(QGeoCoordinate());
+
     switch (d)
     {
         case InputDevice::Id::UNDEFINED:
@@ -3047,6 +3053,8 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             connect(dynamic_cast<RawFileInput *>(m_inputDevice), &RawFileInput::fileProgress, m_settingsBackend,
                     &SettingsBackend::setRawFileProgressValue);
             connect(m_settingsBackend, &SettingsBackend::rawFileSeek, dynamic_cast<RawFileInput *>(m_inputDevice), &RawFileInput::seek);
+            connect(dynamic_cast<RawFileInput *>(m_inputDevice), &RawFileInput::locationUpdate, m_geolocationBackend,
+                    &GeolocationBackend::setCurrentCoordinates);
 
             // we can open device now
             if (m_inputDevice->openDevice())
@@ -3265,6 +3273,7 @@ void Application::loadSettings()
     m_settings->bringWindowToForeground = settings->value("bringWindowToForegroundOnAlarm", true).toBool();
     m_settings->noiseConcealmentLevel = settings->value("noiseConcealment", 0).toInt();
     m_settings->xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();
+    m_settings->recordGeolocationEna = settings->value("rawFileGeolocation", true).toBool();
     m_settings->spiAppEna = settings->value("spiAppEna", true).toBool();
     m_settings->spiProgressEna = settings->value("spiProgressEna", true).toBool();
     m_settings->spiProgressHideComplete = settings->value("spiProgressHideComplete", true).toBool();
@@ -3641,6 +3650,7 @@ void Application::saveSettings()
     settings->setValue("language", QLocale::languageToCode(m_settings->lang));
     settings->setValue("noiseConcealment", m_settings->noiseConcealmentLevel);
     settings->setValue("rawFileXmlHeader", m_settings->xmlHeaderEna);
+    settings->setValue("rawFileGeolocation", m_settings->recordGeolocationEna);
     settings->setValue("spiAppEna", m_settings->spiAppEna);
     settings->setValue("spiProgressEna", m_settings->spiProgressEna);
     settings->setValue("spiProgressHideComplete", m_settings->spiProgressHideComplete);

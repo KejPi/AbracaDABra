@@ -39,7 +39,8 @@ public:
     explicit GeolocationBackend(Settings *settings, QObject *parent = nullptr);
     void doLocationUpdate(bool ena);
     void onSettingsChanged();
-    QGeoCoordinate currentPosition() const { return m_currentPosition; }
+    QGeoPositionInfo currentPosition() const { return m_currentPosition; }
+    void setCurrentCoordinates(const QGeoCoordinate &coord);
 
 signals:
     void positionUpdated(const QGeoPositionInfo &position);
@@ -47,8 +48,10 @@ signals:
 private:
     Settings *m_settings = nullptr;
     int m_locUpdateCounter = 0;
+    bool m_externalLocationSource = false;
     QGeoPositionInfoSource *m_geopositionSource = nullptr;
-    QGeoCoordinate m_currentPosition;
+    QGeoPositionInfo m_currentPosition;
+    QGeoPositionInfo m_currentPositionInternal;
 
     void initGeolocationSource();
     void onSourcePositionUpdated(const QGeoPositionInfo &info);

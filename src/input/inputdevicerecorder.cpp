@@ -27,6 +27,8 @@
 #include "inputdevicerecorder.h"
 
 #include <QDir>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLoggingCategory>
 #include <QTimer>
 
@@ -45,6 +47,7 @@ InputDeviceRecorder::InputDeviceRecorder(Settings *settings) : m_settings(settin
 InputDeviceRecorder::~InputDeviceRecorder()
 {
     stop();
+    delete m_geolocationArray;
 }
 
 void InputDeviceRecorder::setDeviceDescription(const InputDevice::Description &desc)
@@ -91,16 +94,30 @@ void InputDeviceRecorder::start(int timeoutSec)
 
             m_bytesRecorded = 0;
             m_bytesToRecord = timeoutSec * m_bytesPerSec;
+            m_xmlHeader.clear();                // reset XML header
+            m_nextLocationUpdate = 0;           // reset next location update timestamp
+            if (m_geolocationArray != nullptr)  // reset geolocation JSON document
+            {
+                delete m_geolocationArray;
+                m_geolocationArray = nullptr;
+            }
 
             m_file = AndroidFileHelper::instance().openFileForWritingRaw(rawPath, fileName, "application/octet-stream");
             if (nullptr != m_file)
             {
                 if (m_xmlHeaderEna)
                 {
+                    int paddingBytes = INPUTDEVICERECORDER_XML_PADDING;
+                    if (m_geolocationEna)
+                    {
+                        m_geolocationArray = new QJsonArray();
+                        paddingBytes = INPUTDEVICERECORDER_GPS_PADDING;
+                        emit doLocationUpdate(true);
+                    }
                     startXmlHeader();
-                    char *padding = new char[INPUTDEVICERECORDER_XML_PADDING];
-                    memset(padding, 0, INPUTDEVICERECORDER_XML_PADDING);
-                    fwrite(padding, 1, INPUTDEVICERECORDER_XML_PADDING, m_file);
+                    char *padding = new char[paddingBytes];
+                    memset(padding, 0, paddingBytes);
+                    fwrite(padding, 1, paddingBytes, m_file);
                     delete[] padding;
                 }
                 qCInfo(inputDeviceRecorder) << "IQ recording starts, timeout:" << timeoutSec
@@ -136,16 +153,29 @@ void InputDeviceRecorder::start(int timeoutSec)
 
         m_bytesRecorded = 0;
         m_bytesToRecord = timeoutSec * m_bytesPerSec;
+        m_xmlHeader.clear();                // reset XML header
+        if (m_geolocationArray != nullptr)  // reset geolocation JSON document
+        {
+            delete m_geolocationArray;
+            m_geolocationArray = nullptr;
+        }
 
         m_file = AndroidFileHelper::instance().openFileForWritingRaw(rawPath, fileName, "application/octet-stream");
         if (nullptr != m_file)
         {
             if (m_xmlHeaderEna)
             {
+                int paddingBytes = INPUTDEVICERECORDER_XML_PADDING;
+                if (m_geolocationEna)
+                {
+                    m_geolocationArray = new QJsonArray();
+                    paddingBytes = INPUTDEVICERECORDER_GPS_PADDING;
+                    emit doLocationUpdate(true);
+                }
                 startXmlHeader();
-                char *padding = new char[INPUTDEVICERECORDER_XML_PADDING];
-                memset(padding, 0, INPUTDEVICERECORDER_XML_PADDING);
-                fwrite(padding, 1, INPUTDEVICERECORDER_XML_PADDING, m_file);
+                char *padding = new char[paddingBytes];
+                memset(padding, 0, paddingBytes);
+                fwrite(padding, 1, paddingBytes, m_file);
                 delete[] padding;
             }
             qCInfo(inputDeviceRecorder) << "IQ recording starts, timeout:" << timeoutSec << "sec, file:" << QString("%1/%2").arg(rawPath, fileName);
@@ -169,7 +199,7 @@ void InputDeviceRecorder::stop()
     std::lock_guard<std::mutex> guard(m_fileMutex);
     if (nullptr != m_file)
     {
-        if (m_xmlHeaderEna)
+        if (m_xmlHeaderEna && m_xmlHeader.isNull() == false)
         {
             finishXmlHeader();
 
@@ -177,6 +207,23 @@ void InputDeviceRecorder::stop()
             QByteArray bytearray = m_xmlHeader.toByteArray();
             fseek(m_file, 0, SEEK_SET);
             fwrite(bytearray.data(), 1, bytearray.size(), m_file);
+
+            if (m_geolocationArray != nullptr)
+            {
+                // write geolocation JSON document
+                QJsonDocument geoDoc(*m_geolocationArray);
+                QByteArray geoByteArray = geoDoc.toJson(QJsonDocument::Compact);
+                if (geoByteArray.size() < INPUTDEVICERECORDER_GPS_PADDING - INPUTDEVICERECORDER_XML_PADDING)
+                {
+                    fseek(m_file, INPUTDEVICERECORDER_XML_PADDING, SEEK_SET);
+                    fwrite(geoByteArray.data(), 1, geoByteArray.size(), m_file);
+                }
+                else
+                {
+                    qCWarning(inputDeviceRecorder) << "Geolocation JSON document is too large to fit into the reserved space, size:"
+                                                   << geoByteArray.size();
+                }
+            }
         }
         else
         { /* XML header is not enabled */
@@ -184,6 +231,12 @@ void InputDeviceRecorder::stop()
         fflush(m_file);
         fclose(m_file);
         m_file = nullptr;
+        if (m_geolocationArray != nullptr)
+        {
+            delete m_geolocationArray;
+            m_geolocationArray = nullptr;
+        }
+        emit doLocationUpdate(false);
 
         qCInfo(inputDeviceRecorder) << "IQ recording stopped";
         emit recording(false);
@@ -198,8 +251,11 @@ void InputDeviceRecorder::writeBuffer(const uint8_t *buf, uint32_t len)
     {
         if (m_bytesToRecord == 0)
         {
+            saveLocationToJson();
+
             ssize_t bytes = fwrite(buf, 1, len, m_file);
             m_bytesRecorded += bytes;
+            // const uint64_t ms = m_bytesRecorded * m_bytes2ms;
             emit bytesRecorded(m_bytesRecorded, m_bytesRecorded * m_bytes2ms);
             return;
         }
@@ -208,6 +264,8 @@ void InputDeviceRecorder::writeBuffer(const uint8_t *buf, uint32_t len)
         {
             if ((m_bytesRecorded + len) < m_bytesToRecord)
             {  // no timeout yet
+                saveLocationToJson();
+
                 ssize_t bytes = fwrite(buf, 1, len, m_file);
                 m_bytesRecorded += bytes;
                 emit bytesRecorded(m_bytesRecorded, m_bytesRecorded * m_bytes2ms);
@@ -215,6 +273,8 @@ void InputDeviceRecorder::writeBuffer(const uint8_t *buf, uint32_t len)
             }
             // else timeout
             {
+                saveLocationToJson();
+
                 ssize_t bytes = fwrite(buf, 1, m_bytesToRecord - m_bytesRecorded, m_file);
                 m_bytesRecorded += bytes;
                 emit bytesRecorded(m_bytesRecorded, m_bytesRecorded * m_bytes2ms);
@@ -228,6 +288,11 @@ void InputDeviceRecorder::writeBuffer(const uint8_t *buf, uint32_t len)
             }
         }
     }
+}
+
+void InputDeviceRecorder::setCurrentPosition(const QGeoPositionInfo &position)
+{
+    m_currentPosition = position.coordinate();
 }
 
 void InputDeviceRecorder::startXmlHeader()
@@ -252,6 +317,13 @@ void InputDeviceRecorder::startXmlHeader()
     time.setAttribute("Value", QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss"));
     time.setAttribute("Unit", "UTC");
     root.appendChild(time);
+
+    if (m_geolocationArray != nullptr)
+    {
+        QDomElement geolocation = xmlHeader.createElement("Geolocation");
+        geolocation.setAttribute("Offset", QString("%1").arg(INPUTDEVICERECORDER_XML_PADDING));
+        root.appendChild(geolocation);
+    }
 
     QDomElement sample = xmlHeader.createElement("Sample");
     QDomElement sampleRate = xmlHeader.createElement("Samplerate");
@@ -287,7 +359,7 @@ void InputDeviceRecorder::finishXmlHeader()
     datablock.setAttribute("Number", "1");
     datablock.setAttribute("Count", QString("%1").arg(8 * m_bytesRecorded / m_deviceDescription.sample.containerBits));
     datablock.setAttribute("Unit", "Channel");
-    datablock.setAttribute("Offset", QString("%1").arg(INPUTDEVICERECORDER_XML_PADDING));
+    datablock.setAttribute("Offset", QString("%1").arg(m_geolocationArray ? INPUTDEVICERECORDER_GPS_PADDING : INPUTDEVICERECORDER_XML_PADDING));
 
     QDomElement frequency = m_xmlHeader.createElement("Frequency");
     frequency.setAttribute("Value", QString("%1").arg(m_frequency));
@@ -298,4 +370,26 @@ void InputDeviceRecorder::finishXmlHeader()
     datablock.appendChild(modulation);
     datablocks.appendChild(datablock);
     m_xmlHeader.childNodes().at(1).appendChild(datablocks);
+}
+
+void InputDeviceRecorder::saveLocationToJson()
+{
+    if (m_geolocationArray != nullptr)
+    {
+        if (m_nextLocationUpdate <= m_bytesRecorded)
+        {
+            if (m_currentPosition.isValid())
+            {
+                QJsonObject geoObj;
+                geoObj.insert("ms", m_bytesRecorded * m_bytes2ms);
+                geoObj.insert("lon", m_currentPosition.longitude());
+                geoObj.insert("lat", m_currentPosition.latitude());
+                geoObj.insert("alt", m_currentPosition.altitude());
+                m_geolocationArray->append(geoObj);
+                qCDebug(inputDeviceRecorder) << "Geolocation update: ms" << m_bytesRecorded * m_bytes2ms << "| lon" << m_currentPosition.longitude()
+                                             << "| lat" << m_currentPosition.latitude() << "| alt" << m_currentPosition.altitude();
+            }
+            m_nextLocationUpdate += m_bytesPerSec;
+        }
+    }
 }

@@ -29,6 +29,8 @@
 
 #include <QElapsedTimer>
 #include <QFile>
+#include <QGeoCoordinate>
+#include <QJsonArray>
 #include <QObject>
 #include <QSemaphore>
 #include <QString>
@@ -38,6 +40,7 @@
 #include "inputdevice.h"
 
 #define RAWFILEINPUT_XML_PADDING 2048
+#define RAWFILEINPUT_GPS_PADDING (1024 * 1024)
 
 enum class RawFileInputFormat
 {
@@ -88,6 +91,7 @@ public:
 signals:
     void fileLength(int msec);
     void fileProgress(int msec);
+    void locationUpdate(const QGeoCoordinate &position);
 
 private:
     RawFileInputFormat m_sampleFormat;
@@ -96,12 +100,15 @@ private:
     RawFileWorker *m_worker = nullptr;
     QTimer *m_inputTimer = nullptr;
     QTimer m_watchdogTimer;
+    qint64 m_dataOffset = 0;
+    QMap<qint64, QGeoCoordinate> m_geolocationMap;  // map of file ms offset to geolocation
+    QMap<qint64, QGeoCoordinate>::const_iterator m_currentGeolocationIt;
     void stop();
     void rewind();
     void onBytesRead(qint64 bytesRead);
     void onWatchdogTimeout();
-    void onEndOfFile(bool status) { emit error(status ? InputDevice::ErrorCode::EndOfFile : InputDevice::ErrorCode::NoDataAvailable); }
-    void parseXmlHeader(const QByteArray &xml);
+    void onEndOfFile(bool status);
+    void parseXmlHeader(const QByteArray &xml, int &geolocationOffset);
 };
 
 #endif  // RAWFILEINPUT_H

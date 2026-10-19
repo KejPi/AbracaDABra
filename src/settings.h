@@ -183,6 +183,7 @@ public:
     bool dlPlusEna;
     int noiseConcealmentLevel;
     bool xmlHeaderEna;
+    bool recordGeolocationEna;
     bool spiAppEna;
     bool spiProgressEna;
     bool spiProgressHideComplete;

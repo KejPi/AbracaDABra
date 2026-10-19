@@ -30,6 +30,9 @@
 #include <QDomDocument>
 #include <QFile>
 #include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLoggingCategory>
 
 #include "dabtables.h"
@@ -73,6 +76,7 @@ bool RawFileInput::openDevice(const QVariant &hwId, bool fallbackConnection)
         m_inputFile->close();
         delete m_inputFile;
     }
+    m_geolocationMap.clear();
 
     m_inputFile = new QFile(m_fileName);
 
@@ -111,12 +115,69 @@ bool RawFileInput::openDevice(const QVariant &hwId, bool fallbackConnection)
 
         if (idx < RAWFILEINPUT_XML_PADDING)
         {  // try to parse header
-            parseXmlHeader(xml);
+            int geolocationOffset = 0;
+            parseXmlHeader(xml, geolocationOffset);
+            if (geolocationOffset > 0)
+            {  // geolocation JSON found
+                if (m_inputFile->seek(geolocationOffset))
+                {
+                    // read geolocation JSON
+                    QByteArray geoJson;
+                    idx = geolocationOffset;
+                    do
+                    {  // read no more than RAWFILEINPUT_GPS_PADDING - geolocationOffset bytes
+                        char ch;
+                        if (in.readRawData(&ch, 1) > 0)
+                        {  // error
+                            if (0 == ch)
+                            {  // zero indicates header padding bytes
+                                break;
+                            }
+                            geoJson.append(ch);
+                        }
+                    } while (++idx < RAWFILEINPUT_GPS_PADDING);
+
+                    if (idx < RAWFILEINPUT_GPS_PADDING)
+                    {
+                        QJsonParseError parseError;
+                        QJsonDocument geoDoc = QJsonDocument::fromJson(geoJson, &parseError);
+                        if (parseError.error == QJsonParseError::NoError && geoDoc.isArray())
+                        {
+                            // m_deviceDescription.rawFile.geolocationArray = geoDoc.array();
+                            qCDebug(rawFileInput) << "RAW-FILE: Geolocation JSON parsed, number of entries:" << geoDoc.array().size()
+                                                  << "offset:" << geolocationOffset << "bytes";
+                            m_dataOffset = RAWFILEINPUT_GPS_PADDING;
+                            QJsonArray geoArray = QJsonArray(geoDoc.array());
+                            for (const QJsonValue &value : std::as_const(geoArray))
+                            {
+                                QVariantMap map = value.toObject().toVariantMap();
+                                qint64 ms = map.value("ms", -1).toLongLong();
+                                double lat = map.value("lat", 0).toDouble();
+                                double lon = map.value("lon", 0).toDouble();
+                                int alt = map.value("alt", 0).toDouble();
+                                if (ms >= 0)
+                                {
+                                    m_geolocationMap.insert(ms, QGeoCoordinate(lat, lon, alt));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            qCWarning(rawFileInput) << "RAW-FILE: Unable to parse geolocation JSON:" << parseError.errorString();
+                        }
+                    }
+                }
+            }
+            m_deviceDescription.rawFile.hasCoordinates = (m_geolocationMap.isEmpty() == false);
         }
         else
         {  // not found
             m_deviceDescription.rawFile.hasXmlHeader = false;
+            m_deviceDescription.rawFile.hasCoordinates = false;
+            m_dataOffset = 0;
         }
+
+        qCDebug(rawFileInput) << "Data offset:" << m_dataOffset << "bytes";
 
         if (!m_deviceDescription.rawFile.hasXmlHeader)
         {  // header was not correctly parsed or not found
@@ -146,6 +207,7 @@ bool RawFileInput::openDevice(const QVariant &hwId, bool fallbackConnection)
         }
 
         m_deviceDescription.rawFile.hasXmlHeader = false;
+        m_deviceDescription.rawFile.hasCoordinates = false;
     }
 
     switch (m_sampleFormat)
@@ -236,6 +298,11 @@ void RawFileInput::tune(uint32_t freq)
         m_inputTimer = new QTimer(this);
         connect(m_inputTimer, &QTimer::timeout, m_worker, &RawFileWorker::trigger);
         m_inputTimer->start(INPUT_CHUNK_MS);
+        m_currentGeolocationIt = m_geolocationMap.cbegin();
+        if (m_geolocationMap.empty())
+        {  // emiting invalid location to switch to online mode
+            emit locationUpdate(QGeoCoordinate());
+        }
     }
     emit tuned(freq);
 }
@@ -247,7 +314,7 @@ void RawFileInput::rewind()
         // go to file beginning
         if (nullptr != m_inputFile)
         {
-            m_inputFile->seek(m_deviceDescription.rawFile.hasXmlHeader ? (RAWFILEINPUT_XML_PADDING) : (0));
+            m_inputFile->seek(m_dataOffset);
             emit fileProgress(0);
         }
     }
@@ -255,16 +322,32 @@ void RawFileInput::rewind()
 
 void RawFileInput::onBytesRead(qint64 bytesRead)
 {
+    qint64 ms = 0;
     switch (m_sampleFormat)
     {
         case RawFileInputFormat::SAMPLE_FORMAT_U8:
-            emit fileProgress(bytesRead >> (1 + 11));
-            break;
+        {
+            ms = bytesRead >> (1 + 11);
+            emit fileProgress(ms);
+        }
+        break;
         case RawFileInputFormat::SAMPLE_FORMAT_S16:
-            emit fileProgress(bytesRead >> (2 + 11));
-            break;
+        {
+            ms = bytesRead >> (2 + 11);
+            emit fileProgress(ms);
+        }
+        break;
         default:
-            break;
+            return;
+    }
+    if (m_geolocationMap.empty() == false)
+    {
+        if (m_currentGeolocationIt != m_geolocationMap.cend() && ms >= m_currentGeolocationIt.key())
+        {
+            qCDebug(rawFileInput) << "RAW-FILE: Geolocation update at" << ms << "ms:" << m_currentGeolocationIt.value();
+            emit locationUpdate(m_currentGeolocationIt.value());
+            ++m_currentGeolocationIt;
+        }
     }
 }
 
@@ -296,6 +379,12 @@ void RawFileInput::onWatchdogTimeout()
     }
 }
 
+void RawFileInput::onEndOfFile(bool status)
+{
+    m_currentGeolocationIt = m_geolocationMap.cbegin();
+    emit error(status ? InputDevice::ErrorCode::EndOfFile : InputDevice::ErrorCode::NoDataAvailable);
+}
+
 void RawFileInput::seek(int msec)
 {
     if (nullptr == m_inputFile)
@@ -319,12 +408,30 @@ void RawFileInput::seek(int msec)
             break;
     }
 
-    if (m_deviceDescription.rawFile.hasXmlHeader)
-    {
-        numBytes += RAWFILEINPUT_XML_PADDING;
-    }
+    numBytes += m_dataOffset;
 
     m_inputFile->seek(numBytes);
+
+    // find geolocation
+    if (m_geolocationMap.empty() == false)
+    {
+        m_currentGeolocationIt = m_geolocationMap.cbegin();
+        while (m_currentGeolocationIt != m_geolocationMap.cend())
+        {
+            if (msec >= m_currentGeolocationIt.key())
+            {
+                ++m_currentGeolocationIt;
+            }
+            else
+            {
+                break;
+            }
+        }
+        if (m_currentGeolocationIt != m_geolocationMap.cbegin())
+        {
+            --m_currentGeolocationIt;
+        }
+    }
 
     // Reset buffer here - worker thread it not running, DAB waits for new data
     inputBuffer.reset();
@@ -342,7 +449,7 @@ void RawFileInput::seek(int msec)
     m_inputTimer->start(INPUT_CHUNK_MS);
 }
 
-void RawFileInput::parseXmlHeader(const QByteArray &xml)
+void RawFileInput::parseXmlHeader(const QByteArray &xml, int &geolocationOffset)
 {
     QDomDocument xmlHeader;
     if (xmlHeader.setContent(xml))
@@ -373,6 +480,15 @@ void RawFileInput::parseXmlHeader(const QByteArray &xml)
                 {
                     m_deviceDescription.rawFile.time =
                         QString("%1 %2").arg(sdrElement.attribute("Value", "N/A"), sdrElement.attribute("Unit", "N/A"));
+                }
+                else if ("Geolocation" == sdrElement.tagName())
+                {
+                    bool isOK = false;
+                    geolocationOffset = sdrElement.attribute("Offset", "0").toInt(&isOK);
+                    if (!isOK)
+                    {
+                        qCWarning(rawFileInput) << "RAW-FILE: Error in reading XML header: Geolocation->Offset";
+                    }
                 }
                 else if ("Sample" == sdrElement.tagName())
                 {
@@ -488,6 +604,16 @@ void RawFileInput::parseXmlHeader(const QByteArray &xml)
                                 }
                                 m_deviceDescription.rawFile.numSamples = numChannels / 2;
 
+                                m_dataOffset = datablocksElement.attribute("Offset", QString::number(RAWFILEINPUT_XML_PADDING)).toULongLong(&isOK);
+                                if (!isOK)
+                                {
+                                    qCCritical(rawFileInput) << "RAW-FILE: Error in reading XML header: Datablock->Offset";
+                                    m_dataOffset = 0;
+                                }
+                                else
+                                { /* OK */
+                                }
+
                                 QDomNode blockNode = datablocksElement.firstChild();
                                 while (!blockNode.isNull())
                                 {
@@ -531,6 +657,7 @@ void RawFileInput::parseXmlHeader(const QByteArray &xml)
     else
     {  // error in parser
         m_deviceDescription.rawFile.hasXmlHeader = false;
+        m_dataOffset = 0;
     }
 
     qCDebug(rawFileInput) << "Recorder:" << m_deviceDescription.rawFile.recorder;
@@ -546,6 +673,7 @@ void RawFileInput::parseXmlHeader(const QByteArray &xml)
     qCDebug(rawFileInput) << "Num samples:" << m_deviceDescription.rawFile.numSamples << "=>"
                           << m_deviceDescription.rawFile.numSamples * 1.0 / m_deviceDescription.sample.sampleRate << "sec";
     qCDebug(rawFileInput) << "RF [kHz]:" << m_deviceDescription.rawFile.frequency_kHz;
+    qCDebug(rawFileInput) << "Geolocation offset:" << geolocationOffset;
 }
 
 void RawFileInput::stop()
@@ -736,8 +864,8 @@ void RawFileWorker::run()
             {  // short file cannot be seeked
             }
 
-            emit endOfFile(status);
             emit bytesRead(m_bytesRead);
+            emit endOfFile(status);
             if (!status)
             {
                 inputBuffer.flush();

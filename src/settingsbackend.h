@@ -224,6 +224,7 @@ class SettingsBackend : public UIControlProvider
     UI_PROPERTY_SETTINGS(bool, restoreWindowsOnStart, m_settings->restoreWindows)
     UI_PROPERTY_SETTINGS(bool, isCheckForUpdatesEnabled, m_settings->updateCheckEna)
     UI_PROPERTY_SETTINGS(bool, isXmlHeaderEnabled, m_settings->xmlHeaderEna)
+    UI_PROPERTY_SETTINGS(bool, isRecordingGeolocationEnabled, m_settings->recordGeolocationEna)
     UI_PROPERTY_SETTINGS(QString, dataStoragePath, m_settings->dataStoragePath)
     UI_PROPERTY_SETTINGS(bool, keepScreenOn, m_settings->keepScreenOn)
     UI_PROPERTY_SETTINGS(bool, showServicePageWidget, m_settings->showServicePageWidget)
@@ -346,6 +347,7 @@ signals:
     void applicationStyleChanged();
     void noiseConcealmentLevelChanged(int level);
     void xmlHeaderToggled(bool enabled);
+    void recordGeolocationToggled(bool enabled);
     void spiApplicationEnabled(bool enabled);
     void spiApplicationSettingsChanged(bool useInternet, bool enaRadioDNS);
     void spiIconSettingsChanged();
