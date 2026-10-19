@@ -75,6 +75,7 @@ struct CliConfig
 
     QHostAddress bindAddress = QHostAddress::AnyIPv4;
     quint16 webPort = 7979;
+    bool allowRecording = false;
     // true if the user explicitly passed --bind and/or --port; otherwise the CLI shows the
     // interactive terminal UI (or, if stdout isn't a terminal, falls back to plain log output)
     bool webUiEnabled = false;
@@ -122,6 +123,9 @@ public:
     // percent in [0, 100]; no-op if local audio output (HAVE_PORTAUDIO / TUI mode) isn't active
     void setVolume(int percent);
     int volumePercent() const;
+    void toggleRecording();
+    bool recordingActive() const;
+    bool recordingAllowed() const { return m_config.allowRecording; }
 
     // toggles volumePercent() between 0 and the level it had before muting; invokable so it can
     // be triggered by desktop media-key/MPRIS Play-Pause commands (see linuxSetupMediaRemoteCommands)
@@ -146,15 +150,20 @@ signals:
 
     // emitted once the graceful shutdown requested via requestShutdown() has completed
     void readyToQuit();
+    void recordingStartRequested();
+    void recordingStopRequested();
 
 private slots:
     void onEnsembleInformation(const RadioControlEnsemble &ens);
+    void onEnsembleConfiguration(const QString &configuration);
     void onServiceListEntry(const RadioControlEnsemble &ens, const RadioControlServiceComponent &s);
     void onServiceListComplete(const RadioControlEnsemble &ens);
     void onSignalState(uint8_t sync, float snr);
     void onTuneDone(uint32_t freq);
     void onAudioServiceSelection(const RadioControlServiceComponent &s);
     void onAudioParametersInfo(const AudioParameters &params);
+    void onRecordingStarted(const QString &recpath, const QString &filename);
+    void onRecordingStopped();
     void onInputDeviceReady();
     void onInputDeviceError(InputDevice::ErrorCode errCode);
     void onDlComplete(const QString &dl);
@@ -196,6 +205,7 @@ private:
 
     mutable QMutex m_mutex;
     RadioControlEnsemble m_ensemble;
+    QString m_ensembleConfiguration;
     QMap<quint64, CliServiceInfo> m_services;
     uint8_t m_syncLevel = 0;
     float m_snr = 0.0f;
@@ -204,6 +214,8 @@ private:
     uint8_t m_currentScids = 0;
     QString m_currentServiceLabel;
     bool m_isPlaying = false;
+    bool m_recording = false;
+    bool m_recordingPending = false;
     AudioParameters m_audioParams{};
     bool m_haveAudioParams = false;
     bool m_deviceReady = false;
@@ -221,6 +233,7 @@ private:
 
     QByteArray m_slideData;
     QString m_slideContentType;
+    QString m_slideFileName;
     int m_slideVersion = 0;
 
     float m_freqOffsetHz = 0.0f;

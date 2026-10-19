@@ -587,6 +587,17 @@ On a fresh Ubuntu 22.04 installation you can use the following commands to insta
        sudo apt-get install libftxui-dev
        sudo apt-get install portaudio19-dev rtl-sdr
 
+On Raspberry Pi OS/Debian 13 (64-bit), the required Qt modules can be installed
+from the distribution packages instead of using the Qt online installer:
+
+    sudo apt install qt6-base-dev qt6-declarative-dev qt6-declarative-private-dev
+    sudo apt install qt6-location-dev qt6-multimedia-dev qt6-positioning-dev
+    sudo apt install qt6-svg-dev qt6-tools-dev
+
+`qt6-declarative-private-dev` is required because Debian's Qt Location package
+references versioned Qt Quick Shapes headers during CMake configuration. There
+is no separate `qt6-quickshapes-dev` package.
+
 Ubuntu 24.10 or lower does not support the version of Qt (at least 6.7.0) that is required to build the application. If you want to compile the application you should [install](https://doc.qt.io/qt-6/qt-online-installation.html) Qt using the [online installer](https://www.qt.io/download-qt-installer-oss). The following modules are sufficient to compile AbracaDABra:
 
 ![Screenshot from 2024-11-08 19-51-02](https://github.com/user-attachments/assets/56c32368-9472-4f8a-8d18-4cc65120b88b)
