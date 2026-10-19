@@ -575,6 +575,50 @@ Item {
                         Layout.bottomMargin: UI.standardMargin
                     }
                     AbracaGroupBox {
+                        id: rawfileGroupbox
+                        title: qsTr("Raw IQ data recording")
+                        Layout.fillWidth: true
+                        Item {
+                            width: rawfileGroupbox.width
+                            implicitHeight: rawfileLayout.implicitHeight
+                            ColumnLayout {
+                                id: rawfileLayout
+                                anchors.fill: parent
+                                AbracaSwitch {
+                                    Layout.fillWidth: true
+                                    Layout.minimumWidth: implicitWidth
+                                    text: qsTr("Insert XML header")
+                                    wrapMode: Text.WordWrap
+                                    checked: settingsBackend.isXmlHeaderEnabled
+                                    onCheckedChanged: {
+                                        if (settingsBackend.isXmlHeaderEnabled !== checked) {
+                                            settingsBackend.isXmlHeaderEnabled = checked
+                                        }
+                                    }
+                                }
+                                AbracaSwitch {
+                                    Layout.fillWidth: true
+                                    Layout.minimumWidth: implicitWidth
+                                    text: qsTr("Insert GNSS coordinates")
+                                    wrapMode: Text.WordWrap
+                                    enabled: settingsBackend.isXmlHeaderEnabled
+                                    checked: settingsBackend.isRecordingGeolocationEnabled
+                                    onCheckedChanged: {
+                                        if (settingsBackend.isRecordingGeolocationEnabled !== checked) {
+                                            settingsBackend.isRecordingGeolocationEnabled = checked
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    AbracaLine {
+                        Layout.fillWidth: true
+                        isVertical: false
+                        Layout.topMargin: UI.standardMargin
+                        Layout.bottomMargin: UI.standardMargin
+                    }
+                    AbracaGroupBox {
                         id: othersGroupbox
                         Layout.fillWidth: true
                         Item {
@@ -605,32 +649,6 @@ Item {
                                     onCheckedChanged: {
                                         if (settingsBackend.isCheckForUpdatesEnabled !== checked) {
                                             settingsBackend.isCheckForUpdatesEnabled = checked
-                                        }
-                                    }
-                                }
-
-                                AbracaSwitch {
-                                    Layout.fillWidth: true
-                                    //Layout.minimumWidth: implicitWidth
-                                    text: qsTr("Include XML header in raw data recording")
-                                    wrapMode: Text.WordWrap
-                                    checked: settingsBackend.isXmlHeaderEnabled
-                                    onCheckedChanged: {
-                                        if (settingsBackend.isXmlHeaderEnabled !== checked) {
-                                            settingsBackend.isXmlHeaderEnabled = checked
-                                        }
-                                    }
-                                }
-                                AbracaSwitch {
-                                    Layout.fillWidth: true
-                                    //Layout.minimumWidth: implicitWidth
-                                    text: qsTr("Include geolocation in raw data recording")
-                                    wrapMode: Text.WordWrap
-                                    enabled: settingsBackend.isXmlHeaderEnabled
-                                    checked: settingsBackend.isRecordingGeolocationEnabled
-                                    onCheckedChanged: {
-                                        if (settingsBackend.isRecordingGeolocationEnabled !== checked) {
-                                            settingsBackend.isRecordingGeolocationEnabled = checked
                                         }
                                     }
                                 }
