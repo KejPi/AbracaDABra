@@ -150,6 +150,12 @@ int runCliApplication(QCoreApplication &app, const CliConfig &config)
                                           printf("volume: %d%%\n", cliApp.volumePercent());
                                           fflush(stdout);
                                       }
+                                      else if ('r' == c || 'R' == c)
+                                      {
+                                          cliApp.toggleRecording();
+                                          printf("recording: %s\n", cliApp.recordingActive() ? "on" : "off");
+                                          fflush(stdout);
+                                      }
                                       else if ('q' == c || 3 == c)
                                       {
                                           g_quitRequested.store(true);

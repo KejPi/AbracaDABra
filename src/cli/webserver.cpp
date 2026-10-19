@@ -254,6 +254,20 @@ void WebServer::handleRequest(QTcpSocket *socket, const QString &method, const Q
         return;
     }
 
+    if ("POST" == method && "/api/record" == p)
+    {
+      if (!m_app->recordingAllowed())
+      {
+        sendError(socket, 403, "Forbidden", "Recording is disabled for the Web UI");
+        return;
+      }
+        m_app->toggleRecording();
+        QJsonObject res;
+        res["ok"] = true;
+        sendJson(socket, QJsonDocument(res));
+        return;
+    }
+
     if ("GET" == method && "/stream/audio" == p)
     {
         const bool icyRequested = ("1" == headers.value("icy-metadata"));
@@ -452,16 +466,31 @@ QString WebServer::indexHtml()
   .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:.75rem; }
   .stat label { display:block; font-size:.75rem; color:#999; text-transform:uppercase; letter-spacing:.05em; }
   .stat span { font-size:1.1rem; }
+  #sync.sync-no { color:#ff6b6b; }
+  #sync.sync-null { color:#ffd166; }
+  #sync.sync-full { color:#63e6be; }
+  #sync.sync-unknown { color:#eee; }
   table { width:100%; border-collapse: collapse; }
   th, td { text-align:left; padding:.4rem .5rem; border-bottom:1px solid #333; font-size:.9rem; }
   button, select { background:#2a2a2a; color:#eee; border:1px solid #444; border-radius:6px; padding:.4rem .7rem; cursor:pointer; }
   button:hover { background:#3a3a3a; }
   button.playing { background:#2e7d32; border-color:#2e7d32; }
+  #recordButton { width:32px; height:32px; padding:0; display:inline-flex; align-items:center; justify-content:center; }
+  #recordButton[hidden] { display:none; }
+  #recordButton .recordIcon { width:13px; height:13px; border-radius:50%; background:#e5484d; }
+  #recordButton.recording .recordIcon { border-radius:2px; background:#111; }
+  #recordButton.recording { border-color:#777; }
   #player { width:100%; margin-top:.5rem; }
   .row { display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
   .statusRow { display:flex; gap:1rem; align-items:flex-start; flex-wrap:wrap; }
   #slide { width:160px; height:160px; object-fit:contain; border-radius:6px; background:#222; border:1px solid #333; display:none; }
   #slide.visible { display:block; }
+  #slide.visible { cursor:zoom-in; }
+  #slideViewer { position:fixed; inset:0; z-index:10; display:none; align-items:center; justify-content:center; padding:2rem; background:rgba(0,0,0,.88); }
+  #slideViewer.visible { display:flex; }
+  .slideViewerPanel { max-width:min(100%, 1100px); max-height:100%; overflow:auto; background:#1b1b1b; border:1px solid #444; border-radius:8px; padding:1rem; }
+  #enlargedSlide { display:block; max-width:100%; max-height:70vh; margin:0 auto 1rem; object-fit:contain; background:#222; }
+  .slideViewerClose { float:right; }
   details.card summary { cursor:pointer; font-weight:600; }
   details.card[open] summary { margin-bottom:.75rem; }
 </style>
@@ -471,8 +500,7 @@ QString WebServer::indexHtml()
 
 <div class="card">
   <div class="row">
-    <select id="channelSelect"></select>
-    <button onclick="tune()">Tune</button>
+    <select id="channelSelect" onchange="tune()"></select>
   </div>
 </div>
 
@@ -490,6 +518,20 @@ QString WebServer::indexHtml()
   </div>
 </div>
 
+<div id="slideViewer" role="dialog" aria-modal="true" aria-labelledby="slideViewerTitle">
+  <div class="slideViewerPanel">
+    <button class="slideViewerClose" id="closeSlideViewer" type="button">Close</button>
+    <h2 id="slideViewerTitle">Slideshow image</h2>
+    <img id="enlargedSlide" alt="Enlarged station image">
+    <div class="grid">
+      <div class="stat"><label>Size</label><span id="slideSize">-</span></div>
+      <div class="stat"><label>Dimensions</label><span id="slideDimensions">-</span></div>
+      <div class="stat"><label>File type</label><span id="slideType">-</span></div>
+      <div class="stat"><label>File name</label><span id="slideFileName">-</span></div>
+    </div>
+  </div>
+</div>
+
 <details class="card">
   <summary>Advanced / technical info</summary>
   <div class="grid">
@@ -504,6 +546,11 @@ QString WebServer::indexHtml()
   </div>
 </details>
 
+<details class="card" id="ensembleConfigurationCard" hidden>
+  <summary>Ensemble configuration</summary>
+  <div id="ensembleConfiguration"></div>
+</details>
+
 <div class="card">
   <table>
     <thead><tr><th>Service</th><th>Sub-ch</th><th>Bitrate</th><th></th></tr></thead>
@@ -511,6 +558,7 @@ QString WebServer::indexHtml()
   </table>
   <div class="row">
     <span id="playerStatus">Not playing</span>
+    <button id="recordButton" onclick="toggleRecording()" hidden disabled aria-label="Start recording" title="Start recording"><span class="recordIcon"></span></button>
     <button onclick="stopPlayback()">Stop</button>
     <label for="volume">Volume</label>
     <input type="range" id="volume" min="0" max="100" value="100" oninput="setVolume(this.value)">
@@ -524,6 +572,11 @@ async function loadChannels(){
   const j = await r.json();
   const sel = document.getElementById('channelSelect');
   sel.innerHTML = '';
+  const placeholder = document.createElement('option');
+  placeholder.textContent = 'Select channel';
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  sel.appendChild(placeholder);
   j.channels.forEach(c => {
     const opt = document.createElement('option');
     opt.value = c.channel;
@@ -533,10 +586,41 @@ async function loadChannels(){
 }
 async function tune(){
   const ch = document.getElementById('channelSelect').value;
+  if (!ch) return;
   await fetch('/api/tune', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({channel: ch})});
 }
 
 let lastSlideVersion = 0;
+let currentSlideFileName = '';
+const slideImg = document.getElementById('slide');
+const slideViewer = document.getElementById('slideViewer');
+const enlargedSlide = document.getElementById('enlargedSlide');
+
+async function openSlideViewer(){
+  if (!slideImg.src || !slideImg.classList.contains('visible')) return;
+  slideViewer.classList.add('visible');
+  enlargedSlide.src = slideImg.currentSrc || slideImg.src;
+  document.getElementById('slideFileName').textContent = currentSlideFileName || '-';
+  enlargedSlide.onload = () => {
+    document.getElementById('slideDimensions').textContent = enlargedSlide.naturalWidth + ' x ' + enlargedSlide.naturalHeight + ' pixels';
+  };
+  try {
+    const response = await fetch(enlargedSlide.src, {cache:'no-store'});
+    const blob = await response.blob();
+    document.getElementById('slideSize').textContent = (blob.size / 1024).toFixed(1) + ' kB';
+    document.getElementById('slideType').textContent = blob.type || 'Unknown';
+  } catch (e) {
+    document.getElementById('slideSize').textContent = '-';
+    document.getElementById('slideType').textContent = '-';
+  }
+}
+function closeSlideViewer(){ slideViewer.classList.remove('visible'); }
+slideImg.addEventListener('click', openSlideViewer);
+document.getElementById('closeSlideViewer').addEventListener('click', closeSlideViewer);
+slideViewer.addEventListener('click', (event) => { if (event.target === slideViewer) closeSlideViewer(); });
+document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeSlideViewer(); });
+
+let localPlaybackStopped = false;
 )HTML");
 
 #if HAVE_MP3LAME
@@ -559,6 +643,7 @@ function setVolume(percent){
 }
 
 function stopPlayback(){
+  localPlaybackStopped = true;
   player.pause();
   player.removeAttribute('src');
   player.load();
@@ -567,12 +652,19 @@ function stopPlayback(){
     navigator.mediaSession.playbackState = 'paused';
     navigator.mediaSession.setPositionState();
   }
+  refresh();
+}
+
+async function toggleRecording(){
+  await fetch('/api/record', {method:'POST'});
+  await refresh();
 }
 
 async function playService(sid, scids){
   lastSid = sid;
   lastScids = scids;
   stopPlayback();
+  localPlaybackStopped = false;
   await fetch('/api/service', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({sid: sid, scids: scids})});
 
   document.getElementById('playerStatus').textContent = 'Playing...';
@@ -619,6 +711,7 @@ function setVolume(percent){
 }
 
 function stopPlayback(){
+  localPlaybackStopped = true;
   if (streamXhr) {
     const x = streamXhr;
     streamXhr = null;
@@ -629,6 +722,7 @@ function stopPlayback(){
   if ('mediaSession' in navigator) {
     navigator.mediaSession.playbackState = 'paused';
   }
+  refresh();
 }
 
 function feedPcm(chunk, numChannels, sampleRate){
@@ -687,6 +781,7 @@ async function playService(sid, scids){
   unlockSrc.start(0);
 
   stopPlayback();
+  localPlaybackStopped = false;
   await fetch('/api/service', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({sid: sid, scids: scids})});
 
   nextStartTime = 0;
@@ -740,16 +835,42 @@ async function playService(sid, scids){
 function fmtSync(level){
   return ({0:'No sync', 1:'Null sync', 2:'Full sync'})[level] ?? level;
 }
+function syncClass(level){
+  return ({0:'sync-no', 1:'sync-null', 2:'sync-full'})[level] || 'sync-unknown';
+}
 async function refresh(){
   try {
     const r = await fetch('/api/status');
     const s = await r.json();
     document.getElementById('ensemble').textContent = s.ensemble && s.ensemble.valid ? (s.ensemble.label || '(unnamed)') : '-';
     document.getElementById('channel').textContent = s.channel || '-';
+    if (s.channel) {
+      document.getElementById('channelSelect').value = s.channel;
+    }
     document.getElementById('freq').textContent = s.frequencyKHz ? (s.frequencyKHz/1000).toFixed(3) + ' MHz' : '-';
-    document.getElementById('sync').textContent = fmtSync(s.syncLevel);
+    const sync = document.getElementById('sync');
+    sync.textContent = fmtSync(s.syncLevel);
+    sync.className = syncClass(s.syncLevel);
     document.getElementById('snr').textContent = (s.snr ?? 0).toFixed(1) + ' dB';
-    document.getElementById('nowplaying').textContent = (s.current && s.current.playing) ? s.current.label : '(none)';
+    const serviceIsRunning = !!(s.current && s.current.playing);
+    const isRecording = !!s.recording;
+    const recordingAllowed = !!s.recordingAllowed;
+    const playbackIsActive = serviceIsRunning && !localPlaybackStopped;
+    document.getElementById('nowplaying').textContent = serviceIsRunning ? s.current.label : '(none)';
+    document.getElementById('playerStatus').textContent = playbackIsActive ? (isRecording ? 'Playing and recording' : 'Playing') : 'Not playing';
+    const recordButton = document.getElementById('recordButton');
+    recordButton.hidden = !recordingAllowed || (!isRecording && !serviceIsRunning);
+    recordButton.classList.toggle('recording', isRecording);
+    recordButton.setAttribute('aria-label', isRecording ? 'Stop recording' : 'Start recording');
+    recordButton.title = isRecording ? 'Stop recording' : 'Start recording';
+    recordButton.disabled = !recordingAllowed || (!isRecording && !serviceIsRunning);
+    const ensembleConfigurationCard = document.getElementById('ensembleConfigurationCard');
+    const ensembleConfiguration = (s.ensemble && s.ensemble.configuration) || '';
+    const ensembleLocked = !!(s.ensemble && s.ensemble.valid);
+    ensembleConfigurationCard.hidden = !ensembleLocked || !ensembleConfiguration;
+    if (!ensembleConfigurationCard.hidden) {
+      document.getElementById('ensembleConfiguration').innerHTML = ensembleConfiguration;
+    }
     // prefer DL Plus title/artist over the raw DLS text, same precedence as the CLI's own
     // display (DabCliApp::buildCurrentSubtitleLocked()), so the page shows the same info
     const cur = s.current || {};
@@ -776,6 +897,7 @@ async function refresh(){
 
     const slideImg = document.getElementById('slide');
     const slideVersion = (s.current && s.current.slideVersion) || 0;
+    currentSlideFileName = (s.current && s.current.slideFileName) || '';
     if (slideVersion && slideVersion !== lastSlideVersion) {
       lastSlideVersion = slideVersion;
       slideImg.src = '/api/slideshow?v=' + slideVersion;
@@ -801,7 +923,7 @@ async function refresh(){
     const tbody = document.getElementById('services');
     tbody.innerHTML = '';
     (s.services || []).forEach(svc => {
-      const isPlaying = s.current && s.current.playing && s.current.sid === svc.sid && s.current.scids === svc.scids;
+      const isPlaying = playbackIsActive && s.current.sid === svc.sid && s.current.scids === svc.scids;
       const tr = document.createElement('tr');
       tr.innerHTML = '<td>' + svc.label + '</td><td>' + svc.subChId + '</td><td>' + svc.bitRate + ' kbps</td>' +
         '<td><button class="' + (isPlaying?'playing':'') + '" onclick="playService(\'' + svc.sid + '\',' + svc.scids + ')">' +

@@ -30,6 +30,8 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QLoggingCategory>
+#include <QSettings>
+#include <QStandardPaths>
 #include <algorithm>
 
 #include "audiorecorder.h"
@@ -208,6 +210,9 @@ bool DabCliApp::start()
     }
 
     m_audioRecorder = new AudioRecorder();
+    const QString defaultDataPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/AbracaDABra";
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, QStringLiteral("AbracaDABra"), QStringLiteral("AbracaDABra"));
+    m_audioRecorder->setup(settings.value("dataStoragePath", defaultDataPath).toString());
 
 #if HAVE_FDKAAC
     m_audioDecoder = new AudioDecoderFDKAAC(m_audioRecorder);
@@ -222,6 +227,10 @@ bool DabCliApp::start()
     m_audioRecorder->moveToThread(m_audioDecoderThread);
     connect(m_audioDecoderThread, &QThread::finished, m_audioDecoder, &QObject::deleteLater);
     connect(m_audioDecoderThread, &QThread::finished, m_audioRecorder, &QObject::deleteLater);
+    connect(this, &DabCliApp::recordingStartRequested, m_audioRecorder, &AudioRecorder::start, Qt::QueuedConnection);
+    connect(this, &DabCliApp::recordingStopRequested, m_audioRecorder, &AudioRecorder::stop, Qt::QueuedConnection);
+    connect(m_audioRecorder, &AudioRecorder::recordingStarted, this, &DabCliApp::onRecordingStarted, Qt::QueuedConnection);
+    connect(m_audioRecorder, &AudioRecorder::recordingStopped, this, &DabCliApp::onRecordingStopped, Qt::QueuedConnection);
     m_audioDecoderThread->start();
 
     // RadioControl <-> AudioDecoder wiring (mirrors Application::Application())
@@ -248,8 +257,13 @@ bool DabCliApp::start()
     }
 #endif
 
-    connect(m_radioControl, &RadioControl::ensembleInformation, this, &DabCliApp::onEnsembleInformation, Qt::QueuedConnection);
-    connect(m_radioControl, &RadioControl::ensembleReconfiguration, this, &DabCliApp::onEnsembleInformation, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleInformation, this, &DabCliApp::onEnsembleInformation, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleReconfiguration, this, &DabCliApp::onEnsembleInformation, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleConfiguration, this, &DabCliApp::onEnsembleConfiguration, Qt::QueuedConnection);
+        connect(m_radioControl, &RadioControl::ensembleInformation, m_radioControl,
+            [this](const RadioControlEnsemble &) { m_radioControl->getEnsembleConfiguration(); }, Qt::QueuedConnection);
+            connect(m_radioControl, &RadioControl::ensembleReconfiguration, m_radioControl,
+                [this](const RadioControlEnsemble &) { m_radioControl->getEnsembleConfiguration(); }, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListEntry, this, &DabCliApp::onServiceListEntry, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::serviceListComplete, this, &DabCliApp::onServiceListComplete, Qt::QueuedConnection);
     connect(m_radioControl, &RadioControl::signalState, this, &DabCliApp::onSignalState, Qt::QueuedConnection);
@@ -442,6 +456,15 @@ bool DabCliApp::requestTuneFrequency(uint32_t freqKHz, QString *errorOut)
         m_currentServiceLabel.clear();
         m_isPlaying = false;
         m_haveAudioParams = false;
+        m_ensemble = RadioControlEnsemble{};
+        m_ensembleConfiguration.clear();
+        m_dlsText.clear();
+        m_dlPlusTitle.clear();
+        m_dlPlusArtist.clear();
+        m_dlPlusTags.clear();
+        m_slideData.clear();
+        m_slideContentType.clear();
+        ++m_slideVersion;
     }
 
     emit tuneServiceRequested(freqKHz, m_config.haveInitialService ? m_config.initialSid : 0,
@@ -498,6 +521,43 @@ int DabCliApp::volumePercent() const
 {
     QMutexLocker lock(&m_mutex);
     return m_volumePercent;
+}
+
+void DabCliApp::toggleRecording()
+{
+    bool recording;
+    bool ready;
+    {
+        QMutexLocker lock(&m_mutex);
+        if (m_recordingPending)
+        {
+            return;
+        }
+        recording = m_recording;
+        ready = m_isPlaying && m_haveAudioParams;
+        m_recordingPending = true;
+    }
+
+    if (recording)
+    {
+        emit recordingStopRequested();
+    }
+    else if (ready)
+    {
+        emit recordingStartRequested();
+    }
+    else
+    {
+        QMutexLocker lock(&m_mutex);
+        m_recordingPending = false;
+        qCWarning(cliApp) << "Cannot start recording: no active audio service";
+    }
+}
+
+bool DabCliApp::recordingActive() const
+{
+    QMutexLocker lock(&m_mutex);
+    return m_recording;
 }
 
 void DabCliApp::toggleMute()
@@ -559,6 +619,12 @@ void DabCliApp::onEnsembleInformation(const RadioControlEnsemble &ens)
 {
     QMutexLocker lock(&m_mutex);
     m_ensemble = ens;
+}
+
+void DabCliApp::onEnsembleConfiguration(const QString &configuration)
+{
+    QMutexLocker lock(&m_mutex);
+    m_ensembleConfiguration = configuration;
 }
 
 void DabCliApp::onServiceListEntry(const RadioControlEnsemble &ens, const RadioControlServiceComponent &s)
@@ -643,6 +709,7 @@ void DabCliApp::onAudioServiceSelection(const RadioControlServiceComponent &s)
     m_dlPlusTags.clear();
     m_slideData.clear();
     m_slideContentType.clear();
+    m_slideFileName.clear();
     ++m_slideVersion;
     qCInfo(cliApp).noquote() << "Now playing:" << s.label;
 #if defined(Q_OS_LINUX) && HAVE_LINUX_DBUS
@@ -709,6 +776,7 @@ void DabCliApp::onCurrentSlide(const Slide &slide)
     m_slideData = slide.getRawData();
     const QString &format = slide.getFormat();
     m_slideContentType = format.contains("PNG", Qt::CaseInsensitive) ? QStringLiteral("image/png") : QStringLiteral("image/jpeg");
+    m_slideFileName = slide.getContentName();
     ++m_slideVersion;
 }
 
@@ -738,6 +806,20 @@ void DabCliApp::onAudioParametersInfo(const AudioParameters &params)
     QMutexLocker lock(&m_mutex);
     m_audioParams = params;
     m_haveAudioParams = true;
+}
+
+void DabCliApp::onRecordingStarted(const QString &, const QString &)
+{
+    QMutexLocker lock(&m_mutex);
+    m_recording = true;
+    m_recordingPending = false;
+}
+
+void DabCliApp::onRecordingStopped()
+{
+    QMutexLocker lock(&m_mutex);
+    m_recording = false;
+    m_recordingPending = false;
 }
 
 void DabCliApp::currentAudioFormat(int *sampleRate, int *numChannels) const
@@ -794,6 +876,8 @@ QJsonObject DabCliApp::statusJson() const
     root["syncLevel"] = m_syncLevel;
     root["snr"] = double(m_snr);
     root["volumePercent"] = m_volumePercent;
+    root["recording"] = m_recording;
+    root["recordingAllowed"] = m_config.allowRecording;
 
     QJsonObject ensembleObj;
     ensembleObj["label"] = m_ensemble.label;
@@ -801,6 +885,7 @@ QJsonObject DabCliApp::statusJson() const
     ensembleObj["eid"] = m_ensemble.eid();
     ensembleObj["ecc"] = m_ensemble.ecc();
     ensembleObj["valid"] = m_ensemble.isValid();
+    ensembleObj["configuration"] = m_ensembleConfiguration;
     root["ensemble"] = ensembleObj;
 
     QJsonObject currentObj;
@@ -821,6 +906,7 @@ QJsonObject DabCliApp::statusJson() const
     }
     currentObj["dlPlusTags"] = dlPlusTagsArr;
     currentObj["slideVersion"] = m_slideData.isEmpty() ? 0 : m_slideVersion;
+    currentObj["slideFileName"] = m_slideData.isEmpty() ? QString() : m_slideFileName;
     if (m_haveAudioParams)
     {
         QJsonObject audioObj;
