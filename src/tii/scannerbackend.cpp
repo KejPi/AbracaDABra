@@ -1694,19 +1694,9 @@ void ScannerBackend::clearLocalTxAction()
 
 ChannelSelectionModel::ChannelSelectionModel(Settings *settings, QObject *parent) : QAbstractListModel(parent), m_settings(settings)
 {
-    if (m_settings->cableChannelsEna)
+    for (auto it = DabTables::channelList.cbegin(); it != DabTables::channelList.cend(); ++it)
     {
-        for (auto it = DabTables::channelList.cbegin(); it != DabTables::channelList.cend(); ++it)
-        {
-            m_modelData.append({it.key(), m_settings->scanner.channelSelection.value(it.key(), true)});
-        }
-    }
-    else
-    {
-        for (auto it = DabTables::channelList.cbegin(); it.key() <= 239200; ++it)
-        {
-            m_modelData.append({it.key(), m_settings->scanner.channelSelection.value(it.key(), true)});
-        }
+        m_modelData.append({it.key(), m_settings->scanner.channelSelection.value(it.key(), true)});
     }
 }
 

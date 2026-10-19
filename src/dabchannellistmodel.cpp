@@ -84,21 +84,6 @@ void DABChannelListFilteredModel::setChannelFilter(int freq)
 #endif
 }
 
-void DABChannelListFilteredModel::setCableChannelFilter(bool ena)
-{
-#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
-    beginFilterChange();
-#endif
-
-    m_showCableChannels = ena;
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
-    endFilterChange();
-#else
-    invalidateFilter();
-#endif
-}
-
 int DABChannelListFilteredModel::findFrequency(int freq)
 {
     for (int row = 0; row < rowCount(); ++row)
@@ -114,10 +99,10 @@ int DABChannelListFilteredModel::findFrequency(int freq)
 
 bool DABChannelListFilteredModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
     if (m_frequencyFilter == 0)
     {
-        return m_showCableChannels ? true : sourceModel()->data(index, DABChannelListModel::Roles::FrequencyRole).toInt() <= 239200;
+        return true;
     }
+    QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
     return sourceModel()->data(index, DABChannelListModel::Roles::FrequencyRole).toInt() == m_frequencyFilter;
 }

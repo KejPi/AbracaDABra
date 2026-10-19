@@ -34,22 +34,7 @@ BandScanBackend::BandScanBackend(bool autoStart, Settings *settings, QObject *pa
 {
     ensemblesFound(QString("%1").arg(m_numEnsemblesFound));
     servicesFound(QString("%1").arg(m_servicesSet.size()));
-    if (m_settings->cableChannelsEna)
-    {
-        m_numChannels = DabTables::channelList.size();
-    }
-    else
-    {
-        m_numChannels = 0;
-        for (auto it = DabTables::channelList.constBegin(); it != DabTables::channelList.constEnd(); ++it)
-        {
-            if (it.key() <= 239200)
-            {
-                m_numChannels += 1;
-            }
-        }
-    }
-    channelProgress(QString("0 / %1").arg(m_numChannels));
+    channelProgress(QString("0 / %1").arg(DabTables::channelList.size()));
     if (autoStart)
     {
         isScanning(true);
@@ -123,7 +108,7 @@ void BandScanBackend::scanStep()
     }
     m_channelCounter += 1;
 
-    if (m_channelCounter >= m_numChannels)
+    if (DabTables::channelList.constEnd() == m_channelIt)
     {
         // scan finished
         m_state = BandScanState::Idle;
@@ -131,8 +116,8 @@ void BandScanBackend::scanStep()
         return;
     }
 
-    progress(m_channelCounter * 100.0 / m_numChannels);
-    channelProgress(QString("%1 / %2").arg(m_channelCounter).arg(m_numChannels));
+    progress(m_channelCounter * 100.0 / DabTables::channelList.size());
+    channelProgress(QString("%1 / %2").arg(m_channelCounter).arg(DabTables::channelList.size()));
     currentChannel(tr("Scanning channel:") + " " + m_channelIt.value());
     m_state = BandScanState::WaitForTune;
     emit tuneChannel(m_channelIt.key());

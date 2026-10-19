@@ -199,7 +199,6 @@ public:
     bool showEnsFlag;
     bool showServiceFlag;
     bool compactUi;
-    bool cableChannelsEna;
     QString dataStoragePath;
     bool showServicePageWidget;
     bool filterServiceTreeByEnsemble;

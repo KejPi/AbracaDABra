@@ -474,8 +474,6 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     m_channelListModel->setSourceModel(new DABChannelListModel(this));
     setChannelIndex(-1);
     m_ui->tuneEnabled(false);
-    connect(m_settingsBackend, &SettingsBackend::cableChannelsEnaChanged, this,
-            [this]() { m_channelListModel->setCableChannelFilter(m_settings->cableChannelsEna); });
 
     // disable service list - it is enabled when some valid device is selected1
     m_ui->serviceSelectionEnabled(false);
@@ -3322,7 +3320,6 @@ void Application::loadSettings()
     m_settings->trayIconEna = settings->value("showTrayIcon", true).toBool();
 #endif
     m_settings->compactUi = settings->value("compactUi", false).toBool();
-    m_settings->cableChannelsEna = settings->value("cableChannelsEna", false).toBool();
     m_settings->restoreWindows = settings->value("restoreWindows", false).toBool();
     m_settings->showSystemTime = settings->value("showSystemTime", false).toBool();
     m_settings->showEnsFlag = settings->value("showEnsembleCountryFlag", false).toBool();
@@ -3667,7 +3664,6 @@ void Application::saveSettings()
     settings->setValue("showServiceCountryFlag", m_settings->showServiceFlag);
     settings->setValue("dataStoragePath", m_settings->dataStoragePath);
     settings->setValue("compactUi", m_settings->compactUi);
-    settings->setValue("cableChannelsEna", m_settings->cableChannelsEna);
     settings->setValue("showServicePageWidget", m_settings->showServicePageWidget);
     settings->setValue("filterServiceTreeByEnsemble", m_settings->filterServiceTreeByEnsemble);
     settings->setValue("servicePageWidget", static_cast<int>(m_ui->servicePageWidget()));
