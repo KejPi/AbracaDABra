@@ -42,7 +42,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         height: parent.height / 4
-        radius: UI.controlRadius
+        // radius: UI.controlRadius
         color: "transparent"
         border.color: UI.colors.textSecondary
         border.width: 1
@@ -52,7 +52,7 @@ Item {
         anchors.top: progressBorder.top
         anchors.bottom: progressBorder.bottom
         width: Math.max(0, progressBorder.width * Math.min(mainItem.value, 100) * 0.01)
-        radius: progressBorder.radius
+        // radius: progressBorder.radius
         color: UI.colors.textSecondary
     }
     AbracaLabel {
