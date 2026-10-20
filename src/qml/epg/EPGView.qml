@@ -297,31 +297,20 @@ Rectangle {
                                         spacing: 10
                                         Rectangle {
                                             color: "transparent"
-                                            border.width: 2
+                                            border.width: 1
                                             border.color: selectedServiceIndex == index ? UI.colors.accent : "transparent"
-                                            width: logoLoader.width + 8
-                                            height: logoLoader.height + 8
+                                            width: logoImage.width + 8
+                                            height: logoImage.height + 8
                                             anchors.verticalCenter: parent.verticalCenter
-                                            Loader {
-                                                id: logoLoader
+                                            AbracaColorizedImage {
+                                                id: logoImage
+                                                width: 32
+                                                height: 32
                                                 anchors.centerIn: parent
-                                                sourceComponent: smallLogoId === "" ? placeholderComponent : logoComponent
-                                            }
-                                            Component {
-                                                id: logoComponent
-                                                Image {
-                                                    id: logoId
-                                                    source: "image://metadata/logo/" + smallLogoId
-                                                    cache: false
-                                                }
-                                            }
-                                            Component {
-                                                id: placeholderComponent
-                                                Rectangle {
-                                                    color: UI.colors.emptyLogoColor
-                                                    width: 32
-                                                    height: 32
-                                                }
+                                                source: smallLogoId !== "" ? "image://metadata/logo/" + smallLogoId : UI.imagesUrl + "icon-service.svg"
+                                                cache: false
+                                                colorizationEnabled: smallLogoId === ""
+                                                colorizationColor: UI.colors.disabled
                                             }
                                         }
                                         AbracaLabel {
