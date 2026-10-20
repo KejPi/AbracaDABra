@@ -67,6 +67,10 @@ void SLSBackend::reset()
     m_currentSlide.setContentName("");  // this blocks slide saving (Issue #131)
     m_isShowingSlide = false;
     m_clickThroughURL.clear();
+    m_decodedBytes = 0;
+    m_totalBytes = -1;
+    emit decodedBytesChanged();
+    emit totalBytesChanged();
 }
 
 void SLSBackend::showAnnouncement(DabAnnouncement id)
@@ -174,6 +178,50 @@ void SLSBackend::showSlide(const Slide &slide)
 
     m_currentSlide = slide;
     m_isShowingSlide = true;
+
+    m_decodedBytes = m_totalBytes;
+    emit decodedBytesChanged();
+}
+
+void SLSBackend::decodingProgress(int decoded, int total)
+{
+    if (m_progressEnabled)
+    {
+        if (decoded != m_decodedBytes)
+        {
+            m_decodedBytes = decoded;
+            emit decodedBytesChanged();
+        }
+
+        if (total != m_totalBytes)
+        {
+            m_totalBytes = total;
+            emit totalBytesChanged();
+        }
+    }
+}
+
+bool SLSBackend::progressEnabled() const
+{
+    return m_progressEnabled;
+}
+
+void SLSBackend::setProgressEnabled(bool progressEnabled)
+{
+    if (m_progressEnabled == progressEnabled)
+    {
+        return;
+    }
+    m_progressEnabled = progressEnabled;
+    emit progressEnabledChanged();
+
+    if (m_progressEnabled == false)
+    {
+        m_decodedBytes = 0;
+        m_totalBytes = -1;
+        emit decodedBytesChanged();
+        emit totalBytesChanged();
+    }
 }
 
 void SLSBackend::showServiceLogo(const QPixmap &logo, bool force)

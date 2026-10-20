@@ -711,6 +711,8 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     // connect(this, &MainWindow::serviceRequest, m_metadataManager, &MetadataManager::onServiceRequest);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::currentSlide, m_slsBackend[Instance::Service], &SLSBackend::showSlide,
             Qt::QueuedConnection);
+    connect(m_slideShowApp[Instance::Service], &SlideShowApp::decodingProgress, m_slsBackend[Instance::Service], &SLSBackend::decodingProgress,
+            Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Service], &SlideShowApp::resetTerminal, m_slsBackend[Instance::Service], &SLSBackend::reset,
             Qt::QueuedConnection);
     connect(
@@ -724,6 +726,8 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
     connect(m_radioControl, &RadioControl::userAppData_Announcement, m_slideShowApp[Instance::Announcement], &SlideShowApp::onUserAppData);
     connect(m_slideShowApp[Instance::Announcement], &SlideShowApp::currentSlide, m_slsBackend[Instance::Announcement], &SLSBackend::showSlide,
             Qt::QueuedConnection);
+    connect(m_slideShowApp[Instance::Announcement], &SlideShowApp::decodingProgress, m_slsBackend[Instance::Announcement],
+            &SLSBackend::decodingProgress, Qt::QueuedConnection);
     connect(m_slideShowApp[Instance::Announcement], &SlideShowApp::resetTerminal, m_slsBackend[Instance::Announcement], &SLSBackend::reset,
             Qt::QueuedConnection);
 
@@ -769,6 +773,12 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
             {
                 m_slsBackend[Instance::Service]->setBgColor(m_settings->slsBackground);
                 m_slsBackend[Instance::Announcement]->setBgColor(m_settings->slsBackground);
+            });
+    connect(m_settingsBackend, &SettingsBackend::slsProgressEnaChanged, this,
+            [this]()
+            {
+                m_slsBackend[Instance::Service]->setProgressEnabled(m_settings->slsProgressEna);
+                m_slsBackend[Instance::Announcement]->setProgressEnabled(m_settings->slsProgressEna);
             });
 
     // this backedn needs to exist to collect slides
@@ -3273,10 +3283,11 @@ void Application::loadSettings()
     m_settings->xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();
     m_settings->recordGeolocationEna = settings->value("rawFileGeolocation", true).toBool();
     m_settings->spiAppEna = settings->value("spiAppEna", true).toBool();
-    m_settings->spiProgressEna = settings->value("spiProgressEna", true).toBool();
+    m_settings->spiProgressEna = settings->value("spiProgressEna", false).toBool();
     m_settings->spiProgressHideComplete = settings->value("spiProgressHideComplete", true).toBool();
     m_settings->useInternet = settings->value("useInternet", true).toBool();
     m_settings->radioDnsEna = settings->value("radioDNS", true).toBool();
+    m_settings->slsProgressEna = settings->value("slsProgressEna", true).toBool();
     m_settings->slsBackground = QColor::fromString(settings->value("slsBg", QString("#000000")).toString());
     m_settings->updateCheckEna = settings->value("updateCheckEna", true).toBool();
     m_settings->updateCheckTime = settings->value("updateCheckTime", QDateTime::currentDateTime().addDays(-1)).value<QDateTime>();
@@ -3654,6 +3665,8 @@ void Application::saveSettings()
     settings->setValue("useInternet", m_settings->useInternet);
     settings->setValue("radioDNS", m_settings->radioDnsEna);
     settings->setValue("slsBg", m_settings->slsBackground.name(QColor::HexArgb));
+    settings->setValue("slsProgressEna", m_settings->slsProgressEna);
+    settings->setValue("slsScaling", static_cast<int>(m_settings->slsScaling));
     settings->setValue("updateCheckEna", m_settings->updateCheckEna);
     settings->setValue("updateCheckTime", m_settings->updateCheckTime);
     settings->setValue("uploadEnsembleInfoEna", m_settings->uploadEnsembleInfo);
@@ -3667,7 +3680,6 @@ void Application::saveSettings()
     settings->setValue("showServicePageWidget", m_settings->showServicePageWidget);
     settings->setValue("filterServiceTreeByEnsemble", m_settings->filterServiceTreeByEnsemble);
     settings->setValue("servicePageWidget", static_cast<int>(m_ui->servicePageWidget()));
-    settings->setValue("slsScaling", static_cast<int>(m_settings->slsScaling));
 #ifdef Q_OS_ANDROID
     settings->setValue("keepScreenOn", m_settings->keepScreenOn);
 #endif

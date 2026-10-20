@@ -606,6 +606,7 @@ void SettingsBackend::init(Settings *settings)
     emit compactUiChanged();
     emit showServicePageWidgetChanged();
     emit filterServiceTreeByEnsembleChanged();
+    emit slsProgressEnaChanged();
 }
 
 void SettingsBackend::setRawFileLength(int msec)

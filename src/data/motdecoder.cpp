@@ -115,8 +115,9 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
                 // add new object to cache
                 objIt = m_objCache->addMotObj(MOTObject(mscDataGroup.getTransportId()));
             }
-            else
-            { /* do nothing - it already exists, just adding next segment */
+            else if (objIt->isComplete())
+            {  // object is already complete
+                return;
             }
 
             // add header segment
@@ -154,6 +155,10 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
 
                     objIt = m_objCache->addMotObj(MOTObject(mscDataGroup.getTransportId()));
                 }
+                else if (objIt->isComplete())
+                {  // object is already complete
+                    return;
+                }
                 objIt->addSegment((const uint8_t *)dataFieldPtr, mscDataGroup.getSegmentNum(), segmentSize, mscDataGroup.getLastFlag());
 
                 if (objIt->isComplete())
@@ -163,7 +168,13 @@ void MOTDecoder::newDataGroup(const QByteArray &dataGroup)
 
                     emit newMOTObject(*objIt);
 
-                    m_objCache->deleteMotObj(objIt->getId());
+                    // m_objCache->deleteMotObj(objIt->getId());
+                }
+                else
+                {
+                    auto progress = objIt->getProgress();
+                    qCDebug(motDecoder) << "MOT object ID" << objIt->getId() << "progress" << progress.currentSize << "/" << progress.totalSize;
+                    emit motObjectProgress(objIt->getId(), progress.currentSize, progress.totalSize);
                 }
             }
         }

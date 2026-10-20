@@ -64,7 +64,14 @@ void SlideShowApp::start()
     // create new decoder
     m_decoder = new MOTDecoder();
     connect(m_decoder, &MOTDecoder::newMOTObject, this, &SlideShowApp::onNewMOTObject);
-
+    connect(m_decoder, &MOTDecoder::motObjectProgress, this,
+            [this](uint16_t, int completed, int total)
+            {
+                if (total > 0)
+                {
+                    emit decodingProgress(completed, total);
+                }
+            });
     m_isRunning = true;
 }
 

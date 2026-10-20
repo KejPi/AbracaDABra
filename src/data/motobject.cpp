@@ -71,12 +71,12 @@ bool MOTEntity::isComplete() const
     return true;
 }
 
-int MOTEntity::size()
+int MOTEntity::size() const
 {
     int receivedSize = 0;
-    for (int n = 0; n < m_numSegments; ++n)
+    for (const auto &segment : std::as_const(m_segments))
     {
-        receivedSize += m_segments[n].size();
+        receivedSize += segment.size();
     }
 
     return receivedSize;
@@ -337,6 +337,7 @@ bool MOTObject::addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t
     if (d->m_bodySize >= 0)
     {  // header was already received
         // lets check if we already have complete MOT object
+
         if (d->m_body.isComplete())
         {
             if (d->m_body.size() == d->m_bodySize)
@@ -355,6 +356,11 @@ bool MOTObject::addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t
     }
 
     return d->m_objectIsComplete;
+}
+
+MOTObject::Progress MOTObject::getProgress() const
+{
+    return Progress{d->m_body.size(), d->m_bodySize};
 }
 
 QByteArray MOTObject::getBody(bool decompress) const

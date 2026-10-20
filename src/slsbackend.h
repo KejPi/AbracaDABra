@@ -32,6 +32,7 @@
 #include <QQuickImageProvider>
 
 #include "slideshowapp.h"
+#include "uicontrolprovider.h"
 
 class PixmapProvider;
 class Settings;
@@ -44,6 +45,9 @@ class SLSBackend : public QObject
     Q_PROPERTY(QColor backgroundColor READ backgroundColor NOTIFY backgroundColorChanged FINAL)
     Q_PROPERTY(QString toolTip READ toolTip NOTIFY toolTipChanged FINAL)
     Q_PROPERTY(Qt::CursorShape cursorShape READ cursorShape NOTIFY cursorShapeChanged FINAL)
+    Q_PROPERTY(int decodedBytes READ decodedBytes NOTIFY decodedBytesChanged FINAL)
+    Q_PROPERTY(int totalBytes READ totalBytes NOTIFY totalBytesChanged FINAL)
+    Q_PROPERTY(bool progressEnabled READ progressEnabled NOTIFY progressEnabledChanged FINAL)
 
 public:
     //! @brief constructor (empty)
@@ -57,6 +61,9 @@ public:
 
     //! @brief This slot shall be invoked when new slide is to be shown
     void showSlide(const Slide &slide);
+
+    //! @brief This slot shall be invoked when slide decoding progress is available
+    void decodingProgress(int decoded, int total);
 
     //! @brief This method changes between light and dark mode
     void setupDarkMode(bool darkModeEna);
@@ -102,11 +109,26 @@ public:
     //! @brief This methos save current slide to file
     Q_INVOKABLE void saveSlideToFile();
 
+    //! @brief This method returns number of decoded bytes
+    int decodedBytes() const { return m_decodedBytes; }
+
+    //! @brief This method returns total number of bytes
+    int totalBytes() const { return m_totalBytes; }
+
+    //! @brief This method returns true if progress bar is enabled
+    bool progressEnabled() const;
+
+    //! @brief This method enables or disables progress bar
+    void setProgressEnabled(bool progressEnabled);
+
 signals:
     void slidePathChanged();
     void backgroundColorChanged();
     void toolTipChanged();
     void cursorShapeChanged();
+    void decodedBytesChanged();
+    void totalBytesChanged();
+    void progressEnabledChanged();
 
 private:
     //! @brief Application settings
@@ -147,6 +169,9 @@ private:
     QString m_toolTip;
 
     Qt::CursorShape m_cursorShape = Qt::ArrowCursor;
+    int m_decodedBytes = 0;
+    int m_totalBytes = -1;
+    bool m_progressEnabled;
 };
 
 class PixmapProvider : public QQuickImageProvider

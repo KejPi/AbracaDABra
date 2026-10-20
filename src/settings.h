@@ -191,6 +191,7 @@ public:
     bool radioDnsEna;
     bool trayIconEna;
     bool restoreWindows;
+    bool slsProgressEna;
     QColor slsBackground = Qt::red;
     bool updateCheckEna;
     QDateTime updateCheckTime;

@@ -137,8 +137,8 @@ signals:
     // catSLS signals
     void categoryUpdate(int catId, const QString &title);
     void catSlide(const Slide &slide, int catId, int slideIdx, int numSlides);
-
     void catSlsAvailable(bool isAvailable);
+    void decodingProgress(int decoded, int total);
 
 private:
     MOTDecoder *m_decoder;

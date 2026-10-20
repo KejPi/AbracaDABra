@@ -234,6 +234,19 @@ Item {
                                     wrapMode: Text.WordWrap
                                     elideMode: Text.ElideNone
                                 }
+                                AbracaSwitch {
+                                    id: slsProgressSwitch
+                                    Layout.fillWidth: true
+                                    Layout.minimumWidth: implicitWidth
+                                    text: qsTr("Show slide decoding progress")
+                                    wrapMode: Text.WordWrap
+                                    checked: settingsBackend.slsProgressEna
+                                    onCheckedChanged: {
+                                        if (settingsBackend.slsProgressEna !== checked) {
+                                            settingsBackend.slsProgressEna = checked
+                                        }
+                                    }
+                                }
                                 GridLayout  {
                                     Layout.fillWidth: true
                                     columns: 4

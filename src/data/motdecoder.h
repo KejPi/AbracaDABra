@@ -54,11 +54,11 @@ public:
 signals:
     void newMOTObject(const MOTObject &obj);
     void newMOTDirectory();
+    void motObjectProgress(uint16_t id, int completed, int total);
 
     // ETSI EN 301 234 V2.1.1 (2006-05) [6.2.2.1.1 ContentName]
     // The parameter ContentName is used to uniquely identify an object. At any time only one object with a certain ContentName shall be broadcast.
     void newMOTObjectInDirectory(const QString &contentName);
-
     void directoryComplete();
 
 private:

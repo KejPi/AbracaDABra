@@ -27,58 +27,92 @@
 import QtQuick
 import abracaComponents 1.0
 
-Rectangle {
-
+Item {
     property var backend: undefined
     property string slsSource: ""
+    readonly property double preferredHeight: width / 4 * 3 + progressBar.height
 
     implicitWidth: 320
-    implicitHeight: 240
+    implicitHeight: 240 + (progressBar.visible ? progressBar.height : 0)
 
-    color: backend.backgroundColor
-    Image {
+    Rectangle {
         anchors.fill: parent
-        fillMode: Image.PreserveAspectFit
-        source: slsSource
+        anchors.bottomMargin: progressBar.visible ? progressBar.height : 0
 
-        AbracaToolTip {
-            text: backend.toolTip
-            visible: slsMouseArea.containsMouse && !contextMenu.visible
+        color: backend.backgroundColor
+        Image {
+            anchors.fill: parent
+            fillMode: Image.PreserveAspectFit
+            source: slsSource
+
+            AbracaToolTip {
+                text: backend.toolTip
+                visible: slsMouseArea.containsMouse && !contextMenu.visible
+            }
+            AbracaMenu {
+                id: contextMenu
+                AbracaMenuItem {
+                    text: qsTr("Save to file")
+                    onTriggered: backend.saveSlideToFile()
+                }
+                AbracaMenuItem {
+                    text: qsTr("Copy to clipboard")
+                    onTriggered: backend.copySlideToClipboard()
+                }
+            }
+            MouseArea {
+                id: slsMouseArea
+                anchors.fill: parent
+                hoverEnabled: backend.toolTip.length > 0
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                cursorShape: backend.cursorShape
+                onClicked: (mouse)=>{
+                    if (mouse.button === Qt.LeftButton) {
+                        backend.handleLeftClick()
+                    }
+                    else if (mouse.button === Qt.RightButton) {
+                        if (backend.handleRightClick()) {
+                            contextMenu.popup()
+                        }
+                    }
+                }
+                onPressAndHold: (mouse) => {
+                    if (mouse.source === Qt.MouseEventNotSynthesized) {
+                        if (backend.handleRightClick()) {
+                            contextMenu.popup()
+                        }
+                    }
+                }
+            }
         }
-        AbracaMenu {
-            id: contextMenu
-            AbracaMenuItem {
-                text: qsTr("Save to file")
-                onTriggered: backend.saveSlideToFile()
-            }
-            AbracaMenuItem {
-                text: qsTr("Copy to clipboard")
-                onTriggered: backend.copySlideToClipboard()
-            }
+    }
+    Item {
+        id: progressBar
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
+        opacity: (backend.totalBytes < 0 || backend.decodedBytes === backend.totalBytes) ? 0.0 : 0.5
+        Behavior on opacity { NumberAnimation { duration: 1000; easing.type: Easing.InOutQuad } }
+        visible: backend.progressEnabled
+        height: backend.progressEnabled ? 8 : 0
+        Rectangle {
+            // visible: backend.totalBytes > 0
+            height: progressBar.height - 4
+            anchors.left: progressBar.left
+            anchors.bottom: progressBar.bottom
+            width: Math.min(Math.max(0, progressBar.width * backend.decodedBytes/backend.totalBytes), progressBar.width)
+            color: UI.colors.textSecondary
+        }
+        AbracaToolTip {
+            text: qsTr("Decoded %1 of %2 bytes (%3%)").arg(backend.decodedBytes).arg(backend.totalBytes).arg(Math.round(backend.decodedBytes*100.0/backend.totalBytes))
+            visible: progressMouseArea.containsMouse
         }
         MouseArea {
-            id: slsMouseArea
+            id: progressMouseArea
             anchors.fill: parent
-            hoverEnabled: backend.toolTip.length > 0
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
-            cursorShape: backend.cursorShape
-            onClicked: (mouse)=>{
-                if (mouse.button === Qt.LeftButton) {
-                    backend.handleLeftClick()
-                }
-                else if (mouse.button === Qt.RightButton) {
-                    if (backend.handleRightClick()) {
-                        contextMenu.popup()
-                    }
-                }
-            }
-            onPressAndHold: (mouse) => {
-                if (mouse.source === Qt.MouseEventNotSynthesized) {
-                    if (backend.handleRightClick()) {
-                        contextMenu.popup()
-                    }
-                }
-            }
+            hoverEnabled: backend.totalBytes > 0
         }
     }
 }

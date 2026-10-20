@@ -39,7 +39,7 @@ class MOTEntity
 public:
     MOTEntity();
     bool isComplete() const;
-    int size();
+    int size() const;
     void addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag);
     QByteArray getData() const;
     void reset();
@@ -84,6 +84,13 @@ public:
     uint16_t getId() const { return d->m_id; }
     bool addSegment(const uint8_t *segment, uint16_t segmentNum, uint16_t segmentSize, bool lastFlag, bool isHeader = false);
     bool isComplete() const { return d->m_objectIsComplete; };
+
+    struct Progress
+    {
+        int currentSize;
+        int totalSize;
+    };
+    Progress getProgress() const;
     QByteArray getBody(bool decompress = true) const;
     bool isObsolete() const { return d->m_objectIsObsolete; }
     void setObsolete(bool obsolete) { d->m_objectIsObsolete = obsolete; };
