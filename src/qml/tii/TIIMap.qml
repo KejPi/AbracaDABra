@@ -271,6 +271,32 @@ Item {
 
                 height: map.width > 3*width ? infoBox.y - map.y - 20 : Math.min(infoBox.y - map.y - 20, map.height * 0.4)
                 width: Math.min(preferedWidth, map.width - 20)
+
+                // Catch all wheel events happening inside the Flickable perimeter
+                MouseArea {
+                    anchors.fill: parent
+
+                    // Allow clicks/presses to pass through to elements inside Flickable
+                    propagateComposedEvents: true
+                    onPressed: (mouse) => mouse.accepted = false
+                    onReleased: (mouse) => mouse.accepted = false
+                    onClicked: (mouse) => mouse.accepted = false
+
+                    onWheel: (wheel) => {
+                        // Determine scrolling direction and speed
+                        // angleDelta.y is typically +120 (scroll up) or -120 (scroll down)
+                        let scrollDelta = wheel.angleDelta.y;
+
+                        // Manually shift the content vertical offset
+                        tiiTableView.tableViewItem.contentY = Math.max(0,
+                            Math.min(tiiTableView.tableViewItem.contentY - scrollDelta,
+                                     tiiTableView.tableViewItem.contentHeight - tiiTableView.tableViewItem.height)
+                        );
+
+                        // This stops propagation to the Map, even at top/bottom limits.
+                        wheel.accepted = true;
+                    }
+                }
             }
         }
         Connections {

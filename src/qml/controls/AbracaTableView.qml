@@ -39,6 +39,7 @@ Item {
     property alias model: tableView.model
     property alias selectionModel: tableView.selectionModel
     property alias contextMenuModel: contextMenu.menuModel
+    property alias tableViewItem: tableView
     property int shrinkColumnIndex: -1
     property int minColumnWidth: 30
     property int maxColumnWidth: 0
