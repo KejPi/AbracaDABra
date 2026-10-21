@@ -3283,11 +3283,11 @@ void Application::loadSettings()
     m_settings->xmlHeaderEna = settings->value("rawFileXmlHeader", true).toBool();
     m_settings->recordGeolocationEna = settings->value("rawFileGeolocation", true).toBool();
     m_settings->spiAppEna = settings->value("spiAppEna", true).toBool();
-    m_settings->spiProgressEna = settings->value("spiProgressEna", false).toBool();
+    m_settings->spiProgressEna = settings->value("spiProgressEna", true).toBool();
     m_settings->spiProgressHideComplete = settings->value("spiProgressHideComplete", true).toBool();
     m_settings->useInternet = settings->value("useInternet", true).toBool();
     m_settings->radioDnsEna = settings->value("radioDNS", true).toBool();
-    m_settings->slsProgressEna = settings->value("slsProgressEna", true).toBool();
+    m_settings->slsProgressEna = settings->value("slsProgressEna", false).toBool();
     m_settings->slsBackground = QColor::fromString(settings->value("slsBg", QString("#000000")).toString());
     m_settings->updateCheckEna = settings->value("updateCheckEna", true).toBool();
     m_settings->updateCheckTime = settings->value("updateCheckTime", QDateTime::currentDateTime().addDays(-1)).value<QDateTime>();
