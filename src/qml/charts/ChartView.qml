@@ -3,6 +3,10 @@ import abracaComponents
 
 Item {
     id: root
+    property string accessibleName: ""
+    Accessible.role: Accessible.Chart
+    Accessible.name: accessibleName
+    Accessible.ignored: accessibleName === ""
     property alias chart: chart
     property string xAxisTitle: ""
     property string yAxisTitle: ""

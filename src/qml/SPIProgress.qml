@@ -34,6 +34,10 @@ Item {
     property int value: 0
     property string toolTipText: ""
 
+    Accessible.role: Accessible.ProgressBar
+    Accessible.name: qsTr("Service information progress")
+    Accessible.description: toolTipText
+
     implicitWidth: UI.iconSize
     implicitHeight: UI.iconSize
     Rectangle {

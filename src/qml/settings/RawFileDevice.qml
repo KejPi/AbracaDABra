@@ -56,6 +56,7 @@ Item {
                 }
             }
             AbracaComboBox {
+                accessibleName: qsTr("Raw file format")
                 Layout.fillWidth: true
                 model: settingsBackend.rawFileFormatModel
                 textRole: "itemName"
@@ -89,6 +90,7 @@ Item {
             Layout.fillWidth: true
             visible: settingsBackend.isRawFileProgressVisible
             AbracaSlider {
+                accessibleName: qsTr("File playback position")
                 id: progressSlider
                 Layout.fillWidth: true
                 stepSize: 1

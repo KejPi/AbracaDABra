@@ -171,6 +171,8 @@ Item {
                         visible: appUI.isServiceFlagVisible
                         Image {
                             id: countryFlagImage
+                            Accessible.role: Accessible.Graphic
+                            Accessible.name: appUI.serviceFlagToolTip
                             height: 16
                             fillMode: Image.PreserveAspectFit
                             source: appUI.isServiceFlagVisible ? "image://metadata/flag/" + appUI.serviceId : ""

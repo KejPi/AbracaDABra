@@ -36,6 +36,9 @@ Item {
     id: tableItem
 
     objectName: "tableItem"
+    property string accessibleName: ""
+    Accessible.role: Accessible.Table
+    Accessible.name: accessibleName
     property alias model: tableView.model
     property alias selectionModel: tableView.selectionModel
     property alias contextMenuModel: contextMenu.menuModel
@@ -278,6 +281,9 @@ Item {
             required property string display
             required property int index
 
+            Accessible.role: Accessible.ColumnHeader
+            Accessible.name: display
+
             Row {
                 spacing: 2                
                 anchors.verticalCenter: parent.verticalCenter
@@ -374,6 +380,11 @@ Item {
 
                 implicitHeight: tableItem.rowHeight
                 color: selected ? UI.colors.highlight : UI.colors.background
+
+                Accessible.role: Accessible.Cell
+                Accessible.name: display
+                Accessible.selectable: true
+                Accessible.selected: selected
 
                 Image {
                     id: iconImage

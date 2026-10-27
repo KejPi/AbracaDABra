@@ -44,6 +44,7 @@ AbracaDialog {
         anchors.fill: parent
         spacing: UI.standardMargin
         AbracaTextField {
+            accessibleName: qsTr("Recording label")
             id: labelField
             Layout.fillWidth: true
             placeholderText: qsTr("Scheduled item name")

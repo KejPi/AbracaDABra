@@ -53,6 +53,8 @@ Item {
             height: 32
             Image {
                 id: ensembleLogoImage
+                Accessible.role: Accessible.Graphic
+                Accessible.name: qsTr("Ensemble logo")
                 Layout.preferredWidth: 32
                 Layout.preferredHeight: Layout.preferredWidth
                 visible: appUI.isEnsembleLogoVisible
@@ -85,6 +87,8 @@ Item {
                 }
                 Image {
                     id: countryFlagImage
+                    Accessible.role: Accessible.Graphic
+                    Accessible.name: qsTr("Country flag")
                     height: 16
                     fillMode: Image.PreserveAspectFit
                     source: "image://metadata/flag/" + appUI.ensembleId
@@ -127,6 +131,7 @@ Item {
             anchors.rightMargin: isPortrait ? UI.standardMargin : 0
             spacing: 0
             AbracaComboBox {
+                accessibleName: qsTr("Channel")
                 id: channelCombo
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredWidth: implicitWidth * 0.8
@@ -206,6 +211,7 @@ Item {
         }
 
         AbracaTextField {
+            accessibleName: qsTr("Filter services")
             id: serviceFilter
             anchors.top: parent.top
             anchors.topMargin: UI.standardMargin
@@ -629,6 +635,13 @@ Item {
             alternatingRows: false
             delegate: TreeViewDelegate {
                 id: treeViewDelegate
+                Accessible.role: Accessible.TreeItem
+                Accessible.name: treeViewDelegate.text !== "" ? treeViewDelegate.text : serviceName
+                Accessible.selectable: true
+                Accessible.selected: treeViewDelegate.highlighted
+                // Qt 6.12 required
+                // Accessible.expandable: treeViewDelegate.hasChildren
+                // Accessible.expanded: treeViewDelegate.expanded
 
                 required property string serviceName
                 required property bool isFavorite

@@ -140,6 +140,7 @@ Rectangle {
                 spacing: 0
                 ChartView {
                     id: snrPlot
+                    accessibleName: qsTr("SNR chart")
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 

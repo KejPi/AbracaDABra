@@ -130,6 +130,7 @@ Item {
                                         Layout.preferredWidth: receiverLocationLayout.labelWidth
                                     }
                                     AbracaComboBox {
+                                        accessibleName: qsTr("Geolocation source:")
                                         id: geoLocationComboBox
                                         model: settingsBackend.locationSourceModel
                                         textRole: "itemName"
@@ -177,6 +178,7 @@ Item {
                                             text: qsTr("GPS coordinates:")
                                         }
                                         AbracaTextField {
+                                            accessibleName: qsTr("GPS coordinates:")
                                             id: coordinatesTextField
                                             Layout.fillWidth: true
                                             readonly property regexp coordRegExp: /^\s*[+-]?\d+(?:\.\d+)?\s*,\s*[+-]?\d+(?:\.\d+)?\s*$/
@@ -195,6 +197,7 @@ Item {
                                             text: qsTr("Serial port:")
                                         }
                                         AbracaTextField {
+                                            accessibleName: qsTr("Serial port:")
                                             id: serialPortTextField
                                             Layout.fillWidth: true
                                             text: settingsBackend.tiiSerialPort
@@ -209,6 +212,7 @@ Item {
                                             text: qsTr("Baudrate:")
                                         }
                                         AbracaComboBox {
+                                            accessibleName: qsTr("Baudrate:")
                                             model: settingsBackend.serialPortBaudrateModel
                                             textRole: "itemName"
                                             currentIndex: settingsBackend.serialPortBaudrateModel.currentIndex
@@ -250,6 +254,7 @@ Item {
                                         }
                                     }
                                     AbracaSpinBox {
+                                        accessibleName: qsTr("Altitude")
                                         Layout.column: UI.isMobile ? 1 : 2
                                         Layout.row: UI.isMobile ? 1 : 0
                                         enabled: manualAltitudeSwitch.checked || settingsBackend.locationSourceModel.currentIndex === 1
@@ -367,6 +372,7 @@ Item {
                                 text: qsTr("Reliable")
                             }
                             AbracaSlider {
+                                accessibleName: qsTr("Detector reliability")
                                 Layout.fillWidth: true
                                 from: 0
                                 to: 1
@@ -445,6 +451,7 @@ Item {
                                         }
                                     }
                                     AbracaSpinBox {
+                                        accessibleName: qsTr("TII inactive timeout")
                                         enabled: settingsBackend.isTiiInactiveTimeoutEnabled
                                         value: settingsBackend.tiiInactiveTimeout
                                         stepSize: 1

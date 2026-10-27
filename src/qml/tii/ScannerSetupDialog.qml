@@ -55,6 +55,7 @@ AbracaDialog {
         }
 
         AbracaComboBox {
+            accessibleName: qsTr("Mode:")
             Layout.fillWidth: true
             model: ListModel {
                 id: modeModel
@@ -90,6 +91,7 @@ AbracaDialog {
             text: qsTr("Number of cycles:")
         }
         AbracaSpinBox {
+            accessibleName: qsTr("Number of cycles:")
             id: cyclesSpinBox
             Layout.fillWidth: true
             value: scannerBackend.numCycles

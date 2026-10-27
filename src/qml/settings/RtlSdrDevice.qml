@@ -45,6 +45,7 @@ Item {
             Layout.fillWidth: true
             spacing: UI.standardMargin
             AbracaComboBox {
+                accessibleName: qsTr("RTL-SDR device")
                 id: rtlSdrCombo
                 Layout.preferredWidth: 100
                 Layout.fillWidth: true
@@ -158,6 +159,7 @@ Item {
                 text: qsTr("Gain")
             }
             AbracaSlider {
+                accessibleName: qsTr("Gain")
                 Layout.fillWidth: true
                 from: 0
                 to: settingsBackend.rtlSdrGainIndexMax
@@ -201,6 +203,7 @@ Item {
                         text: qsTr("Bandwidth:")
                     }
                     AbracaSpinBox {
+                        accessibleName: qsTr("Bandwidth:")
                         id: bandwidthSpinBox
                         Layout.fillWidth: true
                         from: 0
@@ -229,6 +232,7 @@ Item {
                         text: qsTr("SW AGC level threshold:")
                     }
                     AbracaSpinBox {
+                        accessibleName: qsTr("SW AGC level threshold:")
                         id: agcThrSpinBox
                         Layout.fillWidth: true
                         from: 0
@@ -256,6 +260,7 @@ Item {
                         text: qsTr("Frequency correction:")
                     }
                     AbracaSpinBox {
+                        accessibleName: qsTr("Frequency correction:")
                         id: freqCorrSpinBox
                         Layout.fillWidth: true
                         from: -300
@@ -301,6 +306,7 @@ Item {
                         visible: settingsBackend.haveRtlSdrOldDabDriver
                     }
                     AbracaDoubleSpinBox {
+                        accessibleName: qsTr("RF level correction:")
                         id: rfLevelCorrSpinBox
                         Layout.fillWidth: true
                         stepSizeReal: 1.0

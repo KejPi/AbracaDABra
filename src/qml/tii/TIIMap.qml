@@ -33,6 +33,8 @@ import abracaComponents 1.0
 
 Item {
     id: mainItem
+    Accessible.role: Accessible.Pane
+    Accessible.name: qsTr("Transmitter map")
     property var backend: undefined
     property bool dragEnabled: true
     property bool showTable: true

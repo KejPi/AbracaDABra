@@ -54,6 +54,7 @@ Item {
                 text: qsTr("Device arguments:")
             }
             AbracaTextField {
+                accessibleName: qsTr("Device arguments:")
                 Layout.fillWidth: true
                 Layout.columnSpan: 4
                 placeholderText: qsTr("Soapy SDR device arguments")
@@ -68,6 +69,7 @@ Item {
                 text: qsTr("RX channel number:")
             }
             AbracaSpinBox {
+                accessibleName: qsTr("RX channel number:")
                 from: 0
                 to: 9
                 value: settingsBackend.soapySdrChannelNum
@@ -85,6 +87,7 @@ Item {
                 text: qsTr("Antenna:")
             }
             AbracaTextField {
+                accessibleName: qsTr("Antenna:")
                 text: settingsBackend.soapySdrAntenna
                 onEditingFinished: if (settingsBackend.soapySdrAntenna !== text) {
                     settingsBackend.soapySdrAntenna = text;
@@ -169,6 +172,7 @@ Item {
                 Repeater {
                     model: settingsBackend.soapySdrGainModel
                     AbracaSlider {
+                        accessibleName: qsTr("Gain")
                         required property int gainValue
                         required property int minimum
                         required property int maximum
@@ -228,6 +232,7 @@ Item {
                     text: qsTr("Bandwidth:")
                 }
                 AbracaSpinBox {
+                    accessibleName: qsTr("Bandwidth:")
                     id: bandwidthSpinBox
                     Layout.fillWidth: true
                     from: 0
@@ -256,6 +261,7 @@ Item {
                     text: qsTr("Frequency correction:")
                 }
                 AbracaSpinBox {
+                    accessibleName: qsTr("Frequency correction:")
                     id: freqCorrSpinBox
                     Layout.fillWidth: true
                     from: -300

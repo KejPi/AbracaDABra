@@ -51,6 +51,11 @@ Item {
 
     // Internal properties
     property bool expanded: false
+
+    Accessible.role: Accessible.Button
+    Accessible.name: label + " " + Qt.locale().toString(selectedDate, Locale.LongFormat)
+    Accessible.focusable: true
+    Accessible.onPressAction: root.expanded = !root.expanded
     property int collapsedHeight: UI.controlHeight
     property int expandedHeight: 340
     property date today: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())

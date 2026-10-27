@@ -47,6 +47,7 @@ Item {
                 text: qsTr("IP address:")
             }
             AbracaTextField {
+                accessibleName: qsTr("IP address:")
                 id: ipAddressField
                 Layout.fillWidth: true
                 placeholderText: qsTr("IP address of RaRT-TCP server")
@@ -64,6 +65,7 @@ Item {
                 text: qsTr("Port:")
             }
             AbracaSpinBox {
+                accessibleName: qsTr("Port:")
                 from: 1000
                 to: 99999
                 locale: Qt.locale("C")

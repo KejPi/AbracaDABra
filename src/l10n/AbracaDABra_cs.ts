@@ -112,17 +112,17 @@
         <translation>Čas</translation>
     </message>
     <message>
-        <location filename="../qml/controls/AbracaTimePicker.qml" line="147"/>
+        <location filename="../qml/controls/AbracaTimePicker.qml" line="152"/>
         <source>Hour</source>
         <translation>Hodina</translation>
     </message>
     <message>
-        <location filename="../qml/controls/AbracaTimePicker.qml" line="217"/>
+        <location filename="../qml/controls/AbracaTimePicker.qml" line="222"/>
         <source>Minute</source>
         <translation>Minuta</translation>
     </message>
     <message>
-        <location filename="../qml/controls/AbracaTimePicker.qml" line="271"/>
+        <location filename="../qml/controls/AbracaTimePicker.qml" line="276"/>
         <source>Period</source>
         <translation>AM/PM</translation>
     </message>
@@ -130,88 +130,97 @@
 <context>
     <name>AirspyDevice</name>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="63"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="48"/>
+        <source>Airspy device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/AirspyDevice.qml" line="64"/>
         <source>Reload</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="73"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="74"/>
         <source>Use any available Airspy device if the selected one fails</source>
         <translation>Použít jakékoli Airspy zařízení, pokud vybrané nelze připojit</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="94"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="95"/>
         <source>Connected device:</source>
         <translation>Připojené zařízení:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="97"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="98"/>
         <source>Serial number:</source>
         <translation>Sériové číslo:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="115"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="116"/>
         <source>Gain control</source>
         <translation>Ovládání zesílení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="124"/>
         <source>Software</source>
         <translation>Software</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="124"/>
         <source>Hybrid</source>
         <translation>Hybridní</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="124"/>
         <source>Sensitivity</source>
         <translation>Citlivost</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="124"/>
         <source>Manual</source>
         <translation>Manuálně</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="151"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="152"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="156"/>
         <source>Sensitivity gain</source>
         <translation>Zesílení citlivosti</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="172"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="174"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="178"/>
         <source>LNA gain</source>
         <translation>Zesílení LNA</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="193"/>
-        <location filename="../qml/settings/AirspyDevice.qml" line="222"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="196"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="226"/>
         <source>AGC</source>
         <translation>AGC</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="202"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="205"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="209"/>
         <source>Mixer gain</source>
         <translation>Zesílení mixeru</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="231"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="235"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="239"/>
         <source>IF gain</source>
         <translation>Zesílení IF</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="260"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="265"/>
         <source>Expert settings</source>
         <translation>Pokročilá nastavení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="270"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="275"/>
         <source>Bias Tee:</source>
         <translation>Bias Tee:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="286"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="291"/>
         <source>Prefer 4096kHz rate:</source>
         <translation>Upřednostnit vzorkovací frekvenci 4096kHz:</translation>
     </message>
@@ -686,22 +695,27 @@ Aplikace se restartuje.</translation>
         <translation>Plán nahrávání zvuku</translation>
     </message>
     <message>
-        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="49"/>
+        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="47"/>
+        <source>Recording label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="50"/>
         <source>Scheduled item name</source>
         <translation>Název plánované položky</translation>
     </message>
     <message>
-        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="110"/>
+        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="111"/>
         <source>Stop time:</source>
         <translation>Čas konce:</translation>
     </message>
     <message>
-        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="211"/>
+        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="212"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="220"/>
+        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="221"/>
         <source>Cancel</source>
         <translation>Zrušit</translation>
     </message>
@@ -755,72 +769,75 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="70"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="74"/>
         <source>Noise level during audio drop-out:</source>
         <translation>Úroveň šumu při výpadku zvuku:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="104"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="105"/>
         <source>Audio recording</source>
         <translation>Záznam zvuku</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="117"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="118"/>
         <source>Folder:</source>
         <translation>Složka:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="132"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="133"/>
         <source>Record encoded DAB/DAB+ stream (MP2 or AAC format)</source>
         <translation>Nahrávat kodovaná DAB/DAB+ data (MP2 nebo AAC formát)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="145"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="146"/>
         <source>Record decoded audio (WAV format)</source>
         <translation>Nahrávat dekodované audio (WAV formát)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="159"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="160"/>
         <source>Do not ask to stop audio recording when service changes</source>
         <translation>Neptat se na ukončení nahrávání audia při změně stanice</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="169"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="170"/>
         <source>Record DL messages</source>
         <translation>Zaznamenávat Dynamic Labels (DL)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="179"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="180"/>
         <source>Record DAB time for DL messages</source>
         <translation>Zaznamenávat DAB čas příjmu zpráv DL</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="200"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="201"/>
         <source>Expert settings</source>
         <translation>Pokročilá nastavení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="213"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="214"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="217"/>
         <source>AAC audio decoder:</source>
         <translation>Dekodér AAC audia:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="233"/>
-        <location filename="../qml/settings/AudioSettings.qml" line="273"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="235"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="276"/>
         <source>Restart</source>
         <translation>Restartovat</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="245"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="247"/>
         <source>Audio decoder change will take effect after application restart.</source>
         <translation>Změna audio dekodéru se projeví po restartu aplikace.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="251"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="253"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="257"/>
         <source>Audio output framework:</source>
         <translation>Framework pro audio výstup:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="284"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="287"/>
         <source>Audio output change will take effect after application restart.</source>
         <translation>Změna audio výstupu se projeví po restartu aplikace.</translation>
     </message>
@@ -928,17 +945,17 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
 <context>
     <name>ChartView</name>
     <message>
-        <location filename="../qml/charts/ChartView.qml" line="300"/>
+        <location filename="../qml/charts/ChartView.qml" line="304"/>
         <source>Reset</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../qml/charts/ChartView.qml" line="328"/>
+        <location filename="../qml/charts/ChartView.qml" line="332"/>
         <source>Live</source>
         <translation>Live</translation>
     </message>
     <message>
-        <location filename="../qml/charts/ChartView.qml" line="328"/>
+        <location filename="../qml/charts/ChartView.qml" line="332"/>
         <source>Paused</source>
         <translation>Zastaveno</translation>
     </message>
@@ -962,87 +979,92 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
 <context>
     <name>DabSignalView</name>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="268"/>
+        <location filename="../qml/DabSignalView.qml" line="143"/>
+        <source>SNR chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/DabSignalView.qml" line="269"/>
         <source>Reset</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="354"/>
+        <location filename="../qml/DabSignalView.qml" line="355"/>
         <source>RF level </source>
         <translation>Úroveň </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="355"/>
+        <location filename="../qml/DabSignalView.qml" line="356"/>
         <source>Estimated RF level</source>
         <translation>Odhadovaná úroveň signálu</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="372"/>
+        <location filename="../qml/DabSignalView.qml" line="373"/>
         <source>Gain </source>
         <translation>Zisk </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="373"/>
+        <location filename="../qml/DabSignalView.qml" line="374"/>
         <source>Tuner gain</source>
         <translation>Zisk tuneru</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="390"/>
+        <location filename="../qml/DabSignalView.qml" line="391"/>
         <source>Frequency </source>
         <translation>Frekvence </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="391"/>
+        <location filename="../qml/DabSignalView.qml" line="392"/>
         <source>Tuned frequency</source>
         <translation>Naladěná frekvence</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="408"/>
+        <location filename="../qml/DabSignalView.qml" line="409"/>
         <source>Offset </source>
         <translation>Odchylka </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="409"/>
+        <location filename="../qml/DabSignalView.qml" line="410"/>
         <source>Estimated frequency offset</source>
         <translation>Odhadovaná frekvenční odchylka</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="424"/>
+        <location filename="../qml/DabSignalView.qml" line="425"/>
         <source>Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="442"/>
+        <location filename="../qml/DabSignalView.qml" line="443"/>
         <source>Show NULL spectrum</source>
         <translation>Zobrazit NULL spektrum</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="449"/>
+        <location filename="../qml/DabSignalView.qml" line="450"/>
         <source>Show waterfall</source>
         <translation>Zobrazit waterfall</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="456"/>
+        <location filename="../qml/DabSignalView.qml" line="457"/>
         <source>Slow update (1.4 sec)</source>
         <translation>Pomalu (1.4 s)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="462"/>
+        <location filename="../qml/DabSignalView.qml" line="463"/>
         <source>Normal update (1 sec)</source>
         <translation>Normální rychlost (1 s)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="468"/>
+        <location filename="../qml/DabSignalView.qml" line="469"/>
         <source>Fast update (600 msec)</source>
         <translation>Rychle (600 ms)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="474"/>
+        <location filename="../qml/DabSignalView.qml" line="475"/>
         <source>Very fast update (400 msec)</source>
         <translation>Velmi rychle (400 ms)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="481"/>
+        <location filename="../qml/DabSignalView.qml" line="482"/>
         <source>Show SNR value</source>
         <translation>Zobrazit hodnotu SNR</translation>
     </message>
@@ -1051,16 +1073,17 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     <name>DeviceSettings</name>
     <message>
         <location filename="../qml/settings/DeviceSettings.qml" line="53"/>
+        <location filename="../qml/settings/DeviceSettings.qml" line="57"/>
         <source>Input device:</source>
         <translation>Vstupní zařízení:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/DeviceSettings.qml" line="87"/>
+        <location filename="../qml/settings/DeviceSettings.qml" line="88"/>
         <source>Connect</source>
         <translation>Připojit</translation>
     </message>
     <message>
-        <location filename="../qml/settings/DeviceSettings.qml" line="87"/>
+        <location filename="../qml/settings/DeviceSettings.qml" line="88"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
@@ -1590,24 +1613,29 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
         <translation>Pokud je aktivní, záznam automaticky skončí po nastaveném čase.</translation>
     </message>
     <message>
-        <location filename="../qml/EnsembleInfoView.qml" line="372"/>
-        <location filename="../qml/EnsembleInfoView.qml" line="374"/>
+        <location filename="../qml/EnsembleInfoView.qml" line="354"/>
+        <source>Recording timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/EnsembleInfoView.qml" line="373"/>
+        <location filename="../qml/EnsembleInfoView.qml" line="375"/>
         <source>Stop recording</source>
         <translation>Ukončit záznam</translation>
     </message>
     <message>
-        <location filename="../qml/EnsembleInfoView.qml" line="372"/>
-        <location filename="../qml/EnsembleInfoView.qml" line="375"/>
+        <location filename="../qml/EnsembleInfoView.qml" line="373"/>
+        <location filename="../qml/EnsembleInfoView.qml" line="376"/>
         <source>Record raw data</source>
         <translation>Zaznamenat vstupní signál</translation>
     </message>
     <message>
-        <location filename="../qml/EnsembleInfoView.qml" line="397"/>
+        <location filename="../qml/EnsembleInfoView.qml" line="398"/>
         <source>Length:</source>
         <translation>Délka:</translation>
     </message>
     <message>
-        <location filename="../qml/EnsembleInfoView.qml" line="405"/>
+        <location filename="../qml/EnsembleInfoView.qml" line="406"/>
         <source>File size:</source>
         <translation>Velikost souboru:</translation>
     </message>
@@ -1943,168 +1971,175 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="278"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="281"/>
         <source>Slideshow scaling:</source>
         <translation>Škálování slideshow:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="300"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="301"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="304"/>
         <source>Language:</source>
         <translation>Jazyk:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="322"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="324"/>
         <source>Restart</source>
         <translation>Restartovat</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="330"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="332"/>
         <source>Language change will take effect after application restart.</source>
         <translation>Změna jazyka se projeví po restartu aplikace.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="346"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="348"/>
         <source>Data storage</source>
         <translation>Ukládání dat</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="363"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="365"/>
         <source>Folder:</source>
         <translation>Složka:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="374"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="376"/>
         <source>Data storage folder...</source>
         <translation>Adresář pro ukládání dat...</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="384"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="386"/>
         <source>Application uses this folder to store all data like audio recording, IQ recording and logs, etc.</source>
         <translation>Aplikace používá tento adresář pro ukládání všech soiuborů jako je záznam zvuku, záznam I, logy, atd.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="391"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="393"/>
         <source>Backup settings</source>
         <translation>Zálohovat nastavení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="395"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="397"/>
         <source>Restore settings...</source>
         <translation>Obnovit nastavení...</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="406"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="408"/>
         <source>Backup includes application settings, service list and audio recording schedule. Backup file is stored in data storage folder.</source>
         <translation>Záloha zahrnuje nastavení aplikace, seznam stanic a plán nahrávání zvuku. Soubor se zálohou se uloží do adresáře pro ukládání dat.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="420"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="422"/>
         <source>Network proxy configuration</source>
         <translation>Nastavení proxy serveru</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="432"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="434"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="437"/>
         <source>Proxy type:</source>
         <translation>Konfigurace:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="448"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="451"/>
         <source>Apply</source>
         <translation>Použít</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="457"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="460"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="464"/>
         <source>Server:</source>
         <translation>Server:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="473"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="477"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="481"/>
         <source>Port:</source>
         <translation>Port:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="494"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="499"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="502"/>
         <source>Username:</source>
         <translation>Jméno:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="510"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="516"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="520"/>
         <source>Password:</source>
         <translation>Heslo:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="536"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="543"/>
         <source>FMLIST</source>
         <translation>FMLIST</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="547"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="554"/>
         <source>Upload ensemble information</source>
         <translation>Nahrávat na server informace o multiplexu</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="562"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="569"/>
         <source>Ensemble information is a small CSV file with list of services in the ensemble,
 it is anonymous and contains no personal data.</source>
         <translation>Informace o multiplexu je malý soubor CSV se seznamem stanic v multiplexu,
 je anonymní a neobsahuje žádná osobní data.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="569"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="576"/>
         <source>Application automatically uploads ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</source>
         <translation>Aplikace automaticky nahraje informace o multiplexu na &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="570"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="577"/>
         <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
         <translation>Nahrávání informace o multiplexu na &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; není povoleno.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="578"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="585"/>
         <source>Thank you for supporting the community!</source>
         <translation>Děkujeme, že podporujete komunitu!</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="579"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="586"/>
         <source>Please consider enabling this option to help the community.</source>
         <translation>Zvažte prosím povolení tété volby, pomůžete tím komunitě.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="592"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="599"/>
         <source>Raw IQ data recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="603"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="610"/>
         <source>Insert XML header</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="615"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="622"/>
         <source>Insert GNSS coordinates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="646"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="653"/>
         <source>Restore application windows on start</source>
         <translation>Po startu obnovit naposledy otevřená okna</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="659"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="666"/>
         <source>Check for application update on start</source>
         <translation>Zkontrolovat aktualizace při startu aplikace</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="698"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="705"/>
         <source>Select SLS Background Color</source>
         <translation>Vybrat pozadí SLS</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="712"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="719"/>
         <source>Data storage folder</source>
         <translation>Složka pro ukládání dat</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="736"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="743"/>
         <source>JSON files</source>
         <translation>Soubory JSON</translation>
     </message>
@@ -4209,16 +4244,18 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     <name>RartTcpDevice</name>
     <message>
         <location filename="../qml/settings/RartTcpDevice.qml" line="47"/>
+        <location filename="../qml/settings/RartTcpDevice.qml" line="50"/>
         <source>IP address:</source>
         <translation>IP adresa:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RartTcpDevice.qml" line="52"/>
+        <location filename="../qml/settings/RartTcpDevice.qml" line="53"/>
         <source>IP address of RaRT-TCP server</source>
         <translation>IP adresa a port RaRT-TCP serveru</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RartTcpDevice.qml" line="64"/>
+        <location filename="../qml/settings/RartTcpDevice.qml" line="65"/>
+        <location filename="../qml/settings/RartTcpDevice.qml" line="68"/>
         <source>Port:</source>
         <translation>Port:</translation>
     </message>
@@ -4231,72 +4268,82 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <translation>Otevřít soubor</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="84"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="59"/>
+        <source>Raw file format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/RawFileDevice.qml" line="85"/>
         <source>No file selected</source>
         <translation>Není vybraný soubor</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="123"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="93"/>
+        <source>File playback position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/RawFileDevice.qml" line="125"/>
         <source>%1 / %2 sec</source>
         <translation>%1 / %2 s</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="138"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="140"/>
         <source>Disable repeat</source>
         <translation>Vypnout opakování</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="139"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="141"/>
         <source>Enable repeat</source>
         <translation>Zapnout opakování</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="164"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="166"/>
         <source>Recording date:</source>
         <translation>Datum záznamu:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="167"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="169"/>
         <source>Recorder:</source>
         <translation>Zaznamenáno pomocí:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="170"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="172"/>
         <source>Device:</source>
         <translation>Zařízení:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="173"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="175"/>
         <source>Model:</source>
         <translation>Model:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="176"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="178"/>
         <source>GNSS coordinates:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="179"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="181"/>
         <source>Sample rate [Hz]:</source>
         <translation>Vzorkovací frekvence [Hz]:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="182"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="184"/>
         <source>Frequency [kHz]:</source>
         <translation>Frekvence [kHz]:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="185"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="187"/>
         <source>Recording length [sec]:</source>
         <translation>Délka záznamu [s]:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="188"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="190"/>
         <source>Sample format:</source>
         <translation>Formát vzorků:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="214"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="216"/>
         <source>Binary files</source>
         <translation>Binární soubory</translation>
     </message>
@@ -4304,115 +4351,125 @@ je anonymní a neobsahuje žádná osobní data.</translation>
 <context>
     <name>RtlSdrDevice</name>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="63"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="48"/>
+        <source>RTL-SDR device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="64"/>
         <source>Reload</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="73"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="74"/>
         <source>Use any available RTL-SDR device if the selected one fails</source>
         <translation>Použít jakékoli RTL-SDR zařízení, pokud vybrané nelze připojit</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="100"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="101"/>
         <source>Connected device:</source>
         <translation>Připojené zařízení:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="103"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="104"/>
         <source>Serial number:</source>
         <translation>Sériové číslo:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="106"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="107"/>
         <source>Tuner:</source>
         <translation>Tuner:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="109"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="110"/>
         <source>Sample format:</source>
         <translation>Formát vzorků:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="127"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="128"/>
         <source>Gain control</source>
         <translation>Ovládání zesílení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="136"/>
         <source>Software</source>
         <translation>Software</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="136"/>
         <source>Driver</source>
         <translation>Ovladač</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="136"/>
         <source>Device</source>
         <translation>Zařízení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="136"/>
         <source>Manual</source>
         <translation>Manuálně</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="158"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="159"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="162"/>
         <source>Gain</source>
         <translation>Zesílení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="186"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="188"/>
         <source>Expert settings</source>
         <translation>Pokročilá nastavení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="201"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="203"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="206"/>
         <source>Bandwidth:</source>
         <translation>Šířka pásma:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="216"/>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="243"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="219"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="247"/>
         <source>Default</source>
         <translation>Výchozí</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="222"/>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="249"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="225"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="253"/>
         <source>Set default</source>
         <translation>Nastavit výchozí</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="229"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="232"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="235"/>
         <source>SW AGC level threshold:</source>
         <translation>SW AGC práh úrovně:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="256"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="260"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="263"/>
         <source>Frequency correction:</source>
         <translation>Korekce frekvence:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="276"/>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="325"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="281"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="331"/>
         <source>Reset</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="283"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="288"/>
         <source>RF level estimation:</source>
         <translation>Estimace úrovně signálu:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="300"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="305"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="309"/>
         <source>RF level correction:</source>
         <translation>Korekce úrovně signálu:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="333"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="339"/>
         <source>Bias Tee:</source>
         <translation>Bias Tee:</translation>
     </message>
@@ -4421,109 +4478,116 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     <name>RtlTcpDevice</name>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="50"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="53"/>
         <source>IP address:</source>
         <translation>IP adresa:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="56"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="57"/>
         <source>IP address of RTL-TCP server</source>
         <translation>IP adresa a port RTL-TCP serveru</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="70"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="71"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="74"/>
         <source>Port:</source>
         <translation>Port:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="85"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="87"/>
         <source>Connect to control socket if available</source>
         <translation>Připojit řídicí socket, pokud je k dispozici</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="107"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="109"/>
         <source>Connected device:</source>
         <translation>Připojené zařízení:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="110"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="112"/>
         <source>Tuner:</source>
         <translation>Tuner:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="113"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="115"/>
         <source>Sample format:</source>
         <translation>Formát vzorků:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="131"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="133"/>
         <source>Gain control</source>
         <translation>Ovládání zesílení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="139"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="141"/>
         <source>Software</source>
         <translation>Software</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="139"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="141"/>
         <source>Device</source>
         <translation>Zařízení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="139"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="141"/>
         <source>Manual</source>
         <translation>Manuálně</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="160"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="162"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="165"/>
         <source>Gain</source>
         <translation>Zesílení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="188"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="191"/>
         <source>Expert settings</source>
         <translation>Pokročilá nastavení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="204"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="207"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="210"/>
         <source>Bandwidth:</source>
         <translation>Šířka pásma:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="237"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="241"/>
         <source>Only some RTL-TCP servers support bandwidth selection.</source>
         <translation>Pouze některé RTL-TCP servery umožnují nastavení šířky pásma.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="241"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="245"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="248"/>
         <source>SW AGC level threshold:</source>
         <translation>SW AGC práh úrovně:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="219"/>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="255"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="223"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="260"/>
         <source>Default</source>
         <translation>Výchozí</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="225"/>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="261"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="229"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="266"/>
         <source>Set default</source>
         <translation>Nastavit výchozí</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="268"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="273"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="276"/>
         <source>Frequency correction:</source>
         <translation>Korekce frekvence:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="287"/>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="316"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="293"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="323"/>
         <source>Reset</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="294"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="300"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="303"/>
         <source>RF level correction:</source>
         <translation>Korekce úrovně signálu:</translation>
     </message>
@@ -4564,18 +4628,31 @@ je anonymní a neobsahuje žádná osobní data.</translation>
 <context>
     <name>SLSView</name>
     <message>
-        <location filename="../qml/SLSView.qml" line="55"/>
+        <location filename="../qml/SLSView.qml" line="48"/>
+        <source>Slideshow image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SLSView.qml" line="57"/>
         <source>Save to file</source>
         <translation>Uložit do souboru</translation>
     </message>
     <message>
-        <location filename="../qml/SLSView.qml" line="59"/>
+        <location filename="../qml/SLSView.qml" line="61"/>
         <source>Copy to clipboard</source>
         <translation>Kopírovat do schránky</translation>
     </message>
     <message>
-        <location filename="../qml/SLSView.qml" line="109"/>
+        <location filename="../qml/SLSView.qml" line="111"/>
         <source>Decoded %1 of %2 bytes (%3%)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SPIProgress</name>
+    <message>
+        <location filename="../qml/SPIProgress.qml" line="38"/>
+        <source>Service information progress</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4787,31 +4864,33 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="54"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="58"/>
         <source>Mode:</source>
         <translation>Mód:</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDialog.qml" line="62"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="63"/>
         <source>Fast</source>
         <translation>Rychlý</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDialog.qml" line="66"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="67"/>
         <source>Normal</source>
         <translation>Normální</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDialog.qml" line="70"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="71"/>
         <source>Precise</source>
         <translation>Přesný</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDialog.qml" line="90"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="91"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="94"/>
         <source>Number of cycles:</source>
         <translation>Počet cyklů:</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDialog.qml" line="107"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="109"/>
         <source>Inf</source>
         <translation>Inf</translation>
     </message>
@@ -4820,101 +4899,103 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     <name>ScannerSetupDrawer</name>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="76"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="80"/>
         <source>Mode:</source>
         <translation>Mód:</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="84"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="85"/>
         <source>Fast</source>
         <translation>Rychlý</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="88"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="89"/>
         <source>Normal</source>
         <translation>Normální</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="92"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="93"/>
         <source>Precise</source>
         <translation>Přesný</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="112"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="113"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="116"/>
         <source>Number of cycles:</source>
         <translation>Počet cyklů:</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="129"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="131"/>
         <source>Inf</source>
         <translation>Inf</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="141"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="143"/>
         <source>Channel selection</source>
         <translation>Výběr kanálů</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="173"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="175"/>
         <source>Select all</source>
         <translation>Vybrat vše</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="184"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="186"/>
         <source>Unselect all</source>
         <translation>Zrušit výběr</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="202"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="204"/>
         <source>Incremental scan</source>
         <translation>Inkrementální vyhledávání</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="209"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="211"/>
         <source>Clear scan results on start</source>
         <translation>Vymazat výsledky při startu</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="215"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="217"/>
         <source>Hide local (known) transmitters</source>
         <translation>Skrýt místní (známé) vysílače</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="221"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="223"/>
         <source>AutoSave JSON</source>
         <translation>Automaticky uložit JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="228"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="230"/>
         <source>AutoSave CSV</source>
         <translation>Automaticky uložit CSV</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="241"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="243"/>
         <source>Save as JSON</source>
         <translation>Uložit jako JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="249"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="251"/>
         <source>Save as CSV</source>
         <translation>Uložit jako CSV</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="257"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="259"/>
         <source>Load from file...</source>
         <translation>Načíst ze souboru...</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="265"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="267"/>
         <source>Clear scan results</source>
         <translation>Vymazat výsledky prohledávání</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="273"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="275"/>
         <source>Clear local (known) transmitter database</source>
         <translation>Vymazat databázi místních (známých) vysílačů</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="282"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="284"/>
         <source>Close</source>
         <translation type="unfinished">Zavřít</translation>
     </message>
@@ -4928,128 +5009,130 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="159"/>
+        <location filename="../qml/tii/ScannerView.qml" line="162"/>
         <source>Mode:</source>
         <translation>Mód:</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="166"/>
+        <location filename="../qml/tii/ScannerView.qml" line="167"/>
         <source>Fast</source>
         <translation>Rychlý</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="170"/>
+        <location filename="../qml/tii/ScannerView.qml" line="171"/>
         <source>Normal</source>
         <translation>Normální</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="174"/>
+        <location filename="../qml/tii/ScannerView.qml" line="175"/>
         <source>Precise</source>
         <translation>Přesný</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="195"/>
+        <location filename="../qml/tii/ScannerView.qml" line="196"/>
+        <location filename="../qml/tii/ScannerView.qml" line="199"/>
         <source>Number of cycles:</source>
         <translation>Počet cyklů:</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="212"/>
+        <location filename="../qml/tii/ScannerView.qml" line="214"/>
         <source>Inf</source>
         <translation>Inf</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="220"/>
+        <location filename="../qml/tii/ScannerView.qml" line="222"/>
         <source>Select channels</source>
         <translation>Vybrat kanály</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="231"/>
+        <location filename="../qml/tii/ScannerView.qml" line="233"/>
         <source>Stop</source>
         <translation>Stop</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="231"/>
+        <location filename="../qml/tii/ScannerView.qml" line="233"/>
         <source>Start</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="246"/>
+        <location filename="../qml/tii/ScannerView.qml" line="248"/>
         <source>Resume scanning</source>
         <translation>Pokračovat v prohledávání</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="246"/>
+        <location filename="../qml/tii/ScannerView.qml" line="248"/>
         <source>Pause scanning</source>
         <translation>Pozastavit prohledávání</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="258"/>
+        <location filename="../qml/tii/ScannerView.qml" line="260"/>
         <source>Stop scanning</source>
         <translation>Ukončit prohledávání</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="266"/>
+        <location filename="../qml/tii/ScannerView.qml" line="268"/>
         <source>Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="291"/>
+        <location filename="../qml/tii/ScannerView.qml" line="293"/>
         <source>Incremental scan</source>
         <translation>Inkrementální vyhledávání</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="298"/>
+        <location filename="../qml/tii/ScannerView.qml" line="300"/>
         <source>Clear scan results on start</source>
         <translation>Vymazat výsledky při startu</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="304"/>
+        <location filename="../qml/tii/ScannerView.qml" line="306"/>
         <source>Hide local (known) transmitters</source>
         <translation>Skrýt místní (známé) vysílače</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="310"/>
+        <location filename="../qml/tii/ScannerView.qml" line="312"/>
         <source>AutoSave JSON</source>
         <translation>Automaticky uložit JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="317"/>
+        <location filename="../qml/tii/ScannerView.qml" line="319"/>
         <source>AutoSave CSV</source>
         <translation>Automaticky uložit CSV</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="325"/>
+        <location filename="../qml/tii/ScannerView.qml" line="327"/>
         <source>Save as JSON</source>
         <translation>Uložit jako JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="330"/>
+        <location filename="../qml/tii/ScannerView.qml" line="332"/>
         <source>Save as CSV</source>
         <translation>Uložit jako CSV</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="335"/>
+        <location filename="../qml/tii/ScannerView.qml" line="337"/>
         <source>Load from file...</source>
         <translation>Načíst ze souboru...</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="540"/>
-        <location filename="../qml/tii/ScannerView.qml" line="541"/>
+        <location filename="../qml/tii/ScannerView.qml" line="542"/>
+        <location filename="../qml/tii/ScannerView.qml" line="543"/>
         <source>JSON files</source>
         <translation>Soubory JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="340"/>
+        <location filename="../qml/tii/ScannerView.qml" line="342"/>
         <source>Clear scan results</source>
         <translation>Vymazat výsledky prohledávání</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="345"/>
+        <location filename="../qml/tii/ScannerView.qml" line="347"/>
         <source>Clear local (known) transmitter database</source>
         <translation>Vymazat databázi místních (známých) vysílačů</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="540"/>
-        <location filename="../qml/tii/ScannerView.qml" line="541"/>
+        <location filename="../qml/tii/ScannerView.qml" line="542"/>
+        <location filename="../qml/tii/ScannerView.qml" line="543"/>
         <source>CSV files</source>
         <translation>Soubory CSV</translation>
     </message>
@@ -5057,87 +5140,97 @@ je anonymní a neobsahuje žádná osobní data.</translation>
 <context>
     <name>SdrPlayDevice</name>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="75"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="60"/>
+        <source>SDRplay device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="76"/>
         <source>Reload</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="80"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="81"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="85"/>
         <source>RX channel number:</source>
         <translation>Číslo RX kanálu:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="100"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="102"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="106"/>
         <source>Antenna:</source>
         <translation>Anténa:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="124"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="127"/>
         <source>Use any available SDRplay device if the selected one fails</source>
         <translation>Použít jakékoli SDRplay zařízení, pokud vybrané nelze připojit</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="148"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="151"/>
         <source>Connected device:</source>
         <translation>Připojené zařízení:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="151"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="154"/>
         <source>Serial number:</source>
         <translation>Sériové číslo:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="169"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="172"/>
         <source>Gain control</source>
         <translation>Ovládání zesílení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="177"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="180"/>
         <source>Software</source>
         <translation>Software</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="177"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="180"/>
         <source>Manual</source>
         <translation>Manuálně</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="205"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="208"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="211"/>
         <source>RF gain</source>
         <translation>Zesílení RF</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="231"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="235"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="239"/>
         <source>IF gain</source>
         <translation>Zesílení IF</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="249"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="254"/>
         <source>N/A</source>
         <translation>Nedostupný</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="253"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="258"/>
         <source>AGC</source>
         <translation>AGC</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="270"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="275"/>
         <source>Expert settings</source>
         <translation>Pokročilá nastavení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="284"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="289"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="292"/>
         <source>Frequency correction:</source>
         <translation>Korekce frekvence:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="303"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="309"/>
         <source>Reset</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="310"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="316"/>
         <source>Bias Tee:</source>
         <translation>Bias Tee:</translation>
     </message>
@@ -5150,34 +5243,54 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <translation>Service name;Short label;SID;SCIdS;Number of ensembles</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="217"/>
+        <location filename="../qml/ServiceList.qml" line="57"/>
+        <source>Ensemble logo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="91"/>
+        <source>Country flag</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="134"/>
+        <source>Channel</source>
+        <translation type="unfinished">Kanál</translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="214"/>
+        <source>Filter services</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="223"/>
         <source>Filter services...</source>
         <translation>Filtrovat stanice...</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="502"/>
-        <location filename="../qml/ServiceList.qml" line="779"/>
+        <location filename="../qml/ServiceList.qml" line="508"/>
+        <location filename="../qml/ServiceList.qml" line="791"/>
         <source>Remove service from favorites</source>
         <translation>Odebraz stanici z oblíbených</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="503"/>
-        <location filename="../qml/ServiceList.qml" line="780"/>
+        <location filename="../qml/ServiceList.qml" line="509"/>
+        <location filename="../qml/ServiceList.qml" line="792"/>
         <source>Add service to favorites</source>
         <translation>Přidat stanici k oblíbeným</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="736"/>
+        <location filename="../qml/ServiceList.qml" line="748"/>
         <source>Remove ensemble</source>
         <translation>Odstranit multiplex</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="1000"/>
+        <location filename="../qml/ServiceList.qml" line="1012"/>
         <source>Services</source>
         <translation>Stanice</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="1003"/>
+        <location filename="../qml/ServiceList.qml" line="1015"/>
         <source>Ensembles</source>
         <translation>Multiplexy</translation>
     </message>
@@ -5185,12 +5298,17 @@ je anonymní a neobsahuje žádná osobní data.</translation>
 <context>
     <name>ServicePanel</name>
     <message>
-        <location filename="../qml/ServicePanel.qml" line="117"/>
+        <location filename="../qml/ServicePanel.qml" line="58"/>
+        <source>Service logo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServicePanel.qml" line="119"/>
         <source>Dock page back to main window</source>
         <translation>Dokovat stránku zpět do hlavního okna</translation>
     </message>
     <message>
-        <location filename="../qml/ServicePanel.qml" line="117"/>
+        <location filename="../qml/ServicePanel.qml" line="119"/>
         <source>Undock page to separate window</source>
         <translation>Oddokovat stránku do samostaného okna</translation>
     </message>
@@ -5208,28 +5326,28 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <translation>Přidat stanici k oblíbeným</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="209"/>
+        <location filename="../qml/ServiceView.qml" line="211"/>
         <source>Switch to another ensemble</source>
         <translation>Přepnout na jiný multiplex</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="289"/>
+        <location filename="../qml/ServiceView.qml" line="291"/>
         <source>Right click to copy Dynamic label</source>
         <translation>Kliknutím pravým tlačítkem se zkopíruje Dynamic Label</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="314"/>
-        <location filename="../qml/ServiceView.qml" line="326"/>
+        <location filename="../qml/ServiceView.qml" line="316"/>
+        <location filename="../qml/ServiceView.qml" line="328"/>
         <source>Right click to copy Dynamic label +</source>
         <translation>Kliknutím pravým tlačítkem se zkopíruje Dynamic Label +</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="353"/>
+        <location filename="../qml/ServiceView.qml" line="355"/>
         <source>TII</source>
         <translation>TII</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="354"/>
+        <location filename="../qml/ServiceView.qml" line="356"/>
         <source>Signal Spectrum</source>
         <translation>Spektrum signálu</translation>
     </message>
@@ -5465,27 +5583,27 @@ je anonymní a neobsahuje žádná osobní data.</translation>
 <context>
     <name>SignalState</name>
     <message>
-        <location filename="../qml/SignalState.qml" line="75"/>
+        <location filename="../qml/SignalState.qml" line="79"/>
         <source>DAB signal not detected&lt;br&gt;Looking for signal...</source>
         <translation>DAB signál nenalezen&lt;br&gt;Hledám signál...</translation>
     </message>
     <message>
-        <location filename="../qml/SignalState.qml" line="77"/>
+        <location filename="../qml/SignalState.qml" line="81"/>
         <source>Synchronized to DAB signal</source>
         <translation>Přijímám DAB signál</translation>
     </message>
     <message>
-        <location filename="../qml/SignalState.qml" line="78"/>
+        <location filename="../qml/SignalState.qml" line="82"/>
         <source>Found DAB signal,&lt;br&gt;trying to synchronize...</source>
         <translation>DAB signál detekován,&lt;br&gt;zkouším synchronizovat...</translation>
     </message>
     <message>
-        <location filename="../qml/SignalState.qml" line="84"/>
+        <location filename="../qml/SignalState.qml" line="88"/>
         <source>SNR</source>
         <translation>SNR</translation>
     </message>
     <message>
-        <location filename="../qml/SignalState.qml" line="91"/>
+        <location filename="../qml/SignalState.qml" line="95"/>
         <source>DAB signal SNR</source>
         <translation>Odstup DAB signálu od šumu</translation>
     </message>
@@ -5494,73 +5612,91 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     <name>SoapySdrDevice</name>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="54"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="57"/>
         <source>Device arguments:</source>
         <translation>Parametry zařízení:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="59"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="60"/>
         <source>Soapy SDR device arguments</source>
         <translation>Argumenty Soapy SDR zařízení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="68"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="69"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="72"/>
         <source>RX channel number:</source>
         <translation>Číslo RX kanálu:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="85"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="87"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="90"/>
         <source>Antenna:</source>
         <translation>Anténa:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="107"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="110"/>
         <source>Connected device:</source>
         <translation>Připojené zařízení:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="125"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="128"/>
         <source>Gain control</source>
         <translation>Ovládání zesílení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="133"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="136"/>
         <source>Device</source>
         <translation>Zařízení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="133"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="136"/>
         <source>Manual</source>
         <translation>Manuálně</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="214"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="175"/>
+        <source>Gain</source>
+        <translation type="unfinished">Zesílení</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="218"/>
         <source>Expert settings</source>
         <translation>Pokročilá nastavení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="228"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="232"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="235"/>
         <source>Bandwidth:</source>
         <translation>Šířka pásma:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="243"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="248"/>
         <source>Default</source>
         <translation>Výchozí</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="249"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="254"/>
         <source>Set default</source>
         <translation>Nastavit výchozí</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="256"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="261"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="264"/>
         <source>Frequency correction:</source>
         <translation>Korekce frekvence:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="275"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="281"/>
         <source>Reset</source>
         <translation>Obnovit</translation>
+    </message>
+</context>
+<context>
+    <name>SpectrumWaterfallView</name>
+    <message>
+        <location filename="../qml/charts/SpectrumWaterfallView.qml" line="40"/>
+        <source>Signal spectrum</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5574,6 +5710,11 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <location filename="../qml/StatusBar.qml" line="98"/>
         <source>Mute audio</source>
         <translation>Vypnout zvuk</translation>
+    </message>
+    <message>
+        <location filename="../qml/StatusBar.qml" line="110"/>
+        <source>Volume</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5679,14 +5820,27 @@ Vyberte adresář pro ukládání dat and schvalte přístupová práva.</transl
 <context>
     <name>TIIMap</name>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="471"/>
+        <location filename="../qml/tii/TIIMap.qml" line="37"/>
+        <source>Transmitter map</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/tii/TIIMap.qml" line="473"/>
         <source>Stop logging</source>
         <translation>Zastavit logování</translation>
     </message>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="471"/>
+        <location filename="../qml/tii/TIIMap.qml" line="473"/>
         <source>Record CSV log</source>
         <translation>Zaznamenat CSV log</translation>
+    </message>
+</context>
+<context>
+    <name>TIIView</name>
+    <message>
+        <location filename="../qml/tii/TIIView.qml" line="84"/>
+        <source>TII spectrum</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5713,111 +5867,130 @@ Vyberte adresář pro ukládání dat and schvalte přístupová práva.</transl
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="129"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="133"/>
         <source>Geolocation source:</source>
         <translation>Určení polohy:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="152"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="153"/>
         <source>Apply</source>
         <translation>Použít</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="177"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="178"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="181"/>
         <source>GPS coordinates:</source>
         <translation>Souřadnice GPS:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="195"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="197"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="200"/>
         <source>Serial port:</source>
         <translation>Sériový port:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="209"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="212"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="215"/>
         <source>Baudrate:</source>
         <translation>Přenosová rychlost:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="229"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="233"/>
         <source>Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;&lt;br&gt;&lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;, right click on your location, click on coordinates in popup menu to copy them and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
         <translation>Zadejte souřadnice ve formátu &quot;zeměpisná šířka, zeměpisná délka&quot;, například: 1.234,-5.678&lt;/p&gt;&lt;br&gt;&lt;p&gt;Tip: &lt;i&gt;Otevřete v prohlížeči &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;, klikněte pravým tlačítkem na vaši polohu, klikněte na souřadnice v kontextovém menu, abyste je zkopírovali, a pak vložte zkopírované hodnoty do vstupního pole nahoře.&lt;/i&gt;&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="238"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="242"/>
         <source>Altitude source:</source>
         <translation>Určení nadmořské výšky:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="243"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="247"/>
         <source>Manual</source>
         <translation>Manuálně</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="278"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="257"/>
+        <source>Altitude</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/TiiSettings.qml" line="283"/>
         <source>Logging</source>
         <translation>Logování</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="292"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="297"/>
         <source>Folder:</source>
         <translation>Složka:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="308"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="313"/>
         <source>Timestamp in UTC</source>
         <translation>Časová značka v UTC</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="319"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="324"/>
         <source>Column names in English</source>
         <translation>Názvy sloupců anglicky</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="330"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="335"/>
         <source>GPS coordinates</source>
         <translation>GPS souřadnice</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="341"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="346"/>
         <source>No TII (signal monitoring)</source>
         <translation>Bez TII (monitorování signálu)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="361"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="366"/>
         <source>Detector</source>
         <translation>Detektor</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="367"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="372"/>
         <source>Reliable</source>
         <translation>Spolehlivý</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="383"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="375"/>
+        <source>Detector reliability</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/TiiSettings.qml" line="389"/>
         <source>Sensitive</source>
         <translation>Citlivý</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="395"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="401"/>
         <source>User interface</source>
         <translation>Uživatelské rozhraní</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="408"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="414"/>
         <source>Show spectrum plot</source>
         <translation>Zobrazovat spektrum</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="420"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="426"/>
         <source>Keep no longer detected transmitters on map (grey marker)</source>
         <translation>Zobrazovat v mapě i vysílače, které se už nedetekují (šedá značka)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="438"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="444"/>
         <source>Remove after:</source>
         <translation>Odstranit po:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="471"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="454"/>
+        <source>TII inactive timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/TiiSettings.qml" line="478"/>
         <source>Transmitter table columns</source>
         <translation>Sloupce tabulky vysílačů</translation>
     </message>
@@ -6098,72 +6271,74 @@ Vyberte adresář pro ukládání dat and schvalte přístupová práva.</transl
         <translation>Obrázky slideshow (SLS)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="210"/>
+        <location filename="../qml/settings/UaSettings.qml" line="208"/>
+        <location filename="../qml/settings/UaSettings.qml" line="211"/>
         <source>SLS folder template</source>
         <translation>Šablona SLS cesty</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="221"/>
+        <location filename="../qml/settings/UaSettings.qml" line="222"/>
         <source>SPI data</source>
         <translation>Data SPI</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="234"/>
+        <location filename="../qml/settings/UaSettings.qml" line="233"/>
+        <location filename="../qml/settings/UaSettings.qml" line="236"/>
         <source>SPI folder template</source>
         <translation>Šablona SPI cesty</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="248"/>
+        <location filename="../qml/settings/UaSettings.qml" line="250"/>
         <source>Data storage path pattern supports these tokens.</source>
         <translation>Šablona cesty podporuje tyto proměnné.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="249"/>
+        <location filename="../qml/settings/UaSettings.qml" line="251"/>
         <source>For more information see</source>
         <translation>Pro více informací si přečtěte</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="250"/>
+        <location filename="../qml/settings/UaSettings.qml" line="252"/>
         <source>Documentation</source>
         <translation>Dokumentaci</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="287"/>
+        <location filename="../qml/settings/UaSettings.qml" line="289"/>
         <source>current audio service ID (hex number)</source>
         <translation>ID současné stanice (hexadecimální číslo)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="297"/>
+        <location filename="../qml/settings/UaSettings.qml" line="299"/>
         <source>current ensemble ID (hex number)</source>
         <translation>ID současného multiplexu (hexadecimální číslo)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="307"/>
+        <location filename="../qml/settings/UaSettings.qml" line="309"/>
         <source>transport ID</source>
         <translation>transport ID MOT objektu</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="317"/>
+        <location filename="../qml/settings/UaSettings.qml" line="319"/>
         <source>DAB timestamp</source>
         <translation>DAB časová značka</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="327"/>
+        <location filename="../qml/settings/UaSettings.qml" line="329"/>
         <source>content name</source>
         <translation>jméno MOT objektu</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="337"/>
+        <location filename="../qml/settings/UaSettings.qml" line="339"/>
         <source>content name with extension (only SLS)</source>
         <translation>jméno MOT objektu s příponou (jen SLS)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="347"/>
+        <location filename="../qml/settings/UaSettings.qml" line="349"/>
         <source>transport ID of directory (only SPI)</source>
         <translation>transport ID MOT adresáře (jen SPI)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="357"/>
+        <location filename="../qml/settings/UaSettings.qml" line="359"/>
         <source>service component ID (only SPI)</source>
         <translation>service component ID (jen SPI)</translation>
     </message>

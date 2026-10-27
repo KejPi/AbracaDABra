@@ -112,17 +112,17 @@
         <translation>Zeit</translation>
     </message>
     <message>
-        <location filename="../qml/controls/AbracaTimePicker.qml" line="147"/>
+        <location filename="../qml/controls/AbracaTimePicker.qml" line="152"/>
         <source>Hour</source>
         <translation>Stunde</translation>
     </message>
     <message>
-        <location filename="../qml/controls/AbracaTimePicker.qml" line="217"/>
+        <location filename="../qml/controls/AbracaTimePicker.qml" line="222"/>
         <source>Minute</source>
         <translation>Minute</translation>
     </message>
     <message>
-        <location filename="../qml/controls/AbracaTimePicker.qml" line="271"/>
+        <location filename="../qml/controls/AbracaTimePicker.qml" line="276"/>
         <source>Period</source>
         <translation>Dauer</translation>
     </message>
@@ -130,88 +130,97 @@
 <context>
     <name>AirspyDevice</name>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="63"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="48"/>
+        <source>Airspy device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/AirspyDevice.qml" line="64"/>
         <source>Reload</source>
         <translation>Neu laden</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="73"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="74"/>
         <source>Use any available Airspy device if the selected one fails</source>
         <translation>Jeglichen Airspy verwenden, falls ausgewählter misslingt</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="94"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="95"/>
         <source>Connected device:</source>
         <translation>Verbundenes Gerät:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="97"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="98"/>
         <source>Serial number:</source>
         <translation>Seriennummer:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="115"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="116"/>
         <source>Gain control</source>
         <translation>Verstärkungseinstellung</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="124"/>
         <source>Software</source>
         <translation>Software</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="124"/>
         <source>Hybrid</source>
         <translation>Hybrid</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="124"/>
         <source>Sensitivity</source>
         <translation>Empfindlichkeit</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="123"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="124"/>
         <source>Manual</source>
         <translation>Manuell</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="151"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="152"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="156"/>
         <source>Sensitivity gain</source>
         <translation>Empfindlichkeit</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="172"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="174"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="178"/>
         <source>LNA gain</source>
         <translation>LNA Verstärkung</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="193"/>
-        <location filename="../qml/settings/AirspyDevice.qml" line="222"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="196"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="226"/>
         <source>AGC</source>
         <translation>AGC</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="202"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="205"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="209"/>
         <source>Mixer gain</source>
         <translation>Mixer Verstärkung</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="231"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="235"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="239"/>
         <source>IF gain</source>
         <translation>IF Verstärkung</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="260"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="265"/>
         <source>Expert settings</source>
         <translation>Experteneinstellungen</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="270"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="275"/>
         <source>Bias Tee:</source>
         <translation>Fernspeisespannung:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AirspyDevice.qml" line="286"/>
+        <location filename="../qml/settings/AirspyDevice.qml" line="291"/>
         <source>Prefer 4096kHz rate:</source>
         <translation>4096kHz Takt bevorzugen:</translation>
     </message>
@@ -686,22 +695,27 @@ Nach der Wiederherstellung startet die Applikation erneut.</translation>
         <translation>Audioaufnahme-Planer</translation>
     </message>
     <message>
-        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="49"/>
+        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="47"/>
+        <source>Recording label</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="50"/>
         <source>Scheduled item name</source>
         <translation>Geplanter Aufnahmename</translation>
     </message>
     <message>
-        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="110"/>
+        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="111"/>
         <source>Stop time:</source>
         <translation>Endzeit:</translation>
     </message>
     <message>
-        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="211"/>
+        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="212"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="220"/>
+        <location filename="../qml/audiorec/AudioRecordingItemDialog.qml" line="221"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
@@ -755,72 +769,75 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     </message>
     <message>
         <location filename="../qml/settings/AudioSettings.qml" line="70"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="74"/>
         <source>Noise level during audio drop-out:</source>
         <translation>Geräuschpegel während des Audioausfalls:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="104"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="105"/>
         <source>Audio recording</source>
         <translation>Audioaufnahme</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="117"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="118"/>
         <source>Folder:</source>
         <translation>Ordner:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="132"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="133"/>
         <source>Record encoded DAB/DAB+ stream (MP2 or AAC format)</source>
         <translation>Kodierten DAB/DAB+ Stream aufnehmen (MP2/AAC-Format)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="145"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="146"/>
         <source>Record decoded audio (WAV format)</source>
         <translation>Dekodiertes Audio aufnehmen (WAV-Format)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="159"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="160"/>
         <source>Do not ask to stop audio recording when service changes</source>
         <translation>Bei Dienständerung nicht nachfragen, die Audioaufzeichnung zu beenden</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="169"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="170"/>
         <source>Record DL messages</source>
         <translation>DL Meldungen aufnehmen</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="179"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="180"/>
         <source>Record DAB time for DL messages</source>
         <translation>DAB Zeit für DL Meldungen aufnehmen</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="200"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="201"/>
         <source>Expert settings</source>
         <translation>Experteneinstellungen</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="213"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="214"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="217"/>
         <source>AAC audio decoder:</source>
         <translation>AAC Audiodekoder:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="233"/>
-        <location filename="../qml/settings/AudioSettings.qml" line="273"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="235"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="276"/>
         <source>Restart</source>
         <translation>Neu starten</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="245"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="247"/>
         <source>Audio decoder change will take effect after application restart.</source>
         <translation>Änderung des Audiodekoders wird er beim Neustart des Programms wirksam.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="251"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="253"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="257"/>
         <source>Audio output framework:</source>
         <translation>Audioausgang Framework:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/AudioSettings.qml" line="284"/>
+        <location filename="../qml/settings/AudioSettings.qml" line="287"/>
         <source>Audio output change will take effect after application restart.</source>
         <translation>Änderung des Audioausgangs wird erst nach Programmneustart wirksam.</translation>
     </message>
@@ -928,17 +945,17 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
 <context>
     <name>ChartView</name>
     <message>
-        <location filename="../qml/charts/ChartView.qml" line="300"/>
+        <location filename="../qml/charts/ChartView.qml" line="304"/>
         <source>Reset</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../qml/charts/ChartView.qml" line="328"/>
+        <location filename="../qml/charts/ChartView.qml" line="332"/>
         <source>Live</source>
         <translation>Direkt</translation>
     </message>
     <message>
-        <location filename="../qml/charts/ChartView.qml" line="328"/>
+        <location filename="../qml/charts/ChartView.qml" line="332"/>
         <source>Paused</source>
         <translation>Pausiert</translation>
     </message>
@@ -962,87 +979,92 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
 <context>
     <name>DabSignalView</name>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="268"/>
+        <location filename="../qml/DabSignalView.qml" line="143"/>
+        <source>SNR chart</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/DabSignalView.qml" line="269"/>
         <source>Reset</source>
         <translation>Zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="354"/>
+        <location filename="../qml/DabSignalView.qml" line="355"/>
         <source>RF level </source>
         <translation>RF Pegel </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="355"/>
+        <location filename="../qml/DabSignalView.qml" line="356"/>
         <source>Estimated RF level</source>
         <translation>Geschätzer RF-Pegel</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="372"/>
+        <location filename="../qml/DabSignalView.qml" line="373"/>
         <source>Gain </source>
         <translation>Verstärkung </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="373"/>
+        <location filename="../qml/DabSignalView.qml" line="374"/>
         <source>Tuner gain</source>
         <translation>Tunerverstärkung</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="390"/>
+        <location filename="../qml/DabSignalView.qml" line="391"/>
         <source>Frequency </source>
         <translation>Frequenz </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="391"/>
+        <location filename="../qml/DabSignalView.qml" line="392"/>
         <source>Tuned frequency</source>
         <translation>Verwendete Frequenz</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="408"/>
+        <location filename="../qml/DabSignalView.qml" line="409"/>
         <source>Offset </source>
         <translation>Versatz </translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="409"/>
+        <location filename="../qml/DabSignalView.qml" line="410"/>
         <source>Estimated frequency offset</source>
         <translation>Geschätzter Frequenzversatz</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="424"/>
+        <location filename="../qml/DabSignalView.qml" line="425"/>
         <source>Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="442"/>
+        <location filename="../qml/DabSignalView.qml" line="443"/>
         <source>Show NULL spectrum</source>
         <translation>Zeige NULL-Spektrum</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="449"/>
+        <location filename="../qml/DabSignalView.qml" line="450"/>
         <source>Show waterfall</source>
         <translation>Wasserfall anzeigen</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="456"/>
+        <location filename="../qml/DabSignalView.qml" line="457"/>
         <source>Slow update (1.4 sec)</source>
         <translation>Langsames Update (1,4 Sek.)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="462"/>
+        <location filename="../qml/DabSignalView.qml" line="463"/>
         <source>Normal update (1 sec)</source>
         <translation>Normales Update (1 Sek.)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="468"/>
+        <location filename="../qml/DabSignalView.qml" line="469"/>
         <source>Fast update (600 msec)</source>
         <translation>Schnelles Update (600 mSek.)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="474"/>
+        <location filename="../qml/DabSignalView.qml" line="475"/>
         <source>Very fast update (400 msec)</source>
         <translation>Sehr schnelles Update (400 mSek.)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="481"/>
+        <location filename="../qml/DabSignalView.qml" line="482"/>
         <source>Show SNR value</source>
         <translation>Zeige SNR-Wert</translation>
     </message>
@@ -1051,16 +1073,17 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     <name>DeviceSettings</name>
     <message>
         <location filename="../qml/settings/DeviceSettings.qml" line="53"/>
+        <location filename="../qml/settings/DeviceSettings.qml" line="57"/>
         <source>Input device:</source>
         <translation>Eingangsgerät:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/DeviceSettings.qml" line="87"/>
+        <location filename="../qml/settings/DeviceSettings.qml" line="88"/>
         <source>Connect</source>
         <translation>Verbinden</translation>
     </message>
     <message>
-        <location filename="../qml/settings/DeviceSettings.qml" line="87"/>
+        <location filename="../qml/settings/DeviceSettings.qml" line="88"/>
         <source>Disconnect</source>
         <translation>Trennen</translation>
     </message>
@@ -1590,24 +1613,29 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
         <translation>Wenn ausgewählt, stoppt die Aufnahme bei Erreichen des Zeitlimits automatisch.</translation>
     </message>
     <message>
-        <location filename="../qml/EnsembleInfoView.qml" line="372"/>
-        <location filename="../qml/EnsembleInfoView.qml" line="374"/>
+        <location filename="../qml/EnsembleInfoView.qml" line="354"/>
+        <source>Recording timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/EnsembleInfoView.qml" line="373"/>
+        <location filename="../qml/EnsembleInfoView.qml" line="375"/>
         <source>Stop recording</source>
         <translation>Aufnahme beenden</translation>
     </message>
     <message>
-        <location filename="../qml/EnsembleInfoView.qml" line="372"/>
-        <location filename="../qml/EnsembleInfoView.qml" line="375"/>
+        <location filename="../qml/EnsembleInfoView.qml" line="373"/>
+        <location filename="../qml/EnsembleInfoView.qml" line="376"/>
         <source>Record raw data</source>
         <translation>Rohdaten speichern</translation>
     </message>
     <message>
-        <location filename="../qml/EnsembleInfoView.qml" line="397"/>
+        <location filename="../qml/EnsembleInfoView.qml" line="398"/>
         <source>Length:</source>
         <translation>Länge:</translation>
     </message>
     <message>
-        <location filename="../qml/EnsembleInfoView.qml" line="405"/>
+        <location filename="../qml/EnsembleInfoView.qml" line="406"/>
         <source>File size:</source>
         <translation>Dateigröße:</translation>
     </message>
@@ -1943,168 +1971,175 @@ Klicke auf &apos;Hinzufügen&apos; für eine neue Aufnahme.</translation>
     </message>
     <message>
         <location filename="../qml/settings/OtherSettings.qml" line="278"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="281"/>
         <source>Slideshow scaling:</source>
         <translation>Slideshowskalierung:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="300"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="301"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="304"/>
         <source>Language:</source>
         <translation>Sprache:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="322"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="324"/>
         <source>Restart</source>
         <translation>Neu starten</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="330"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="332"/>
         <source>Language change will take effect after application restart.</source>
         <translation>Die Änderung der Sprache erfolgt nach Programmneustart.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="346"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="348"/>
         <source>Data storage</source>
         <translation>Speicherort</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="363"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="365"/>
         <source>Folder:</source>
         <translation>Ordner:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="374"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="376"/>
         <source>Data storage folder...</source>
         <translation>Ordner des Datenspeichers...</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="384"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="386"/>
         <source>Application uses this folder to store all data like audio recording, IQ recording and logs, etc.</source>
         <translation>Dieser Ordner wird zum Speichern aller Daten verwendet, wie Audioaufnahmen, IQ-Aufnahmen, Logs, usw.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="391"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="393"/>
         <source>Backup settings</source>
         <translation>Einstellungen sichern</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="395"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="397"/>
         <source>Restore settings...</source>
         <translation>Einstellungen zurückspielen...</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="406"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="408"/>
         <source>Backup includes application settings, service list and audio recording schedule. Backup file is stored in data storage folder.</source>
         <translation>Die Sicherunge beinhaltet Applikationseinstellungen, Dienstliste und Audioaufnahmeplaner. Die Sicherungsdatei befindet sich im Speicherortverzeichnis.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="420"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="422"/>
         <source>Network proxy configuration</source>
         <translation>Netzwerkproxy-Konfiguration</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="432"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="434"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="437"/>
         <source>Proxy type:</source>
         <translation>Proxy-Typ:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="448"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="451"/>
         <source>Apply</source>
         <translation>Anwenden</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="457"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="460"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="464"/>
         <source>Server:</source>
         <translation>Server:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="473"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="477"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="481"/>
         <source>Port:</source>
         <translation>Port:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="494"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="499"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="502"/>
         <source>Username:</source>
         <translation>Benutzername:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="510"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="516"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="520"/>
         <source>Password:</source>
         <translation>Passwort:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="536"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="543"/>
         <source>FMLIST</source>
         <translation>FMLIST</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="547"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="554"/>
         <source>Upload ensemble information</source>
         <translation>Ensembleinformationen hochladen</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="562"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="569"/>
         <source>Ensemble information is a small CSV file with list of services in the ensemble,
 it is anonymous and contains no personal data.</source>
         <translation>Ensembleinformation ist eine kleine CSV-Datei mit einer Liste an Diensten im Ensemble,
 es ist anonym und enthält keine persönlichen Daten.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="569"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="576"/>
         <source>Application automatically uploads ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</source>
         <translation>Das Programm lädt automatisch die Ensembleinformationen auf &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="570"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="577"/>
         <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
         <translation>Hochladen der Ensembleinformationen auf &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; ist derzeit deaktiviert.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="578"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="585"/>
         <source>Thank you for supporting the community!</source>
         <translation>Danke, dass Sie die Gemeinschaft unterstützen!</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="579"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="586"/>
         <source>Please consider enabling this option to help the community.</source>
         <translation>Denken Sie bitte daran, diese Option zu aktivieren, um der Gemeinschaft zu helfen.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="592"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="599"/>
         <source>Raw IQ data recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="603"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="610"/>
         <source>Insert XML header</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="615"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="622"/>
         <source>Insert GNSS coordinates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="646"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="653"/>
         <source>Restore application windows on start</source>
         <translation>Programmfenster beim Start wiederherstellen</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="659"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="666"/>
         <source>Check for application update on start</source>
         <translation>Bei Programmstart auf Aktualisierung prüfen</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="698"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="705"/>
         <source>Select SLS Background Color</source>
         <translation>SLS Hintergrundfarbe auswählen</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="712"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="719"/>
         <source>Data storage folder</source>
         <translation>Dateispeicherordner</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="736"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="743"/>
         <source>JSON files</source>
         <translation>JSON-Dateien</translation>
     </message>
@@ -4209,16 +4244,18 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
     <name>RartTcpDevice</name>
     <message>
         <location filename="../qml/settings/RartTcpDevice.qml" line="47"/>
+        <location filename="../qml/settings/RartTcpDevice.qml" line="50"/>
         <source>IP address:</source>
         <translation>IP-Adresse:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RartTcpDevice.qml" line="52"/>
+        <location filename="../qml/settings/RartTcpDevice.qml" line="53"/>
         <source>IP address of RaRT-TCP server</source>
         <translation>IP-Adresse des RaRT-TCP Servers</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RartTcpDevice.qml" line="64"/>
+        <location filename="../qml/settings/RartTcpDevice.qml" line="65"/>
+        <location filename="../qml/settings/RartTcpDevice.qml" line="68"/>
         <source>Port:</source>
         <translation>Port:</translation>
     </message>
@@ -4231,72 +4268,82 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
         <translation>Öffne Datei</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="84"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="59"/>
+        <source>Raw file format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/RawFileDevice.qml" line="85"/>
         <source>No file selected</source>
         <translation>Keine Datei ausgewählt</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="123"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="93"/>
+        <source>File playback position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/RawFileDevice.qml" line="125"/>
         <source>%1 / %2 sec</source>
         <translation>%1 / %2 sec</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="138"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="140"/>
         <source>Disable repeat</source>
         <translation>Wiederholung ausschalten</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="139"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="141"/>
         <source>Enable repeat</source>
         <translation>Wiederholung einschalten</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="164"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="166"/>
         <source>Recording date:</source>
         <translation>Aufnahmedatum:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="167"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="169"/>
         <source>Recorder:</source>
         <translation>Aufnahmegerät:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="170"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="172"/>
         <source>Device:</source>
         <translation>Gerät:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="173"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="175"/>
         <source>Model:</source>
         <translation>Modell:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="176"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="178"/>
         <source>GNSS coordinates:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="179"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="181"/>
         <source>Sample rate [Hz]:</source>
         <translation>Abtastrate [Hz]:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="182"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="184"/>
         <source>Frequency [kHz]:</source>
         <translation>Frequenz [kHz]:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="185"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="187"/>
         <source>Recording length [sec]:</source>
         <translation>Aufnahmelänge [sec]:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="188"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="190"/>
         <source>Sample format:</source>
         <translation>Datenformat:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="214"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="216"/>
         <source>Binary files</source>
         <translation>Binärdateien</translation>
     </message>
@@ -4304,115 +4351,125 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
 <context>
     <name>RtlSdrDevice</name>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="63"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="48"/>
+        <source>RTL-SDR device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="64"/>
         <source>Reload</source>
         <translation>Neu laden</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="73"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="74"/>
         <source>Use any available RTL-SDR device if the selected one fails</source>
         <translation>Jeglichen RTL-SDR verwenden, falls ausgewählter misslingt</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="100"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="101"/>
         <source>Connected device:</source>
         <translation>Verbundenes Gerät:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="103"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="104"/>
         <source>Serial number:</source>
         <translation>Seriennummer:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="106"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="107"/>
         <source>Tuner:</source>
         <translation>Tuner:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="109"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="110"/>
         <source>Sample format:</source>
         <translation>Datenformat:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="127"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="128"/>
         <source>Gain control</source>
         <translation>Verstärkungseinstellung</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="136"/>
         <source>Software</source>
         <translation>Software</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="136"/>
         <source>Driver</source>
         <translation>Treiber</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="136"/>
         <source>Device</source>
         <translation>Gerät</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="135"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="136"/>
         <source>Manual</source>
         <translation>Manuell</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="158"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="159"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="162"/>
         <source>Gain</source>
         <translation>Verstärkung</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="186"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="188"/>
         <source>Expert settings</source>
         <translation>Experteneinstellungen</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="201"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="203"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="206"/>
         <source>Bandwidth:</source>
         <translation>Bandbreite:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="216"/>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="243"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="219"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="247"/>
         <source>Default</source>
         <translation>Standard</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="222"/>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="249"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="225"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="253"/>
         <source>Set default</source>
         <translation>Standardwerte</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="229"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="232"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="235"/>
         <source>SW AGC level threshold:</source>
         <translation>SW AGC Pegelschwelle:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="256"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="260"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="263"/>
         <source>Frequency correction:</source>
         <translation>Frequenzkorrektur:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="276"/>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="325"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="281"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="331"/>
         <source>Reset</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="283"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="288"/>
         <source>RF level estimation:</source>
         <translation>RF-Pegel geschätzt:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="300"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="305"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="309"/>
         <source>RF level correction:</source>
         <translation>RF-Pegel Korrektur:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlSdrDevice.qml" line="333"/>
+        <location filename="../qml/settings/RtlSdrDevice.qml" line="339"/>
         <source>Bias Tee:</source>
         <translation>Fernspeisespannung:</translation>
     </message>
@@ -4421,109 +4478,116 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
     <name>RtlTcpDevice</name>
     <message>
         <location filename="../qml/settings/RtlTcpDevice.qml" line="50"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="53"/>
         <source>IP address:</source>
         <translation>IP-Adresse:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="56"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="57"/>
         <source>IP address of RTL-TCP server</source>
         <translation>IP-Adresse des RTL-TCP Servers</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="70"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="71"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="74"/>
         <source>Port:</source>
         <translation>Port:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="85"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="87"/>
         <source>Connect to control socket if available</source>
         <translation>Falls verfügbar, verbinde zu Kontrollsocket</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="107"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="109"/>
         <source>Connected device:</source>
         <translation>Verbundenes Gerät:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="110"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="112"/>
         <source>Tuner:</source>
         <translation>Tuner:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="113"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="115"/>
         <source>Sample format:</source>
         <translation>Datenformat:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="131"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="133"/>
         <source>Gain control</source>
         <translation>Verstärkungseinstellung</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="139"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="141"/>
         <source>Software</source>
         <translation>Software</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="139"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="141"/>
         <source>Device</source>
         <translation>Gerät</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="139"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="141"/>
         <source>Manual</source>
         <translation>Manuell</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="160"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="162"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="165"/>
         <source>Gain</source>
         <translation>Verstärkung</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="188"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="191"/>
         <source>Expert settings</source>
         <translation>Experteneinstellungen</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="204"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="207"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="210"/>
         <source>Bandwidth:</source>
         <translation>Bandbreite:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="237"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="241"/>
         <source>Only some RTL-TCP servers support bandwidth selection.</source>
         <translation>Bandbreitenauswahl wird nur von einigen RTL-TCP-Servern unterstützt.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="241"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="245"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="248"/>
         <source>SW AGC level threshold:</source>
         <translation>SW AGC Pegelschwelle:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="219"/>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="255"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="223"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="260"/>
         <source>Default</source>
         <translation>Standard</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="225"/>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="261"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="229"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="266"/>
         <source>Set default</source>
         <translation>Standardwerte</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="268"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="273"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="276"/>
         <source>Frequency correction:</source>
         <translation>Frequenzkorrektur:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="287"/>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="316"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="293"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="323"/>
         <source>Reset</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RtlTcpDevice.qml" line="294"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="300"/>
+        <location filename="../qml/settings/RtlTcpDevice.qml" line="303"/>
         <source>RF level correction:</source>
         <translation></translation>
     </message>
@@ -4564,18 +4628,31 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
 <context>
     <name>SLSView</name>
     <message>
-        <location filename="../qml/SLSView.qml" line="55"/>
+        <location filename="../qml/SLSView.qml" line="48"/>
+        <source>Slideshow image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SLSView.qml" line="57"/>
         <source>Save to file</source>
         <translation>In Datei speichern</translation>
     </message>
     <message>
-        <location filename="../qml/SLSView.qml" line="59"/>
+        <location filename="../qml/SLSView.qml" line="61"/>
         <source>Copy to clipboard</source>
         <translation>In  Zwischenablage kopieren</translation>
     </message>
     <message>
-        <location filename="../qml/SLSView.qml" line="109"/>
+        <location filename="../qml/SLSView.qml" line="111"/>
         <source>Decoded %1 of %2 bytes (%3%)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SPIProgress</name>
+    <message>
+        <location filename="../qml/SPIProgress.qml" line="38"/>
+        <source>Service information progress</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4787,31 +4864,33 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerSetupDialog.qml" line="54"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="58"/>
         <source>Mode:</source>
         <translation>Modus:</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDialog.qml" line="62"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="63"/>
         <source>Fast</source>
         <translation>Schnell</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDialog.qml" line="66"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="67"/>
         <source>Normal</source>
         <translation>Normal</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDialog.qml" line="70"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="71"/>
         <source>Precise</source>
         <translation>Genau</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDialog.qml" line="90"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="91"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="94"/>
         <source>Number of cycles:</source>
         <translation>Anzahl der Durchläufe:</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDialog.qml" line="107"/>
+        <location filename="../qml/tii/ScannerSetupDialog.qml" line="109"/>
         <source>Inf</source>
         <translation>Inf</translation>
     </message>
@@ -4820,101 +4899,103 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
     <name>ScannerSetupDrawer</name>
     <message>
         <location filename="../qml/tii/ScannerSetupDrawer.qml" line="76"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="80"/>
         <source>Mode:</source>
         <translation>Modus:</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="84"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="85"/>
         <source>Fast</source>
         <translation>Schnell</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="88"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="89"/>
         <source>Normal</source>
         <translation>Normal</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="92"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="93"/>
         <source>Precise</source>
         <translation>Genau</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="112"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="113"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="116"/>
         <source>Number of cycles:</source>
         <translation>Anzahl der Durchläufe:</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="129"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="131"/>
         <source>Inf</source>
         <translation>Inf</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="141"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="143"/>
         <source>Channel selection</source>
         <translation>Kanäle auswählen</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="173"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="175"/>
         <source>Select all</source>
         <translation>Alle auswählen</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="184"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="186"/>
         <source>Unselect all</source>
         <translation>Keine auswählen</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="202"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="204"/>
         <source>Incremental scan</source>
         <translation>Schrittweiser Scan</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="209"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="211"/>
         <source>Clear scan results on start</source>
         <translation>Scanergebnisse bei Start leeren</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="215"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="217"/>
         <source>Hide local (known) transmitters</source>
         <translation>Blende lokale (bekannte) Sendeanlagen aus</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="221"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="223"/>
         <source>AutoSave JSON</source>
         <translation>JSON autom. speichern</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="228"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="230"/>
         <source>AutoSave CSV</source>
         <translation>CSV autom. speichern</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="241"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="243"/>
         <source>Save as JSON</source>
         <translation>als JSON speichern</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="249"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="251"/>
         <source>Save as CSV</source>
         <translation>Speichern als CSV</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="257"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="259"/>
         <source>Load from file...</source>
         <translation>von Datei laden...</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="265"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="267"/>
         <source>Clear scan results</source>
         <translation>Scanergebnisse leeren</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="273"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="275"/>
         <source>Clear local (known) transmitter database</source>
         <translation>Datenbank lokaler (bekannter) Sendeanlagen leeren</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="282"/>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="284"/>
         <source>Close</source>
         <translation type="unfinished">Schließen</translation>
     </message>
@@ -4928,128 +5009,130 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
     </message>
     <message>
         <location filename="../qml/tii/ScannerView.qml" line="159"/>
+        <location filename="../qml/tii/ScannerView.qml" line="162"/>
         <source>Mode:</source>
         <translation>Modus:</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="166"/>
+        <location filename="../qml/tii/ScannerView.qml" line="167"/>
         <source>Fast</source>
         <translation>Schnell</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="170"/>
+        <location filename="../qml/tii/ScannerView.qml" line="171"/>
         <source>Normal</source>
         <translation>Normal</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="174"/>
+        <location filename="../qml/tii/ScannerView.qml" line="175"/>
         <source>Precise</source>
         <translation>Genau</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="195"/>
+        <location filename="../qml/tii/ScannerView.qml" line="196"/>
+        <location filename="../qml/tii/ScannerView.qml" line="199"/>
         <source>Number of cycles:</source>
         <translation>Anzahl der Durchläufe:</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="212"/>
+        <location filename="../qml/tii/ScannerView.qml" line="214"/>
         <source>Inf</source>
         <translation>Inf</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="220"/>
+        <location filename="../qml/tii/ScannerView.qml" line="222"/>
         <source>Select channels</source>
         <translation>Kanäle auswählen</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="231"/>
+        <location filename="../qml/tii/ScannerView.qml" line="233"/>
         <source>Stop</source>
         <translation>Stop</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="231"/>
+        <location filename="../qml/tii/ScannerView.qml" line="233"/>
         <source>Start</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="246"/>
+        <location filename="../qml/tii/ScannerView.qml" line="248"/>
         <source>Resume scanning</source>
         <translation>Scannen fortsetzen</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="246"/>
+        <location filename="../qml/tii/ScannerView.qml" line="248"/>
         <source>Pause scanning</source>
         <translation>Scannen pausieren</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="258"/>
+        <location filename="../qml/tii/ScannerView.qml" line="260"/>
         <source>Stop scanning</source>
         <translation>Scannen anhalten</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="266"/>
+        <location filename="../qml/tii/ScannerView.qml" line="268"/>
         <source>Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="291"/>
+        <location filename="../qml/tii/ScannerView.qml" line="293"/>
         <source>Incremental scan</source>
         <translation>Schrittweiser Scan</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="298"/>
+        <location filename="../qml/tii/ScannerView.qml" line="300"/>
         <source>Clear scan results on start</source>
         <translation>Scanergebnisse bei Start leeren</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="304"/>
+        <location filename="../qml/tii/ScannerView.qml" line="306"/>
         <source>Hide local (known) transmitters</source>
         <translation>Blende lokale (bekannte) Sendeanlagen aus</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="310"/>
+        <location filename="../qml/tii/ScannerView.qml" line="312"/>
         <source>AutoSave JSON</source>
         <translation>JSON autom. speichern</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="317"/>
+        <location filename="../qml/tii/ScannerView.qml" line="319"/>
         <source>AutoSave CSV</source>
         <translation>Autom. Speichern CSV</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="325"/>
+        <location filename="../qml/tii/ScannerView.qml" line="327"/>
         <source>Save as JSON</source>
         <translation>als JSON speichern</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="330"/>
+        <location filename="../qml/tii/ScannerView.qml" line="332"/>
         <source>Save as CSV</source>
         <translation>Speichern als CSV</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="335"/>
+        <location filename="../qml/tii/ScannerView.qml" line="337"/>
         <source>Load from file...</source>
         <translation>von Datei laden...</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="540"/>
-        <location filename="../qml/tii/ScannerView.qml" line="541"/>
+        <location filename="../qml/tii/ScannerView.qml" line="542"/>
+        <location filename="../qml/tii/ScannerView.qml" line="543"/>
         <source>JSON files</source>
         <translation>JSON-Dateien</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="340"/>
+        <location filename="../qml/tii/ScannerView.qml" line="342"/>
         <source>Clear scan results</source>
         <translation>Scanergebnisse leeren</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="345"/>
+        <location filename="../qml/tii/ScannerView.qml" line="347"/>
         <source>Clear local (known) transmitter database</source>
         <translation>Datenbank lokaler (bekannter) Sendeanlagen leeren</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="540"/>
-        <location filename="../qml/tii/ScannerView.qml" line="541"/>
+        <location filename="../qml/tii/ScannerView.qml" line="542"/>
+        <location filename="../qml/tii/ScannerView.qml" line="543"/>
         <source>CSV files</source>
         <translation>CSV-Dateien</translation>
     </message>
@@ -5057,87 +5140,97 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
 <context>
     <name>SdrPlayDevice</name>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="75"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="60"/>
+        <source>SDRplay device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="76"/>
         <source>Reload</source>
         <translation>Neu laden</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="80"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="81"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="85"/>
         <source>RX channel number:</source>
         <translation>RX Kanalnummer:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="100"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="102"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="106"/>
         <source>Antenna:</source>
         <translation>Antenne:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="124"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="127"/>
         <source>Use any available SDRplay device if the selected one fails</source>
         <translation>Jeglichen SDRplay verwenden, falls ausgewählter misslingt</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="148"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="151"/>
         <source>Connected device:</source>
         <translation>Verbundenes Gerät:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="151"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="154"/>
         <source>Serial number:</source>
         <translation>Seriennummer:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="169"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="172"/>
         <source>Gain control</source>
         <translation>Verstärkungseinstellung</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="177"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="180"/>
         <source>Software</source>
         <translation>Software</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="177"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="180"/>
         <source>Manual</source>
         <translation>Manuell</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="205"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="208"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="211"/>
         <source>RF gain</source>
         <translation>RF Verstärkung</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="231"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="235"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="239"/>
         <source>IF gain</source>
         <translation>IF Verstärkung</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="249"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="254"/>
         <source>N/A</source>
         <translation>k.A.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="253"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="258"/>
         <source>AGC</source>
         <translation>AGC</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="270"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="275"/>
         <source>Expert settings</source>
         <translation>Experteneinstellungen</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="284"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="289"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="292"/>
         <source>Frequency correction:</source>
         <translation>Frequenzkorrektur:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="303"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="309"/>
         <source>Reset</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SdrPlayDevice.qml" line="310"/>
+        <location filename="../qml/settings/SdrPlayDevice.qml" line="316"/>
         <source>Bias Tee:</source>
         <translation>Fernspeisespannung:</translation>
     </message>
@@ -5150,34 +5243,54 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
         <translation>Dienstname;Kurzbez.;SID;SCIdS;Anzahl an Ensembles</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="217"/>
+        <location filename="../qml/ServiceList.qml" line="57"/>
+        <source>Ensemble logo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="91"/>
+        <source>Country flag</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="134"/>
+        <source>Channel</source>
+        <translation type="unfinished">Kanal</translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="214"/>
+        <source>Filter services</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="223"/>
         <source>Filter services...</source>
         <translation>Dienste filtern...</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="502"/>
-        <location filename="../qml/ServiceList.qml" line="779"/>
+        <location filename="../qml/ServiceList.qml" line="508"/>
+        <location filename="../qml/ServiceList.qml" line="791"/>
         <source>Remove service from favorites</source>
         <translation>Dienst aus Favoriten entfernen</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="503"/>
-        <location filename="../qml/ServiceList.qml" line="780"/>
+        <location filename="../qml/ServiceList.qml" line="509"/>
+        <location filename="../qml/ServiceList.qml" line="792"/>
         <source>Add service to favorites</source>
         <translation>Dienst zu Favoriten hinzufügen</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="736"/>
+        <location filename="../qml/ServiceList.qml" line="748"/>
         <source>Remove ensemble</source>
         <translation>Ensemble entfernen</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="1000"/>
+        <location filename="../qml/ServiceList.qml" line="1012"/>
         <source>Services</source>
         <translation>Dienste</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="1003"/>
+        <location filename="../qml/ServiceList.qml" line="1015"/>
         <source>Ensembles</source>
         <translation>Ensembles</translation>
     </message>
@@ -5185,12 +5298,17 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
 <context>
     <name>ServicePanel</name>
     <message>
-        <location filename="../qml/ServicePanel.qml" line="117"/>
+        <location filename="../qml/ServicePanel.qml" line="58"/>
+        <source>Service logo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServicePanel.qml" line="119"/>
         <source>Dock page back to main window</source>
         <translation>Seite am Hauptfenster andocken</translation>
     </message>
     <message>
-        <location filename="../qml/ServicePanel.qml" line="117"/>
+        <location filename="../qml/ServicePanel.qml" line="119"/>
         <source>Undock page to separate window</source>
         <translation>Seite abdocken in eigenes Fenster</translation>
     </message>
@@ -5208,28 +5326,28 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
         <translation>Dienst zu Favoriten hinzufügen</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="209"/>
+        <location filename="../qml/ServiceView.qml" line="211"/>
         <source>Switch to another ensemble</source>
         <translation>Auf anderes Ensemble schalten</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="289"/>
+        <location filename="../qml/ServiceView.qml" line="291"/>
         <source>Right click to copy Dynamic label</source>
         <translation>Rechtsklick, um Dynamic Label zu kopieren</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="314"/>
-        <location filename="../qml/ServiceView.qml" line="326"/>
+        <location filename="../qml/ServiceView.qml" line="316"/>
+        <location filename="../qml/ServiceView.qml" line="328"/>
         <source>Right click to copy Dynamic label +</source>
         <translation>Rechtsklick, um Dynamic Label + zu kopieren</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="353"/>
+        <location filename="../qml/ServiceView.qml" line="355"/>
         <source>TII</source>
         <translation>TII</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="354"/>
+        <location filename="../qml/ServiceView.qml" line="356"/>
         <source>Signal Spectrum</source>
         <translation>Signalspektrum</translation>
     </message>
@@ -5465,27 +5583,27 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
 <context>
     <name>SignalState</name>
     <message>
-        <location filename="../qml/SignalState.qml" line="75"/>
+        <location filename="../qml/SignalState.qml" line="79"/>
         <source>DAB signal not detected&lt;br&gt;Looking for signal...</source>
         <translation>DAB signal nicht erkannt&lt;br&gt;Suche nach Signal...</translation>
     </message>
     <message>
-        <location filename="../qml/SignalState.qml" line="77"/>
+        <location filename="../qml/SignalState.qml" line="81"/>
         <source>Synchronized to DAB signal</source>
         <translation>Synchronisiert auf DAB-Signal</translation>
     </message>
     <message>
-        <location filename="../qml/SignalState.qml" line="78"/>
+        <location filename="../qml/SignalState.qml" line="82"/>
         <source>Found DAB signal,&lt;br&gt;trying to synchronize...</source>
         <translation>DAB Signal gefunden,&lt;br&gt;versuche zu synchronisieren...</translation>
     </message>
     <message>
-        <location filename="../qml/SignalState.qml" line="84"/>
+        <location filename="../qml/SignalState.qml" line="88"/>
         <source>SNR</source>
         <translation>SNR</translation>
     </message>
     <message>
-        <location filename="../qml/SignalState.qml" line="91"/>
+        <location filename="../qml/SignalState.qml" line="95"/>
         <source>DAB signal SNR</source>
         <translation>DAB-Signal-SNR</translation>
     </message>
@@ -5494,73 +5612,91 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
     <name>SoapySdrDevice</name>
     <message>
         <location filename="../qml/settings/SoapySdrDevice.qml" line="54"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="57"/>
         <source>Device arguments:</source>
         <translation>Gerätargumente:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="59"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="60"/>
         <source>Soapy SDR device arguments</source>
         <translation>Argumente des Soapy SDR-Geräts</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="68"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="69"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="72"/>
         <source>RX channel number:</source>
         <translation>RX Kanalnummer:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="85"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="87"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="90"/>
         <source>Antenna:</source>
         <translation>Antenne:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="107"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="110"/>
         <source>Connected device:</source>
         <translation>Verbundenes Gerät:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="125"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="128"/>
         <source>Gain control</source>
         <translation>Verstärkungseinstellung</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="133"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="136"/>
         <source>Device</source>
         <translation>Gerät</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="133"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="136"/>
         <source>Manual</source>
         <translation>Manuell</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="214"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="175"/>
+        <source>Gain</source>
+        <translation type="unfinished">Verstärkung</translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="218"/>
         <source>Expert settings</source>
         <translation>Experteneinstellungen</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="228"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="232"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="235"/>
         <source>Bandwidth:</source>
         <translation>Bandbreite:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="243"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="248"/>
         <source>Default</source>
         <translation>Standard</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="249"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="254"/>
         <source>Set default</source>
         <translation>Standardwerte</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="256"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="261"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="264"/>
         <source>Frequency correction:</source>
         <translation>Frequenzkorrektur:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/SoapySdrDevice.qml" line="275"/>
+        <location filename="../qml/settings/SoapySdrDevice.qml" line="281"/>
         <source>Reset</source>
         <translation>Reset</translation>
+    </message>
+</context>
+<context>
+    <name>SpectrumWaterfallView</name>
+    <message>
+        <location filename="../qml/charts/SpectrumWaterfallView.qml" line="40"/>
+        <source>Signal spectrum</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5574,6 +5710,11 @@ es ist anonym und enthält keine persönlichen Daten.</translation>
         <location filename="../qml/StatusBar.qml" line="98"/>
         <source>Mute audio</source>
         <translation>Audio stummschalten</translation>
+    </message>
+    <message>
+        <location filename="../qml/StatusBar.qml" line="110"/>
+        <source>Volume</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5679,14 +5820,27 @@ Bitte den Speicherort auswählen und Rechte gewähren.</translation>
 <context>
     <name>TIIMap</name>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="471"/>
+        <location filename="../qml/tii/TIIMap.qml" line="37"/>
+        <source>Transmitter map</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/tii/TIIMap.qml" line="473"/>
         <source>Stop logging</source>
         <translation>Loggen beenden</translation>
     </message>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="471"/>
+        <location filename="../qml/tii/TIIMap.qml" line="473"/>
         <source>Record CSV log</source>
         <translation>CSV Log aufzeichnen</translation>
+    </message>
+</context>
+<context>
+    <name>TIIView</name>
+    <message>
+        <location filename="../qml/tii/TIIView.qml" line="84"/>
+        <source>TII spectrum</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -5713,111 +5867,130 @@ Bitte den Speicherort auswählen und Rechte gewähren.</translation>
     </message>
     <message>
         <location filename="../qml/settings/TiiSettings.qml" line="129"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="133"/>
         <source>Geolocation source:</source>
         <translation>Quelle für Ortung:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="152"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="153"/>
         <source>Apply</source>
         <translation>Anwenden</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="177"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="178"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="181"/>
         <source>GPS coordinates:</source>
         <translation>GPS-Koordinaten:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="195"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="197"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="200"/>
         <source>Serial port:</source>
         <translation>Serielle Schnittstelle:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="209"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="212"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="215"/>
         <source>Baudrate:</source>
         <translation>Baudrate:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="229"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="233"/>
         <source>Enter coordinates in &quot;latitude, longitude&quot; format, for example: 1.234,-5.678&lt;/p&gt;&lt;br&gt;&lt;p&gt;Tip: &lt;i&gt;Go to &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt;, right click on your location, click on coordinates in popup menu to copy them and then insert the values here as they are.&lt;/i&gt;&lt;/p&gt;</source>
         <translation>Koordinaten im Format &quot;Länge, Breite&quot; eingeben, zB: 1.234,-5.678&lt;/p&gt;&lt;br&gt;&lt;p&gt;Tipp: &lt;i&gt;auf &lt;a href=&quot;https://www.google.com/maps&quot;&gt;Google maps&lt;/a&gt; gehen, rechts auf die Position klicken, Klick auf Koordinaten im Popupmenü zum Kopieren und dann die Werte hier einzufügen.&lt;/i&gt;&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="238"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="242"/>
         <source>Altitude source:</source>
         <translation>Quelle für Seehöhe:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="243"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="247"/>
         <source>Manual</source>
         <translation>Manuell</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="278"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="257"/>
+        <source>Altitude</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/TiiSettings.qml" line="283"/>
         <source>Logging</source>
         <translation>Logfunktion</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="292"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="297"/>
         <source>Folder:</source>
         <translation>Ordner:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="308"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="313"/>
         <source>Timestamp in UTC</source>
         <translation>Zeitstempel in UTC</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="319"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="324"/>
         <source>Column names in English</source>
         <translation>Spaltenüberschriften in Englisch</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="330"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="335"/>
         <source>GPS coordinates</source>
         <translation>GPS-Koordinaten</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="341"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="346"/>
         <source>No TII (signal monitoring)</source>
         <translation>Kein TII (Signalmonitoring)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="361"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="366"/>
         <source>Detector</source>
         <translation>Ortungsgerät</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="367"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="372"/>
         <source>Reliable</source>
         <translation>Zuverlässig</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="383"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="375"/>
+        <source>Detector reliability</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/TiiSettings.qml" line="389"/>
         <source>Sensitive</source>
         <translation>Empfindlich</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="395"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="401"/>
         <source>User interface</source>
         <translation>Benutzeroberfläche</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="408"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="414"/>
         <source>Show spectrum plot</source>
         <translation>Spektrumplot zeigen</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="420"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="426"/>
         <source>Keep no longer detected transmitters on map (grey marker)</source>
         <translation>Zeige nicht mehr erkannte Sendestandorte auf der Karte an (graue Markierung)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="438"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="444"/>
         <source>Remove after:</source>
         <translation>Entfernen nach:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/TiiSettings.qml" line="471"/>
+        <location filename="../qml/settings/TiiSettings.qml" line="454"/>
+        <source>TII inactive timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/TiiSettings.qml" line="478"/>
         <source>Transmitter table columns</source>
         <translation>Sendertabelle Spalten</translation>
     </message>
@@ -6098,72 +6271,74 @@ Bitte den Speicherort auswählen und Rechte gewähren.</translation>
         <translation>Slideshowdaten</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="210"/>
+        <location filename="../qml/settings/UaSettings.qml" line="208"/>
+        <location filename="../qml/settings/UaSettings.qml" line="211"/>
         <source>SLS folder template</source>
         <translation>SLS Verzeichnis Vorlage</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="221"/>
+        <location filename="../qml/settings/UaSettings.qml" line="222"/>
         <source>SPI data</source>
         <translation>SPI-Daten</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="234"/>
+        <location filename="../qml/settings/UaSettings.qml" line="233"/>
+        <location filename="../qml/settings/UaSettings.qml" line="236"/>
         <source>SPI folder template</source>
         <translation>SPI Verzeichnis Vorlage</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="248"/>
+        <location filename="../qml/settings/UaSettings.qml" line="250"/>
         <source>Data storage path pattern supports these tokens.</source>
         <translation>Unterstütze Kürzel fürdie Syntax im Dateispeicherpfad.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="249"/>
+        <location filename="../qml/settings/UaSettings.qml" line="251"/>
         <source>For more information see</source>
         <translation>Für weitere Infos siehe</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="250"/>
+        <location filename="../qml/settings/UaSettings.qml" line="252"/>
         <source>Documentation</source>
         <translation>Dokumentation</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="287"/>
+        <location filename="../qml/settings/UaSettings.qml" line="289"/>
         <source>current audio service ID (hex number)</source>
         <translation>Aktuelle Audiodienst-ID (Hexnummer)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="297"/>
+        <location filename="../qml/settings/UaSettings.qml" line="299"/>
         <source>current ensemble ID (hex number)</source>
         <translation>Aktuelle Ensemble ID (Hex-Nummer)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="307"/>
+        <location filename="../qml/settings/UaSettings.qml" line="309"/>
         <source>transport ID</source>
         <translation>Transport ID</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="317"/>
+        <location filename="../qml/settings/UaSettings.qml" line="319"/>
         <source>DAB timestamp</source>
         <translation>DAB-Zeit</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="327"/>
+        <location filename="../qml/settings/UaSettings.qml" line="329"/>
         <source>content name</source>
         <translation>Inhaltsname</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="337"/>
+        <location filename="../qml/settings/UaSettings.qml" line="339"/>
         <source>content name with extension (only SLS)</source>
         <translation>Inhaltsname mit Erweiterung (nur SLS)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="347"/>
+        <location filename="../qml/settings/UaSettings.qml" line="349"/>
         <source>transport ID of directory (only SPI)</source>
         <translation>transport ID des Verzeichnisses (nur SPI)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/UaSettings.qml" line="357"/>
+        <location filename="../qml/settings/UaSettings.qml" line="359"/>
         <source>service component ID (only SPI)</source>
         <translation>Dienstkomponenten ID (nur SPI)</translation>
     </message>

@@ -57,6 +57,7 @@ Item {
             readonly property bool mobileView: mainItem.width <= UI.narrowViewWidth
 
             AbracaComboBox {
+                accessibleName: qsTr("SDRplay device")
                 Layout.columnSpan: 4
                 Layout.fillWidth: true
                 model: settingsBackend.sdrplayDevicesModel
@@ -81,6 +82,7 @@ Item {
                 enabled: mainItem.isDeviceInfoLoaded && !settingsBackend.isSdrplayControlEnabled
             }
             AbracaComboBox {
+                accessibleName: qsTr("RX channel number:")
                 enabled: mainItem.isDeviceInfoLoaded && !settingsBackend.isSdrplayControlEnabled
                 // Layout.columnSpan: deviceSelectionGrid.mobileView ? 3 : 1
                 model: settingsBackend.sdrplayChannelModel
@@ -101,6 +103,7 @@ Item {
                 enabled: mainItem.isDeviceInfoLoaded
             }
             AbracaComboBox {
+                accessibleName: qsTr("Antenna:")
                 id: antennaCombo
                 // Layout.columnSpan: deviceSelectionGrid.mobileView ? 3 : 1
                 enabled: mainItem.isDeviceInfoLoaded
@@ -205,6 +208,7 @@ Item {
                     text: qsTr("RF gain")
                 }
                 AbracaSlider {
+                    accessibleName: qsTr("RF gain")
                     id: rfGainSlider
                     Layout.fillWidth: true
                     from: 0
@@ -232,6 +236,7 @@ Item {
                     enabled: settingsBackend.sdrplayGainMode === 0 || settingsBackend.isSdrplayIfAgcChecked === false
                 }
                 AbracaSlider {
+                    accessibleName: qsTr("IF gain")
                     Layout.fillWidth: true
                     enabled: settingsBackend.sdrplayGainMode === 1 && settingsBackend.isSdrplayIfAgcChecked === false
                     from: -59
@@ -284,6 +289,7 @@ Item {
                     text: qsTr("Frequency correction:")
                 }
                 AbracaSpinBox {
+                    accessibleName: qsTr("Frequency correction:")
                     id: freqCorrSpinBox
                     Layout.fillWidth: true
                     from: -100

@@ -278,6 +278,7 @@ Item {
                                         text: qsTr("Slideshow scaling:")
                                     }
                                     AbracaComboBox {
+                                        accessibleName: qsTr("Slideshow scaling:")
                                         id: slsScalingComboBox
                                         property int w: -1
                                         Layout.preferredWidth: w > 0 ? w : implicitWidth
@@ -300,6 +301,7 @@ Item {
                                         text: qsTr("Language:")
                                     }
                                     AbracaComboBox {
+                                        accessibleName: qsTr("Language:")
                                         id: languageComboBox
                                         property int w: -1
                                         Layout.preferredWidth: w > 0 ? w : implicitWidth
@@ -432,6 +434,7 @@ Item {
                                 text: qsTr("Proxy type:")
                             }
                             AbracaComboBox {
+                                accessibleName: qsTr("Proxy type:")
                                 model: settingsBackend.proxyConfigModel
                                 textRole: "itemName"
                                 currentIndex: settingsBackend.proxyConfigModel.currentIndex
@@ -458,6 +461,7 @@ Item {
                                 enabled: settingsBackend.proxyConfigModel.currentIndex === 2
                             }
                             AbracaTextField {
+                                accessibleName: qsTr("Server:")
                                 Layout.fillWidth: true
                                 Layout.columnSpan: 2
                                 enabled: settingsBackend.proxyConfigModel.currentIndex === 2
@@ -474,6 +478,7 @@ Item {
                                 enabled: settingsBackend.proxyConfigModel.currentIndex === 2
                             }
                             AbracaSpinBox {
+                                accessibleName: qsTr("Port:")
                                 from: 0
                                 to: 65535
                                 editable: true
@@ -494,6 +499,7 @@ Item {
                                 text: qsTr("Username:")
                             }
                             AbracaTextField {
+                                accessibleName: qsTr("Username:")
                                 Layout.fillWidth: true
                                 Layout.columnSpan: 2
                                 enabled: settingsBackend.proxyConfigModel.currentIndex === 2
@@ -511,6 +517,7 @@ Item {
                                 enabled: settingsBackend.proxyConfigModel.currentIndex === 2
                             }
                             AbracaTextField {
+                                accessibleName: qsTr("Password:")
                                 Layout.fillWidth: true
                                 Layout.columnSpan: 2
                                 echoMode: TextInput.Password

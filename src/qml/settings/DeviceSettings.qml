@@ -54,6 +54,7 @@ Item {
         }
         Item { Layout.fillHeight: true; Layout.fillWidth: inputDeviceSelectionRow.mobileView;}
         AbracaComboBox {
+            accessibleName: qsTr("Input device:")
             id: deviceSelectionCombo
             enabled: settingsBackend.isInputDeviceSelectionEnabled
             model: settingsBackend.inputsModel

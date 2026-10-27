@@ -71,6 +71,7 @@ Item {
                                 wrapMode: Text.WordWrap
                             }
                             AbracaComboBox {
+                                accessibleName: qsTr("Noise level during audio drop-out:")
                                 id: dropOutLevelCombo
                                 Layout.fillWidth: true
                                 model: settingsBackend.audioNoiseConcealModel
@@ -213,6 +214,7 @@ Item {
                                     text: qsTr("AAC audio decoder:")
                                 }
                                 AbracaComboBox {
+                                    accessibleName: qsTr("AAC audio decoder:")
                                     model: settingsBackend.audioDecoderModel
                                     textRole: "itemName"
                                     currentIndex: settingsBackend.audioDecoderModel.currentIndex
@@ -252,6 +254,7 @@ Item {
                                     visible: UI.isAndroid === false
                                 }
                                 AbracaComboBox {
+                                    accessibleName: qsTr("Audio output framework:")
                                     model: settingsBackend.audioOutputModel
                                     textRole: "itemName"
                                     currentIndex: settingsBackend.audioOutputModel.currentIndex

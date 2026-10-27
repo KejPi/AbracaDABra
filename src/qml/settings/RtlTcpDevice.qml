@@ -50,6 +50,7 @@ Item {
                 text: qsTr("IP address:")
             }
             AbracaTextField {
+                accessibleName: qsTr("IP address:")
                 id: ipAddressField
                 Layout.fillWidth: true
                 defaultText: "127.0.0.1"
@@ -70,6 +71,7 @@ Item {
                 text: qsTr("Port:")
             }
             AbracaSpinBox {
+                accessibleName: qsTr("Port:")
                 from: 0
                 to: 65535
                 locale: Qt.locale("C")
@@ -160,6 +162,7 @@ Item {
                 text: qsTr("Gain")
             }
             AbracaSlider {
+                accessibleName: qsTr("Gain")
                 Layout.fillWidth: true
                 from: 0
                 to: settingsBackend.rtlTcpGainIndexMax
@@ -204,6 +207,7 @@ Item {
                         text: qsTr("Bandwidth:")
                     }
                     AbracaSpinBox {
+                        accessibleName: qsTr("Bandwidth:")
                         id: bandwidthSpinBox
                         Layout.fillWidth: true
                         from: 0
@@ -241,6 +245,7 @@ Item {
                         text: qsTr("SW AGC level threshold:")
                     }
                     AbracaSpinBox {
+                        accessibleName: qsTr("SW AGC level threshold:")
                         id: agcThrSpinBox
                         Layout.fillWidth: true
                         from: 0
@@ -268,6 +273,7 @@ Item {
                         text: qsTr("Frequency correction:")
                     }
                     AbracaSpinBox {
+                        accessibleName: qsTr("Frequency correction:")
                         id: freqCorrSpinBox
                         Layout.fillWidth: true
                         from: -300
@@ -294,6 +300,7 @@ Item {
                         text: qsTr("RF level correction:")
                     }
                     AbracaDoubleSpinBox {
+                        accessibleName: qsTr("RF level correction:")
                         id: rfLevelCorrSpinBox
                         Layout.fillWidth: true
                         stepSizeReal: 1.0

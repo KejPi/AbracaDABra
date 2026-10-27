@@ -54,6 +54,8 @@ Item {
 
         Image {
             id: serviceLogoImage
+            Accessible.role: Accessible.Graphic
+            Accessible.name: qsTr("Service logo")
             Layout.rowSpan: 2
             Layout.preferredWidth: 32
             Layout.preferredHeight: 32

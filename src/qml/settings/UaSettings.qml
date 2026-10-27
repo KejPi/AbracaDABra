@@ -205,6 +205,7 @@ Item {
                                     }
                                 }
                                 AbracaTextField {
+                                    accessibleName: qsTr("SLS folder template")
                                     Layout.fillWidth: true
                                     Layout.leftMargin: slsDataSwitch.labelX
                                     placeholderText: qsTr("SLS folder template")
@@ -229,6 +230,7 @@ Item {
                                     }
                                 }
                                 AbracaTextField {
+                                    accessibleName: qsTr("SPI folder template")
                                     Layout.fillWidth: true
                                     Layout.leftMargin: spiDataSwitch.labelX
                                     placeholderText: qsTr("SPI folder template")

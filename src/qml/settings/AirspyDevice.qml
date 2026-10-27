@@ -45,6 +45,7 @@ Item {
             Layout.fillWidth: true
             spacing: UI.standardMargin
             AbracaComboBox {
+                accessibleName: qsTr("Airspy device")
                 id: airspyCombo
                 Layout.preferredWidth: 100
                 Layout.fillWidth: true
@@ -152,6 +153,7 @@ Item {
                     enabled: settingsBackend.airspyGainMode === 0 || settingsBackend.isAirspySensitivityGainEnabled
                 }
                 AbracaSlider {
+                    accessibleName: qsTr("Sensitivity gain")
                     Layout.fillWidth: true
                     from: 0
                     to: 21
@@ -173,6 +175,7 @@ Item {
                     enabled: settingsBackend.isAirspyManualGainEnabled && settingsBackend.isAirspyLnaAgcChecked === false
                 }
                 AbracaSlider {
+                    accessibleName: qsTr("LNA gain")
                     Layout.fillWidth: true
                     enabled: settingsBackend.isAirspyManualGainEnabled && settingsBackend.isAirspyLnaAgcChecked === false
                     from: 0
@@ -203,6 +206,7 @@ Item {
                     enabled: settingsBackend.isAirspyManualGainEnabled && settingsBackend.isAirspyMixerAgcChecked === false
                 }
                 AbracaSlider {
+                    accessibleName: qsTr("Mixer gain")
                     Layout.fillWidth: true
                     enabled: settingsBackend.isAirspyManualGainEnabled && settingsBackend.isAirspyMixerAgcChecked === false
                     from: 0
@@ -232,6 +236,7 @@ Item {
                     enabled: settingsBackend.airspyGainMode === 1 || settingsBackend.isAirspyManualGainEnabled
                 }
                 AbracaSlider {
+                    accessibleName: qsTr("IF gain")
                     Layout.fillWidth: true
                     from: 0
                     to: 21

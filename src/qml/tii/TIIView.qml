@@ -81,6 +81,7 @@ Item {
             }
             ChartView {
                 id: tiiSpectrumView
+                accessibleName: qsTr("TII spectrum")
                 SplitView.fillWidth: true
                 SplitView.preferredHeight: 150
                 SplitView.minimumHeight: 0

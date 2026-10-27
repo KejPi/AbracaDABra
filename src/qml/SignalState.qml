@@ -65,12 +65,16 @@ Item {
             border.width: 3
             border.color: sigColor
 
+            Accessible.role: Accessible.StaticText
+            Accessible.name: sigToolTip.text.replace(/<br>/g, " ")
+
             MouseArea {
                 id: hoverArea
                 anchors.fill: parent
                 hoverEnabled: true
             }
             AbracaToolTip {
+                id: sigToolTip
                 text: appUI.signalQualityLevel === 0 ?
                         qsTr("DAB signal not detected<br>Looking for signal...")
                             : (appUI.signalQualityLevel > 3 ?

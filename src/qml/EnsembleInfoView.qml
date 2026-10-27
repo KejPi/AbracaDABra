@@ -351,6 +351,7 @@ UndockablePage {
                         }
                     }
                     AbracaSpinBox {
+                        accessibleName: qsTr("Recording timeout")
                         id: timeoutSpinBox
                         enabled: timeoutSwitch.checked && ensembleInfo.isRecordingEnabled && !ensembleInfo.isRecordingOngoing
                         visible: ensembleInfo.isRecordingVisible

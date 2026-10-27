@@ -107,6 +107,7 @@ Rectangle {
                 }
             }
             AbracaSlider {
+                accessibleName: qsTr("Volume")
                 id: volumeSlider                
                 Layout.preferredWidth: 100
                 //Layout.preferredHeight: muteButton.height

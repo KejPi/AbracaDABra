@@ -36,6 +36,8 @@ import abracaComponents
 // blends into the chart background — no visible bar, just a 1 px line.
 SplitView {
     id: root
+    Accessible.role: Accessible.Chart
+    Accessible.name: qsTr("Signal spectrum")
 
     property bool showWaterfall: false
     property var splitterState: null

@@ -36,7 +36,7 @@ ComboBox {
     property string accessibleName: ""
     property string accessibleDescription: ""
 
-    Accessible.name: accessibleName !== "" ? accessibleName : displayText
+    Accessible.name: accessibleName !== "" ? (accessibleName + ": " + displayText) : displayText
     Accessible.description: accessibleDescription
     implicitContentWidthPolicy: ComboBox.WidestTextWhenCompleted
 

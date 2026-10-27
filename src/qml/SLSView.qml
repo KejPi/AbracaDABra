@@ -44,6 +44,8 @@ Item {
             anchors.fill: parent
             fillMode: Image.PreserveAspectFit
             source: slsSource
+            Accessible.role: Accessible.Graphic
+            Accessible.name: backend.toolTip !== "" ? backend.toolTip : qsTr("Slideshow image")
 
             AbracaToolTip {
                 text: backend.toolTip
