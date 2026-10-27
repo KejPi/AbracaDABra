@@ -34,6 +34,7 @@ import abracaComponents
 
 Button {
     id: control
+    focusPolicy: Qt.StrongFocus
 
     property int buttonRole: UI.ButtonRole.Neutral
     property int buttonType: UI.ButtonType.Normal

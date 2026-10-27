@@ -407,8 +407,21 @@ Item {
                 });
             }
 
+            activeFocusOnTab: true
+
+            // Single handler: Keys.onPressed is processed before key-specific handlers
             Keys.onPressed: (event) => {
-                if (event.text.length === 1 && event.text.match(/[^\x00-\x1F\x7F]/)) {
+                if (event.key === Qt.Key_Space) {
+                    if (currentItem) {
+                        currentItem.clicked();
+                    }
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                    if (currentItem) {
+                        currentItem.toggleFavorite();
+                    }
+                    event.accepted = true;
+                } else if (event.text.length === 1 && event.text.match(/[^\x00-\x1F\x7F]/)) {
                     serviceListItem.showFilter();
                     serviceFilter.text = event.text;
                     event.accepted = true;
@@ -423,6 +436,14 @@ Item {
                 required property string smallLogoId
 
                 readonly property bool isSelectedItem: index === serviceList.selectedItemIndex
+
+                focusPolicy: Qt.NoFocus   // keyboard handled by the list
+                Accessible.name: isFavorite ? qsTr("%1, favorite").arg(serviceName) : serviceName
+                Accessible.description: qsTr("Space to select, Enter to toggle favorite")
+
+                function toggleFavorite() {
+                    application.setServiceFavorite(serviceList.model.index(index, 0), !isFavorite);
+                }
 
                 height: itemHeight
                 width: serviceList.width - UI.standardMargin
@@ -494,6 +515,8 @@ Item {
                     // Shared favorite button (used by both views)
                     AbracaImgButton {
                         id: favoriteIcon
+                        focusPolicy: Qt.NoFocus
+                        Accessible.ignored: true
                         anchors.verticalCenter: contentItem.verticalCenter
                         anchors.right: contentItem.right
 
@@ -602,11 +625,34 @@ Item {
                 });
             }
 
-            Keys.onSpacePressed: {
-                if (slTreeSelectionModel.currentIndex.valid) {
-                    //slTreeSelectionModel.select(slTreeSelectionModel.currentIndex, ItemSelectionModel.ClearAndSelect);
-                    let index = serviceTree.index(serviceTree.currentRow, serviceTree.currentColumn);
+            activeFocusOnTab: true
+
+            function activateCurrent() {
+                if (!slTreeSelectionModel.currentIndex.valid) {
+                    return;
+                }
+                let row = serviceTree.currentRow;
+                let index = serviceTree.index(row, serviceTree.currentColumn);
+                if (serviceTree.depth(row) === 0) {
+                    serviceTree.toggleExpanded(row);
+                } else {
                     slTreeSelectionModel.setCurrentIndex(index, ItemSelectionModel.ClearAndSelect);
+                }
+            }
+
+            Keys.onPressed: event => {
+                if (event.key === Qt.Key_Space) {
+                    serviceTree.activateCurrent();
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                    let row = serviceTree.currentRow;
+                    if (slTreeSelectionModel.currentIndex.valid && serviceTree.depth(row) > 0) {
+                        let item = serviceTree.itemAtCell(Qt.point(serviceTree.currentColumn, row));
+                        if (item) {
+                            item.toggleFavorite();
+                        }
+                    }
+                    event.accepted = true;
                 }
             }
 
@@ -635,6 +681,12 @@ Item {
             alternatingRows: false
             delegate: TreeViewDelegate {
                 id: treeViewDelegate
+                focusPolicy: Qt.NoFocus   // keyboard handled by the tree
+
+                function toggleFavorite() {
+                    application.setServiceFavorite(serviceTree.index(row, column), !isFavorite);
+                }
+                Accessible.description: depth > 0 ? qsTr("Space to select, Enter to toggle favorite") : qsTr("Space to expand or collapse")
                 Accessible.role: Accessible.TreeItem
                 Accessible.name: treeViewDelegate.text !== "" ? treeViewDelegate.text : serviceName
                 Accessible.selectable: true
@@ -777,6 +829,8 @@ Item {
                         }
                         AbracaImgButton {
                             id: tFavoriteIcon
+                            focusPolicy: Qt.NoFocus
+                            Accessible.ignored: true
                             visible: depth > 0
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: parent.right

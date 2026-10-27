@@ -30,6 +30,7 @@ import abracaComponents
 
 Slider {
     id: control
+    focusPolicy: Qt.StrongFocus
 
     implicitHeight: UI.controlHeight
 

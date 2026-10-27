@@ -5392,29 +5392,45 @@ it is anonymous and contains no personal data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="508"/>
-        <location filename="../qml/ServiceList.qml" line="791"/>
+        <location filename="../qml/ServiceList.qml" line="441"/>
+        <source>%1, favorite</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="442"/>
+        <location filename="../qml/ServiceList.qml" line="689"/>
+        <source>Space to select, Enter to toggle favorite</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="689"/>
+        <source>Space to expand or collapse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="531"/>
+        <location filename="../qml/ServiceList.qml" line="846"/>
         <source>Remove service from favorites</source>
         <translation>Usuń z listy ulubionych stacji</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="509"/>
-        <location filename="../qml/ServiceList.qml" line="792"/>
+        <location filename="../qml/ServiceList.qml" line="532"/>
+        <location filename="../qml/ServiceList.qml" line="847"/>
         <source>Add service to favorites</source>
         <translation>Dodaj program do ulubionych</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="748"/>
+        <location filename="../qml/ServiceList.qml" line="801"/>
         <source>Remove ensemble</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="1012"/>
+        <location filename="../qml/ServiceList.qml" line="1067"/>
         <source>Services</source>
         <translation>Usługi</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="1015"/>
+        <location filename="../qml/ServiceList.qml" line="1070"/>
         <source>Ensembles</source>
         <translation type="unfinished"></translation>
     </message>

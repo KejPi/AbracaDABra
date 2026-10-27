@@ -32,6 +32,7 @@ import abracaComponents
 
 TextField {
     id: control
+    focusPolicy: Qt.StrongFocus
 
     property string accessibleName: ""
     property string accessibleDescription: ""

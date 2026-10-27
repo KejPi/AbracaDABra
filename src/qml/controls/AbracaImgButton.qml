@@ -33,6 +33,7 @@ import abracaComponents
 
 Button {
     id: control
+    focusPolicy: Qt.StrongFocus
 
     property bool colorizationEnabled: true
     property color colorizationColor: UI.colors.icon

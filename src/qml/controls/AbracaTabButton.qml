@@ -31,6 +31,7 @@ import abracaComponents
 
 TabButton {
     id: control
+    focusPolicy: Qt.StrongFocus
 
     property string accessibleName: ""
     property string accessibleDescription: ""

@@ -32,6 +32,7 @@ import abracaComponents
 
 ComboBox {
     id: control
+    focusPolicy: Qt.StrongFocus
 
     property string accessibleName: ""
     property string accessibleDescription: ""
