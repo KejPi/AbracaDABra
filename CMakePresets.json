@@ -27,7 +27,8 @@
                 "CMAKE_OSX_DEPLOYMENT_TARGET": "11",
                 "APPLE_APP_BUNDLE": "ON",
                 "USE_PORTAUDIO": "ON",
-                "AIRSPY": "OFF",
+                "USE_FDKAAC": "ON",
+                "AIRSPY": "ON",
                 "SOAPYSDR": "ON",
                 "RARTTCP": "OFF"
             },
@@ -47,7 +48,60 @@
                 "CMAKE_OSX_DEPLOYMENT_TARGET": "11",
                 "APPLE_APP_BUNDLE": "ON",
                 "USE_PORTAUDIO": "ON",
-                "AIRSPY": "OFF",
+                "USE_FDKAAC": "ON",
+                "AIRSPY": "ON",
+                "SOAPYSDR": "ON",
+                "RARTTCP": "OFF"
+            },
+            "environment": {
+                "CC": "clang",
+                "CXX": "clang++"
+            }
+        },
+        {
+            "name": "Qt-6.8.3-macos",
+            "displayName": "Qt 6.8.3 macOS Base",
+            "description": "Base configuration for Qt 6.8.3 on macOS",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_PREFIX_PATH": "$env{HOME}/Devel/Qt/6.8.3/macos/lib/cmake"
+            }
+        },
+        {
+            "name": "macos-debug-6.8.3",
+            "displayName": "macOS Debug Qt 6.8.3",
+            "description": "Debug build for macOS with Qt 6.8.3",
+            "binaryDir": "${sourceDir}/build/macos-debug-6.8.3",
+            "inherits": "Qt-6.8.3-macos",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_OSX_DEPLOYMENT_TARGET": "11",
+                "APPLE_APP_BUNDLE": "ON",
+                "USE_PORTAUDIO": "ON",
+                "USE_FDKAAC": "ON",
+                "AIRSPY": "ON",
+                "SOAPYSDR": "ON",
+                "RARTTCP": "OFF"
+            },
+            "environment": {
+                "CC": "clang",
+                "CXX": "clang++"
+            }
+        },
+        {
+            "name": "macos-release-6.8.3",
+            "displayName": "macOS Release Qt 6.8.3",
+            "description": "Release build for macOS with Qt 6.8.3",
+            "binaryDir": "${sourceDir}/build/macos-release-6.8.3",
+            "inherits": "Qt-6.8.3-macos",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_OSX_DEPLOYMENT_TARGET": "11",
+                "APPLE_APP_BUNDLE": "ON",
+                "USE_PORTAUDIO": "ON",
+                "USE_FDKAAC": "ON",
+                "AIRSPY": "ON",
                 "SOAPYSDR": "ON",
                 "RARTTCP": "OFF"
             },
