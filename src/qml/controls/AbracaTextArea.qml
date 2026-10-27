@@ -34,6 +34,12 @@ import abracaComponents
 TextArea {
     id: control
 
+    property string accessibleName: ""
+    property string accessibleDescription: ""
+
+    Accessible.name: accessibleName !== "" ? accessibleName : placeholderText
+    Accessible.description: accessibleDescription
+
     color: UI.colors.textPrimary
     selectionColor: UI.colors.selectionColor
     selectedTextColor: UI.colors.textSelected

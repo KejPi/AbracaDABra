@@ -47,6 +47,17 @@ Button {
 
     property int iconSize: UI.iconSize
 
+    property string accessibleName: ""
+    property string accessibleDescription: ""
+
+    Accessible.role: Accessible.Button
+    Accessible.name: accessibleName !== "" ? accessibleName : (text !== "" ? text : _toolTipText)
+    Accessible.description: accessibleDescription
+    Accessible.checkable: checkable
+    Accessible.checked: checked
+    Accessible.focusable: true
+    Accessible.onPressAction: control.clicked()
+
     readonly property string _toolTipText: control.checkable ? (control.checked ? toolTipChecked : toolTipUnchecked) : toolTipText
 
     icon {

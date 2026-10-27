@@ -279,6 +279,7 @@ AbracaDrawer {
             }
             AbracaImgButton {
                 id: closeButton
+                accessibleName: qsTr("Close")
                 anchors.right: parent.right
                 anchors.rightMargin: UI.standardMargin
                 anchors.top: parent.top

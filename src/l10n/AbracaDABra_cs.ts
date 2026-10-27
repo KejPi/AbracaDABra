@@ -88,9 +88,18 @@
     </message>
 </context>
 <context>
+    <name>AbracaDialog</name>
+    <message>
+        <location filename="../qml/controls/AbracaDialog.qml" line="75"/>
+        <source>Close</source>
+        <translation type="unfinished">Zavřít</translation>
+    </message>
+</context>
+<context>
     <name>AbracaRecordingButton</name>
     <message>
-        <location filename="../qml/controls/AbracaRecordingButton.qml" line="60"/>
+        <location filename="../qml/controls/AbracaRecordingButton.qml" line="44"/>
+        <location filename="../qml/controls/AbracaRecordingButton.qml" line="67"/>
         <source>Stop recording</source>
         <translation>Ukončit záznam</translation>
     </message>
@@ -259,412 +268,412 @@
 <context>
     <name>Application</name>
     <message>
-        <location filename="../application.cpp" line="402"/>
-        <location filename="../application.cpp" line="404"/>
+        <location filename="../application.cpp" line="410"/>
+        <location filename="../application.cpp" line="412"/>
         <source>Mute</source>
         <translation>Vypnout zvuk</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="404"/>
+        <location filename="../application.cpp" line="412"/>
         <source>Unmute</source>
         <translation>Zapnout zvuk</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="480"/>
+        <location filename="../application.cpp" line="486"/>
         <source>Audio coding</source>
         <translation>Kódování zvuku</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="485"/>
+        <location filename="../application.cpp" line="491"/>
         <source>Ongoing announcement</source>
         <translation>Probíhá hlášení</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="990"/>
+        <location filename="../application.cpp" line="1006"/>
         <source>&lt;b&gt;Ensemble:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %5</source>
         <translation>&lt;b&gt;Multiplex:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krátký název:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;ECC:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;EID:&lt;/b&gt; 0x%4&lt;br&gt;&lt;b&gt;Stát:&lt;/b&gt; %5</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1197"/>
+        <location filename="../application.cpp" line="1213"/>
         <source>System time</source>
         <translation>Systémový čas</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1207"/>
-        <location filename="../application.cpp" line="4622"/>
+        <location filename="../application.cpp" line="1223"/>
+        <location filename="../application.cpp" line="4649"/>
         <source>DAB time</source>
         <translation>Čas z DAB vysílání</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1217"/>
+        <location filename="../application.cpp" line="1233"/>
         <source>&lt;b&gt;DAB audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;Kódování zvuku DAB&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1217"/>
+        <location filename="../application.cpp" line="1233"/>
         <source>MPEG-1 layer 2</source>
         <translation>MPEG-1 layer 2</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1221"/>
-        <location filename="../application.cpp" line="1225"/>
-        <location filename="../application.cpp" line="1229"/>
+        <location filename="../application.cpp" line="1237"/>
+        <location filename="../application.cpp" line="1241"/>
+        <location filename="../application.cpp" line="1245"/>
         <source>&lt;b&gt;DAB+ audio encoding&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;Kódování zvuku DAB+&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1221"/>
+        <location filename="../application.cpp" line="1237"/>
         <source>MPEG-4 Low Complexity AAC</source>
         <translation>MPEG-4 Low Complexity AAC</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1225"/>
+        <location filename="../application.cpp" line="1241"/>
         <source>MPEG-4 High Efficiency AAC</source>
         <translation>MPEG-4 High Efficiency AAC</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1229"/>
+        <location filename="../application.cpp" line="1245"/>
         <source>MPEG-4 High Efficiency AAC v2</source>
         <translation>MPEG-4 High Efficiency AAC v2</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1246"/>
+        <location filename="../application.cpp" line="1262"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Sample rate: %2 kHz</source>
         <translation>&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;%1Stereo&lt;br&gt;Vzorkovací frekvence: %2 kHz</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1250"/>
+        <location filename="../application.cpp" line="1266"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Sample rate: %2 kHz (SBR %3)</source>
         <translation>&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;Stereo (PS %1)&lt;br&gt;Vzorkovací frekvence: %2 kHz (SBR %3)</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1251"/>
-        <location filename="../application.cpp" line="1253"/>
+        <location filename="../application.cpp" line="1267"/>
+        <location filename="../application.cpp" line="1269"/>
         <source>on</source>
         <translation>zapnuto</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1251"/>
-        <location filename="../application.cpp" line="1253"/>
+        <location filename="../application.cpp" line="1267"/>
+        <location filename="../application.cpp" line="1269"/>
         <source>off</source>
         <translation>vypnuto</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1261"/>
+        <location filename="../application.cpp" line="1277"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz</source>
         <translation>&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Vzorkovací frekvence: %1 kHz</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1266"/>
+        <location filename="../application.cpp" line="1282"/>
         <source>&lt;b&gt;Audio signal&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Sample rate: %1 kHz (SBR: %2)</source>
         <translation>&lt;b&gt;Formát zvuku&lt;/b&gt;&lt;br&gt;Mono&lt;br&gt;Vzorkovací frekvence: %1 kHz (SBR: %2)</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1287"/>
+        <location filename="../application.cpp" line="1303"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1 (dynamic)</source>
         <translation>&lt;b&gt;Typ programu (PTY)&lt;/b&gt;&lt;br&gt;%1 (dynamický)</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1294"/>
+        <location filename="../application.cpp" line="1310"/>
         <source>&lt;b&gt;Programme Type&lt;/b&gt;&lt;br&gt;%1</source>
         <translation>&lt;b&gt;Typ programu (PTY)&lt;/b&gt;&lt;br&gt;%1</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1314"/>
+        <location filename="../application.cpp" line="1330"/>
         <source>Tuning...  </source>
         <translation>Ladím...  </translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1380"/>
-        <location filename="../application.cpp" line="1392"/>
+        <location filename="../application.cpp" line="1396"/>
+        <location filename="../application.cpp" line="1408"/>
         <source>Tune to %1</source>
         <translation>Přeladit na %1</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1548"/>
+        <location filename="../application.cpp" line="1564"/>
         <source>End of file</source>
         <translation>Konec soubory</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1549"/>
+        <location filename="../application.cpp" line="1565"/>
         <source>Select any service to restart</source>
         <translation>Přehrávání se restartuje po zvolení stanice</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1563"/>
+        <location filename="../application.cpp" line="1579"/>
         <source>Input device error: Device disconnected</source>
         <translation>Chyba vstupního zařízení: Zařízení odpojeno</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1564"/>
-        <location filename="../application.cpp" line="1576"/>
+        <location filename="../application.cpp" line="1580"/>
+        <location filename="../application.cpp" line="1592"/>
         <source>Try to reconnect the device or choose another device in Settings</source>
         <translation>Zkuste zařízení znovu připojit nebo vyberte jiné zařízení v Nastavení</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1575"/>
+        <location filename="../application.cpp" line="1591"/>
         <source>Input device error: No data</source>
         <translation>Chyba vstupního zařízení: Žádná data</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1599"/>
+        <location filename="../application.cpp" line="1615"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you change DAB channel.</source>
         <translation>Probíhá nahrávání zvuku. Záznam bude ukončen a uložen pokud přeladíte na jiný DAB kanál.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1602"/>
+        <location filename="../application.cpp" line="1618"/>
         <source>Audio recording is ongoing. It will be stopped and saved if you switch current service.</source>
         <translation>Probíhá nahrávání zvuku. Záznam bude ukončen a uložen pokud přepnete na jinou stanici.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1607"/>
+        <location filename="../application.cpp" line="1623"/>
         <source>Stop audio recording?</source>
         <translation>Ukončit nahrávání zvuku?</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1624"/>
+        <location filename="../application.cpp" line="1640"/>
         <source>Keep recording</source>
         <translation>Pokračovat v nahrávání</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1625"/>
+        <location filename="../application.cpp" line="1641"/>
         <source>Stop recording and do not ask again</source>
         <translation>Ukončit nahrávání a příště se neptat</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1626"/>
+        <location filename="../application.cpp" line="1642"/>
         <source>Stop recording</source>
         <translation>Ukončit záznam</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1871"/>
+        <location filename="../application.cpp" line="1887"/>
         <source>&lt;b&gt;Service:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Short label:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Language:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Country:&lt;/b&gt; %6</source>
         <translation>&lt;b&gt;Stanice:&lt;/b&gt; %1&lt;br&gt;&lt;b&gt;Krátký název:&lt;/b&gt; %2&lt;br&gt;&lt;b&gt;SId:&lt;/b&gt; 0x%3&lt;br&gt;&lt;b&gt;SCIdS:&lt;/b&gt; %4&lt;br&gt;&lt;b&gt;Jazyk:&lt;/b&gt; %5&lt;br&gt;&lt;b&gt;Stát:&lt;/b&gt; %6</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1939"/>
+        <location filename="../application.cpp" line="1955"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Coderate: %2/%3&lt;br&gt;Capacity units: %4 CU</source>
         <translation>&lt;B&gt;Chybové zabezpečení&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Kódový poměr: %2/%3&lt;br&gt;Kapacitní jednotky: %4 CU</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1950"/>
+        <location filename="../application.cpp" line="1966"/>
         <source>&lt;B&gt;Error protection&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Protection level: %2&lt;br&gt;Capacity units: %3 CU</source>
         <translation>&lt;B&gt;Chybové zabezpečení&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;Kódový poměr: %2&lt;br&gt;Kapacitní jednotky: %3 CU</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1960"/>
+        <location filename="../application.cpp" line="1976"/>
         <source>%1 kbps</source>
         <translation>%1 kb/s</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="1962"/>
+        <location filename="../application.cpp" line="1978"/>
         <source>&lt;b&gt;Service bitrate&lt;/b&gt;&lt;br&gt;Audio &amp; data: %1</source>
         <translation>&lt;b&gt;Datový tok stanice&lt;/b&gt;&lt;br&gt;Audio a data: %1</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2012"/>
+        <location filename="../application.cpp" line="2028"/>
         <source>Service currently unavailable</source>
         <translation>Stanice je nedostupná</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2013"/>
+        <location filename="../application.cpp" line="2029"/>
         <source>Service was removed from ensemble</source>
         <translation>Stanice byla odebraná z multiplexu</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2045"/>
+        <location filename="../application.cpp" line="2061"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;on current service</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Probíhá hlášení&lt;br&gt;na současné stanici</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2059"/>
+        <location filename="../application.cpp" line="2075"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Ongoing announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to suspend this announcement</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Probíhá hlášení&lt;br&gt;Na stanici: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknutím pozastavíte toho hlášení</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2076"/>
+        <location filename="../application.cpp" line="2092"/>
         <source>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Suspended announcement&lt;br&gt;Source service: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Click to resume this announcement</source>
         <translation>&lt;b&gt;%1&lt;/b&gt;&lt;br&gt;Pozastavené hlášení&lt;br&gt;Na stanici: &lt;i&gt;%2&lt;/i&gt;&lt;br&gt;&lt;br&gt;Kliknutím obnovíte toto hlášení</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2121"/>
+        <location filename="../application.cpp" line="2137"/>
         <source>Default audio device</source>
         <translation>Výchozí audio zařízení</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2198"/>
+        <location filename="../application.cpp" line="2214"/>
         <source>Stop audio recording</source>
         <translation>Ukončit nahrávání zvuku</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2204"/>
+        <location filename="../application.cpp" line="2220"/>
         <source>Start audio recording</source>
         <translation>Spustit nahrávání zvuku</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2214"/>
+        <location filename="../application.cpp" line="2230"/>
         <source>Audio recording ongoing (%2 kBytes recorded)
 File: %1</source>
         <translation>Probíhá nahrávání audia (uloženo %2 kByte)
 Soubor: %1</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2222"/>
+        <location filename="../application.cpp" line="2238"/>
         <source>Scheduled audio recording is getting ready</source>
         <translation>Připravuje se plánované nahrávání</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2234"/>
+        <location filename="../application.cpp" line="2250"/>
         <source>Scheduled recording should start in %1 seconds</source>
         <translation>Plánované nahrávání by mělo začít za %1 sekund</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2237"/>
+        <location filename="../application.cpp" line="2253"/>
         <source>Ongoing recording now prevents the start of a scheduled recording. The schedule will be cancelled if you do not choose otherwise. If you select to keep the schedule, the service might be switched.</source>
         <translation>Probíhající nahrávání znemožňuje spuštění plánovaného nahrávání. Plán bude zrušen, pokud nezvolíte jinak.Pokud vyberete pokračovat podle plánu, stanice může být přepnuta.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2250"/>
+        <location filename="../application.cpp" line="2266"/>
         <source>Keep current recording</source>
         <translation>Pokračovat v nahrávání</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2251"/>
+        <location filename="../application.cpp" line="2267"/>
         <source>Keep schedule</source>
         <translation>Pokračovat podle plánu</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2260"/>
+        <location filename="../application.cpp" line="2276"/>
         <source>Scheduled recording starts in %1 seconds</source>
         <translation>Plánované nahrávání začne za %1 sekund</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2263"/>
+        <location filename="../application.cpp" line="2279"/>
         <source>Recording is going to start according to the schedule. The service might be switched if it differs from the current one.</source>
         <translation>Nahrávání začne podle plánu. Stanice může být přepnuta, pokud je jiná než současná stanice.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2274"/>
+        <location filename="../application.cpp" line="2290"/>
         <source>Continue as planned</source>
         <translation>Pokračovat podle plánu</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2275"/>
+        <location filename="../application.cpp" line="2291"/>
         <source>Cancel plan</source>
         <translation>Zrušit plán</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2445"/>
+        <location filename="../application.cpp" line="2461"/>
         <source>SPI MOT directory not complete
 Decoded %1 / %2 MOT objects</source>
         <translation>SPI MOT directory není kompletní
 Dekódováno %1 / %2 MOT objektů</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2449"/>
+        <location filename="../application.cpp" line="2465"/>
         <source>SPI MOT directory complete
 %1 MOT objects decoded</source>
         <translation>SPI MOT directory je kompletní
 %1 MOT objektů dekódováno</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2454"/>
+        <location filename="../application.cpp" line="2470"/>
         <source>SPI MOT directory decoding started</source>
         <translation>Dekódování SPI MOT directory zahájeno</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2653"/>
+        <location filename="../application.cpp" line="2669"/>
         <source>No ensemble</source>
         <translation>Žádný multiplex</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2654"/>
+        <location filename="../application.cpp" line="2670"/>
         <source>No ensemble tuned</source>
         <translation>Není naladěný žádný multiplex</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2665"/>
+        <location filename="../application.cpp" line="2681"/>
         <source>No service</source>
         <translation>Žádná stanice</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="2671"/>
+        <location filename="../application.cpp" line="2687"/>
         <source>No service playing</source>
         <translation>Nepřehrává žádnou stanici</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="449"/>
+        <location filename="../application.cpp" line="457"/>
         <source>Service list exported</source>
         <translation>Seznam stanic vyexportován</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="453"/>
+        <location filename="../application.cpp" line="461"/>
         <source>Failed to export service list</source>
         <translation>Export seznamu stanic selhal</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4750"/>
+        <location filename="../application.cpp" line="4777"/>
         <source>Clear service list?</source>
         <translation>Vymazat seznam stanic?</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4750"/>
+        <location filename="../application.cpp" line="4777"/>
         <source>Current service list including favorites will be deleted. This action is irreversible.</source>
         <translation>Současný seznam stanic včetně oblíbených bude vymazán. Tato akce je nevratná.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4764"/>
+        <location filename="../application.cpp" line="4791"/>
         <source>Clear</source>
         <translation>Vymazat</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4765"/>
-        <location filename="../application.cpp" line="4996"/>
+        <location filename="../application.cpp" line="4792"/>
+        <location filename="../application.cpp" line="5023"/>
         <source>Cancel</source>
         <translation>Zrušit</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4804"/>
-        <location filename="../application.cpp" line="4854"/>
+        <location filename="../application.cpp" line="4831"/>
+        <location filename="../application.cpp" line="4881"/>
         <source>Failed to create backup</source>
         <translation>Vytvoření zálohy selhalo</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4849"/>
+        <location filename="../application.cpp" line="4876"/>
         <source>Settings backup created successfully</source>
         <translation>Záloha byla úspěšně vytvořena</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4880"/>
+        <location filename="../application.cpp" line="4907"/>
         <source>Restore settings?</source>
         <translation>Obnovit nastavení?</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4880"/>
+        <location filename="../application.cpp" line="4907"/>
         <source>Settings will be restored from backup.
 Application will restart after restore.</source>
         <translation>Nastavení bude obnoveno ze zálohy.
 Aplikace se restartuje.</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4893"/>
-        <location filename="../application.cpp" line="4938"/>
+        <location filename="../application.cpp" line="4920"/>
+        <location filename="../application.cpp" line="4965"/>
         <source>Failed to restore settings</source>
         <translation>Obnovení zálohy selhalo</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4903"/>
-        <location filename="../application.cpp" line="4911"/>
+        <location filename="../application.cpp" line="4930"/>
+        <location filename="../application.cpp" line="4938"/>
         <source>Invalid backup file</source>
         <translation>Neplatný soubor zálohy</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4983"/>
+        <location filename="../application.cpp" line="5010"/>
         <source>Settings restored, restarting...</source>
         <translation>Nastavení obnoveno, restartuji...</translation>
     </message>
     <message>
-        <location filename="../application.cpp" line="4995"/>
+        <location filename="../application.cpp" line="5022"/>
         <source>Restore</source>
         <translation>Obnovit</translation>
     </message>
@@ -857,12 +866,12 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
 <context>
     <name>BandScanBackend</name>
     <message>
-        <location filename="../bandscanbackend.cpp" line="61"/>
+        <location filename="../bandscanbackend.cpp" line="46"/>
         <source>Press Start to perform band scan.</source>
         <translation>Vyhledánání stanic spustíte tlačítkem Start.</translation>
     </message>
     <message>
-        <location filename="../bandscanbackend.cpp" line="136"/>
+        <location filename="../bandscanbackend.cpp" line="121"/>
         <source>Scanning channel:</source>
         <translation>Prohledávám kanál:</translation>
     </message>
@@ -873,6 +882,19 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
         <location filename="../qml/CatSLS.qml" line="34"/>
         <source>Categorized slideshow</source>
         <translation>Kategorizovaná slideshow</translation>
+    </message>
+</context>
+<context>
+    <name>CatSLSView</name>
+    <message>
+        <location filename="../qml/CatSLSView.qml" line="70"/>
+        <source>Previous image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/CatSLSView.qml" line="84"/>
+        <source>Next image</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -985,37 +1007,42 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
         <translation>Odhadovaná frekvenční odchylka</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="441"/>
+        <location filename="../qml/DabSignalView.qml" line="424"/>
+        <source>Menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/DabSignalView.qml" line="442"/>
         <source>Show NULL spectrum</source>
         <translation>Zobrazit NULL spektrum</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="448"/>
+        <location filename="../qml/DabSignalView.qml" line="449"/>
         <source>Show waterfall</source>
         <translation>Zobrazit waterfall</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="455"/>
+        <location filename="../qml/DabSignalView.qml" line="456"/>
         <source>Slow update (1.4 sec)</source>
         <translation>Pomalu (1.4 s)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="461"/>
+        <location filename="../qml/DabSignalView.qml" line="462"/>
         <source>Normal update (1 sec)</source>
         <translation>Normální rychlost (1 s)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="467"/>
+        <location filename="../qml/DabSignalView.qml" line="468"/>
         <source>Fast update (600 msec)</source>
         <translation>Rychle (600 ms)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="473"/>
+        <location filename="../qml/DabSignalView.qml" line="474"/>
         <source>Very fast update (400 msec)</source>
         <translation>Velmi rychle (400 ms)</translation>
     </message>
     <message>
-        <location filename="../qml/DabSignalView.qml" line="480"/>
+        <location filename="../qml/DabSignalView.qml" line="481"/>
         <source>Show SNR value</source>
         <translation>Zobrazit hodnotu SNR</translation>
     </message>
@@ -1055,28 +1082,38 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="121"/>
-        <location filename="../qml/epg/EPGView.qml" line="163"/>
+        <location filename="../qml/epg/EPGView.qml" line="164"/>
         <source>Hide services without schedule</source>
         <translation>Skrýt stanice bez programu</translation>
     </message>
     <message>
         <location filename="../qml/epg/EPGView.qml" line="131"/>
-        <location filename="../qml/epg/EPGView.qml" line="173"/>
+        <location filename="../qml/epg/EPGView.qml" line="174"/>
         <source>Show only current ensemble</source>
         <translation>Zobrazit jen současný multiplex</translation>
     </message>
     <message>
-        <location filename="../qml/epg/EPGView.qml" line="215"/>
+        <location filename="../qml/epg/EPGView.qml" line="146"/>
+        <source>Menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/epg/EPGView.qml" line="216"/>
         <source>Current time: </source>
         <translation>Aktuální čas: </translation>
     </message>
     <message>
-        <location filename="../qml/epg/EPGView.qml" line="414"/>
+        <location filename="../qml/epg/EPGView.qml" line="404"/>
         <source>No program available</source>
         <translation>Program není k dispozici</translation>
     </message>
     <message>
-        <location filename="../qml/epg/EPGView.qml" line="599"/>
+        <location filename="../qml/epg/EPGView.qml" line="514"/>
+        <source>Show details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/epg/EPGView.qml" line="590"/>
         <source>Schedule audio recording</source>
         <translation>Naplánovat nahrávání zvuku</translation>
     </message>
@@ -1115,6 +1152,11 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
         <location filename="../qml/EnsembleConfigDrawer.qml" line="86"/>
         <source>Ensemble Information</source>
         <translation>Informace o multiplexu</translation>
+    </message>
+    <message>
+        <location filename="../qml/EnsembleConfigDrawer.qml" line="101"/>
+        <source>Close</source>
+        <translation type="unfinished">Zavřít</translation>
     </message>
 </context>
 <context>
@@ -1890,169 +1932,179 @@ Klikněte na &apos;Přidat&apos; pro vytvoření plánu.</translation>
         <translation>Zobrazit vlajku státu stanice (vyžaduje připojení k internetu)</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="243"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="241"/>
+        <source>Show slide decoding progress</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/OtherSettings.qml" line="256"/>
         <source>Slideshow background:</source>
         <translation>Pozadí slideshow:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="265"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="278"/>
         <source>Slideshow scaling:</source>
         <translation>Škálování slideshow:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="287"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="300"/>
         <source>Language:</source>
         <translation>Jazyk:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="309"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="322"/>
         <source>Restart</source>
         <translation>Restartovat</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="317"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="330"/>
         <source>Language change will take effect after application restart.</source>
         <translation>Změna jazyka se projeví po restartu aplikace.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="333"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="346"/>
         <source>Data storage</source>
         <translation>Ukládání dat</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="350"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="363"/>
         <source>Folder:</source>
         <translation>Složka:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="361"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="374"/>
         <source>Data storage folder...</source>
         <translation>Adresář pro ukládání dat...</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="371"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="384"/>
         <source>Application uses this folder to store all data like audio recording, IQ recording and logs, etc.</source>
         <translation>Aplikace používá tento adresář pro ukládání všech soiuborů jako je záznam zvuku, záznam I, logy, atd.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="378"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="391"/>
         <source>Backup settings</source>
         <translation>Zálohovat nastavení</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="382"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="395"/>
         <source>Restore settings...</source>
         <translation>Obnovit nastavení...</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="393"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="406"/>
         <source>Backup includes application settings, service list and audio recording schedule. Backup file is stored in data storage folder.</source>
         <translation>Záloha zahrnuje nastavení aplikace, seznam stanic a plán nahrávání zvuku. Soubor se zálohou se uloží do adresáře pro ukládání dat.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="407"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="420"/>
         <source>Network proxy configuration</source>
         <translation>Nastavení proxy serveru</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="419"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="432"/>
         <source>Proxy type:</source>
         <translation>Konfigurace:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="435"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="448"/>
         <source>Apply</source>
         <translation>Použít</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="444"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="457"/>
         <source>Server:</source>
         <translation>Server:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="460"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="473"/>
         <source>Port:</source>
         <translation>Port:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="481"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="494"/>
         <source>Username:</source>
         <translation>Jméno:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="497"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="510"/>
         <source>Password:</source>
         <translation>Heslo:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="523"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="536"/>
         <source>FMLIST</source>
         <translation>FMLIST</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="534"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="547"/>
         <source>Upload ensemble information</source>
         <translation>Nahrávat na server informace o multiplexu</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="549"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="562"/>
         <source>Ensemble information is a small CSV file with list of services in the ensemble,
 it is anonymous and contains no personal data.</source>
         <translation>Informace o multiplexu je malý soubor CSV se seznamem stanic v multiplexu,
 je anonymní a neobsahuje žádná osobní data.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="556"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="569"/>
         <source>Application automatically uploads ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</source>
         <translation>Aplikace automaticky nahraje informace o multiplexu na &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="557"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="570"/>
         <source>Upload of ensemble information to &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; is currently disabled.</source>
         <translation>Nahrávání informace o multiplexu na &lt;a href=&quot;https://www.fmlist.org/&quot;&gt;FMLIST&lt;/a&gt; není povoleno.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="565"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="578"/>
         <source>Thank you for supporting the community!</source>
         <translation>Děkujeme, že podporujete komunitu!</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="566"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="579"/>
         <source>Please consider enabling this option to help the community.</source>
         <translation>Zvažte prosím povolení tété volby, pomůžete tím komunitě.</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="589"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="592"/>
+        <source>Raw IQ data recording</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/OtherSettings.qml" line="603"/>
+        <source>Insert XML header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/OtherSettings.qml" line="615"/>
+        <source>Insert GNSS coordinates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/OtherSettings.qml" line="646"/>
         <source>Restore application windows on start</source>
         <translation>Po startu obnovit naposledy otevřená okna</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="602"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="659"/>
         <source>Check for application update on start</source>
         <translation>Zkontrolovat aktualizace při startu aplikace</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="615"/>
-        <source>Include XML header in raw data recording</source>
-        <translation>Vkládat XML záhlaví na začátek souboru při záznamu vstupního signálu</translation>
-    </message>
-    <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="627"/>
-        <source>DAB cable channels (16A - 17D)</source>
-        <translation>DAB kanály kabelové TV (16A - 17D)</translation>
-    </message>
-    <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="666"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="698"/>
         <source>Select SLS Background Color</source>
         <translation>Vybrat pozadí SLS</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="680"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="712"/>
         <source>Data storage folder</source>
         <translation>Složka pro ukládání dat</translation>
     </message>
     <message>
-        <location filename="../qml/settings/OtherSettings.qml" line="704"/>
+        <location filename="../qml/settings/OtherSettings.qml" line="736"/>
         <source>JSON files</source>
         <translation>Soubory JSON</translation>
     </message>
@@ -2142,8 +2194,8 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <translation>Žánr</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="166"/>
-        <location filename="../dabtables.cpp" line="2201"/>
+        <location filename="../dabtables.cpp" line="165"/>
+        <location filename="../dabtables.cpp" line="2200"/>
         <location filename="../dlplusmodel.cpp" line="319"/>
         <source>News</source>
         <translation>Zprávy</translation>
@@ -2159,7 +2211,7 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <translation>Burza</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="172"/>
+        <location filename="../dabtables.cpp" line="171"/>
         <location filename="../dlplusmodel.cpp" line="328"/>
         <source>Sport</source>
         <translation>Sport</translation>
@@ -2185,7 +2237,7 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <translation>Zdraví</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2205"/>
+        <location filename="../dabtables.cpp" line="2204"/>
         <location filename="../dlplusmodel.cpp" line="343"/>
         <source>Event</source>
         <translation>Událost</translation>
@@ -2206,7 +2258,7 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <translation>TV</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2203"/>
+        <location filename="../dabtables.cpp" line="2202"/>
         <location filename="../dlplusmodel.cpp" line="358"/>
         <source>Weather</source>
         <translation>Počasí</translation>
@@ -2217,7 +2269,7 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <translation>Doprava</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2193"/>
+        <location filename="../dabtables.cpp" line="2192"/>
         <location filename="../dlplusmodel.cpp" line="364"/>
         <source>Alarm</source>
         <translation>Alarm</translation>
@@ -2358,1797 +2410,1797 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="228"/>
+        <location filename="../dabtables.cpp" line="227"/>
         <source>None</source>
         <translation>Žádný</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="168"/>
+        <location filename="../dabtables.cpp" line="167"/>
         <source>Current Affairs</source>
         <translation>Aktuální události</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="164"/>
+        <location filename="../dabtables.cpp" line="163"/>
         <source>No programme type</source>
         <translation>Žádný typ programu</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="170"/>
+        <location filename="../dabtables.cpp" line="169"/>
         <source>Information</source>
         <translation>Informace</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="174"/>
+        <location filename="../dabtables.cpp" line="173"/>
         <source>Education</source>
         <translation>Vzdělávání</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="176"/>
+        <location filename="../dabtables.cpp" line="175"/>
         <source>Drama</source>
         <translation>Drama</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="178"/>
+        <location filename="../dabtables.cpp" line="177"/>
         <source>Culture</source>
         <translation>Kultura</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="180"/>
+        <location filename="../dabtables.cpp" line="179"/>
         <source>Science</source>
         <translation>Věda</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="182"/>
+        <location filename="../dabtables.cpp" line="181"/>
         <source>Varied</source>
         <translation>Různé</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="184"/>
+        <location filename="../dabtables.cpp" line="183"/>
         <source>Pop Music</source>
         <translation>Pop</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="186"/>
+        <location filename="../dabtables.cpp" line="185"/>
         <source>Rock Music</source>
         <translation>Rock</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="188"/>
+        <location filename="../dabtables.cpp" line="187"/>
         <source>Easy Listening Music</source>
         <translation>Easy Listening</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="190"/>
+        <location filename="../dabtables.cpp" line="189"/>
         <source>Light Classical</source>
         <translation>Lehká klasika</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="192"/>
+        <location filename="../dabtables.cpp" line="191"/>
         <source>Serious Classical</source>
         <translation>Vážná hudba</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="194"/>
+        <location filename="../dabtables.cpp" line="193"/>
         <source>Other Music</source>
         <translation>Ostatní hudba</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="196"/>
+        <location filename="../dabtables.cpp" line="195"/>
         <source>Weather/meteorology</source>
         <translation>Počasí</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="198"/>
+        <location filename="../dabtables.cpp" line="197"/>
         <source>Finance/Business</source>
         <translation>Finance</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="200"/>
+        <location filename="../dabtables.cpp" line="199"/>
         <source>Children&apos;s programmes</source>
         <translation>Dětský program</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="202"/>
+        <location filename="../dabtables.cpp" line="201"/>
         <source>Social Affairs</source>
         <translation>Společenské události</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="204"/>
+        <location filename="../dabtables.cpp" line="203"/>
         <source>Religion</source>
         <translation>Náboženství</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="206"/>
+        <location filename="../dabtables.cpp" line="205"/>
         <source>Phone In</source>
         <translation>Zavolej</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="208"/>
+        <location filename="../dabtables.cpp" line="207"/>
         <source>Travel</source>
         <translation>Cestování</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="210"/>
+        <location filename="../dabtables.cpp" line="209"/>
         <source>Leisure</source>
         <translation>Odpočinek</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="212"/>
+        <location filename="../dabtables.cpp" line="211"/>
         <source>Jazz Music</source>
         <translation>Jazz</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="214"/>
+        <location filename="../dabtables.cpp" line="213"/>
         <source>Country Music</source>
         <translation>Country</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="216"/>
+        <location filename="../dabtables.cpp" line="215"/>
         <source>National Music</source>
         <translation>Lidovky</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="218"/>
+        <location filename="../dabtables.cpp" line="217"/>
         <source>Oldies Music</source>
         <translation>Oldies</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="220"/>
+        <location filename="../dabtables.cpp" line="219"/>
         <source>Folk Music</source>
         <translation>Folk</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="222"/>
+        <location filename="../dabtables.cpp" line="221"/>
         <source>Documentary</source>
         <translation>Dokument</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="310"/>
+        <location filename="../dabtables.cpp" line="309"/>
         <source>Unknown/NA</source>
         <translation>Neznámý</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="312"/>
+        <location filename="../dabtables.cpp" line="311"/>
         <source>Albanian</source>
         <translation>Albánština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="314"/>
+        <location filename="../dabtables.cpp" line="313"/>
         <source>Breton</source>
         <translation>bretonština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="316"/>
+        <location filename="../dabtables.cpp" line="315"/>
         <source>Catalan</source>
         <translation>katalánština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="318"/>
+        <location filename="../dabtables.cpp" line="317"/>
         <source>Croatian</source>
         <translation>chorvatština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="320"/>
+        <location filename="../dabtables.cpp" line="319"/>
         <source>Welsh</source>
         <translation>velština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="322"/>
+        <location filename="../dabtables.cpp" line="321"/>
         <source>Czech</source>
         <translation>Čeština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="324"/>
+        <location filename="../dabtables.cpp" line="323"/>
         <source>Danish</source>
         <translation>dánština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="326"/>
+        <location filename="../dabtables.cpp" line="325"/>
         <source>German</source>
         <translation>Němčina</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="328"/>
+        <location filename="../dabtables.cpp" line="327"/>
         <source>English</source>
         <translation>angličtina</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="330"/>
+        <location filename="../dabtables.cpp" line="329"/>
         <source>Spanish</source>
         <translation>španělština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="332"/>
+        <location filename="../dabtables.cpp" line="331"/>
         <source>Esperanto</source>
         <translation>esperanto</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="334"/>
+        <location filename="../dabtables.cpp" line="333"/>
         <source>Estonian</source>
         <translation>estonština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="336"/>
+        <location filename="../dabtables.cpp" line="335"/>
         <source>Basque</source>
         <translation>baskitština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="338"/>
+        <location filename="../dabtables.cpp" line="337"/>
         <source>Faroese</source>
         <translation>faerština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="340"/>
+        <location filename="../dabtables.cpp" line="339"/>
         <source>French</source>
         <translation>francouština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="342"/>
+        <location filename="../dabtables.cpp" line="341"/>
         <source>Frisian</source>
         <translation>fríština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="344"/>
+        <location filename="../dabtables.cpp" line="343"/>
         <source>Irish</source>
         <translation>irština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="346"/>
+        <location filename="../dabtables.cpp" line="345"/>
         <source>Gaelic</source>
         <translation>gaelština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="348"/>
+        <location filename="../dabtables.cpp" line="347"/>
         <source>Galician</source>
         <translation>galicijština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="350"/>
+        <location filename="../dabtables.cpp" line="349"/>
         <source>Icelandic</source>
         <translation>islanština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="352"/>
+        <location filename="../dabtables.cpp" line="351"/>
         <source>Italian</source>
         <translation>italština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="354"/>
+        <location filename="../dabtables.cpp" line="353"/>
         <source>Lappish</source>
         <translation>laponština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="356"/>
+        <location filename="../dabtables.cpp" line="355"/>
         <source>Latin</source>
         <translation>latina</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="358"/>
+        <location filename="../dabtables.cpp" line="357"/>
         <source>Latvian</source>
         <translation>lotyština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="360"/>
+        <location filename="../dabtables.cpp" line="359"/>
         <source>Luxembourgian</source>
         <translation>lucemburština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="362"/>
+        <location filename="../dabtables.cpp" line="361"/>
         <source>Lithuanian</source>
         <translation>litevština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="364"/>
+        <location filename="../dabtables.cpp" line="363"/>
         <source>Hungarian</source>
         <translation>maďarština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="366"/>
+        <location filename="../dabtables.cpp" line="365"/>
         <source>Maltese</source>
         <translation>maltština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="368"/>
+        <location filename="../dabtables.cpp" line="367"/>
         <source>Dutch</source>
         <translation>holandština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="370"/>
+        <location filename="../dabtables.cpp" line="369"/>
         <source>Norwegian</source>
         <translation>norština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="372"/>
+        <location filename="../dabtables.cpp" line="371"/>
         <source>Occitan</source>
         <translation>okcitánština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="374"/>
+        <location filename="../dabtables.cpp" line="373"/>
         <source>Polish</source>
         <translation>Polština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="376"/>
+        <location filename="../dabtables.cpp" line="375"/>
         <source>Portuguese</source>
         <translation>portugalština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="378"/>
+        <location filename="../dabtables.cpp" line="377"/>
         <source>Romanian</source>
         <translation>rumunština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="380"/>
+        <location filename="../dabtables.cpp" line="379"/>
         <source>Romansh</source>
         <translation>rétorománština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="382"/>
+        <location filename="../dabtables.cpp" line="381"/>
         <source>Serbian</source>
         <translation>srbština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="384"/>
+        <location filename="../dabtables.cpp" line="383"/>
         <source>Slovak</source>
         <translation>sloveština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="386"/>
+        <location filename="../dabtables.cpp" line="385"/>
         <source>Slovene</source>
         <translation>slovinština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="388"/>
+        <location filename="../dabtables.cpp" line="387"/>
         <source>Finnish</source>
         <translation>finština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="390"/>
+        <location filename="../dabtables.cpp" line="389"/>
         <source>Swedish</source>
         <translation>švédština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="392"/>
+        <location filename="../dabtables.cpp" line="391"/>
         <source>Turkish</source>
         <translation>turečtina</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="394"/>
+        <location filename="../dabtables.cpp" line="393"/>
         <source>Flemish</source>
         <translation>vlámština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="396"/>
+        <location filename="../dabtables.cpp" line="395"/>
         <source>Walloon</source>
         <translation>valonština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="398"/>
+        <location filename="../dabtables.cpp" line="397"/>
         <source>Background sound/clean feed</source>
         <translation>Zvuky na pozadí</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="400"/>
+        <location filename="../dabtables.cpp" line="399"/>
         <source>Zulu</source>
         <translation>zuluština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="402"/>
+        <location filename="../dabtables.cpp" line="401"/>
         <source>Vietnamese</source>
         <translation>vietnamština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="404"/>
+        <location filename="../dabtables.cpp" line="403"/>
         <source>Uzbek</source>
         <translation>uzbečtina</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="406"/>
+        <location filename="../dabtables.cpp" line="405"/>
         <source>Urdu</source>
         <translation>urdština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="408"/>
+        <location filename="../dabtables.cpp" line="407"/>
         <source>Ukranian</source>
         <translation>ukrajinština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="410"/>
+        <location filename="../dabtables.cpp" line="409"/>
         <source>Thai</source>
         <translation>thajština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="412"/>
+        <location filename="../dabtables.cpp" line="411"/>
         <source>Telugu</source>
         <translation>telugština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="414"/>
+        <location filename="../dabtables.cpp" line="413"/>
         <source>Tatar</source>
         <translation>tatarština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="416"/>
+        <location filename="../dabtables.cpp" line="415"/>
         <source>Tamil</source>
         <translation>tamilština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="418"/>
+        <location filename="../dabtables.cpp" line="417"/>
         <source>Tadzhik</source>
         <translation>tádžičtina</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="420"/>
+        <location filename="../dabtables.cpp" line="419"/>
         <source>Swahili</source>
         <translation>svahilština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="422"/>
+        <location filename="../dabtables.cpp" line="421"/>
         <source>Sranan Tongo</source>
         <translation>surinamština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="424"/>
+        <location filename="../dabtables.cpp" line="423"/>
         <source>Somali</source>
         <translation>somálština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="426"/>
+        <location filename="../dabtables.cpp" line="425"/>
         <source>Sinhalese</source>
         <translation>sinhálština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="428"/>
+        <location filename="../dabtables.cpp" line="427"/>
         <source>Shona</source>
         <translation>shonština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="430"/>
+        <location filename="../dabtables.cpp" line="429"/>
         <source>Serbo-Croat</source>
         <translation>srbochorvatština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="432"/>
+        <location filename="../dabtables.cpp" line="431"/>
         <source>Rusyn</source>
         <translation>rusínština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="434"/>
+        <location filename="../dabtables.cpp" line="433"/>
         <source>Russian</source>
         <translation>ruština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="436"/>
+        <location filename="../dabtables.cpp" line="435"/>
         <source>Quechua</source>
         <translation>kečuánština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="438"/>
+        <location filename="../dabtables.cpp" line="437"/>
         <source>Pushtu</source>
         <translation>paštština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="440"/>
+        <location filename="../dabtables.cpp" line="439"/>
         <source>Punjabi</source>
         <translation>paňdžábština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="442"/>
+        <location filename="../dabtables.cpp" line="441"/>
         <source>Persian</source>
         <translation>perština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="444"/>
+        <location filename="../dabtables.cpp" line="443"/>
         <source>Papiamento</source>
         <translation>papiamento</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="446"/>
+        <location filename="../dabtables.cpp" line="445"/>
         <source>Oriya</source>
         <translation>urijština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="448"/>
+        <location filename="../dabtables.cpp" line="447"/>
         <source>Nepali</source>
         <translation>nepálština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="450"/>
+        <location filename="../dabtables.cpp" line="449"/>
         <source>Ndebele</source>
         <translation>ndebele</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="452"/>
+        <location filename="../dabtables.cpp" line="451"/>
         <source>Marathi</source>
         <translation>maráthština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="454"/>
+        <location filename="../dabtables.cpp" line="453"/>
         <source>Moldavian</source>
         <translation>moldavština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="456"/>
+        <location filename="../dabtables.cpp" line="455"/>
         <source>Malaysian</source>
         <translation>malajština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="458"/>
+        <location filename="../dabtables.cpp" line="457"/>
         <source>Malagasay</source>
         <translation>malgaština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="460"/>
+        <location filename="../dabtables.cpp" line="459"/>
         <source>Macedonian</source>
         <translation>makedonština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="462"/>
+        <location filename="../dabtables.cpp" line="461"/>
         <source>Laotian</source>
         <translation>laoština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="464"/>
+        <location filename="../dabtables.cpp" line="463"/>
         <source>Korean</source>
         <translation>korejština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="466"/>
+        <location filename="../dabtables.cpp" line="465"/>
         <source>Khmer</source>
         <translation>khmerština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="468"/>
+        <location filename="../dabtables.cpp" line="467"/>
         <source>Kazakh</source>
         <translation>kazaština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="470"/>
+        <location filename="../dabtables.cpp" line="469"/>
         <source>Kannada</source>
         <translation>kannadština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="472"/>
+        <location filename="../dabtables.cpp" line="471"/>
         <source>Japanese</source>
         <translation>japonština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="474"/>
+        <location filename="../dabtables.cpp" line="473"/>
         <source>Indonesian</source>
         <translation>indonéština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="476"/>
+        <location filename="../dabtables.cpp" line="475"/>
         <source>Hindi</source>
         <translation>hindština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="478"/>
+        <location filename="../dabtables.cpp" line="477"/>
         <source>Hebrew</source>
         <translation>hebrejština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="480"/>
+        <location filename="../dabtables.cpp" line="479"/>
         <source>Hausa</source>
         <translation>hauština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="482"/>
+        <location filename="../dabtables.cpp" line="481"/>
         <source>Gurani</source>
         <translation>guaranština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="484"/>
+        <location filename="../dabtables.cpp" line="483"/>
         <source>Gujurati</source>
         <translation>gudžarátština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="486"/>
+        <location filename="../dabtables.cpp" line="485"/>
         <source>Greek</source>
         <translation>řečtina</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="488"/>
+        <location filename="../dabtables.cpp" line="487"/>
         <source>Georgian</source>
         <translation>gruzínština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="490"/>
+        <location filename="../dabtables.cpp" line="489"/>
         <source>Fulani</source>
         <translation>fulbština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="492"/>
+        <location filename="../dabtables.cpp" line="491"/>
         <source>Dari</source>
         <translation>darí</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="494"/>
+        <location filename="../dabtables.cpp" line="493"/>
         <source>Chuvash</source>
         <translation>čuvaština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="496"/>
+        <location filename="../dabtables.cpp" line="495"/>
         <source>Chinese</source>
         <translation>čínština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="498"/>
+        <location filename="../dabtables.cpp" line="497"/>
         <source>Burmese</source>
         <translation>barmština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="500"/>
+        <location filename="../dabtables.cpp" line="499"/>
         <source>Bulgarian</source>
         <translation>bulharština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="502"/>
+        <location filename="../dabtables.cpp" line="501"/>
         <source>Bengali</source>
         <translation>bengálština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="504"/>
+        <location filename="../dabtables.cpp" line="503"/>
         <source>Belorussian</source>
         <translation>běloruština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="506"/>
+        <location filename="../dabtables.cpp" line="505"/>
         <source>Bambora</source>
         <translation>bambarština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="508"/>
+        <location filename="../dabtables.cpp" line="507"/>
         <source>Azerbaijani</source>
         <translation>ázerbájdžánština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="510"/>
+        <location filename="../dabtables.cpp" line="509"/>
         <source>Assamese</source>
         <translation>ásámština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="512"/>
+        <location filename="../dabtables.cpp" line="511"/>
         <source>Armenian</source>
         <translation>arménština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="514"/>
+        <location filename="../dabtables.cpp" line="513"/>
         <source>Arabic</source>
         <translation>arabština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="516"/>
+        <location filename="../dabtables.cpp" line="515"/>
         <source>Amharic</source>
         <translation>amharština</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="518"/>
-        <location filename="../dabtables.cpp" line="1221"/>
-        <location filename="../dabtables.cpp" line="2217"/>
+        <location filename="../dabtables.cpp" line="517"/>
+        <location filename="../dabtables.cpp" line="1220"/>
+        <location filename="../dabtables.cpp" line="2216"/>
         <source>Unknown</source>
         <translation>neznámý</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="767"/>
+        <location filename="../dabtables.cpp" line="766"/>
         <source>USA/Puerto Rico</source>
         <translation>USA/Portoriko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="772"/>
+        <location filename="../dabtables.cpp" line="771"/>
         <source>Canada</source>
         <translation>Kanada</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="774"/>
+        <location filename="../dabtables.cpp" line="773"/>
         <source>Greenland</source>
         <translation>Grónsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="776"/>
+        <location filename="../dabtables.cpp" line="775"/>
         <source>Anguilla</source>
         <translation>Anguilla</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="778"/>
+        <location filename="../dabtables.cpp" line="777"/>
         <source>Antigua and Barbuda</source>
         <translation>Antigua a Barbuda</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="780"/>
+        <location filename="../dabtables.cpp" line="779"/>
         <source>Ecuador</source>
         <translation>Ekvádor</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="782"/>
+        <location filename="../dabtables.cpp" line="781"/>
         <source>Falkland Islands</source>
         <translation>Falklanské ostrovy</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="784"/>
+        <location filename="../dabtables.cpp" line="783"/>
         <source>Barbados</source>
         <translation>Barbados</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="786"/>
+        <location filename="../dabtables.cpp" line="785"/>
         <source>Belize</source>
         <translation>Belize</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="788"/>
+        <location filename="../dabtables.cpp" line="787"/>
         <source>Cayman Islands</source>
         <translation>Kajmanské ostrovy</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="790"/>
+        <location filename="../dabtables.cpp" line="789"/>
         <source>Costa Rica</source>
         <translation>Kostarika</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="792"/>
+        <location filename="../dabtables.cpp" line="791"/>
         <source>Cuba</source>
         <translation>Kuba</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="794"/>
+        <location filename="../dabtables.cpp" line="793"/>
         <source>Argentina</source>
         <translation>Argentina</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="796"/>
-        <location filename="../dabtables.cpp" line="869"/>
+        <location filename="../dabtables.cpp" line="795"/>
+        <location filename="../dabtables.cpp" line="868"/>
         <source>Brazil</source>
         <translation>Brazílie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="798"/>
+        <location filename="../dabtables.cpp" line="797"/>
         <source>Bermuda</source>
         <translation>Bermudy</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="800"/>
+        <location filename="../dabtables.cpp" line="799"/>
         <source>Netherlands Antilles</source>
         <translation>Nizozemské Antily</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="802"/>
+        <location filename="../dabtables.cpp" line="801"/>
         <source>Guadeloupe</source>
         <translation>Guadeloupe</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="804"/>
+        <location filename="../dabtables.cpp" line="803"/>
         <source>Bahamas</source>
         <translation>Bahamy</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="806"/>
+        <location filename="../dabtables.cpp" line="805"/>
         <source>Bolivia</source>
         <translation>Bolívie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="808"/>
+        <location filename="../dabtables.cpp" line="807"/>
         <source>Colombia</source>
         <translation>Kolumbie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="810"/>
+        <location filename="../dabtables.cpp" line="809"/>
         <source>Jamaica</source>
         <translation>Jamajka</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="812"/>
+        <location filename="../dabtables.cpp" line="811"/>
         <source>Martinique</source>
         <translation>Martinik</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="814"/>
+        <location filename="../dabtables.cpp" line="813"/>
         <source>Paraguay</source>
         <translation>Paraguay</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="816"/>
+        <location filename="../dabtables.cpp" line="815"/>
         <source>Nicaragua</source>
         <translation>Nikaragua</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="818"/>
+        <location filename="../dabtables.cpp" line="817"/>
         <source>Panama</source>
         <translation>Panama</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="820"/>
+        <location filename="../dabtables.cpp" line="819"/>
         <source>Dominica</source>
         <translation>Dominika</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="822"/>
+        <location filename="../dabtables.cpp" line="821"/>
         <source>Dominican Republic</source>
         <translation>Dominikánská republika</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="824"/>
+        <location filename="../dabtables.cpp" line="823"/>
         <source>Chile</source>
         <translation>Chile</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="826"/>
+        <location filename="../dabtables.cpp" line="825"/>
         <source>Grenada</source>
         <translation>Grenada</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="828"/>
+        <location filename="../dabtables.cpp" line="827"/>
         <source>Turks and Caicos islands</source>
         <translation>Turks a Caicos</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="830"/>
+        <location filename="../dabtables.cpp" line="829"/>
         <source>Guyana</source>
         <translation>Guyana</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="832"/>
+        <location filename="../dabtables.cpp" line="831"/>
         <source>Guatemala</source>
         <translation>Guatemala</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="834"/>
+        <location filename="../dabtables.cpp" line="833"/>
         <source>Honduras</source>
         <translation>Honduras</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="836"/>
+        <location filename="../dabtables.cpp" line="835"/>
         <source>Aruba</source>
         <translation>Aruba</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="838"/>
+        <location filename="../dabtables.cpp" line="837"/>
         <source>Montserrat</source>
         <translation>Montserrat</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="840"/>
+        <location filename="../dabtables.cpp" line="839"/>
         <source>Trinidad and Tobago</source>
         <translation>Trinidad a Tobago</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="842"/>
+        <location filename="../dabtables.cpp" line="841"/>
         <source>Peru</source>
         <translation>Peru</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="844"/>
+        <location filename="../dabtables.cpp" line="843"/>
         <source>Surinam</source>
         <translation>Surinam</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="846"/>
+        <location filename="../dabtables.cpp" line="845"/>
         <source>Uruguay</source>
         <translation>Uruguay</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="848"/>
+        <location filename="../dabtables.cpp" line="847"/>
         <source>St. Kitts</source>
         <translation>Svatý Kryštof</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="850"/>
+        <location filename="../dabtables.cpp" line="849"/>
         <source>St. Lucia</source>
         <translation>Svatá Lucie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="852"/>
+        <location filename="../dabtables.cpp" line="851"/>
         <source>El Salvador</source>
         <translation>Salvador</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="854"/>
+        <location filename="../dabtables.cpp" line="853"/>
         <source>Haiti</source>
         <translation>Haiti</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="856"/>
+        <location filename="../dabtables.cpp" line="855"/>
         <source>Venezuela</source>
         <translation>Venezuela</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="858"/>
-        <location filename="../dabtables.cpp" line="864"/>
+        <location filename="../dabtables.cpp" line="857"/>
+        <location filename="../dabtables.cpp" line="863"/>
         <source>Mexico</source>
         <translation>Mexiko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="860"/>
+        <location filename="../dabtables.cpp" line="859"/>
         <source>St. Vincent</source>
         <translation>Svatý Vincenc</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="871"/>
+        <location filename="../dabtables.cpp" line="870"/>
         <source>St. Pierre and Miquelon</source>
         <translation>St. Pierre a Miquelon</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="874"/>
+        <location filename="../dabtables.cpp" line="873"/>
         <source>Cameroon</source>
         <translation>Kamerun</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="876"/>
+        <location filename="../dabtables.cpp" line="875"/>
         <source>Central African Republic</source>
         <translation>Středoafrická republika</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="878"/>
+        <location filename="../dabtables.cpp" line="877"/>
         <source>Djibouti</source>
         <translation>Džibutsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="880"/>
+        <location filename="../dabtables.cpp" line="879"/>
         <source>Madagascar</source>
         <translation>Madagaskar</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="882"/>
+        <location filename="../dabtables.cpp" line="881"/>
         <source>Mali</source>
         <translation>Mali</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="884"/>
+        <location filename="../dabtables.cpp" line="883"/>
         <source>Angola</source>
         <translation>Angola</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="886"/>
+        <location filename="../dabtables.cpp" line="885"/>
         <source>Equatorial Guinea</source>
         <translation>Rovníková Guinea</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="888"/>
+        <location filename="../dabtables.cpp" line="887"/>
         <source>Gabon</source>
         <translation>Gabon</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="890"/>
+        <location filename="../dabtables.cpp" line="889"/>
         <source>Republic of Guinea</source>
         <translation>Guinea</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="892"/>
+        <location filename="../dabtables.cpp" line="891"/>
         <source>South Africa</source>
         <translation>Jihoafrická republika</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="894"/>
+        <location filename="../dabtables.cpp" line="893"/>
         <source>Burkina Faso</source>
         <translation>Burkina Faso</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="896"/>
+        <location filename="../dabtables.cpp" line="895"/>
         <source>Congo</source>
         <translation>Kongo</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="898"/>
+        <location filename="../dabtables.cpp" line="897"/>
         <source>Togo</source>
         <translation>Togo</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="900"/>
+        <location filename="../dabtables.cpp" line="899"/>
         <source>Benin</source>
         <translation>Benin</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="902"/>
+        <location filename="../dabtables.cpp" line="901"/>
         <source>Malawi</source>
         <translation>Malawi</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="904"/>
+        <location filename="../dabtables.cpp" line="903"/>
         <source>Namibia</source>
         <translation>Namibie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="906"/>
+        <location filename="../dabtables.cpp" line="905"/>
         <source>Liberia</source>
         <translation>Libérie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="908"/>
+        <location filename="../dabtables.cpp" line="907"/>
         <source>Ghana</source>
         <translation>Ghana</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="910"/>
+        <location filename="../dabtables.cpp" line="909"/>
         <source>Mauritania</source>
         <translation>Mauritánie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="912"/>
+        <location filename="../dabtables.cpp" line="911"/>
         <source>Sao Tome and Principe</source>
         <translation>Svatý Tomáš a Princův ostrov</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="914"/>
+        <location filename="../dabtables.cpp" line="913"/>
         <source>Cape Verde</source>
         <translation>Kapverdy</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="916"/>
+        <location filename="../dabtables.cpp" line="915"/>
         <source>Senegal</source>
         <translation>Senegal</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="918"/>
+        <location filename="../dabtables.cpp" line="917"/>
         <source>Gambia</source>
         <translation>Gambie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="920"/>
+        <location filename="../dabtables.cpp" line="919"/>
         <source>Burundi</source>
         <translation>Burundi</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="922"/>
+        <location filename="../dabtables.cpp" line="921"/>
         <source>Ascension Island</source>
         <translation>Ascension</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="924"/>
+        <location filename="../dabtables.cpp" line="923"/>
         <source>Botswana</source>
         <translation>Botswana</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="926"/>
+        <location filename="../dabtables.cpp" line="925"/>
         <source>Comoros</source>
         <translation>Komory</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="928"/>
+        <location filename="../dabtables.cpp" line="927"/>
         <source>Tanzania</source>
         <translation>Tanzánie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="930"/>
+        <location filename="../dabtables.cpp" line="929"/>
         <source>Ethiopia</source>
         <translation>Etiopie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="932"/>
+        <location filename="../dabtables.cpp" line="931"/>
         <source>Nigeria</source>
         <translation>Nigerie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="934"/>
+        <location filename="../dabtables.cpp" line="933"/>
         <source>Sierra Leone</source>
         <translation>Sierra Leone</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="936"/>
+        <location filename="../dabtables.cpp" line="935"/>
         <source>Zimbabwe</source>
         <translation>Zimbabwe</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="938"/>
+        <location filename="../dabtables.cpp" line="937"/>
         <source>Mozambique</source>
         <translation>Mosambik</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="940"/>
+        <location filename="../dabtables.cpp" line="939"/>
         <source>Uganda</source>
         <translation>Uganda</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="942"/>
+        <location filename="../dabtables.cpp" line="941"/>
         <source>Swaziland</source>
         <translation>Svazijsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="944"/>
+        <location filename="../dabtables.cpp" line="943"/>
         <source>Kenya</source>
         <translation>Keňa</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="946"/>
+        <location filename="../dabtables.cpp" line="945"/>
         <source>Somalia</source>
         <translation>Somálsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="948"/>
+        <location filename="../dabtables.cpp" line="947"/>
         <source>Niger</source>
         <translation>Niger</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="950"/>
+        <location filename="../dabtables.cpp" line="949"/>
         <source>Chad</source>
         <translation>Čad</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="952"/>
+        <location filename="../dabtables.cpp" line="951"/>
         <source>Guinea-Bissau</source>
         <translation>Guinea-Bissau</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="954"/>
+        <location filename="../dabtables.cpp" line="953"/>
         <source>Zaire</source>
         <translation>Zair</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="956"/>
+        <location filename="../dabtables.cpp" line="955"/>
         <source>Cote d&apos;Ivoire</source>
         <translation>Pobřeží slonoviny</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="958"/>
+        <location filename="../dabtables.cpp" line="957"/>
         <source>Zanzibar</source>
         <translation>Zanzibar</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="960"/>
+        <location filename="../dabtables.cpp" line="959"/>
         <source>Zambia</source>
         <translation>Zambie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="962"/>
+        <location filename="../dabtables.cpp" line="961"/>
         <source>Western Sahara</source>
         <translation>Západní Sahara</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="964"/>
+        <location filename="../dabtables.cpp" line="963"/>
         <source>Rwanda</source>
         <translation>Rwanda</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="966"/>
+        <location filename="../dabtables.cpp" line="965"/>
         <source>Lesotho</source>
         <translation>Lesotho</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="968"/>
+        <location filename="../dabtables.cpp" line="967"/>
         <source>Seychelles</source>
         <translation>Seychely</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="970"/>
+        <location filename="../dabtables.cpp" line="969"/>
         <source>Mauritius</source>
         <translation>Mauricius</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="972"/>
+        <location filename="../dabtables.cpp" line="971"/>
         <source>Sudan</source>
         <translation>Súdán</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="975"/>
-        <location filename="../dabtables.cpp" line="999"/>
+        <location filename="../dabtables.cpp" line="974"/>
+        <location filename="../dabtables.cpp" line="998"/>
         <source>Germany</source>
         <translation>Německo</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="977"/>
+        <location filename="../dabtables.cpp" line="976"/>
         <source>Algeria</source>
         <translation>Alžírsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="979"/>
+        <location filename="../dabtables.cpp" line="978"/>
         <source>Andorra</source>
         <translation>Andora</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="981"/>
+        <location filename="../dabtables.cpp" line="980"/>
         <source>Israel</source>
         <translation>Izrael</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="983"/>
+        <location filename="../dabtables.cpp" line="982"/>
         <source>Italy</source>
         <translation>Itálie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="985"/>
+        <location filename="../dabtables.cpp" line="984"/>
         <source>Belgium</source>
         <translation>Belgie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="987"/>
+        <location filename="../dabtables.cpp" line="986"/>
         <source>Russian Federation</source>
         <translation>Rusko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="989"/>
+        <location filename="../dabtables.cpp" line="988"/>
         <source>Palestine</source>
         <translation>Palestina</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="991"/>
+        <location filename="../dabtables.cpp" line="990"/>
         <source>Albania</source>
         <translation>Albánie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="993"/>
+        <location filename="../dabtables.cpp" line="992"/>
         <source>Austria</source>
         <translation>Rakousko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="995"/>
+        <location filename="../dabtables.cpp" line="994"/>
         <source>Hungary</source>
         <translation>Maďarsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="997"/>
+        <location filename="../dabtables.cpp" line="996"/>
         <source>Malta</source>
         <translation>Malta</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1001"/>
+        <location filename="../dabtables.cpp" line="1000"/>
         <source>Egypt</source>
         <translation>Egypt</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1003"/>
+        <location filename="../dabtables.cpp" line="1002"/>
         <source>Greece</source>
         <translation>Řecko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1005"/>
+        <location filename="../dabtables.cpp" line="1004"/>
         <source>Cyprus</source>
         <translation>Kypr</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1007"/>
+        <location filename="../dabtables.cpp" line="1006"/>
         <source>San Marino</source>
         <translation>San Marino</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1009"/>
+        <location filename="../dabtables.cpp" line="1008"/>
         <source>Switzerland</source>
         <translation>Švýcarsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1011"/>
+        <location filename="../dabtables.cpp" line="1010"/>
         <source>Jordan</source>
         <translation>Jordánsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1013"/>
+        <location filename="../dabtables.cpp" line="1012"/>
         <source>Finland</source>
         <translation>Finsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1015"/>
+        <location filename="../dabtables.cpp" line="1014"/>
         <source>Luxembourg</source>
         <translation>Lucembursko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1017"/>
+        <location filename="../dabtables.cpp" line="1016"/>
         <source>Bulgaria</source>
         <translation>Bulharsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1019"/>
+        <location filename="../dabtables.cpp" line="1018"/>
         <source>Denmark</source>
         <translation>Dánsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1022"/>
+        <location filename="../dabtables.cpp" line="1021"/>
         <source>Gibraltar</source>
         <translation>Gibraltar</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1024"/>
+        <location filename="../dabtables.cpp" line="1023"/>
         <source>Iraq</source>
         <translation>Irák</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1026"/>
+        <location filename="../dabtables.cpp" line="1025"/>
         <source>United Kingdom</source>
         <translation>Spojené království</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1028"/>
+        <location filename="../dabtables.cpp" line="1027"/>
         <source>Libya</source>
         <translation>Libye</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1030"/>
+        <location filename="../dabtables.cpp" line="1029"/>
         <source>Romania</source>
         <translation>Rumunsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1032"/>
+        <location filename="../dabtables.cpp" line="1031"/>
         <source>France</source>
         <translation>Francie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1034"/>
+        <location filename="../dabtables.cpp" line="1033"/>
         <source>Morocco</source>
         <translation>Maroko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1036"/>
+        <location filename="../dabtables.cpp" line="1035"/>
         <source>Czech Republic</source>
         <translation>Česká republika</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1038"/>
+        <location filename="../dabtables.cpp" line="1037"/>
         <source>Poland</source>
         <translation>Polsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1040"/>
+        <location filename="../dabtables.cpp" line="1039"/>
         <source>Vatican</source>
         <translation>Vatikán</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1042"/>
+        <location filename="../dabtables.cpp" line="1041"/>
         <source>Slovakia</source>
         <translation>Slovensko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1044"/>
+        <location filename="../dabtables.cpp" line="1043"/>
         <source>Syria</source>
         <translation>Sýrie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1046"/>
+        <location filename="../dabtables.cpp" line="1045"/>
         <source>Tunisia</source>
         <translation>Tunisko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1048"/>
+        <location filename="../dabtables.cpp" line="1047"/>
         <source>Liechtenstein</source>
         <translation>Lichtenštejnsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1050"/>
+        <location filename="../dabtables.cpp" line="1049"/>
         <source>Iceland</source>
         <translation>Island</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1052"/>
+        <location filename="../dabtables.cpp" line="1051"/>
         <source>Monaco</source>
         <translation>Monako</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1054"/>
+        <location filename="../dabtables.cpp" line="1053"/>
         <source>Lithuania</source>
         <translation>Litva</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1056"/>
+        <location filename="../dabtables.cpp" line="1055"/>
         <source>Serbia</source>
         <translation>Srbsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1058"/>
+        <location filename="../dabtables.cpp" line="1057"/>
         <source>Spain</source>
         <translation>Španělsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1061"/>
+        <location filename="../dabtables.cpp" line="1060"/>
         <source>Norway</source>
         <translation>Norsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1063"/>
+        <location filename="../dabtables.cpp" line="1062"/>
         <source>Montenegro</source>
         <translation>Černá hora</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1065"/>
+        <location filename="../dabtables.cpp" line="1064"/>
         <source>Ireland</source>
         <translation>Irsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1067"/>
+        <location filename="../dabtables.cpp" line="1066"/>
         <source>Turkey</source>
         <translation>Turecko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1069"/>
+        <location filename="../dabtables.cpp" line="1068"/>
         <source>Tajikistan</source>
         <translation>Tádžikistán</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1071"/>
+        <location filename="../dabtables.cpp" line="1070"/>
         <source>Netherlands</source>
         <translation>Nizozemsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1073"/>
+        <location filename="../dabtables.cpp" line="1072"/>
         <source>Latvia</source>
         <translation>Lotyšsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1075"/>
+        <location filename="../dabtables.cpp" line="1074"/>
         <source>Lebanon</source>
         <translation>Libanon</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1077"/>
+        <location filename="../dabtables.cpp" line="1076"/>
         <source>Azerbaijan</source>
         <translation>Ázerbájdžán</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1079"/>
+        <location filename="../dabtables.cpp" line="1078"/>
         <source>Croatia</source>
         <translation>Chorvatsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1081"/>
+        <location filename="../dabtables.cpp" line="1080"/>
         <source>Kazakhstan</source>
         <translation>Kazachstán</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1083"/>
+        <location filename="../dabtables.cpp" line="1082"/>
         <source>Sweden</source>
         <translation>Švédsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1085"/>
+        <location filename="../dabtables.cpp" line="1084"/>
         <source>Belarus</source>
         <translation>Bělorusko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1087"/>
+        <location filename="../dabtables.cpp" line="1086"/>
         <source>Moldova</source>
         <translation>Moldavsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1089"/>
+        <location filename="../dabtables.cpp" line="1088"/>
         <source>Estonia</source>
         <translation>Estonsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1091"/>
+        <location filename="../dabtables.cpp" line="1090"/>
         <source>Macedonia</source>
         <translation>Makedonie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1093"/>
+        <location filename="../dabtables.cpp" line="1092"/>
         <source>Ukraine</source>
         <translation>Ukrajina</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1095"/>
+        <location filename="../dabtables.cpp" line="1094"/>
         <source>Kosovo</source>
         <translation>Kosovo</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1099"/>
+        <location filename="../dabtables.cpp" line="1098"/>
         <source>Portugal</source>
         <translation>Portugalsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1101"/>
+        <location filename="../dabtables.cpp" line="1100"/>
         <source>Slovenia</source>
         <translation>Slovinsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1103"/>
+        <location filename="../dabtables.cpp" line="1102"/>
         <source>Armenia</source>
         <translation>Arménie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1105"/>
+        <location filename="../dabtables.cpp" line="1104"/>
         <source>Uzbekistan</source>
         <translation>Uzbekistán</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1107"/>
+        <location filename="../dabtables.cpp" line="1106"/>
         <source>Georgia</source>
         <translation>Gruzie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1109"/>
+        <location filename="../dabtables.cpp" line="1108"/>
         <source>Turkmenistan</source>
         <translation>Turkmenistán</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1111"/>
+        <location filename="../dabtables.cpp" line="1110"/>
         <source>Bosnia Herzegovina</source>
         <translation>Bosna a Hercegovina</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1113"/>
+        <location filename="../dabtables.cpp" line="1112"/>
         <source>Kyrgyzstan</source>
         <translation>Kyrgyzstán</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1116"/>
+        <location filename="../dabtables.cpp" line="1115"/>
         <source>Australia: Capital Cities (commercial and community broadcasters)</source>
         <translation>Austrálie: Hlavní města (komerční a místní vysílání)</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1118"/>
+        <location filename="../dabtables.cpp" line="1117"/>
         <source>Australia: Regional New South Wales and ACT</source>
         <translation>Austrálie: Region Nový Jižní Wales a ACT</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1120"/>
+        <location filename="../dabtables.cpp" line="1119"/>
         <source>Australia: Capital Cities (national broadcasters)</source>
         <translation>Australia: Hlavní města (národní vysílání)</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1122"/>
+        <location filename="../dabtables.cpp" line="1121"/>
         <source>Australia: Regional Queensland</source>
         <translation>Austrálie: Region Queensland</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1124"/>
+        <location filename="../dabtables.cpp" line="1123"/>
         <source>Australia: Regional South Australia and Northern Territory</source>
         <translation>Austrálie: Region Jižní Austrálie a Severní teritorium</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1126"/>
+        <location filename="../dabtables.cpp" line="1125"/>
         <source>Australia: Regional Western Australia</source>
         <translation>Austrálie: Region Západní Austrálie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1128"/>
+        <location filename="../dabtables.cpp" line="1127"/>
         <source>Australia: Regional Victoria and Tasmania</source>
         <translation>Austálie: Region Victoria a Tasmania</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1130"/>
+        <location filename="../dabtables.cpp" line="1129"/>
         <source>Australia: Regional (future)</source>
         <translation>Austrálie: Region (budoucí)</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1132"/>
+        <location filename="../dabtables.cpp" line="1131"/>
         <source>Saudi Arabia</source>
         <translation>Saudská Arábie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1134"/>
+        <location filename="../dabtables.cpp" line="1133"/>
         <source>Afghanistan</source>
         <translation>Afgánistán</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1136"/>
+        <location filename="../dabtables.cpp" line="1135"/>
         <source>Myanmar (Burma)</source>
         <translation>Myanmar (Burma)</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1138"/>
+        <location filename="../dabtables.cpp" line="1137"/>
         <source>China</source>
         <translation>Čína</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1140"/>
+        <location filename="../dabtables.cpp" line="1139"/>
         <source>Korea (North)</source>
         <translation>Severní Korea</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1142"/>
+        <location filename="../dabtables.cpp" line="1141"/>
         <source>Bahrain</source>
         <translation>Bahrain</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1144"/>
+        <location filename="../dabtables.cpp" line="1143"/>
         <source>Malaysia</source>
         <translation>Malajsie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1146"/>
+        <location filename="../dabtables.cpp" line="1145"/>
         <source>Kiribati</source>
         <translation>Kiribati</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1148"/>
+        <location filename="../dabtables.cpp" line="1147"/>
         <source>Bhutan</source>
         <translation>Bhútán</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1150"/>
+        <location filename="../dabtables.cpp" line="1149"/>
         <source>Bangladesh</source>
         <translation>Bangladéš</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1152"/>
+        <location filename="../dabtables.cpp" line="1151"/>
         <source>Pakistan</source>
         <translation>Pákistán</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1154"/>
+        <location filename="../dabtables.cpp" line="1153"/>
         <source>Fiji</source>
         <translation>Fidži</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1156"/>
+        <location filename="../dabtables.cpp" line="1155"/>
         <source>Oman</source>
         <translation>Omán</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1158"/>
+        <location filename="../dabtables.cpp" line="1157"/>
         <source>Nauru</source>
         <translation>Nauru</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1160"/>
+        <location filename="../dabtables.cpp" line="1159"/>
         <source>Iran</source>
         <translation>Írán</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1162"/>
+        <location filename="../dabtables.cpp" line="1161"/>
         <source>New Zealand</source>
         <translation>Nový Zéland</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1164"/>
+        <location filename="../dabtables.cpp" line="1163"/>
         <source>Solomon Islands</source>
         <translation>Šalomounovy ostrovy</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1166"/>
+        <location filename="../dabtables.cpp" line="1165"/>
         <source>Brunei Darussalam</source>
         <translation>Brunej Darussalam</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1168"/>
+        <location filename="../dabtables.cpp" line="1167"/>
         <source>Sri Lanka</source>
         <translation>Srí Lanka</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1170"/>
+        <location filename="../dabtables.cpp" line="1169"/>
         <source>Taiwan</source>
         <translation>Taiwan</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1172"/>
+        <location filename="../dabtables.cpp" line="1171"/>
         <source>Korea (South)</source>
         <translation>Jižní Korea</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1174"/>
+        <location filename="../dabtables.cpp" line="1173"/>
         <source>Hong Kong</source>
         <translation>Hongkong</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1176"/>
+        <location filename="../dabtables.cpp" line="1175"/>
         <source>Kuwait</source>
         <translation>Kuvajt</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1178"/>
+        <location filename="../dabtables.cpp" line="1177"/>
         <source>Qatar</source>
         <translation>Katar</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1180"/>
+        <location filename="../dabtables.cpp" line="1179"/>
         <source>Cambodia</source>
         <translation>Kambodža</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1182"/>
+        <location filename="../dabtables.cpp" line="1181"/>
         <source>Western Samoa</source>
         <translation>Samoa</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1184"/>
+        <location filename="../dabtables.cpp" line="1183"/>
         <source>India</source>
         <translation>Indie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1186"/>
+        <location filename="../dabtables.cpp" line="1185"/>
         <source>Macau</source>
         <translation>Macau</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1188"/>
+        <location filename="../dabtables.cpp" line="1187"/>
         <source>Vietnam</source>
         <translation>Vietnam</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1190"/>
+        <location filename="../dabtables.cpp" line="1189"/>
         <source>Philippines</source>
         <translation>Filipíny</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1192"/>
+        <location filename="../dabtables.cpp" line="1191"/>
         <source>Japan</source>
         <translation>Japonsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1194"/>
+        <location filename="../dabtables.cpp" line="1193"/>
         <source>Singapore</source>
         <translation>Singapur</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1196"/>
+        <location filename="../dabtables.cpp" line="1195"/>
         <source>Maldives</source>
         <translation>Maledivy</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1198"/>
+        <location filename="../dabtables.cpp" line="1197"/>
         <source>Indonesia</source>
         <translation>Indonésie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1200"/>
+        <location filename="../dabtables.cpp" line="1199"/>
         <source>United Arab Emirates</source>
         <translation>Spojené arabské emiráty</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1202"/>
+        <location filename="../dabtables.cpp" line="1201"/>
         <source>Nepal</source>
         <translation>Nelál</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1204"/>
+        <location filename="../dabtables.cpp" line="1203"/>
         <source>Vanuatu</source>
         <translation>Vanuatu</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1206"/>
+        <location filename="../dabtables.cpp" line="1205"/>
         <source>Laos</source>
         <translation>Laos</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1208"/>
+        <location filename="../dabtables.cpp" line="1207"/>
         <source>Thailand</source>
         <translation>Thajsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1210"/>
+        <location filename="../dabtables.cpp" line="1209"/>
         <source>Tonga</source>
         <translation>Tonga</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1212"/>
+        <location filename="../dabtables.cpp" line="1211"/>
         <source>Papua New Guinea</source>
         <translation>Papua Nová Guinea</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1214"/>
+        <location filename="../dabtables.cpp" line="1213"/>
         <source>Yemen</source>
         <translation>Jemen</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1216"/>
+        <location filename="../dabtables.cpp" line="1215"/>
         <source>Micronesia</source>
         <translation>Mikronésie</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="1218"/>
+        <location filename="../dabtables.cpp" line="1217"/>
         <source>Mongolia</source>
         <translation>Mongolsko</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2195"/>
+        <location filename="../dabtables.cpp" line="2194"/>
         <source>Traffic News</source>
         <translation>Dopravní informace</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2197"/>
+        <location filename="../dabtables.cpp" line="2196"/>
         <source>Transport News</source>
         <translation>Cestovní zprávy</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2199"/>
+        <location filename="../dabtables.cpp" line="2198"/>
         <source>Warning</source>
         <translation>Varování</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2207"/>
+        <location filename="../dabtables.cpp" line="2206"/>
         <source>Special event</source>
         <translation>Speciální událost</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2209"/>
+        <location filename="../dabtables.cpp" line="2208"/>
         <source>Radio Info</source>
         <translation>Radio info</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2211"/>
+        <location filename="../dabtables.cpp" line="2210"/>
         <source>Sport news</source>
         <translation>Sportovní zprávy</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2213"/>
+        <location filename="../dabtables.cpp" line="2212"/>
         <source>Financial news</source>
         <translation>Finanční zprávy</translation>
     </message>
     <message>
-        <location filename="../dabtables.cpp" line="2215"/>
+        <location filename="../dabtables.cpp" line="2214"/>
         <source>Alarm Test</source>
         <translation>Test alarmu</translation>
     </message>
@@ -4220,26 +4272,31 @@ je anonymní a neobsahuje žádná osobní data.</translation>
     </message>
     <message>
         <location filename="../qml/settings/RawFileDevice.qml" line="176"/>
+        <source>GNSS coordinates:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/settings/RawFileDevice.qml" line="179"/>
         <source>Sample rate [Hz]:</source>
         <translation>Vzorkovací frekvence [Hz]:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="179"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="182"/>
         <source>Frequency [kHz]:</source>
         <translation>Frekvence [kHz]:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="182"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="185"/>
         <source>Recording length [sec]:</source>
         <translation>Délka záznamu [s]:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="185"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="188"/>
         <source>Sample format:</source>
         <translation>Formát vzorků:</translation>
     </message>
     <message>
-        <location filename="../qml/settings/RawFileDevice.qml" line="211"/>
+        <location filename="../qml/settings/RawFileDevice.qml" line="214"/>
         <source>Binary files</source>
         <translation>Binární soubory</translation>
     </message>
@@ -4474,32 +4531,32 @@ je anonymní a neobsahuje žádná osobní data.</translation>
 <context>
     <name>SLSBackend</name>
     <message>
-        <location filename="../slsbackend.cpp" line="105"/>
+        <location filename="../slsbackend.cpp" line="109"/>
         <source>Ongoing announcement:</source>
         <translation>Probíhá hlášení:</translation>
     </message>
     <message>
-        <location filename="../slsbackend.cpp" line="151"/>
+        <location filename="../slsbackend.cpp" line="155"/>
         <source>&lt;b&gt;Category:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Kategorie:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../slsbackend.cpp" line="161"/>
+        <location filename="../slsbackend.cpp" line="165"/>
         <source>&lt;b&gt;Resolution:&lt;/b&gt; %1x%2 pixels&lt;br&gt;</source>
         <translation>&lt;b&gt;Rozlišení:&lt;/b&gt; %1x%2 pixelů&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../slsbackend.cpp" line="162"/>
+        <location filename="../slsbackend.cpp" line="166"/>
         <source>&lt;b&gt;Size:&lt;/b&gt; %1 bytes&lt;br&gt;</source>
         <translation>&lt;b&gt;Velikost:&lt;/b&gt; %1 byte&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../slsbackend.cpp" line="163"/>
+        <location filename="../slsbackend.cpp" line="167"/>
         <source>&lt;b&gt;Format:&lt;/b&gt; %1&lt;br&gt;</source>
         <translation>&lt;b&gt;Formát:&lt;/b&gt; %1&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../slsbackend.cpp" line="164"/>
+        <location filename="../slsbackend.cpp" line="168"/>
         <source>&lt;b&gt;Content name:&lt;/b&gt; &quot;%1&quot;</source>
         <translation>&lt;b&gt;Název:&lt;/b&gt; &quot;%1&quot;</translation>
     </message>
@@ -4507,14 +4564,19 @@ je anonymní a neobsahuje žádná osobní data.</translation>
 <context>
     <name>SLSView</name>
     <message>
-        <location filename="../qml/SLSView.qml" line="51"/>
+        <location filename="../qml/SLSView.qml" line="55"/>
         <source>Save to file</source>
         <translation>Uložit do souboru</translation>
     </message>
     <message>
-        <location filename="../qml/SLSView.qml" line="55"/>
+        <location filename="../qml/SLSView.qml" line="59"/>
         <source>Copy to clipboard</source>
         <translation>Kopírovat do schránky</translation>
+    </message>
+    <message>
+        <location filename="../qml/SLSView.qml" line="109"/>
+        <source>Decoded %1 of %2 bytes (%3%)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4851,6 +4913,11 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <source>Clear local (known) transmitter database</source>
         <translation>Vymazat databázi místních (známých) vysílačů</translation>
     </message>
+    <message>
+        <location filename="../qml/tii/ScannerSetupDrawer.qml" line="282"/>
+        <source>Close</source>
+        <translation type="unfinished">Zavřít</translation>
+    </message>
 </context>
 <context>
     <name>ScannerView</name>
@@ -4920,64 +4987,69 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <translation>Ukončit prohledávání</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="290"/>
+        <location filename="../qml/tii/ScannerView.qml" line="266"/>
+        <source>Menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/tii/ScannerView.qml" line="291"/>
         <source>Incremental scan</source>
         <translation>Inkrementální vyhledávání</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="297"/>
+        <location filename="../qml/tii/ScannerView.qml" line="298"/>
         <source>Clear scan results on start</source>
         <translation>Vymazat výsledky při startu</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="303"/>
+        <location filename="../qml/tii/ScannerView.qml" line="304"/>
         <source>Hide local (known) transmitters</source>
         <translation>Skrýt místní (známé) vysílače</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="309"/>
+        <location filename="../qml/tii/ScannerView.qml" line="310"/>
         <source>AutoSave JSON</source>
         <translation>Automaticky uložit JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="316"/>
+        <location filename="../qml/tii/ScannerView.qml" line="317"/>
         <source>AutoSave CSV</source>
         <translation>Automaticky uložit CSV</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="324"/>
+        <location filename="../qml/tii/ScannerView.qml" line="325"/>
         <source>Save as JSON</source>
         <translation>Uložit jako JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="329"/>
+        <location filename="../qml/tii/ScannerView.qml" line="330"/>
         <source>Save as CSV</source>
         <translation>Uložit jako CSV</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="334"/>
+        <location filename="../qml/tii/ScannerView.qml" line="335"/>
         <source>Load from file...</source>
         <translation>Načíst ze souboru...</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="539"/>
         <location filename="../qml/tii/ScannerView.qml" line="540"/>
+        <location filename="../qml/tii/ScannerView.qml" line="541"/>
         <source>JSON files</source>
         <translation>Soubory JSON</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="339"/>
+        <location filename="../qml/tii/ScannerView.qml" line="340"/>
         <source>Clear scan results</source>
         <translation>Vymazat výsledky prohledávání</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="344"/>
+        <location filename="../qml/tii/ScannerView.qml" line="345"/>
         <source>Clear local (known) transmitter database</source>
         <translation>Vymazat databázi místních (známých) vysílačů</translation>
     </message>
     <message>
-        <location filename="../qml/tii/ScannerView.qml" line="539"/>
         <location filename="../qml/tii/ScannerView.qml" line="540"/>
+        <location filename="../qml/tii/ScannerView.qml" line="541"/>
         <source>CSV files</source>
         <translation>Soubory CSV</translation>
     </message>
@@ -5260,64 +5332,74 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <translation>Nepoužívat proxy</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="892"/>
-        <location filename="../settingsbackend.cpp" line="930"/>
-        <location filename="../settingsbackend.cpp" line="2102"/>
+        <location filename="../settingsbackend.cpp" line="894"/>
+        <location filename="../settingsbackend.cpp" line="932"/>
+        <location filename="../settingsbackend.cpp" line="2105"/>
         <source>N/A</source>
         <translation>Nedostupný</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="945"/>
+        <location filename="../settingsbackend.cpp" line="947"/>
         <source>RTL SDR device connected</source>
         <translation>RTL SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="948"/>
+        <location filename="../settingsbackend.cpp" line="950"/>
         <source>RTL TCP device connected</source>
         <translation>RTL TCP zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="951"/>
+        <location filename="../settingsbackend.cpp" line="953"/>
         <source>No device connected</source>
         <translation>Žádné zařízení není připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="954"/>
+        <location filename="../settingsbackend.cpp" line="956"/>
         <source>Raw file connected</source>
         <translation>Raw soubor připojen</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="957"/>
+        <location filename="../settingsbackend.cpp" line="959"/>
         <source>Airspy device connected</source>
         <translation>Airspy zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="960"/>
+        <location filename="../settingsbackend.cpp" line="962"/>
         <source>Soapy SDR device connected</source>
         <translation>Soapy SDR zařízení připojeno</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1434"/>
+        <location filename="../settingsbackend.cpp" line="1436"/>
         <source>Update failed</source>
         <translation>Aktualizace selhala</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1444"/>
+        <location filename="../settingsbackend.cpp" line="1446"/>
         <source>Last update: </source>
         <translation>Poslední aktualizace: </translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1448"/>
+        <location filename="../settingsbackend.cpp" line="1450"/>
         <source>Data not available</source>
         <translation>Není k dispozici</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.cpp" line="1810"/>
+        <location filename="../settingsbackend.cpp" line="1481"/>
+        <source>yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsbackend.cpp" line="1481"/>
+        <source>no</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settingsbackend.cpp" line="1813"/>
         <source>sec</source>
         <translation>s</translation>
     </message>
     <message>
-        <location filename="../settingsbackend.h" line="413"/>
+        <location filename="../settingsbackend.h" line="415"/>
         <source>No file selected</source>
         <translation>Není vybraný soubor</translation>
     </message>
@@ -5597,12 +5679,12 @@ Vyberte adresář pro ukládání dat and schvalte přístupová práva.</transl
 <context>
     <name>TIIMap</name>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="445"/>
+        <location filename="../qml/tii/TIIMap.qml" line="471"/>
         <source>Stop logging</source>
         <translation>Zastavit logování</translation>
     </message>
     <message>
-        <location filename="../qml/tii/TIIMap.qml" line="445"/>
+        <location filename="../qml/tii/TIIMap.qml" line="471"/>
         <source>Record CSV log</source>
         <translation>Zaznamenat CSV log</translation>
     </message>
@@ -5776,22 +5858,22 @@ Vyberte adresář pro ukládání dat and schvalte přístupová práva.</transl
 <context>
     <name>TxMapBackend</name>
     <message>
-        <location filename="../tii/txmapbackend.cpp" line="311"/>
+        <location filename="../tii/txmapbackend.cpp" line="197"/>
         <source>Ensemble: &lt;b&gt;%1&lt;/b&gt;</source>
         <translation>Multiplex: &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/txmapbackend.cpp" line="316"/>
+        <location filename="../tii/txmapbackend.cpp" line="202"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</source>
         <translation>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt; | TX: &lt;b&gt;%3&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/txmapbackend.cpp" line="324"/>
+        <location filename="../tii/txmapbackend.cpp" line="210"/>
         <source>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</source>
         <translation>ECC: &lt;b&gt;%1&lt;/b&gt; | EID: &lt;b&gt;%2&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../tii/txmapbackend.cpp" line="313"/>
+        <location filename="../tii/txmapbackend.cpp" line="199"/>
         <source>Channel: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</source>
         <translation>Kanál: &lt;b&gt;%1 (%2 kHz)&lt;/b&gt;</translation>
     </message>

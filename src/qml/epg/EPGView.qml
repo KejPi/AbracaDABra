@@ -143,6 +143,7 @@ Rectangle {
             id: mobileControls
             AbracaImgButton {
                 id: menuButton
+                accessibleName: qsTr("Menu")
                 source: UI.imagesUrl + "icon-config.svg"
                 onClicked: optionsMenu.open()
 
@@ -510,6 +511,7 @@ Rectangle {
 
                     AbracaImgButton {
                         id: expandButtonIcon
+                        accessibleName: qsTr("Show details")
                         sourceChecked: UI.imagesUrl + "icon-sidebar-left.svg"
                         sourceUnchecked: UI.imagesUrl + "icon-sidebar-left.svg"
                         colorizationColor: checked ? UI.colors.accent : UI.colors.buttonTextNeutral

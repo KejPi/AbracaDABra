@@ -32,6 +32,12 @@ import abracaComponents
 
 ComboBox {
     id: control
+
+    property string accessibleName: ""
+    property string accessibleDescription: ""
+
+    Accessible.name: accessibleName !== "" ? accessibleName : displayText
+    Accessible.description: accessibleDescription
     implicitContentWidthPolicy: ComboBox.WidestTextWhenCompleted
 
     property int delegateCount: 7

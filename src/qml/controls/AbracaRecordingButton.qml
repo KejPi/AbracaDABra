@@ -41,6 +41,13 @@ Item {
     // Signal emitted when recording is stopped
     signal clicked
 
+    property string accessibleName: qsTr("Stop recording")
+    Accessible.role: Accessible.Button
+    Accessible.name: accessibleName
+    Accessible.focusable: interactive
+    Accessible.ignored: !interactive
+    Accessible.onPressAction: if (interactive) { recordingButton.clicked(); }
+
     Rectangle {
         id: redCircle
         anchors.fill: parent

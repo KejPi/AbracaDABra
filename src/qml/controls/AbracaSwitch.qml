@@ -32,6 +32,11 @@ import abracaComponents
 Switch {
     id: control
     property string toolTipText: ""
+    property string accessibleName: ""
+    property string accessibleDescription: ""
+
+    Accessible.name: accessibleName !== "" ? accessibleName : text
+    Accessible.description: accessibleDescription !== "" ? accessibleDescription : toolTipText
     readonly property int labelX: control.leftPadding + control.indicator.width + UI.standardMargin
     property int elideMode: Text.ElideRight
     property int wrapMode: Text.NoWrap

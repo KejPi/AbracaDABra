@@ -105,6 +105,13 @@ FocusScope {
 
             readonly property bool isSelectedItem: index === listview.selectedRow
 
+            Accessible.role: Accessible.RadioButton
+            Accessible.name: shortLabel
+            Accessible.checkable: true
+            Accessible.checked: isSelectedItem
+            Accessible.focusable: true
+            Accessible.onPressAction: mouseArea.clicked(null)
+
             height: buttonSize
             width: buttonSize
             enabled: isEnabled
@@ -166,6 +173,13 @@ FocusScope {
             required property int index
 
             readonly property bool isSelectedItem: index === listview.selectedRow
+
+            Accessible.role: Accessible.RadioButton
+            Accessible.name: shortLabel
+            Accessible.checkable: true
+            Accessible.checked: isSelectedItem
+            Accessible.focusable: true
+            Accessible.onPressAction: selectItem()
 
             enabled: isEnabled
             height: buttonSize
@@ -246,6 +260,13 @@ FocusScope {
 
             readonly property bool isSelectedItem: index === listview.selectedRow
 
+            Accessible.role: Accessible.RadioButton
+            Accessible.name: shortLabel
+            Accessible.checkable: true
+            Accessible.checked: isSelectedItem
+            Accessible.focusable: true
+            Accessible.onPressAction: mouseArea.clicked(null)
+
             height: buttonSize
             width: buttonSize
             enabled: isEnabled
@@ -295,6 +316,13 @@ FocusScope {
             required property int index
 
             readonly property bool isSelectedItem: index === listview.selectedRow
+
+            Accessible.role: Accessible.RadioButton
+            Accessible.name: shortLabel
+            Accessible.checkable: true
+            Accessible.checked: isSelectedItem
+            Accessible.focusable: true
+            Accessible.onPressAction: selectItem()
 
             enabled: isEnabled
             height: buttonSize

@@ -421,6 +421,7 @@ Rectangle {
 
         AbracaImgButton {
             id: menuButton
+            accessibleName: qsTr("Menu")
             source: UI.imagesUrl + "icon-config.svg"
             onClicked: optionsMenu.open()
 

@@ -263,6 +263,7 @@ Item {
                 }
                 AbracaImgButton {
                     id: menuButton
+                    accessibleName: qsTr("Menu")
                     source: UI.imagesUrl + "icon-config.svg"
                     onClicked: {
                         if (channelSelectButton.visible) {

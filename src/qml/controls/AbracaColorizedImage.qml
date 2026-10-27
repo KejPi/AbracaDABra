@@ -32,6 +32,7 @@ import abracaComponents 1.0
 
 Item {
     id: mainItem
+    Accessible.ignored: true
     property alias image: image
     property alias source: image.source
     property alias sourceSize: image.sourceSize

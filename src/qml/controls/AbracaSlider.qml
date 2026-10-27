@@ -33,6 +33,13 @@ Slider {
 
     implicitHeight: UI.controlHeight
 
+    property string accessibleName: ""
+    property string accessibleDescription: ""
+
+    Accessible.role: Accessible.Slider
+    Accessible.name: accessibleName
+    Accessible.description: accessibleDescription
+
     layer.enabled: !control.enabled    // for correct opacity handling
     opacity: control.enabled ? 1.0 : 0.5
 

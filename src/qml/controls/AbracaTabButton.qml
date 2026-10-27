@@ -32,6 +32,12 @@ import abracaComponents
 TabButton {
     id: control
 
+    property string accessibleName: ""
+    property string accessibleDescription: ""
+
+    Accessible.name: accessibleName !== "" ? accessibleName : text
+    Accessible.description: accessibleDescription
+
     implicitHeight: UI.controlHeight
     implicitWidth: fontMetrics.boundingRect(control.text).width + 40
 

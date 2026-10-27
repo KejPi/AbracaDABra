@@ -67,6 +67,7 @@ Item {
 
         AbracaImgButton {
             id: backButton
+            accessibleName: qsTr("Previous image")
             Layout.preferredWidth: 50
             source: UI.imagesUrl + "chevron-left.svg"
             onClicked: catSlsBackend.onBackButtonClicked()
@@ -80,6 +81,7 @@ Item {
         }
         AbracaImgButton {
             id: fwdButton
+            accessibleName: qsTr("Next image")
             Layout.preferredWidth: 50
             source: UI.imagesUrl + "chevron-right.svg"
             onClicked: catSlsBackend.onFwdButtonClicked()

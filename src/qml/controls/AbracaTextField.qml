@@ -33,6 +33,12 @@ import abracaComponents
 TextField {
     id: control
 
+    property string accessibleName: ""
+    property string accessibleDescription: ""
+
+    Accessible.name: accessibleName !== "" ? accessibleName : placeholderText
+    Accessible.description: accessibleDescription
+
     signal cleared()
 
     property string defaultText: ""

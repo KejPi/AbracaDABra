@@ -34,6 +34,12 @@ import abracaComponents
 CheckBox {
     id: control
 
+    property string accessibleName: ""
+    property string accessibleDescription: ""
+
+    Accessible.name: accessibleName !== "" ? accessibleName : text
+    Accessible.description: accessibleDescription
+
     onPressed: forceActiveFocus()
 
     indicator: Item {

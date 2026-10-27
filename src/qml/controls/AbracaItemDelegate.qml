@@ -32,6 +32,13 @@ ItemDelegate {
     id: control
     implicitHeight: UI.controlHeight
 
+    Accessible.role: Accessible.ListItem
+    Accessible.name: text
+    Accessible.selectable: true
+    Accessible.selected: highlighted
+    Accessible.focusable: true
+    Accessible.onPressAction: control.clicked()
+
     contentItem: AbracaLabel {
         rightPadding: control.spacing
         text: control.text

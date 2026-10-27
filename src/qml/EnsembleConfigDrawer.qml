@@ -98,6 +98,7 @@ AbracaDrawer {
             }
             AbracaImgButton {
                 id: closeButton
+                accessibleName: qsTr("Close")
                 source: UI.imagesUrl + "close.svg"
                 // anchors.verticalCenter: titleLabel.verticalCenter
                 // anchors.right: titleLabel.right

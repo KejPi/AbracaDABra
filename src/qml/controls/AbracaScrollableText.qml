@@ -31,6 +31,13 @@ import abracaComponents
 
 Item {
     id: control
+
+    property string accessibleName: ""
+    property string accessibleDescription: ""
+
+    Accessible.name: accessibleName !== "" ? accessibleName : text
+    Accessible.description: accessibleDescription
+    Accessible.role: Accessible.StaticText
     property alias text: label.text
 
     Flickable {

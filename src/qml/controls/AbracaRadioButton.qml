@@ -31,6 +31,12 @@ import abracaComponents
 RadioButton {
     id: control
 
+    property string accessibleName: ""
+    property string accessibleDescription: ""
+
+    Accessible.name: accessibleName !== "" ? accessibleName : text
+    Accessible.description: accessibleDescription
+
     text: "RadioButton"
     checked: true
 

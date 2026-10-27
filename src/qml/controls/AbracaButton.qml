@@ -42,6 +42,14 @@ Button {
     property string iconSource: ""
     property color iconColor: textColor
     property string toolTipText: ""
+    property string accessibleName: ""
+    property string accessibleDescription: ""
+
+    Accessible.role: Accessible.Button
+    Accessible.name: accessibleName !== "" ? accessibleName : (text !== "" ? text : toolTipText)
+    Accessible.description: accessibleDescription
+    Accessible.focusable: true
+    Accessible.onPressAction: control.clicked()
 
     hoverEnabled: true
 

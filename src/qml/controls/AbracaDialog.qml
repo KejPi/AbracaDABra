@@ -72,6 +72,7 @@ Dialog {
         }
         AbracaImgButton {
             id: closeButton
+            accessibleName: qsTr("Close")
             visible: dialog.canEscape
             source: UI.imagesUrl + "close.svg"
             colorizationColor: UI.colors.iconInactive

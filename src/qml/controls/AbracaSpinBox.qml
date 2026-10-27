@@ -31,6 +31,12 @@ import abracaComponents
 SpinBox {
     id: control
 
+    property string accessibleName: ""
+    property string accessibleDescription: ""
+
+    Accessible.name: accessibleName !== "" ? accessibleName : ""
+    Accessible.description: accessibleDescription
+
     property string suffix: ""
     property int specialValue: 0
     property string specialValueString: ""
