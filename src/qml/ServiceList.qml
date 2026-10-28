@@ -597,8 +597,8 @@ Item {
             Keys.onTabPressed: (event) => UI.handleTab("tree", event, true)
             Keys.onBacktabPressed: (event) => UI.handleTab("tree", event, false)
             Accessible.role: Accessible.Tree
-            Accessible.name: qsTr("Service list")
-            Accessible.description: activeFocus ? qsTr("Use up and down arrows to move, Space to select service or expand ensemble, Enter to toggle favorite") : ""
+            Accessible.name: qsTr("Ensemble tree")
+            Accessible.description: activeFocus ? qsTr("Use up and down arrows to move, Space to select service, to collapse or expand ensemble, Enter to toggle favorite") : ""
             anchors.fill: serviceTreeItem
             anchors.leftMargin: isPortrait ? UI.standardMargin : 0
             topMargin: UI.standardMargin
@@ -636,11 +636,45 @@ Item {
                 target: slTreeSelectionModel
                 function onCurrentChanged(current, previous) {
                     serviceTree.showCurrent(current);
+                    if (serviceTree.activeFocus) {
+                        treeAnnounceTimer.restart();
+                    }
                     if (serviceTree.swipedRow >= 0) {
                         serviceTree.closeSwipeForRow(-1);
                         serviceTree.swipedRow = -1;
                     }
                 }
+            }
+
+            // The TreeView does not expose its current cell to screen readers, so describe it explicitly
+            Timer {
+                id: treeAnnounceTimer
+                interval: 120
+                onTriggered: serviceTree.announceCurrentRow()
+            }
+
+            function announceCurrentRow() {
+                if (!slTreeSelectionModel.currentIndex.valid) {
+                    return;
+                }
+                const row = serviceTree.currentRow;
+                const idx = serviceTree.index(row, 0);
+                const item = serviceTree.itemAtCell(Qt.point(0, row));
+                const name = item ? item.serviceName : serviceTree.model.data(idx, Qt.DisplayRole);
+                let msg;
+                if (serviceTree.depth(row) === 0) {
+                    const channel = item ? item.channel : "";
+                    const state = serviceTree.isExpanded(row) ? qsTr("expanded") : qsTr("collapsed");
+                    msg = channel !== "" ? qsTr("%1 on channel %2, %3").arg(name).arg(channel).arg(state)
+                                         : qsTr("%1, %2").arg(name).arg(state);
+                } else {
+                    const ensemble = serviceTree.model.data(idx.parent, Qt.DisplayRole);
+                    msg = qsTr("%1, service from %2 ensemble").arg(name).arg(ensemble);
+                    if (item && item.isFavorite) {
+                        msg += ", " + qsTr("favorite service");
+                    }
+                }
+                serviceTree.Accessible.announce(msg, Accessible.Assertive);
             }
 
             onCurrentRowChanged: {
@@ -706,10 +740,28 @@ Item {
                 }
             }
 
+            function announceExpandedState(row) {
+                if (!serviceTree.activeFocus || row !== serviceTree.currentRow || serviceTree.depth(row) !== 0) {
+                    return;
+                }
+                const item = serviceTree.itemAtCell(Qt.point(0, row));
+                if (!item) {
+                    return;
+                }
+                const state = serviceTree.isExpanded(row) ? qsTr("expanded") : qsTr("collapsed");
+                const msg = item.channel !== "" ? qsTr("Ensemble %1 on channel %2 is %3").arg(item.serviceName).arg(item.channel).arg(state)
+                                                : qsTr("Ensemble %1 is %2").arg(item.serviceName).arg(state);
+                serviceTree.Accessible.announce(msg, Accessible.Assertive);
+            }
+
             onExpanded: (row, depth) => {
                 if (depth === 1) {
                     expandRecursively(row)
                 }
+                Qt.callLater(serviceTree.announceExpandedState, row);
+            }
+            onCollapsed: (row, recursively) => {
+                Qt.callLater(serviceTree.announceExpandedState, row);
             }
 
             alternatingRows: false
@@ -723,10 +775,12 @@ Item {
                     serviceTree.Accessible.announce(makeFavorite ? qsTr("%1 added to favorites").arg(serviceName)
                                                                  : qsTr("%1 removed from favorites").arg(serviceName));
                 }
+                Accessible.ignored: true   // rows are announced by the tree
                 Accessible.role: Accessible.TreeItem
                 Accessible.name: treeViewDelegate.text !== "" ? treeViewDelegate.text : serviceName
-                Accessible.selectable: true
-                Accessible.selected: treeViewDelegate.highlighted
+                // Accessible.selectable: true
+                // Accessible.selected: treeViewDelegate.highlighted
+
                 // Qt 6.12 required
                 // Accessible.expandable: treeViewDelegate.hasChildren
                 // Accessible.expanded: treeViewDelegate.expanded
