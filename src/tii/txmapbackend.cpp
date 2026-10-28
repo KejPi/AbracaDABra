@@ -33,6 +33,8 @@
 
 #include "txmapbackend.h"
 
+#include "accessibilityannouncer.h"
+
 Q_LOGGING_CATEGORY(txMap, "TII", QtInfoMsg)
 
 // used to track is location update shall be active
@@ -40,6 +42,8 @@ int TxMapBackend::s_locUpdateCounter = 0;
 
 TxMapBackend::TxMapBackend(Settings *settings, bool isTii, QObject *parent) : UIControlProvider(parent), m_settings(settings), m_isTii(isTii)
 {
+    connect(this, &TxMapBackend::showInfoMessage, this, [](const QString &text, int type) { a11y::announce(text, type < 0); });
+
     m_model = new TxTableModel(this);
     m_sortedFilteredModel = new TxTableProxyModel(this);
     m_sortedFilteredModel->setSourceModel(m_model);

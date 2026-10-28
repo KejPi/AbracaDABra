@@ -31,6 +31,7 @@
 #include <QLoggingCategory>
 #include <QUrl>
 
+#include "accessibilityannouncer.h"
 #include "androidfilehelper.h"
 #include "dabtables.h"
 #include "settings.h"
@@ -39,6 +40,8 @@ Q_DECLARE_LOGGING_CATEGORY(application)
 
 EnsembleInfoBackend::EnsembleInfoBackend(QObject *parent) : QAbstractListModel{parent}
 {
+    connect(this, &EnsembleInfoBackend::showInfoMessage, this, [](const QString &text, int type) { a11y::announce(text, type < 0); });
+
     // create list
     m_modelData.resize(LabelId::NumLabels);
     // clang-format off

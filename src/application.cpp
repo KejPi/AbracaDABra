@@ -61,6 +61,7 @@
 #include <cstring>
 #endif
 
+#include "accessibilityannouncer.h"
 #include "appversion.h"
 #include "audiooutputqt.h"
 #include "dabtables.h"
@@ -259,6 +260,8 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
       m_messageBoxBackend(new MessageBoxBackend(this))
 {
     m_settings = new Settings();
+
+    connect(this, &Application::showInfoMessage, this, [](const QString &text, int type) { a11y::announce(text, type < 0); });
 
 #if HAVE_FMLIST_INTERFACE
     m_fmlistInterface = nullptr;
@@ -947,6 +950,16 @@ void Application::setContextProperties()
 
 void Application::onInputDeviceReady()
 {
+    if (m_inputDevice)
+    {
+        QString name = m_inputDevice->deviceDescription().device.name;
+        if (name.isEmpty())
+        {
+            name = inputDeviceName(m_inputDeviceId);
+        }
+        a11y::announce(tr("Connected to %1").arg(name));
+    }
+
     // setup dialog
     configureForInputDevice();
 
@@ -1566,6 +1579,7 @@ void Application::onInputDeviceError(const InputDevice::ErrorCode errCode)
             m_ui->infoLabelIndex(1);
             if (!m_settings->rawfile.loopEna)
             {
+                a11y::announce(m_ui->messageInfoTitle() + QStringLiteral(". ") + m_ui->messageInfoDetails());
                 emit showMessage();
                 setChannelIndex(-1);
                 onSignalState(uint8_t(DabSyncLevel::NoSync), 0.0);
@@ -1579,6 +1593,7 @@ void Application::onInputDeviceError(const InputDevice::ErrorCode errCode)
             m_ui->messageInfoTitle(tr("Input device error: Device disconnected"));
             m_ui->messageInfoDetails(tr("Try to reconnect the device or choose another device in Settings"));
             m_ui->infoLabelIndex(1);
+            a11y::announce(m_ui->messageInfoTitle() + QStringLiteral(". ") + m_ui->messageInfoDetails());
             emit showMessage();
             onSignalState(uint8_t(DabSyncLevel::NoSync), 0.0);
 
@@ -1591,6 +1606,7 @@ void Application::onInputDeviceError(const InputDevice::ErrorCode errCode)
             m_ui->messageInfoTitle(tr("Input device error: No data"));
             m_ui->messageInfoDetails(tr("Try to reconnect the device or choose another device in Settings"));
             m_ui->infoLabelIndex(1);
+            a11y::announce(m_ui->messageInfoTitle() + QStringLiteral(". ") + m_ui->messageInfoDetails());
             emit showMessage();
             onSignalState(uint8_t(DabSyncLevel::NoSync), 0.0);
 
@@ -2712,6 +2728,29 @@ void Application::onNewAnnouncementSettings()
     }
 }
 
+QString Application::inputDeviceName(InputDevice::Id id) const
+{
+    switch (id)
+    {
+        case InputDevice::Id::RTLSDR:
+            return QStringLiteral("RTL-SDR");
+        case InputDevice::Id::RTLTCP:
+            return QStringLiteral("RTL-TCP");
+        case InputDevice::Id::RARTTCP:
+            return QStringLiteral("RaRT-TCP");
+        case InputDevice::Id::AIRSPY:
+            return QStringLiteral("Airspy");
+        case InputDevice::Id::SDRPLAY:
+            return QStringLiteral("SDRplay");
+        case InputDevice::Id::SOAPYSDR:
+            return QStringLiteral("SoapySDR");
+        case InputDevice::Id::RAWFILE:
+            return tr("raw file");
+        default:
+            return tr("unknown");
+    }
+}
+
 void Application::changeInputDevice(const InputDevice::Id &d, const QVariant &id)
 {
     m_inputDeviceRequest = d;
@@ -2754,6 +2793,11 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
 
     // GeoLocation backend => forcing online mode by setting invalid coordinates
     m_geolocationBackend->setCurrentCoordinates(QGeoCoordinate());
+
+    if (InputDevice::Id::UNDEFINED != d)
+    {
+        a11y::announce(tr("Connecting to %1 input device").arg(inputDeviceName(d)), false);
+    }
 
     switch (d)
     {
@@ -2811,6 +2855,7 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             }
             else
             {
+                a11y::announce(tr("Unable to connect to %1 input device").arg(inputDeviceName(d)));
                 m_settingsBackend->resetInputDevice();
                 initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             }
@@ -2856,6 +2901,7 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             }
             else
             {
+                a11y::announce(tr("Unable to connect to %1 input device").arg(inputDeviceName(d)));
                 m_settingsBackend->resetInputDevice();
                 initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             }
@@ -2901,6 +2947,7 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             }
             else
             {
+                a11y::announce(tr("Unable to connect to %1 input device").arg(inputDeviceName(d)));
                 m_settingsBackend->resetInputDevice();
                 initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             }
@@ -2943,6 +2990,7 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             }
             else
             {
+                a11y::announce(tr("Unable to connect to %1 input device").arg(inputDeviceName(d)));
                 m_settingsBackend->resetInputDevice();
                 initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             }
@@ -2990,6 +3038,7 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             }
             else
             {
+                a11y::announce(tr("Unable to connect to %1 input device").arg(inputDeviceName(d)));
                 m_settingsBackend->resetInputDevice();
                 initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             }
@@ -3036,6 +3085,7 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             }
             else
             {
+                a11y::announce(tr("Unable to connect to %1 input device").arg(inputDeviceName(d)));
                 m_settingsBackend->resetInputDevice();
                 initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             }
@@ -3086,6 +3136,7 @@ void Application::initInputDevice(const InputDevice::Id &d, const QVariant &id)
             }
             else
             {
+                a11y::announce(tr("Unable to connect to %1 input device").arg(inputDeviceName(d)));
                 m_settingsBackend->resetInputDevice();
                 initInputDevice(InputDevice::Id::UNDEFINED, QVariant());
             }

@@ -525,6 +525,7 @@ private:
     void onTuneDone(uint32_t freq);
     void onNewAnnouncementSettings();
     void onInputDeviceError(const InputDevice::ErrorCode errCode);
+    QString inputDeviceName(InputDevice::Id id) const;
     void onServiceListSelection(const QItemSelection &selected, const QItemSelection &deselected);
     void onServiceListTreeSelection(const QItemSelection &selected, const QItemSelection &deselected);
     void onAudioServiceSelection(const RadioControlServiceComponent &s);

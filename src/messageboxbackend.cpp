@@ -26,6 +26,8 @@
 
 #include "messageboxbackend.h"
 
+#include "accessibilityannouncer.h"
+
 #include <QVariantMap>
 
 MessageBoxBackend::MessageBoxBackend(QObject *parent) : QObject(parent), m_visible(false)
@@ -37,6 +39,7 @@ void MessageBoxBackend::showQuestion(const QString &message, const QString &info
 {
     m_message = message;
     emit messageChanged();
+    a11y::announce(infoText.isEmpty() ? message : message + QStringLiteral(". ") + infoText);
 
     m_informativeText = infoText;
     emit informativeTextChanged();

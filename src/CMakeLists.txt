@@ -423,6 +423,7 @@ qt_add_qml_module(${TARGET}
         soapysdrgainmodel.h soapysdrgainmodel.cpp
 
         messageboxbackend.h messageboxbackend.cpp
+        accessibilityannouncer.h accessibilityannouncer.cpp
         contextmenumodel.h contextmenumodel.cpp
 
         signalbackend.h signalbackend.cpp
