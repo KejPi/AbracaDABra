@@ -525,6 +525,8 @@ Item {
 
                 focusPolicy: Qt.NoFocus   // keyboard handled by the list
 
+                AbracaFocusRing {}
+
                 Accessible.ignored: true   // rows are announced by the list
                 Accessible.role: Accessible.ListItem
                 Accessible.name: isFavorite ? qsTr("%1, favorite service").arg(serviceName) : serviceName
@@ -695,7 +697,7 @@ Item {
                     serviceTree.forceLayout();
                     serviceTree.positionViewAtRow(serviceTree.rowAtIndex(currentIdx), TableView.Contain);
                 }
-            }
+            }                    
 
             // connection to selection model
             Connections {
@@ -729,6 +731,10 @@ Item {
 
             onActiveFocusChanged: {
                 if (activeFocus) {
+
+                    treeHighlight.opacity = 1.0;
+                    treeHighlightFadeAnim.restart();
+
                     if (!UI.channelJustChanged) {
                         announceIntro = true;
                         // longer delay: the screen reader speaks the focus change itself first
@@ -1158,7 +1164,7 @@ Item {
                 }
                 background: Rectangle {
                     anchors.fill: treeViewDelegate
-                    radius: UI.controlRadius
+                    radius: UI.controlRadius                    
                     color: treeViewDelegate.enabled ? (treeViewDelegate.highlighted ? UI.colors.highlight : treeViewDelegate.hovered ? UI.colors.listItemHovered : "transparent") : "transparent"
                     anchors.leftMargin: treeViewDelegate.depth * treeViewDelegate.indentation - treeViewDelegate.contentOffset
                     anchors.rightMargin: treeViewDelegate.contentOffset
