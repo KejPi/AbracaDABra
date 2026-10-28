@@ -206,9 +206,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/scanner)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cli)
 
 # QML
-if(QT_VERSION_MINOR GREATER_EQUAL 8)
-    qt_policy(SET QTP0004 NEW)
-endif()
+qt_policy(SET QTP0004 NEW)
 
 set(QML_SINGLETONS
     qml/UI.qml
@@ -346,7 +344,7 @@ qt_add_qml_module(${TARGET}
         qml/controls/AbracaTabButton.qml
         qml/controls/AbracaItemDelegate.qml
         qml/controls/AbracaColorizedImage.qml
-        qml/controls/AbracaDrawer.qml
+        qml/controls/AbracaFocusRing.qml        qml/controls/AbracaDrawer.qml
         qml/controls/AbracaTextField.qml
         qml/controls/AbracaScrollBar.qml
         qml/controls/AbracaMenu.qml

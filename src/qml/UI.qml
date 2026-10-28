@@ -59,6 +59,37 @@ QtObject {
     readonly property bool isLinux: Qt.platform.os === "linux"
     readonly property bool isAndroid: Qt.platform.os === "android"
 
+    // Keyboard Tab cycle (Tab / Shift+Tab) across separate parts of the main window
+    readonly property var tabOrder: ["nav", "list", "channel", "channelDown", "channelUp", "bar", "tree",
+                                     "favorite", "switchSource", "rec", "volume", "mute"]
+    property var tabStops: ({})
+
+    // item can be an Item or a function returning an Item
+    function registerTabStop(name, item) {
+        tabStops[name] = item;
+    }
+
+    function tabStopItem(name) {
+        let s = tabStops[name];
+        if (typeof s === "function") {
+            s = s();
+        }
+        return (s && s.visible && s.enabled) ? s : null;
+    }
+
+    function handleTab(name, event, forward) {
+        event.accepted = true;
+        const n = tabOrder.length;
+        let idx = tabOrder.indexOf(name);
+        for (let i = 1; i <= n; ++i) {
+            const target = tabStopItem(tabOrder[(idx + (forward ? i : -i) + 2*n) % n]);
+            if (target) {
+                target.forceActiveFocus(forward ? Qt.TabFocusReason : Qt.BacktabFocusReason);
+                return;
+            }
+        }
+    }
+
     readonly property url imagesUrl: "qrc:/qt/qml/abracaComponents/qml/images/"
     readonly property real scaleFactor: Screen.devicePixelRatio
 

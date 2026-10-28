@@ -57,6 +57,9 @@ Item {
 
         AbracaRecordingButton {
             id: recButton
+            Component.onCompleted: UI.registerTabStop("rec", recButton)
+            Keys.onTabPressed: (event) => UI.handleTab("rec", event, true)
+            Keys.onBacktabPressed: (event) => UI.handleTab("rec", event, false)
             Layout.preferredHeight: mainItem.height
             Layout.preferredWidth: Layout.preferredHeight
             interactive: true

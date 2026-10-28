@@ -2,7 +2,7 @@
 
 Abraca DAB radio is a DAB and DAB+ Software Defined Radio (SDR) application. It works with cheap RTL-SDR (RTL2832U) USB sticks, but also with Airspy devices, SDRplay devices and with devices supported by <a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a>. 
 
-The application is based on the Qt6 cross-platform software development framework and can run on any platform supported by Qt6 _(Qt version 6.7 or higher is required)_. 
+The application is based on the Qt6 cross-platform software development framework and can run on any platform supported by Qt6 _(Qt version 6.8 or higher is required)_. 
 Prebuilt binaries are released for Windows, macOS (both Intel and Apple Silicon), Android (API 30, ARM64) and Linux x86-64 and AARCH64 (AppImage). The AARCH64 AppImage is built to run on Raspberry Pi 4/5 with a 64 bit OS.
 Arch Linux users can install AbracaDABra from the <a href="https://aur.archlinux.org/packages/abracadabra">AUR</a>.
 
@@ -568,7 +568,7 @@ _Note:_ When application is uninstalled, system deletes all application files. T
 
 The following libraries are required:
 
-* Qt >= 6.7.0
+* Qt >= 6.8.0
 * libusb
 * rtldsdr
 * faad2 (default) and fdk-aac (optional)
@@ -598,7 +598,7 @@ from the distribution packages instead of using the Qt online installer:
 references versioned Qt Quick Shapes headers during CMake configuration. There
 is no separate `qt6-quickshapes-dev` package.
 
-Ubuntu 24.10 or lower does not support the version of Qt (at least 6.7.0) that is required to build the application. If you want to compile the application you should [install](https://doc.qt.io/qt-6/qt-online-installation.html) Qt using the [online installer](https://www.qt.io/download-qt-installer-oss). The following modules are sufficient to compile AbracaDABra:
+Ubuntu 24.10 or lower does not support the version of Qt (at least 6.8.0) that is required to build the application. If you want to compile the application you should [install](https://doc.qt.io/qt-6/qt-online-installation.html) Qt using the [online installer](https://www.qt.io/download-qt-installer-oss). The following modules are sufficient to compile AbracaDABra:
 
 ![Screenshot from 2024-11-08 19-51-02](https://github.com/user-attachments/assets/56c32368-9472-4f8a-8d18-4cc65120b88b)
        
@@ -622,7 +622,7 @@ Then clone the project:
    
 2. Export the QT path
 
-       export QT_PATH=$HOME/Qt/6.7.3/gcc_64
+       export QT_PATH=$HOME/Qt/6.8.3/gcc_64
 
 3. Run cmake
 

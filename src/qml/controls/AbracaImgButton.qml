@@ -35,6 +35,8 @@ Button {
     id: control
     focusPolicy: Qt.StrongFocus
 
+    AbracaFocusRing {}
+
     property bool colorizationEnabled: true
     property color colorizationColor: UI.colors.icon
 

@@ -32,6 +32,8 @@ import abracaComponents
 Switch {
     id: control
     focusPolicy: Qt.StrongFocus
+
+    AbracaFocusRing {}
     property string toolTipText: ""
     property string accessibleName: ""
     property string accessibleDescription: ""

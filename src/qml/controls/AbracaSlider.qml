@@ -32,6 +32,8 @@ Slider {
     id: control
     focusPolicy: Qt.StrongFocus
 
+    AbracaFocusRing {}
+
     implicitHeight: UI.controlHeight
 
     property string accessibleName: ""

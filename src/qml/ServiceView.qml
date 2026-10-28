@@ -38,9 +38,32 @@ Item {
     readonly property int itemsTopMargin: UI.standardMargin
     readonly property int itemsBottomMargin: UI.standardMargin
 
+    function announceCurrentService() {
+        if (!visible) {
+            return;
+        }
+        console.log("a11y: announce current service", appUI.serviceLabel);
+        serviceView.Accessible.announce(qsTr("Current service is %1").arg(appUI.serviceLabel));
+    }
+
     // Set initial focus
     Component.onCompleted: {
         serviceList.forceActiveFocus()
+        announceTimer.restart();
+    }
+    onVisibleChanged: if (visible) { announceTimer.restart(); }
+
+    // Delay lets screen reader finish speaking focus change first
+    Timer {
+        id: announceTimer
+        interval: 1500
+        onTriggered: serviceView.announceCurrentService()
+    }
+    Connections {
+        target: appUI
+        function onServiceLabelChanged() {
+            announceTimer.restart();
+        }
     }
 
     RowLayout {
@@ -139,6 +162,9 @@ Item {
                     }
                     AbracaImgButton {
                         id: favoriteIcon
+                        Component.onCompleted: UI.registerTabStop("favorite", favoriteIcon)
+                        Keys.onTabPressed: (event) => UI.handleTab("favorite", event, true)
+                        Keys.onBacktabPressed: (event) => UI.handleTab("favorite", event, false)
                         colorizationEnabled: checked === false
                         colorizationColor: UI.colors.inactive
                         checkable: true
@@ -205,6 +231,9 @@ Item {
                     }
                     AbracaImgButton {
                         id: switchSourceIcon
+                        Component.onCompleted: UI.registerTabStop("switchSource", switchSourceIcon)
+                        Keys.onTabPressed: (event) => UI.handleTab("switchSource", event, true)
+                        Keys.onBacktabPressed: (event) => UI.handleTab("switchSource", event, false)
                         checkable: false
                         visible: application.serviceSourcesMenuModel.rowCount > 1
                         source: UI.imagesUrl + "icon-multi-ens.svg"

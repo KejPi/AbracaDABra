@@ -90,6 +90,9 @@ Rectangle {
             property int volumeIconId: 3
             AbracaImgButton {
                 id: muteButton
+                Component.onCompleted: UI.registerTabStop("mute", muteButton)
+                Keys.onTabPressed: (event) => UI.handleTab("mute", event, true)
+                Keys.onBacktabPressed: (event) => UI.handleTab("mute", event, false)
                 checkable: true
                 checked: appUI.isMuted
                 sourceChecked: UI.imagesUrl + "volume-0.svg"
@@ -109,6 +112,9 @@ Rectangle {
             AbracaSlider {
                 accessibleName: qsTr("Volume")
                 id: volumeSlider                
+                Component.onCompleted: UI.registerTabStop("volume", volumeSlider)
+                Keys.onTabPressed: (event) => UI.handleTab("volume", event, true)
+                Keys.onBacktabPressed: (event) => UI.handleTab("volume", event, false)
                 Layout.preferredWidth: 100
                 //Layout.preferredHeight: muteButton.height
                 orientation: Qt.Horizontal

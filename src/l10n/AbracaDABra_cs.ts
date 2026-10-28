@@ -5268,45 +5268,62 @@ je anonymní a neobsahuje žádná osobní data.</translation>
         <translation>Filtrovat stanice...</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="441"/>
+        <location filename="../qml/ServiceList.qml" line="249"/>
+        <location filename="../qml/ServiceList.qml" line="577"/>
+        <source>Service list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="250"/>
+        <source>Use up and down arrows to move between services, Space to select service, Enter to toggle favorite</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="446"/>
         <source>%1, favorite</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="442"/>
-        <location filename="../qml/ServiceList.qml" line="689"/>
-        <source>Space to select, Enter to toggle favorite</source>
+        <location filename="../qml/ServiceList.qml" line="451"/>
+        <location filename="../qml/ServiceList.qml" line="699"/>
+        <source>%1 added to favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="689"/>
-        <source>Space to expand or collapse</source>
+        <location filename="../qml/ServiceList.qml" line="452"/>
+        <location filename="../qml/ServiceList.qml" line="700"/>
+        <source>%1 removed from favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="531"/>
-        <location filename="../qml/ServiceList.qml" line="846"/>
+        <location filename="../qml/ServiceList.qml" line="538"/>
+        <location filename="../qml/ServiceList.qml" line="858"/>
         <source>Remove service from favorites</source>
         <translation>Odebraz stanici z oblíbených</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="532"/>
-        <location filename="../qml/ServiceList.qml" line="847"/>
+        <location filename="../qml/ServiceList.qml" line="539"/>
+        <location filename="../qml/ServiceList.qml" line="859"/>
         <source>Add service to favorites</source>
         <translation>Přidat stanici k oblíbeným</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="801"/>
+        <location filename="../qml/ServiceList.qml" line="578"/>
+        <source>Use up and down arrows to move, Space to select service or expand ensemble, Enter to toggle favorite</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceList.qml" line="813"/>
         <source>Remove ensemble</source>
         <translation>Odstranit multiplex</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="1067"/>
+        <location filename="../qml/ServiceList.qml" line="1079"/>
         <source>Services</source>
         <translation>Stanice</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceList.qml" line="1070"/>
+        <location filename="../qml/ServiceList.qml" line="1082"/>
         <source>Ensembles</source>
         <translation>Multiplexy</translation>
     </message>
@@ -5332,38 +5349,43 @@ je anonymní a neobsahuje žádná osobní data.</translation>
 <context>
     <name>ServiceView</name>
     <message>
-        <location filename="../qml/ServiceView.qml" line="148"/>
+        <location filename="../qml/ServiceView.qml" line="46"/>
+        <source>Current service is %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/ServiceView.qml" line="171"/>
         <source>Remove service from favorites</source>
         <translation>Odebraz stanici z oblíbených</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="149"/>
+        <location filename="../qml/ServiceView.qml" line="172"/>
         <source>Add service to favorites</source>
         <translation>Přidat stanici k oblíbeným</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="211"/>
+        <location filename="../qml/ServiceView.qml" line="234"/>
         <source>Switch to another ensemble</source>
         <translation>Přepnout na jiný multiplex</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="291"/>
+        <location filename="../qml/ServiceView.qml" line="314"/>
         <source>Right click to copy Dynamic label</source>
         <translation>Kliknutím pravým tlačítkem se zkopíruje Dynamic Label</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="316"/>
-        <location filename="../qml/ServiceView.qml" line="328"/>
+        <location filename="../qml/ServiceView.qml" line="339"/>
+        <location filename="../qml/ServiceView.qml" line="351"/>
         <source>Right click to copy Dynamic label +</source>
         <translation>Kliknutím pravým tlačítkem se zkopíruje Dynamic Label +</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="355"/>
+        <location filename="../qml/ServiceView.qml" line="378"/>
         <source>TII</source>
         <translation>TII</translation>
     </message>
     <message>
-        <location filename="../qml/ServiceView.qml" line="356"/>
+        <location filename="../qml/ServiceView.qml" line="379"/>
         <source>Signal Spectrum</source>
         <translation>Spektrum signálu</translation>
     </message>

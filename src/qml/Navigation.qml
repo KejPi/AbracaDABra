@@ -379,6 +379,8 @@ FocusScope {
 
     ListView {
         id: navigationList
+        Keys.onTabPressed: (event) => UI.handleTab("nav", event, true)
+        Keys.onBacktabPressed: (event) => UI.handleTab("nav", event, false)
         anchors.fill: parent
         anchors.bottomMargin: appUI.isPortraitView || isSmallNavigation ? 0 : landscape2Loader.implicitHeight
         model: navigationProxyModel
@@ -407,6 +409,7 @@ FocusScope {
 
         // Initialize currentIndex to selected row
         Component.onCompleted: {
+            UI.registerTabStop("nav", navigationList);
             currentIndex = selectedRow;
             previousCurrentIndex = selectedRow;
         }
@@ -521,6 +524,8 @@ FocusScope {
         width: parent.width
         sourceComponent: ListView {
             id: landscapeSepListview
+            Keys.onTabPressed: (event) => UI.handleTab("nav", event, true)
+            Keys.onBacktabPressed: (event) => UI.handleTab("nav", event, false)
             width: parent.width
             height: contentHeight
             model: NavigationProxyModel {

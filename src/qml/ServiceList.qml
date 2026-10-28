@@ -133,6 +133,9 @@ Item {
             AbracaComboBox {
                 accessibleName: qsTr("Channel")
                 id: channelCombo
+                Component.onCompleted: UI.registerTabStop("channel", channelCombo)
+                Keys.onTabPressed: (event) => UI.handleTab("channel", event, true)
+                Keys.onBacktabPressed: (event) => UI.handleTab("channel", event, false)
                 Layout.alignment: Qt.AlignVCenter
                 Layout.preferredWidth: implicitWidth * 0.8
                 Layout.rightMargin: 5
@@ -150,6 +153,9 @@ Item {
                 Layout.alignment: Qt.AlignCenter
                 AbracaImgButton {
                     id: channelDown
+                    Component.onCompleted: UI.registerTabStop("channelDown", channelDown)
+                    Keys.onTabPressed: (event) => UI.handleTab("channelDown", event, true)
+                    Keys.onBacktabPressed: (event) => UI.handleTab("channelDown", event, false)
                     source: UI.imagesUrl + "chevron-left.svg"
                     toolTipText: appUI.channelDownToolTip
                     enabled: appUI.tuneEnabled
@@ -169,6 +175,9 @@ Item {
                 }
                 AbracaImgButton {
                     id: channelUp
+                    Component.onCompleted: UI.registerTabStop("channelUp", channelUp)
+                    Keys.onTabPressed: (event) => UI.handleTab("channelUp", event, true)
+                    Keys.onBacktabPressed: (event) => UI.handleTab("channelUp", event, false)
                     source: UI.imagesUrl + "chevron-right.svg"
                     toolTipText: appUI.channelUpToolTip
                     enabled: appUI.tuneEnabled
@@ -213,6 +222,8 @@ Item {
         AbracaTextField {
             accessibleName: qsTr("Filter services")
             id: serviceFilter
+            Keys.onTabPressed: (event) => UI.handleTab("list", event, true)
+            Keys.onBacktabPressed: (event) => UI.handleTab("list", event, false)
             anchors.top: parent.top
             anchors.topMargin: UI.standardMargin
             anchors.left: parent.left
@@ -245,6 +256,11 @@ Item {
         }
         ListView {
             id: serviceList
+            Keys.onTabPressed: (event) => UI.handleTab("list", event, true)
+            Keys.onBacktabPressed: (event) => UI.handleTab("list", event, false)
+            Accessible.role: Accessible.List
+            Accessible.name: qsTr("Service list")
+            Accessible.description: qsTr("Use up and down arrows to move between services, Space to select service, Enter to toggle favorite")
             anchors.fill: parent
             anchors.leftMargin: isPortrait ? UI.standardMargin : 0
             anchors.topMargin: serviceListItem.filterVisible ? serviceFilter.implicitHeight + 2*UI.standardMargin : 0
@@ -286,6 +302,8 @@ Item {
 
             currentIndex: -1
             highlightFollowsCurrentItem: false
+            // instantiate all delegates so screen reader reports position within the whole list
+            cacheBuffer: count * itemHeight
             highlightRangeMode: ListView.ApplyRange
             preferredHighlightBegin: itemHeight
             preferredHighlightEnd: serviceList.height - itemHeight
@@ -387,6 +405,7 @@ Item {
             }
             // initial index
             Component.onCompleted: {
+                UI.registerTabStop("list", serviceList);
                 let currentIdx = slSelectionModel.currentIndex;
                 currentIndex = slProxyModel.mapFromSource(currentIdx).row;
                 selectedItemIndex = slProxyModel.mapFromSource(currentIdx).row;
@@ -439,10 +458,12 @@ Item {
 
                 focusPolicy: Qt.NoFocus   // keyboard handled by the list
                 Accessible.name: isFavorite ? qsTr("%1, favorite").arg(serviceName) : serviceName
-                Accessible.description: qsTr("Space to select, Enter to toggle favorite")
 
                 function toggleFavorite() {
-                    application.setServiceFavorite(serviceList.model.index(index, 0), !isFavorite);
+                    const makeFavorite = !isFavorite;
+                    application.setServiceFavorite(serviceList.model.index(index, 0), makeFavorite);
+                    serviceList.Accessible.announce(makeFavorite ? qsTr("%1 added to favorites").arg(serviceName)
+                                                                 : qsTr("%1 removed from favorites").arg(serviceName));
                 }
 
                 height: itemHeight
@@ -566,6 +587,11 @@ Item {
         id: serviceTreeItem
         TreeView {
             id: serviceTree
+            Keys.onTabPressed: (event) => UI.handleTab("tree", event, true)
+            Keys.onBacktabPressed: (event) => UI.handleTab("tree", event, false)
+            Accessible.role: Accessible.Tree
+            Accessible.name: qsTr("Service list")
+            Accessible.description: qsTr("Use up and down arrows to move, Space to select service or expand ensemble, Enter to toggle favorite")
             anchors.fill: serviceTreeItem
             anchors.leftMargin: isPortrait ? UI.standardMargin : 0
             topMargin: UI.standardMargin
@@ -619,6 +645,7 @@ Item {
 
             // initial index
             Component.onCompleted: {
+                UI.registerTabStop("tree", serviceTree);
                 serviceTree.previousCurrentRow = serviceTree.rowAtIndex(slTreeSelectionModel.currentIndex);
                 Qt.callLater(function () {
                     serviceTree.showCurrent(slTreeSelectionModel.currentIndex);
@@ -684,9 +711,11 @@ Item {
                 focusPolicy: Qt.NoFocus   // keyboard handled by the tree
 
                 function toggleFavorite() {
-                    application.setServiceFavorite(serviceTree.index(row, column), !isFavorite);
+                    const makeFavorite = !isFavorite;
+                    application.setServiceFavorite(serviceTree.index(row, column), makeFavorite);
+                    serviceTree.Accessible.announce(makeFavorite ? qsTr("%1 added to favorites").arg(serviceName)
+                                                                 : qsTr("%1 removed from favorites").arg(serviceName));
                 }
-                Accessible.description: depth > 0 ? qsTr("Space to select, Enter to toggle favorite") : qsTr("Space to expand or collapse")
                 Accessible.role: Accessible.TreeItem
                 Accessible.name: treeViewDelegate.text !== "" ? treeViewDelegate.text : serviceName
                 Accessible.selectable: true
@@ -1061,6 +1090,9 @@ Item {
             }
             AbracaTabBar {
                 id: bar
+                Component.onCompleted: UI.registerTabStop("bar", () => bar.currentItem)
+                Keys.onTabPressed: (event) => UI.handleTab("bar", event, true)
+                Keys.onBacktabPressed: (event) => UI.handleTab("bar", event, false)
                 Layout.fillWidth: true
                 visible: slStacked.visible
                 AbracaTabButton {

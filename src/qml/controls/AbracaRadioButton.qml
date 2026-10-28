@@ -32,6 +32,8 @@ RadioButton {
     id: control
     focusPolicy: Qt.StrongFocus
 
+    AbracaFocusRing {}
+
     property string accessibleName: ""
     property string accessibleDescription: ""
 

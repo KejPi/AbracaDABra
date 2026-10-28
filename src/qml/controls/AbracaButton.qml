@@ -36,6 +36,8 @@ Button {
     id: control
     focusPolicy: Qt.StrongFocus
 
+    AbracaFocusRing {}
+
     property int buttonRole: UI.ButtonRole.Neutral
     property int buttonType: UI.ButtonType.Normal
     property bool hasBackground: true
