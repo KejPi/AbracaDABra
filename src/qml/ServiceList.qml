@@ -1093,15 +1093,17 @@ Item {
             AbracaTabBar {
                 id: bar
                 Component.onCompleted: UI.registerTabStop("bar", () => bar.currentItem)
-                Keys.onTabPressed: (event) => UI.handleTab("bar", event, true)
-                Keys.onBacktabPressed: (event) => UI.handleTab("bar", event, false)
                 Layout.fillWidth: true
                 visible: slStacked.visible
                 AbracaTabButton {
                     text: qsTr("Services")
+                    Keys.onTabPressed: (event) => UI.handleTab("bar", event, true)
+                    Keys.onBacktabPressed: (event) => UI.handleTab("bar", event, false)
                 }
                 AbracaTabButton {
                     text: qsTr("Ensembles")
+                    Keys.onTabPressed: (event) => UI.handleTab("bar", event, true)
+                    Keys.onBacktabPressed: (event) => UI.handleTab("bar", event, false)
                 }
             }
             StackLayout {
