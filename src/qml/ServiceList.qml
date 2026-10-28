@@ -260,7 +260,6 @@ Item {
             Keys.onBacktabPressed: (event) => UI.handleTab("list", event, false)
             Accessible.role: Accessible.List
             Accessible.name: qsTr("Service list")
-            Accessible.description: activeFocus ? qsTr("Use up and down arrows to move between services, Space to select service, Enter to toggle favorite") : ""
             anchors.fill: parent
             anchors.leftMargin: isPortrait ? UI.standardMargin : 0
             anchors.topMargin: serviceListItem.filterVisible ? serviceFilter.implicitHeight + 2*UI.standardMargin : 0
@@ -364,6 +363,40 @@ Item {
                 serviceList.shouldAnimate = serviceList.enableAnimate && (diff === 1);
                 serviceList.enableAnimate = true;
                 serviceList.previousCurrentIndex = serviceList.currentIndex;
+                if (serviceList.activeFocus) {
+                    listAnnounceTimer.restart();
+                }
+            }
+
+            // Rows are hidden from the screen reader; the current one is announced explicitly
+            Timer {
+                id: listAnnounceTimer
+                interval: 120
+                onTriggered: serviceList.announceCurrentRow()
+            }
+
+            property bool announceIntro: false
+
+            onActiveFocusChanged: {
+                if (activeFocus) {
+                    announceIntro = true;
+                    listAnnounceTimer.restart();
+                }
+            }
+
+            function announceCurrentRow() {
+                const item = serviceList.itemAtIndex(serviceList.currentIndex);
+                let msg = "";
+                if (announceIntro) {
+                    announceIntro = false;
+                    msg = qsTr("Service list") + ". " + qsTr("Use up and down arrows to move between services, Space to select service, Enter to toggle favorite") + ". ";
+                }
+                if (item) {
+                    msg += item.isFavorite ? qsTr("%1, favorite service").arg(item.serviceName) : item.serviceName;
+                }
+                if (msg !== "") {
+                    serviceList.Accessible.announce(msg, Accessible.Assertive);
+                }
             }
 
             // connection to selection model
@@ -458,7 +491,7 @@ Item {
 
                 focusPolicy: Qt.NoFocus   // keyboard handled by the list
 
-                // Not a ListItem: screen readers would add "N of M" counting only instantiated delegates
+                Accessible.ignored: true   // rows are announced by the list
                 Accessible.role: Accessible.Button
                 Accessible.name: isFavorite ? qsTr("%1, favorite service").arg(serviceName) : serviceName
                 Accessible.description: ""
@@ -598,7 +631,6 @@ Item {
             Keys.onBacktabPressed: (event) => UI.handleTab("tree", event, false)
             Accessible.role: Accessible.Tree
             Accessible.name: qsTr("Ensemble tree")
-            Accessible.description: activeFocus ? qsTr("Use up and down arrows to move, Space to select service, to collapse or expand ensemble, Enter to toggle favorite") : ""
             anchors.fill: serviceTreeItem
             anchors.leftMargin: isPortrait ? UI.standardMargin : 0
             topMargin: UI.standardMargin
@@ -653,8 +685,25 @@ Item {
                 onTriggered: serviceTree.announceCurrentRow()
             }
 
+            property bool announceIntro: false
+
+            onActiveFocusChanged: {
+                if (activeFocus) {
+                    announceIntro = true;
+                    treeAnnounceTimer.restart();
+                }
+            }
+
             function announceCurrentRow() {
+                let intro = "";
+                if (announceIntro) {
+                    announceIntro = false;
+                    intro = qsTr("Ensemble tree") + ". " + qsTr("Use up and down arrows to move, Space to select service, to collapse or expand ensemble, Enter to toggle favorite") + ". ";
+                }
                 if (!slTreeSelectionModel.currentIndex.valid) {
+                    if (intro !== "") {
+                        serviceTree.Accessible.announce(intro, Accessible.Assertive);
+                    }
                     return;
                 }
                 const row = serviceTree.currentRow;
@@ -674,7 +723,7 @@ Item {
                         msg += ", " + qsTr("favorite service");
                     }
                 }
-                serviceTree.Accessible.announce(msg, Accessible.Assertive);
+                serviceTree.Accessible.announce(intro + msg, Accessible.Assertive);
             }
 
             onCurrentRowChanged: {
