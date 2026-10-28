@@ -457,7 +457,9 @@ Item {
                 readonly property bool isSelectedItem: index === serviceList.selectedItemIndex
 
                 focusPolicy: Qt.NoFocus   // keyboard handled by the list
+
                 Accessible.name: isFavorite ? qsTr("%1, favorite").arg(serviceName) : serviceName
+                Accessible.description: ""
 
                 function toggleFavorite() {
                     const makeFavorite = !isFavorite;
