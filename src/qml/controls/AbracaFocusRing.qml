@@ -34,10 +34,9 @@ Rectangle {
     property Item control: parent
 
     anchors.fill: parent
-    anchors.margins: -2
     z: 1000
     color: "transparent"
-    radius: UI.controlRadius + 2
+    radius: UI.controlRadius + 1
     border.color: UI.colors.accent
     border.width: 2
     visible: control !== null && control.visualFocus === true
