@@ -528,7 +528,6 @@ Item {
                 Accessible.ignored: true   // rows are announced by the list
                 Accessible.role: Accessible.ListItem
                 Accessible.name: isFavorite ? qsTr("%1, favorite service").arg(serviceName) : serviceName
-                Accessible.description: ""
 
                 function toggleFavorite() {
                     const makeFavorite = !isFavorite;
