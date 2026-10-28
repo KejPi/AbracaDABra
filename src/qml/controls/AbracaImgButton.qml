@@ -73,7 +73,7 @@ Button {
         implicitHeight: UI.controlHeight
         border.width: 2
         border.color: control.visualFocus ? UI.colors.accent : "transparent"
-        radius: UI.controlRadius + 1
+        radius: UI.focusRadius
     }
     MouseArea {
         id: mouseArea

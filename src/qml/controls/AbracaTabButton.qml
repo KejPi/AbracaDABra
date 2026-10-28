@@ -33,7 +33,7 @@ TabButton {
     id: control
     focusPolicy: Qt.StrongFocus
 
-    AbracaFocusRing {}
+    // AbracaFocusRing {}
 
     property string accessibleName: ""
     property string accessibleDescription: ""
@@ -67,5 +67,9 @@ TabButton {
         implicitWidth: control.implicitWidth
         implicitHeight: control.implicitHeight
         color: "transparent"
+
+        border.width: 1
+        border.color: control.visualFocus ? UI.colors.accent : "transparent"
+        radius: UI.controlRadius
     }
 }

@@ -36,7 +36,7 @@ Rectangle {
     anchors.fill: parent
     z: 1000
     color: "transparent"
-    radius: UI.controlRadius + 1
+    radius: UI.focusRadius
     border.color: UI.colors.accent
     border.width: 2
     visible: control !== null && control.visualFocus === true

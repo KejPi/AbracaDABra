@@ -117,6 +117,7 @@ QtObject {
     readonly property int controlHeightSmall: isAndroid ? Math.ceil(20 - baselineFontHeight + (baselineFontHeight * fontScaleFactor)) : 16
     readonly property int controlWidth: 100
     readonly property int controlRadius: isAndroid ? 6 : 4
+    readonly property int focusRadius: controlRadius + 1
     readonly property int iconSize: isAndroid ? Math.ceil(24 * fontScaleFactor) : 20
     readonly property int iconSizeSmall: isAndroid ? Math.ceil(20 * fontScaleFactor) : 16
 
