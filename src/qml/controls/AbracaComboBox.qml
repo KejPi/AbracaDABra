@@ -107,7 +107,7 @@ ComboBox {
     background: Rectangle {
         implicitWidth:  UI.controlWidth
         implicitHeight: UI.controlHeight
-        border.color: control.enabled ? (control.pressed ? UI.colors.clicked : UI.colors.inactive) : UI.colors.disabled
+        border.color: control.enabled ? (control.visualFocus ? UI.colors.accent : (control.pressed ? UI.colors.clicked : UI.colors.inactive)) : UI.colors.disabled
         border.width: control.visualFocus ? 2 : 1
         radius: UI.controlRadius
         color: UI.colors.inputBackground

@@ -32,8 +32,6 @@ SpinBox {
     id: control
     focusPolicy: Qt.StrongFocus
 
-    AbracaFocusRing {}
-
     property string accessibleName: ""
     property string accessibleDescription: ""
 
@@ -191,7 +189,7 @@ SpinBox {
         implicitHeight: UI.controlHeight
         color: UI.colors.inputBackground
         border.color: control.enabled && (control.hovered || control.activeFocus) ? UI.colors.accent : UI.colors.inactive
-        border.width: 1
+        border.width: control.visualFocus ? 2 : 1
         radius: UI.controlRadius
         opacity: control.enabled ? 1.0 : 0.5
     }

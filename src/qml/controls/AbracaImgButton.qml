@@ -35,8 +35,6 @@ Button {
     id: control
     focusPolicy: Qt.StrongFocus
 
-    AbracaFocusRing {}
-
     property bool colorizationEnabled: true
     property color colorizationColor: UI.colors.icon
 
@@ -73,6 +71,9 @@ Button {
         color: "transparent"
         implicitWidth: UI.controlHeight
         implicitHeight: UI.controlHeight
+        border.width: 2
+        border.color: control.visualFocus ? UI.colors.accent : "transparent"
+        radius: UI.controlRadius + 1
     }
     MouseArea {
         id: mouseArea

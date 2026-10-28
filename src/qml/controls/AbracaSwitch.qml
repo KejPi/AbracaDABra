@@ -34,6 +34,7 @@ Switch {
     focusPolicy: Qt.StrongFocus
 
     AbracaFocusRing {}
+
     property string toolTipText: ""
     property string accessibleName: ""
     property string accessibleDescription: ""
