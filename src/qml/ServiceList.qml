@@ -134,6 +134,11 @@ Item {
                 accessibleName: qsTr("Channel")
                 id: channelCombo
                 Component.onCompleted: UI.registerTabStop("channel", channelCombo)
+                Timer {
+                    id: channelChangeTimer
+                    interval: 1000
+                    onTriggered: UI.channelJustChanged = false
+                }
                 Keys.onTabPressed: (event) => UI.handleTab("channel", event, true)
                 Keys.onBacktabPressed: (event) => UI.handleTab("channel", event, false)
                 Layout.alignment: Qt.AlignVCenter
@@ -143,7 +148,11 @@ Item {
                 textRole: "display"
                 valueRole: "frequency"
                 currentIndex: appUI.channelIndex
-                onCurrentIndexChanged: application.setChannelIndex(currentIndex) // appUI.channelIndex = currentIndex
+                onCurrentIndexChanged: {
+                    UI.channelJustChanged = true;
+                    channelChangeTimer.restart();
+                    application.setChannelIndex(currentIndex);
+                }
                 enabled: appUI.tuneEnabled
                 delegateCount: 0
             }
@@ -378,7 +387,7 @@ Item {
             property bool announceIntro: false
 
             onActiveFocusChanged: {
-                if (activeFocus) {
+                if (activeFocus && !UI.channelJustChanged) {
                     announceIntro = true;
                     listAnnounceTimer.restart();
                 }
@@ -389,7 +398,11 @@ Item {
                 let msg = "";
                 if (announceIntro) {
                     announceIntro = false;
-                    msg = qsTr("Service list") + ". " + qsTr("Use up and down arrows to move between services, Space to select service, Enter to toggle favorite") + ". ";
+                    msg = qsTr("Service list") + ". ";
+                    if (!UI.listIntroSpoken) {
+                        UI.listIntroSpoken = true;
+                        msg += qsTr("Use up and down arrows to move between services, Space to select service, Enter to toggle favorite") + ". ";
+                    }
                 }
                 if (item) {
                     msg += item.isFavorite ? qsTr("%1, favorite service").arg(item.serviceName) : item.serviceName;
@@ -688,7 +701,7 @@ Item {
             property bool announceIntro: false
 
             onActiveFocusChanged: {
-                if (activeFocus) {
+                if (activeFocus && !UI.channelJustChanged) {
                     announceIntro = true;
                     treeAnnounceTimer.restart();
                 }
@@ -698,7 +711,11 @@ Item {
                 let intro = "";
                 if (announceIntro) {
                     announceIntro = false;
-                    intro = qsTr("Ensemble tree") + ". " + qsTr("Use up and down arrows to move, Space to select service, to collapse or expand ensemble, Enter to toggle favorite") + ". ";
+                    intro = qsTr("Ensemble tree") + ". ";
+                    if (!UI.treeIntroSpoken) {
+                        UI.treeIntroSpoken = true;
+                        intro += qsTr("Use up and down arrows to move, Space to select service, to collapse or expand ensemble, Enter to toggle favorite") + ". ";
+                    }
                 }
                 if (!slTreeSelectionModel.currentIndex.valid) {
                     if (intro !== "") {

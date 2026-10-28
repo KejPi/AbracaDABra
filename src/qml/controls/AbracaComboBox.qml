@@ -37,7 +37,8 @@ ComboBox {
     property string accessibleName: ""
     property string accessibleDescription: ""
 
-    Accessible.name: accessibleName !== "" ? (accessibleName + ": " + displayText) : displayText
+    // Current text is part of the name only while focused, so programmatic changes are not announced
+    Accessible.name: accessibleName !== "" ? (activeFocus ? accessibleName + ": " + displayText : accessibleName) : displayText
     Accessible.description: accessibleDescription
     implicitContentWidthPolicy: ComboBox.WidestTextWhenCompleted
 

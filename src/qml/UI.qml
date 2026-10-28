@@ -64,6 +64,12 @@ QtObject {
                                      "favorite", "switchSource", "rec", "volume", "mute"]
     property var tabStops: ({})
 
+    // Usage instructions of service list / ensemble tree are spoken once per app run
+    property bool listIntroSpoken: false
+    property bool treeIntroSpoken: false
+    // Set briefly after channel change so that focus events caused by tuning are not announced
+    property bool channelJustChanged: false
+
     // item can be an Item or a function returning an Item
     function registerTabStop(name, item) {
         tabStops[name] = item;
