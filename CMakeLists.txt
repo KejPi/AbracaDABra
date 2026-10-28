@@ -690,6 +690,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS LinguistTools)
 set(HAVE_LINUX_DBUS OFF)
 
 ## Zlib for MOT decompression
+find_package(Qt6 QUIET OPTIONAL_COMPONENTS ZlibPrivate)
 if (TARGET Qt6::ZlibPrivate)
     message(STATUS "Using Qt6::ZlibPrivate for MOT decompression")
     set(ZLIB Qt6::ZlibPrivate)
