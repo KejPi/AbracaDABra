@@ -269,6 +269,9 @@ Item {
             Keys.onBacktabPressed: (event) => UI.handleTab("list", event, false)
             Accessible.role: Accessible.List
             Accessible.name: qsTr("Service list")
+            Accessible.focusable: true
+            Accessible.focused: activeFocus
+            // Instructions are exposed only until the list has been left for the first time
             anchors.fill: parent
             anchors.leftMargin: isPortrait ? UI.standardMargin : 0
             anchors.topMargin: serviceListItem.filterVisible ? serviceFilter.implicitHeight + 2*UI.standardMargin : 0
@@ -372,7 +375,7 @@ Item {
                 serviceList.shouldAnimate = serviceList.enableAnimate && (diff === 1);
                 serviceList.enableAnimate = true;
                 serviceList.previousCurrentIndex = serviceList.currentIndex;
-                if (serviceList.activeFocus) {
+                if (serviceList.activeFocus && !serviceList.announceIntro) {
                     listAnnounceTimer.restart();
                 }
             }
@@ -385,22 +388,40 @@ Item {
             }
 
             property bool announceIntro: false
+            property bool listIntroArmed: false
+            Timer {
+                id: listIntroArm
+                interval: 2500
+                onTriggered: serviceList.listIntroArmed = true
+            }
 
             onActiveFocusChanged: {
-                if (activeFocus && !UI.channelJustChanged) {
-                    announceIntro = true;
-                    listAnnounceTimer.restart();
+                if (activeFocus) {
+                    if (!UI.channelJustChanged) {
+                        announceIntro = true;
+                        // longer delay: the screen reader speaks the focus change itself first
+                        listAnnounceTimer.interval = 800;
+                        listAnnounceTimer.restart();
+                    }
+                    listIntroArm.restart();
+                } else {
+                    listIntroArm.stop();
+                    // Intro counts as heard only if the view kept focus long enough to be spoken
+                    if (listIntroArmed) {
+                        UI.listIntroSpoken = true;
+                    }
+                    listIntroArmed = false;
                 }
             }
 
             function announceCurrentRow() {
+                listAnnounceTimer.interval = 120;
                 const item = serviceList.itemAtIndex(serviceList.currentIndex);
                 let msg = "";
                 if (announceIntro) {
                     announceIntro = false;
                     msg = qsTr("Service list") + ". ";
                     if (!UI.listIntroSpoken) {
-                        UI.listIntroSpoken = true;
                         msg += qsTr("Use up and down arrows to move between services, Space to select service, Enter to toggle favorite") + ". ";
                     }
                 }
@@ -561,13 +582,11 @@ Item {
                             anchors.leftMargin: UI.standardMargin
                             spacing: 2
                             AbracaLabel {
-                                Accessible.ignored: true
                                 text: serviceName
                                 font.bold: isSelectedItem
                                 color: isSelectedItem ? UI.colors.listItemSelected : UI.colors.textPrimary
                             }
                             AbracaLabel {
-                                Accessible.ignored: true
                                 text: "SID: " + sidHex
                                 role: UI.LabelRole.Secondary
                             }
@@ -575,7 +594,6 @@ Item {
                     }
                     // Slim view
                     AbracaLabel {
-                        Accessible.ignored: true
                         id: slimLabel
                         visible: appUI.isCompact
                         anchors.verticalCenter: contentItem.verticalCenter
@@ -642,8 +660,12 @@ Item {
             id: serviceTree
             Keys.onTabPressed: (event) => UI.handleTab("tree", event, true)
             Keys.onBacktabPressed: (event) => UI.handleTab("tree", event, false)
-            Accessible.role: Accessible.Tree
+            // Same role as the flat list: with Tree, VoiceOver reports an empty table (rows are announced by the tree itself)
+            Accessible.role: Accessible.List
             Accessible.name: qsTr("Ensemble tree")
+            Accessible.focusable: true
+            Accessible.focused: activeFocus
+            Accessible.description: UI.treeIntroSpoken ? "" : qsTr("Use up and down arrows to move, Space to select service, to collapse or expand ensemble, Enter to toggle favorite")
             anchors.fill: serviceTreeItem
             anchors.leftMargin: isPortrait ? UI.standardMargin : 0
             topMargin: UI.standardMargin
@@ -681,7 +703,7 @@ Item {
                 target: slTreeSelectionModel
                 function onCurrentChanged(current, previous) {
                     serviceTree.showCurrent(current);
-                    if (serviceTree.activeFocus) {
+                    if (serviceTree.activeFocus && !serviceTree.announceIntro) {
                         treeAnnounceTimer.restart();
                     }
                     if (serviceTree.swipedRow >= 0) {
@@ -699,28 +721,36 @@ Item {
             }
 
             property bool announceIntro: false
+            property bool treeIntroArmed: false
+            Timer {
+                id: treeIntroArm
+                interval: 2500
+                onTriggered: serviceTree.treeIntroArmed = true
+            }
 
             onActiveFocusChanged: {
-                if (activeFocus && !UI.channelJustChanged) {
-                    announceIntro = true;
-                    treeAnnounceTimer.restart();
+                if (activeFocus) {
+                    if (!UI.channelJustChanged) {
+                        announceIntro = true;
+                        // longer delay: the screen reader speaks the focus change itself first
+                        treeAnnounceTimer.interval = 800;
+                        treeAnnounceTimer.restart();
+                    }
+                    treeIntroArm.restart();
+                } else {
+                    treeIntroArm.stop();
+                    // Intro counts as heard only if the view kept focus long enough to be spoken
+                    if (treeIntroArmed) {
+                        UI.treeIntroSpoken = true;
+                    }
+                    treeIntroArmed = false;
                 }
             }
 
             function announceCurrentRow() {
-                let intro = "";
-                if (announceIntro) {
-                    announceIntro = false;
-                    intro = qsTr("Ensemble tree") + ". ";
-                    if (!UI.treeIntroSpoken) {
-                        UI.treeIntroSpoken = true;
-                        intro += qsTr("Use up and down arrows to move, Space to select service, to collapse or expand ensemble, Enter to toggle favorite") + ". ";
-                    }
-                }
+                treeAnnounceTimer.interval = 120;
+                announceIntro = false;
                 if (!slTreeSelectionModel.currentIndex.valid) {
-                    if (intro !== "") {
-                        serviceTree.Accessible.announce(intro, Accessible.Assertive);
-                    }
                     return;
                 }
                 const row = serviceTree.currentRow;
@@ -740,7 +770,7 @@ Item {
                         msg += ", " + qsTr("favorite service");
                     }
                 }
-                serviceTree.Accessible.announce(intro + msg, Accessible.Assertive);
+                serviceTree.Accessible.announce(msg, Accessible.Assertive);
             }
 
             onCurrentRowChanged: {
