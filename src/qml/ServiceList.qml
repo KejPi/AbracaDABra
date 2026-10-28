@@ -260,7 +260,7 @@ Item {
             Keys.onBacktabPressed: (event) => UI.handleTab("list", event, false)
             Accessible.role: Accessible.List
             Accessible.name: qsTr("Service list")
-            Accessible.description: qsTr("Use up and down arrows to move between services, Space to select service, Enter to toggle favorite")
+            Accessible.description: activeFocus ? qsTr("Use up and down arrows to move between services, Space to select service, Enter to toggle favorite") : ""
             anchors.fill: parent
             anchors.leftMargin: isPortrait ? UI.standardMargin : 0
             anchors.topMargin: serviceListItem.filterVisible ? serviceFilter.implicitHeight + 2*UI.standardMargin : 0
@@ -458,7 +458,9 @@ Item {
 
                 focusPolicy: Qt.NoFocus   // keyboard handled by the list
 
-                Accessible.name: isFavorite ? qsTr("%1, favorite").arg(serviceName) : serviceName
+                // Not a ListItem: screen readers would add "N of M" counting only instantiated delegates
+                Accessible.role: Accessible.Button
+                Accessible.name: isFavorite ? qsTr("%1, favorite service").arg(serviceName) : serviceName
                 Accessible.description: ""
 
                 function toggleFavorite() {
@@ -513,11 +515,13 @@ Item {
                             anchors.leftMargin: UI.standardMargin
                             spacing: 2
                             AbracaLabel {
+                                Accessible.ignored: true
                                 text: serviceName
                                 font.bold: isSelectedItem
                                 color: isSelectedItem ? UI.colors.listItemSelected : UI.colors.textPrimary
                             }
                             AbracaLabel {
+                                Accessible.ignored: true
                                 text: "SID: " + sidHex
                                 role: UI.LabelRole.Secondary
                             }
@@ -525,6 +529,7 @@ Item {
                     }
                     // Slim view
                     AbracaLabel {
+                        Accessible.ignored: true
                         id: slimLabel
                         visible: appUI.isCompact
                         anchors.verticalCenter: contentItem.verticalCenter
@@ -593,7 +598,7 @@ Item {
             Keys.onBacktabPressed: (event) => UI.handleTab("tree", event, false)
             Accessible.role: Accessible.Tree
             Accessible.name: qsTr("Service list")
-            Accessible.description: qsTr("Use up and down arrows to move, Space to select service or expand ensemble, Enter to toggle favorite")
+            Accessible.description: activeFocus ? qsTr("Use up and down arrows to move, Space to select service or expand ensemble, Enter to toggle favorite") : ""
             anchors.fill: serviceTreeItem
             anchors.leftMargin: isPortrait ? UI.standardMargin : 0
             topMargin: UI.standardMargin
