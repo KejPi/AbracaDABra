@@ -32,6 +32,10 @@ import QtQuick.Layouts
 import abracaComponents 1.0
 
 Item {
+    id: mainItem
+    property Item entryItem: null
+    property Item exitItem: null
+    readonly property Item firstItem: kn1
     implicitHeight: contentLayout.implicitHeight + 2*UI.standardMargin
     implicitWidth: contentLayout.implicitWidth + 2*UI.standardMargin
     ColumnLayout {
@@ -54,6 +58,9 @@ Item {
                 text: qsTr("Device arguments:")
             }
             AbracaTextField {
+                id: kn1
+                KeyNavigation.tab: kn2
+                KeyNavigation.backtab: mainItem.entryItem
                 accessibleName: qsTr("Device arguments:")
                 Layout.fillWidth: true
                 Layout.columnSpan: 4
@@ -69,6 +76,9 @@ Item {
                 text: qsTr("RX channel number:")
             }
             AbracaSpinBox {
+                id: kn2
+                KeyNavigation.tab: kn3
+                KeyNavigation.backtab: kn1
                 accessibleName: qsTr("RX channel number:")
                 from: 0
                 to: 9
@@ -87,6 +97,9 @@ Item {
                 text: qsTr("Antenna:")
             }
             AbracaTextField {
+                id: kn3
+                KeyNavigation.tab: gainModeRepeater.count > 0 ? gainModeRepeater.itemAt(0) : knRep8.count > 0 ? knRep8.itemAt(0) : bandwidthSpinBox
+                KeyNavigation.backtab: kn2
                 accessibleName: qsTr("Antenna:")
                 text: settingsBackend.soapySdrAntenna
                 onEditingFinished: if (settingsBackend.soapySdrAntenna !== text) {
@@ -135,6 +148,8 @@ Item {
                     id: gainModeRepeater
                     model: [qsTr("Device"), qsTr("Manual")]
                     delegate: AbracaRadioButton {
+                        KeyNavigation.tab: index + 1 < gainModeRepeater.count ? gainModeRepeater.itemAt(index + 1) : (knRep8.count > 0 ? knRep8.itemAt(0) : bandwidthSpinBox)
+                        KeyNavigation.backtab: index > 0 ? gainModeRepeater.itemAt(index - 1) : (kn3)
                         id: button
                         required property int index
                         required property string modelData
@@ -170,8 +185,11 @@ Item {
                     }
                 }
                 Repeater {
+                    id: knRep8
                     model: settingsBackend.soapySdrGainModel
                     AbracaSlider {
+                        KeyNavigation.tab: index + 1 < knRep8.count ? knRep8.itemAt(index + 1) : (bandwidthSpinBox)
+                        KeyNavigation.backtab: index > 0 ? knRep8.itemAt(index - 1) : (gainModeRepeater.count > 0 ? gainModeRepeater.itemAt(gainModeRepeater.count - 1) : kn3)
                         accessibleName: qsTr("Gain")
                         required property int gainValue
                         required property int minimum
@@ -232,6 +250,8 @@ Item {
                     text: qsTr("Bandwidth:")
                 }
                 AbracaSpinBox {
+                    KeyNavigation.tab: kn4
+                    KeyNavigation.backtab: knRep8.count > 0 ? knRep8.itemAt(knRep8.count - 1) : gainModeRepeater.count > 0 ? gainModeRepeater.itemAt(gainModeRepeater.count - 1) : kn3
                     accessibleName: qsTr("Bandwidth:")
                     id: bandwidthSpinBox
                     Layout.fillWidth: true
@@ -248,6 +268,9 @@ Item {
                     specialValueString: qsTr("Default")
                 }
                 AbracaButton {
+                    id: kn4
+                    KeyNavigation.tab: freqCorrSpinBox
+                    KeyNavigation.backtab: bandwidthSpinBox
                     Layout.fillWidth: true
                     Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                     // Layout.minimumWidth: implicitWidth
@@ -261,6 +284,8 @@ Item {
                     text: qsTr("Frequency correction:")
                 }
                 AbracaSpinBox {
+                    KeyNavigation.tab: kn5
+                    KeyNavigation.backtab: kn4
                     accessibleName: qsTr("Frequency correction:")
                     id: freqCorrSpinBox
                     Layout.fillWidth: true
@@ -275,6 +300,9 @@ Item {
                     suffix: " PPM"
                 }
                 AbracaButton {
+                    id: kn5
+                    KeyNavigation.tab: mainItem.exitItem
+                    KeyNavigation.backtab: freqCorrSpinBox
                     Layout.fillWidth: true
                     Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                     // Layout.minimumWidth: implicitWidth

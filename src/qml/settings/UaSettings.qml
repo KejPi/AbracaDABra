@@ -34,6 +34,9 @@ import abracaComponents
 
 Item {
     id: mainItem
+    property Item entryItem: null
+    property Item exitItem: null
+    readonly property Item firstItem: enableSpiSwitch
 
     Flickable {
         id: contentFlickable
@@ -73,6 +76,8 @@ Item {
                             rows: appUI.isPortraitView ? 5 : 3
                             uniformCellWidths: true
                             AbracaSwitch {
+                                KeyNavigation.tab: downloadDataSwitch
+                                KeyNavigation.backtab: mainItem.entryItem
                                 id: enableSpiSwitch
                                 Layout.fillWidth: true
                                 Layout.minimumWidth: implicitWidth
@@ -86,6 +91,8 @@ Item {
                                 }
                             }
                             AbracaSwitch {
+                                KeyNavigation.tab: radiodnsSwitch
+                                KeyNavigation.backtab: enableSpiSwitch
                                 id: downloadDataSwitch
                                 Layout.fillWidth: true
                                 Layout.minimumWidth: implicitWidth
@@ -100,6 +107,8 @@ Item {
                                 }
                             }
                             AbracaSwitch {
+                                KeyNavigation.tab: progressSwitch
+                                KeyNavigation.backtab: downloadDataSwitch
                                 id: radiodnsSwitch
                                 Layout.fillWidth: true
                                 Layout.minimumWidth: implicitWidth
@@ -113,6 +122,8 @@ Item {
                                 }
                             }
                             AbracaSwitch {
+                                KeyNavigation.tab: kn1
+                                KeyNavigation.backtab: radiodnsSwitch
                                 id: progressSwitch
                                 Layout.fillWidth: true
                                 Layout.minimumWidth: implicitWidth
@@ -127,6 +138,9 @@ Item {
                                 }
                             }
                             AbracaSwitch {
+                                id: kn1
+                                KeyNavigation.tab: kn2
+                                KeyNavigation.backtab: progressSwitch
                                 Layout.fillWidth: true
                                 Layout.minimumWidth: implicitWidth
                                 text: qsTr("Hide progress when completed")
@@ -172,6 +186,9 @@ Item {
                                     }
                                 }
                                 AbracaSwitch {
+                                    id: kn2
+                                    KeyNavigation.tab: slsDataSwitch
+                                    KeyNavigation.backtab: kn1
                                     Layout.fillWidth: true
                                     Layout.minimumWidth: implicitWidth
                                     text: qsTr("Overwrite existing files")
@@ -192,6 +209,8 @@ Item {
                                     isVertical: false
                                 }
                                 AbracaSwitch {
+                                    KeyNavigation.tab: kn3
+                                    KeyNavigation.backtab: kn2
                                     id: slsDataSwitch
                                     Layout.fillWidth: true
                                     // Layout.minimumWidth: implicitWidth
@@ -205,6 +224,9 @@ Item {
                                     }
                                 }
                                 AbracaTextField {
+                                    id: kn3
+                                    KeyNavigation.tab: spiDataSwitch
+                                    KeyNavigation.backtab: slsDataSwitch
                                     accessibleName: qsTr("SLS folder template")
                                     Layout.fillWidth: true
                                     Layout.leftMargin: slsDataSwitch.labelX
@@ -216,6 +238,8 @@ Item {
                                     }
                                 }
                                 AbracaSwitch {
+                                    KeyNavigation.tab: kn4
+                                    KeyNavigation.backtab: kn3
                                     id: spiDataSwitch
                                     Layout.fillWidth: true
                                     Layout.minimumWidth: implicitWidth
@@ -230,6 +254,9 @@ Item {
                                     }
                                 }
                                 AbracaTextField {
+                                    id: kn4
+                                    KeyNavigation.tab: mainItem.exitItem
+                                    KeyNavigation.backtab: spiDataSwitch
                                     accessibleName: qsTr("SPI folder template")
                                     Layout.fillWidth: true
                                     Layout.leftMargin: spiDataSwitch.labelX

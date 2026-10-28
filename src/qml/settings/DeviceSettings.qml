@@ -34,7 +34,24 @@ import abracaComponents
 
 Item {
     id: mainItem
+    property Item entryItem: null
+    property Item exitItem: null
+    readonly property Item firstItem: deviceSelectionCombo
     property int currentDevice: 0
+
+    // first control of the page of the selected device, Tab from Connect button continues there
+    readonly property Item currentDeviceFirstItem: {
+        switch (currentDevice) {
+        case 1: return rtlSdrDeviceSettings.firstItem
+        case 2: return rtlTcpDeviceSettings.firstItem
+        case 3: return rawFileDeviceSettings.firstItem
+        case 4: return airspyDeviceSettingsLoader.item ? airspyDeviceSettingsLoader.item.firstItem : null
+        case 5: return sdrPlayDeviceSettingsLoader.item ? sdrPlayDeviceSettingsLoader.item.firstItem : null
+        case 6: return soapySdrDeviceSettingsLoader.item ? soapySdrDeviceSettingsLoader.item.firstItem : null
+        case 7: return rartTcpDeviceSettings.firstItem
+        }
+        return null
+    }
 
     GridLayout {
         id: inputDeviceSelectionRow
@@ -54,6 +71,8 @@ Item {
         }
         Item { Layout.fillHeight: true; Layout.fillWidth: inputDeviceSelectionRow.mobileView;}
         AbracaComboBox {
+            KeyNavigation.tab: connectButton
+            KeyNavigation.backtab: mainItem.entryItem
             accessibleName: qsTr("Input device:")
             id: deviceSelectionCombo
             enabled: settingsBackend.isInputDeviceSelectionEnabled
@@ -84,6 +103,8 @@ Item {
         }
         Item { Layout.fillHeight: true; Layout.fillWidth: inputDeviceSelectionRow.mobileView;  }
         AbracaButton {
+            KeyNavigation.tab: mainItem.currentDeviceFirstItem ?? mainItem.exitItem
+            KeyNavigation.backtab: deviceSelectionCombo
             id: connectButton
             text: settingsBackend.isConnectButton ? qsTr("Connect") : qsTr("Disconnect")
             enabled: settingsBackend.isConnectButtonEnabled && settingsBackend.isInputDeviceSelectionEnabled
@@ -136,14 +157,20 @@ Item {
                 Item { }  // undefined
                 RtlSdrDevice {
                     id: rtlSdrDeviceSettings;
+                    entryItem: connectButton
+                    exitItem: mainItem.exitItem
                     Layout.preferredWidth: Math.max(Math.min(contentFlickable.width, 700), implicitWidth)
                 }
                 RtlTcpDevice {
                     id: rtlTcpDeviceSettings;
+                    entryItem: connectButton
+                    exitItem: mainItem.exitItem
                     Layout.preferredWidth: Math.max(Math.min(contentFlickable.width, 700), implicitWidth)
                 }
                 RawFileDevice {
                     id: rawFileDeviceSettings;
+                    entryItem: connectButton
+                    exitItem: mainItem.exitItem
                     Layout.preferredWidth: Math.max(Math.min(contentFlickable.width, 700), implicitWidth)
                 }
                 Item {
@@ -152,7 +179,11 @@ Item {
                         id: airspyDeviceSettingsLoader
                         anchors.fill: parent
                         active: settingsBackend.haveAirspy
-                        sourceComponent: AirspyDevice { id: airspyDeviceSettings }
+                        sourceComponent: AirspyDevice {
+                            id: airspyDeviceSettings
+                            entryItem: connectButton
+                            exitItem: mainItem.exitItem
+                        }
                     }
                 }
                 Item {
@@ -161,7 +192,11 @@ Item {
                         id: sdrPlayDeviceSettingsLoader
                         anchors.fill: parent
                         active: settingsBackend.haveSoapySdr
-                        sourceComponent: SdrPlayDevice { id: sdrPlayDeviceSettings  }
+                        sourceComponent: SdrPlayDevice {
+                            id: sdrPlayDeviceSettings
+                            entryItem: connectButton
+                            exitItem: mainItem.exitItem
+                        }
                     }
                 }
                 Item {
@@ -170,11 +205,17 @@ Item {
                         id: soapySdrDeviceSettingsLoader
                         anchors.fill: parent
                         active: settingsBackend.haveSoapySdr
-                        sourceComponent: SoapySdrDevice { id: soapySdrDeviceSettings  }
+                        sourceComponent: SoapySdrDevice {
+                            id: soapySdrDeviceSettings
+                            entryItem: connectButton
+                            exitItem: mainItem.exitItem
+                        }
                     }
                 }
                 RartTcpDevice {
                     id: rartTcpDeviceSettings
+                    entryItem: connectButton
+                    exitItem: mainItem.exitItem
                     Layout.preferredWidth: Math.max(Math.min(contentFlickable.width, 700), implicitWidth)
                 }
             }

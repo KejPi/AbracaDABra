@@ -35,6 +35,9 @@ import abracaComponents
 
 Item {
     id: mainItem
+    property Item entryItem: null
+    property Item exitItem: null
+    readonly property Item firstItem: kn1
     implicitHeight: contentLayout.implicitHeight + 2 * UI.standardMargin
     implicitWidth: contentLayout.implicitWidth + 2 * UI.standardMargin
     ColumnLayout {
@@ -48,6 +51,9 @@ Item {
             uniformCellSizes: true
             Layout.alignment: contentLayout.width > 2*implicitWidth ? Qt.AlignLeft : Qt.AlignHCenter
             AbracaButton {
+                id: kn1
+                KeyNavigation.tab: kn2
+                KeyNavigation.backtab: mainItem.entryItem
                 Layout.fillWidth: true
                 text: qsTr("Open file")
                 onClicked: {
@@ -56,6 +62,9 @@ Item {
                 }
             }
             AbracaComboBox {
+                id: kn2
+                KeyNavigation.tab: progressSlider
+                KeyNavigation.backtab: kn1
                 accessibleName: qsTr("Raw file format")
                 Layout.fillWidth: true
                 model: settingsBackend.rawFileFormatModel
@@ -90,6 +99,8 @@ Item {
             Layout.fillWidth: true
             visible: settingsBackend.isRawFileProgressVisible
             AbracaSlider {
+                KeyNavigation.tab: favoriteIcon
+                KeyNavigation.backtab: kn2
                 accessibleName: qsTr("File playback position")
                 id: progressSlider
                 Layout.fillWidth: true
@@ -126,6 +137,8 @@ Item {
                 }
             }
             AbracaImgButton {
+                KeyNavigation.tab: mainItem.exitItem
+                KeyNavigation.backtab: progressSlider
                 id: favoriteIcon
                 Layout.preferredWidth: implicitWidth
                 Layout.alignment: Qt.AlignVCenter

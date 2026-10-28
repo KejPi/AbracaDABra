@@ -1246,7 +1246,8 @@ Item {
             }
             AbracaTabBar {
                 id: bar
-                Component.onCompleted: UI.registerTabStop("bar", () => bar.currentItem)
+                Component.onCompleted: UI.registerTabStop("bar", () => bar ? bar.currentItem : null)
+                Component.onDestruction: UI.unregisterTabStop("bar")
                 Layout.fillWidth: true
                 visible: slStacked.visible
                 AbracaTabButton {

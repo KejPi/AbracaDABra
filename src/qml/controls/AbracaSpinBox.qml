@@ -92,6 +92,9 @@ SpinBox {
 
     contentItem: Item {
         id: contentItem
+        // the SpinBox forwards its active focus to this item, so it has to follow the same links as the SpinBox
+        KeyNavigation.tab: control.KeyNavigation.tab
+        KeyNavigation.backtab: control.KeyNavigation.backtab
         anchors.fill: control
         anchors.rightMargin: 2 * UI.controlHeight
         property alias text: textInput.text
@@ -102,6 +105,9 @@ SpinBox {
             anchors.verticalCenter: contentItem.verticalCenter
             TextInput {
                 id: textInput
+                // focus lands here when the text is clicked
+                KeyNavigation.tab: control.KeyNavigation.tab
+                KeyNavigation.backtab: control.KeyNavigation.backtab
                 z: 2
                 text: control.displayText // control.textFromValue(control.value, control.locale)
 

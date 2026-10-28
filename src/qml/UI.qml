@@ -60,7 +60,7 @@ QtObject {
     readonly property bool isAndroid: Qt.platform.os === "android"
 
     // Keyboard Tab cycle (Tab / Shift+Tab) across separate parts of the main window
-    readonly property var tabOrder: ["nav", "list", "channel", "channelDown", "channelUp", "bar", "tree",
+    readonly property var tabOrder: ["nav", "settings", "list", "channel", "channelDown", "channelUp", "bar", "tree",
                                      "favorite", "switchSource", "rec", "volume", "mute"]
     property var tabStops: ({})
 
@@ -73,6 +73,10 @@ QtObject {
     // item can be an Item or a function returning an Item
     function registerTabStop(name, item) {
         tabStops[name] = item;
+    }
+
+    function unregisterTabStop(name) {
+        delete tabStops[name];
     }
 
     function tabStopItem(name) {

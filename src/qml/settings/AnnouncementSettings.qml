@@ -34,6 +34,9 @@ import abracaComponents
 
 Item {
     id: mainItem
+    property Item entryItem: null
+    property Item exitItem: null
+    readonly property Item firstItem: knRep2.count > 0 ? knRep2.itemAt(0) : kn1
 
     Flickable {
         id: contentFlickable
@@ -74,12 +77,15 @@ Item {
                                 Layout.fillWidth: true
                                 uniformCellSizes: true
                                 Repeater {
+                                    id: knRep2
                                     model: AnnouncementsProxyModel {
                                         id: announcementModelAlarms
                                         sourceModel: settingsBackend.announcementModel
                                         alarm: true
                                     }
                                     delegate: AbracaSwitch {
+                                        KeyNavigation.tab: index + 1 < knRep2.count ? knRep2.itemAt(index + 1) : (kn1)
+                                        KeyNavigation.backtab: index > 0 ? knRep2.itemAt(index - 1) : (mainItem.entryItem)
                                         required property int index
                                         required property string itemName
                                         required property bool itemData
@@ -98,6 +104,9 @@ Item {
                                 text: qsTr("<br>Note: Alarm announcement cannot be disabled.")
                             }
                             AbracaSwitch {
+                                id: kn1
+                                KeyNavigation.tab: knRep3.count > 0 ? knRep3.itemAt(0) : mainItem.exitItem
+                                KeyNavigation.backtab: knRep2.count > 0 ? knRep2.itemAt(knRep2.count - 1) : mainItem.entryItem
                                 Layout.fillWidth: true
                                 visible: UI.isDesktop
                                 text: qsTr("Bring window to foreground on alarm announcement")
@@ -127,12 +136,15 @@ Item {
                             columns: 2
                             uniformCellWidths: true
                             Repeater {
+                                id: knRep3
                                 model: AnnouncementsProxyModel {
                                     id: announcementModel
                                     sourceModel: settingsBackend.announcementModel
                                     alarm: false
                                 }
                                 delegate: AbracaSwitch {
+                                    KeyNavigation.tab: index + 1 < knRep3.count ? knRep3.itemAt(index + 1) : (mainItem.exitItem)
+                                    KeyNavigation.backtab: index > 0 ? knRep3.itemAt(index - 1) : (kn1)
                                     required property int index
                                     required property string itemName
                                     required property bool itemData

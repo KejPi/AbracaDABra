@@ -34,6 +34,9 @@ import abracaComponents
 
 Item {
     id: mainItem
+    property Item entryItem: null
+    property Item exitItem: null
+    readonly property Item firstItem: dropOutLevelCombo
 
     Flickable {
         id: contentFlickable
@@ -71,6 +74,8 @@ Item {
                                 wrapMode: Text.WordWrap
                             }
                             AbracaComboBox {
+                                KeyNavigation.tab: kn1
+                                KeyNavigation.backtab: mainItem.entryItem
                                 accessibleName: qsTr("Noise level during audio drop-out:")
                                 id: dropOutLevelCombo
                                 Layout.fillWidth: true
@@ -128,6 +133,9 @@ Item {
                                     id: captureOutputColumn
                                     Layout.fillWidth: true
                                     AbracaRadioButton {
+                                        id: kn1
+                                        KeyNavigation.tab: kn2
+                                        KeyNavigation.backtab: dropOutLevelCombo
                                         anchors.left: captureOutputColumn.left
                                         anchors.right: captureOutputColumn.right
                                         text: qsTr("Record encoded DAB/DAB+ stream (MP2 or AAC format)")
@@ -141,6 +149,9 @@ Item {
                                         }
                                     }
                                     AbracaRadioButton {
+                                        id: kn2
+                                        KeyNavigation.tab: autoStopSwitch
+                                        KeyNavigation.backtab: kn1
                                         anchors.left: captureOutputColumn.left
                                         anchors.right: captureOutputColumn.right
                                         text: qsTr("Record decoded audio (WAV format)")
@@ -155,6 +166,8 @@ Item {
                                     }
                                 }
                                 AbracaSwitch {
+                                    KeyNavigation.tab: kn3
+                                    KeyNavigation.backtab: kn2
                                     id: autoStopSwitch
                                     Layout.fillWidth: true
                                     text: qsTr("Do not ask to stop audio recording when service changes")
@@ -167,6 +180,9 @@ Item {
                                     }
                                 }
                                 AbracaSwitch {
+                                    id: kn3
+                                    KeyNavigation.tab: kn4
+                                    KeyNavigation.backtab: autoStopSwitch
                                     text: qsTr("Record DL messages")
                                     checked: settingsBackend.audioRecDl
                                     wrapMode: Text.WordWrap
@@ -177,6 +193,9 @@ Item {
                                     }
                                 }
                                 AbracaSwitch {
+                                    id: kn4
+                                    KeyNavigation.tab: kn5
+                                    KeyNavigation.backtab: kn3
                                     text: qsTr("Record DAB time for DL messages")
                                     wrapMode: Text.WordWrap
                                     enabled: settingsBackend.audioRecDl
@@ -214,6 +233,9 @@ Item {
                                     text: qsTr("AAC audio decoder:")
                                 }
                                 AbracaComboBox {
+                                    id: kn5
+                                    KeyNavigation.tab: kn6
+                                    KeyNavigation.backtab: kn4
                                     accessibleName: qsTr("AAC audio decoder:")
                                     model: settingsBackend.audioDecoderModel
                                     textRole: "itemName"
@@ -232,6 +254,9 @@ Item {
                                     }
                                 }
                                 AbracaButton {
+                                    id: kn6
+                                    KeyNavigation.tab: kn7
+                                    KeyNavigation.backtab: kn5
                                     text: qsTr("Restart")
                                     onClicked: settingsBackend.requestRestart()
                                     visible: settingsBackend.audioDecoderChanged
@@ -254,6 +279,9 @@ Item {
                                     visible: UI.isAndroid === false
                                 }
                                 AbracaComboBox {
+                                    id: kn7
+                                    KeyNavigation.tab: kn8
+                                    KeyNavigation.backtab: kn6
                                     accessibleName: qsTr("Audio output framework:")
                                     model: settingsBackend.audioOutputModel
                                     textRole: "itemName"
@@ -273,6 +301,9 @@ Item {
                                     visible: UI.isAndroid === false
                                 }
                                 AbracaButton {
+                                    id: kn8
+                                    KeyNavigation.tab: mainItem.exitItem
+                                    KeyNavigation.backtab: kn7
                                     text: qsTr("Restart")
                                     visible: settingsBackend.audioOutputChanged
                                     onClicked: settingsBackend.requestRestart()

@@ -35,6 +35,9 @@ import abracaComponents
 
 Item {
     id: mainItem
+    property Item entryItem: null
+    property Item exitItem: null
+    readonly property Item firstItem: gainModeRepeater.count > 0 ? gainModeRepeater.itemAt(0) : kn1
 
     Flickable {
         id: contentFlickable
@@ -79,6 +82,8 @@ Item {
                                 id: gainModeRepeater
                                 model: [qsTr("System"), qsTr("Light"), qsTr("Dark") ]
                                 delegate: AbracaRadioButton {
+                                    KeyNavigation.tab: index + 1 < gainModeRepeater.count ? gainModeRepeater.itemAt(index + 1) : (kn1)
+                                    KeyNavigation.backtab: index > 0 ? gainModeRepeater.itemAt(index - 1) : (mainItem.entryItem)
                                     id: button
                                     required property int index
                                     required property string modelData
@@ -111,6 +116,9 @@ Item {
                                 id: uiSettingsLayout
                                 anchors.fill: parent
                                 AbracaSwitch {
+                                    id: kn1
+                                    KeyNavigation.tab: kn2
+                                    KeyNavigation.backtab: gainModeRepeater.count > 0 ? gainModeRepeater.itemAt(gainModeRepeater.count - 1) : mainItem.entryItem
                                     Layout.fillWidth: true
                                     text: qsTr("Fullscreen mode")
                                     checked: settingsBackend.fullscreen
@@ -124,6 +132,9 @@ Item {
                                     elideMode: Text.ElideNone
                                 }
                                 AbracaSwitch {
+                                    id: kn2
+                                    KeyNavigation.tab: kn3
+                                    KeyNavigation.backtab: kn1
                                     Layout.fillWidth: true
                                     text: qsTr("Keep screen on")
                                     checked: settingsBackend.keepScreenOn
@@ -137,6 +148,9 @@ Item {
                                     elideMode: Text.ElideNone
                                 }
                                 AbracaSwitch {
+                                    id: kn3
+                                    KeyNavigation.tab: kn4
+                                    KeyNavigation.backtab: kn2
                                     Layout.fillWidth: true
                                     text: qsTr("Compact view (smaller controls, etc.)")
                                     checked: settingsBackend.compactUi
@@ -150,6 +164,9 @@ Item {
                                     elideMode: Text.ElideNone
                                 }
                                 AbracaSwitch {
+                                    id: kn4
+                                    KeyNavigation.tab: kn5
+                                    KeyNavigation.backtab: kn3
                                     Layout.fillWidth: true
                                     text: qsTr("Show tray icon")
                                     checked: settingsBackend.showTrayIcon
@@ -162,6 +179,9 @@ Item {
                                     visible: UI.isAndroid === false
                                 }
                                 AbracaSwitch {
+                                    id: kn5
+                                    KeyNavigation.tab: kn6
+                                    KeyNavigation.backtab: kn4
                                     Layout.fillWidth: true
                                     text: qsTr("Dynamic Label Plus (DL+)")
                                     checked: settingsBackend.showDlPlus
@@ -174,6 +194,9 @@ Item {
                                     elideMode: Text.ElideNone                                    
                                 }
                                 AbracaSwitch {
+                                    id: kn6
+                                    KeyNavigation.tab: kn7
+                                    KeyNavigation.backtab: kn5
                                     Layout.fillWidth: true
                                     text: qsTr("Show widget on service page")
                                     checked: settingsBackend.showServicePageWidget
@@ -187,6 +210,9 @@ Item {
                                     visible: UI.isMobile === false
                                 }
                                 AbracaSwitch {
+                                    id: kn7
+                                    KeyNavigation.tab: kn8
+                                    KeyNavigation.backtab: kn6
                                     Layout.fillWidth: true
                                     text: qsTr("Show only current ensemble in service tree")
                                     checked: settingsBackend.filterServiceTreeByEnsemble
@@ -199,6 +225,9 @@ Item {
                                     elideMode: Text.ElideNone
                                 }
                                 AbracaSwitch {
+                                    id: kn8
+                                    KeyNavigation.tab: kn9
+                                    KeyNavigation.backtab: kn7
                                     Layout.fillWidth: true
                                     text: qsTr("Show system time when DAB time is not available")
                                     checked: settingsBackend.showSystemTime
@@ -211,6 +240,9 @@ Item {
                                     elideMode: Text.ElideNone
                                 }
                                 AbracaSwitch {
+                                    id: kn9
+                                    KeyNavigation.tab: kn10
+                                    KeyNavigation.backtab: kn8
                                     Layout.fillWidth: true
                                     text: qsTr("Show ensemble country flag (internet connection required)")
                                     checked: settingsBackend.showEnsembleCountryFlag
@@ -223,6 +255,9 @@ Item {
                                     elideMode: Text.ElideNone
                                 }
                                 AbracaSwitch {
+                                    id: kn10
+                                    KeyNavigation.tab: slsProgressSwitch
+                                    KeyNavigation.backtab: kn9
                                     Layout.fillWidth: true
                                     text: qsTr("Show service country flag (internet connection required)")
                                     checked: settingsBackend.showServiceCountryFlag
@@ -235,6 +270,8 @@ Item {
                                     elideMode: Text.ElideNone
                                 }
                                 AbracaSwitch {
+                                    KeyNavigation.tab: slsScalingComboBox
+                                    KeyNavigation.backtab: kn10
                                     id: slsProgressSwitch
                                     Layout.fillWidth: true
                                     Layout.minimumWidth: implicitWidth
@@ -278,6 +315,8 @@ Item {
                                         text: qsTr("Slideshow scaling:")
                                     }
                                     AbracaComboBox {
+                                        KeyNavigation.tab: languageComboBox
+                                        KeyNavigation.backtab: slsProgressSwitch
                                         accessibleName: qsTr("Slideshow scaling:")
                                         id: slsScalingComboBox
                                         property int w: -1
@@ -301,6 +340,8 @@ Item {
                                         text: qsTr("Language:")
                                     }
                                     AbracaComboBox {
+                                        KeyNavigation.tab: restartButton
+                                        KeyNavigation.backtab: slsScalingComboBox
                                         accessibleName: qsTr("Language:")
                                         id: languageComboBox
                                         property int w: -1
@@ -320,6 +361,8 @@ Item {
                                         }
                                     }
                                     AbracaButton {
+                                        KeyNavigation.tab: kn11
+                                        KeyNavigation.backtab: languageComboBox
                                         id: restartButton
                                         text: qsTr("Restart")
                                         onClicked: settingsBackend.requestRestart()
@@ -373,6 +416,9 @@ Item {
                                     }
                                 }
                                 AbracaButton {
+                                    id: kn11
+                                    KeyNavigation.tab: kn12
+                                    KeyNavigation.backtab: restartButton
                                     text: qsTr("Data storage folder...")
                                     onClicked: {
                                         dirDialogLoader.dirpath = settingsBackend.dataStoragePathUrl();
@@ -390,10 +436,16 @@ Item {
                                     Layout.topMargin: 2*UI.standardMargin
                                     spacing: UI.standardMargin
                                     AbracaButton {
+                                        id: kn12
+                                        KeyNavigation.tab: kn13
+                                        KeyNavigation.backtab: kn11
                                         text: qsTr("Backup settings")
                                         onClicked: application.backupSettings()
                                     }
                                     AbracaButton {
+                                        id: kn13
+                                        KeyNavigation.tab: kn14
+                                        KeyNavigation.backtab: kn12
                                         text: qsTr("Restore settings...")
                                         onClicked:  {
                                             fileDialogLoader.filename = "";
@@ -434,6 +486,9 @@ Item {
                                 text: qsTr("Proxy type:")
                             }
                             AbracaComboBox {
+                                id: kn14
+                                KeyNavigation.tab: kn15
+                                KeyNavigation.backtab: kn13
                                 accessibleName: qsTr("Proxy type:")
                                 model: settingsBackend.proxyConfigModel
                                 textRole: "itemName"
@@ -448,6 +503,9 @@ Item {
                                 Layout.fillWidth: true
                                 Item { Layout.fillWidth: true }
                                 AbracaButton {
+                                    id: kn15
+                                    KeyNavigation.tab: kn16
+                                    KeyNavigation.backtab: kn14
                                     text: qsTr("Apply")
                                     enabled: settingsBackend.isProxyApplyEnabled
                                     onClicked: settingsBackend.requestApplyProxyConfig()
@@ -461,6 +519,9 @@ Item {
                                 enabled: settingsBackend.proxyConfigModel.currentIndex === 2
                             }
                             AbracaTextField {
+                                id: kn16
+                                KeyNavigation.tab: kn17
+                                KeyNavigation.backtab: kn15
                                 accessibleName: qsTr("Server:")
                                 Layout.fillWidth: true
                                 Layout.columnSpan: 2
@@ -478,6 +539,9 @@ Item {
                                 enabled: settingsBackend.proxyConfigModel.currentIndex === 2
                             }
                             AbracaSpinBox {
+                                id: kn17
+                                KeyNavigation.tab: kn18
+                                KeyNavigation.backtab: kn16
                                 accessibleName: qsTr("Port:")
                                 from: 0
                                 to: 65535
@@ -499,6 +563,9 @@ Item {
                                 text: qsTr("Username:")
                             }
                             AbracaTextField {
+                                id: kn18
+                                KeyNavigation.tab: kn19
+                                KeyNavigation.backtab: kn17
                                 accessibleName: qsTr("Username:")
                                 Layout.fillWidth: true
                                 Layout.columnSpan: 2
@@ -517,6 +584,9 @@ Item {
                                 enabled: settingsBackend.proxyConfigModel.currentIndex === 2
                             }
                             AbracaTextField {
+                                id: kn19
+                                KeyNavigation.tab: kn20
+                                KeyNavigation.backtab: kn18
                                 accessibleName: qsTr("Password:")
                                 Layout.fillWidth: true
                                 Layout.columnSpan: 2
@@ -549,6 +619,9 @@ Item {
                                 id: fmlistLayout
                                 anchors.fill: parent
                                 AbracaSwitch {
+                                    id: kn20
+                                    KeyNavigation.tab: kn21
+                                    KeyNavigation.backtab: kn19
                                     Layout.fillWidth: true
                                     Layout.minimumWidth: implicitWidth
                                     text: qsTr("Upload ensemble information")
@@ -605,6 +678,9 @@ Item {
                                 id: rawfileLayout
                                 anchors.fill: parent
                                 AbracaSwitch {
+                                    id: kn21
+                                    KeyNavigation.tab: kn22
+                                    KeyNavigation.backtab: kn20
                                     Layout.fillWidth: true
                                     Layout.minimumWidth: implicitWidth
                                     text: qsTr("Insert XML header")
@@ -617,6 +693,9 @@ Item {
                                     }
                                 }
                                 AbracaSwitch {
+                                    id: kn22
+                                    KeyNavigation.tab: kn23
+                                    KeyNavigation.backtab: kn21
                                     Layout.fillWidth: true
                                     Layout.minimumWidth: implicitWidth
                                     text: qsTr("Insert GNSS coordinates")
@@ -648,6 +727,9 @@ Item {
                                 id: othersLayout
                                 anchors.fill: parent
                                 AbracaSwitch {
+                                    id: kn23
+                                    KeyNavigation.tab: kn24
+                                    KeyNavigation.backtab: kn22
                                     Layout.fillWidth: true
                                     //Layout.minimumWidth: implicitWidth
                                     text: qsTr("Restore application windows on start")
@@ -661,6 +743,9 @@ Item {
                                     visible: UI.isAndroid === false
                                 }
                                 AbracaSwitch {
+                                    id: kn24
+                                    KeyNavigation.tab: mainItem.exitItem
+                                    KeyNavigation.backtab: kn23
                                     Layout.fillWidth: true
                                     //Layout.minimumWidth: implicitWidth
                                     text: qsTr("Check for application update on start")

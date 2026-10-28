@@ -34,6 +34,9 @@ import abracaComponents
 
 Item {
     id: mainItem
+    property Item entryItem: null
+    property Item exitItem: null
+    readonly property Item firstItem: updateDbButton
 
     Flickable {
         id: contentFlickable
@@ -94,6 +97,8 @@ Item {
                                         running: settingsBackend.isTiiDbUpdating
                                     }
                                     AbracaButton {
+                                        KeyNavigation.tab: geoLocationComboBox
+                                        KeyNavigation.backtab: mainItem.entryItem
                                         id: updateDbButton
                                         text: qsTr("Update")
                                         enabled: settingsBackend.isTiiUpdateEnabled
@@ -130,6 +135,8 @@ Item {
                                         Layout.preferredWidth: receiverLocationLayout.labelWidth
                                     }
                                     AbracaComboBox {
+                                        KeyNavigation.tab: kn1
+                                        KeyNavigation.backtab: updateDbButton
                                         accessibleName: qsTr("Geolocation source:")
                                         id: geoLocationComboBox
                                         model: settingsBackend.locationSourceModel
@@ -150,6 +157,9 @@ Item {
                                     }
                                     Item { Layout.fillWidth: true }
                                     AbracaButton {
+                                        id: kn1
+                                        KeyNavigation.tab: coordinatesTextField
+                                        KeyNavigation.backtab: geoLocationComboBox
                                         text: qsTr("Apply")
                                         visible: geoLocationComboBox.currentIndex > 0
                                         enabled: (geoLocationComboBox.currentIndex === 1 && coordinatesTextField.text !== settingsBackend.locationCoordinates)
@@ -178,6 +188,8 @@ Item {
                                             text: qsTr("GPS coordinates:")
                                         }
                                         AbracaTextField {
+                                            KeyNavigation.tab: serialPortTextField
+                                            KeyNavigation.backtab: kn1
                                             accessibleName: qsTr("GPS coordinates:")
                                             id: coordinatesTextField
                                             Layout.fillWidth: true
@@ -197,6 +209,8 @@ Item {
                                             text: qsTr("Serial port:")
                                         }
                                         AbracaTextField {
+                                            KeyNavigation.tab: kn2
+                                            KeyNavigation.backtab: coordinatesTextField
                                             accessibleName: qsTr("Serial port:")
                                             id: serialPortTextField
                                             Layout.fillWidth: true
@@ -212,6 +226,9 @@ Item {
                                             text: qsTr("Baudrate:")
                                         }
                                         AbracaComboBox {
+                                            id: kn2
+                                            KeyNavigation.tab: manualAltitudeSwitch
+                                            KeyNavigation.backtab: serialPortTextField
                                             accessibleName: qsTr("Baudrate:")
                                             model: settingsBackend.serialPortBaudrateModel
                                             textRole: "itemName"
@@ -243,6 +260,8 @@ Item {
                                         Layout.preferredWidth: receiverLocationLayout.labelWidth
                                     }
                                     AbracaSwitch {
+                                        KeyNavigation.tab: kn3
+                                        KeyNavigation.backtab: kn2
                                         id: manualAltitudeSwitch
                                         text: qsTr("Manual")
                                         enabled: settingsBackend.locationSourceModel.currentIndex !== 1
@@ -254,6 +273,9 @@ Item {
                                         }
                                     }
                                     AbracaSpinBox {
+                                        id: kn3
+                                        KeyNavigation.tab: kn4
+                                        KeyNavigation.backtab: manualAltitudeSwitch
                                         accessibleName: qsTr("Altitude")
                                         Layout.column: UI.isMobile ? 1 : 2
                                         Layout.row: UI.isMobile ? 1 : 0
@@ -309,6 +331,9 @@ Item {
                                     rowSpacing: UI.standardMargin
                                     columns: UI.isMobile ? 1 : 2
                                     AbracaSwitch {
+                                        id: kn4
+                                        KeyNavigation.tab: kn5
+                                        KeyNavigation.backtab: kn3
                                         Layout.fillWidth: true
                                         text: qsTr("Timestamp in UTC")
                                         wrapMode: Text.WordWrap
@@ -320,6 +345,9 @@ Item {
                                         }
                                     }
                                     AbracaSwitch {
+                                        id: kn5
+                                        KeyNavigation.tab: kn6
+                                        KeyNavigation.backtab: kn4
                                         Layout.fillWidth: true
                                         text: qsTr("Column names in English")
                                         wrapMode: Text.WordWrap
@@ -331,6 +359,9 @@ Item {
                                         }
                                     }
                                     AbracaSwitch {
+                                        id: kn6
+                                        KeyNavigation.tab: kn7
+                                        KeyNavigation.backtab: kn5
                                         Layout.fillWidth: true
                                         text: qsTr("GPS coordinates")
                                         wrapMode: Text.WordWrap
@@ -342,6 +373,9 @@ Item {
                                         }
                                     }
                                     AbracaSwitch {
+                                        id: kn7
+                                        KeyNavigation.tab: kn8
+                                        KeyNavigation.backtab: kn6
                                         Layout.fillWidth: true
                                         text: qsTr("No TII (signal monitoring)")
                                         wrapMode: Text.WordWrap
@@ -372,6 +406,9 @@ Item {
                                 text: qsTr("Reliable")
                             }
                             AbracaSlider {
+                                id: kn8
+                                KeyNavigation.tab: kn9
+                                KeyNavigation.backtab: kn7
                                 accessibleName: qsTr("Detector reliability")
                                 Layout.fillWidth: true
                                 from: 0
@@ -410,6 +447,9 @@ Item {
 
 
                                 AbracaSwitch {
+                                    id: kn9
+                                    KeyNavigation.tab: showInactiveSwitch
+                                    KeyNavigation.backtab: kn8
                                     Layout.fillWidth: true
                                     text: qsTr("Show spectrum plot")
                                     wrapMode: Text.WordWrap
@@ -421,6 +461,8 @@ Item {
                                     }
                                 }
                                 AbracaSwitch {
+                                    KeyNavigation.tab: timeoutSwitch
+                                    KeyNavigation.backtab: kn9
                                     id: showInactiveSwitch
                                     Layout.fillWidth: true
                                     text: qsTr("Keep no longer detected transmitters on map (grey marker)")
@@ -440,6 +482,8 @@ Item {
                                         Layout.preferredWidth: 4 * UI.standardMargin
                                     }
                                     AbracaSwitch {
+                                        KeyNavigation.tab: kn10
+                                        KeyNavigation.backtab: showInactiveSwitch
                                         id: timeoutSwitch
                                         text: qsTr("Remove after:")
                                         wrapMode: Text.WordWrap
@@ -451,6 +495,9 @@ Item {
                                         }
                                     }
                                     AbracaSpinBox {
+                                        id: kn10
+                                        KeyNavigation.tab: tiiTableColsView.count > 0 ? (tiiTableColsView.itemAtIndex(0)?.tabItem ?? null) : mainItem.exitItem
+                                        KeyNavigation.backtab: timeoutSwitch
                                         accessibleName: qsTr("TII inactive timeout")
                                         enabled: settingsBackend.isTiiInactiveTimeoutEnabled
                                         value: settingsBackend.tiiInactiveTimeout
@@ -502,6 +549,7 @@ Item {
 
                                 delegate: DropArea {
                                     id: dropArea
+                                    property Item tabItem: colSwitch
                                     width: tiiTableColsView.width
                                     height: UI.controlHeight
 
@@ -594,6 +642,8 @@ Item {
                                             }
 
                                             AbracaSwitch {
+                                                KeyNavigation.tab: dropArea.index + 1 < tiiTableColsView.count ? (tiiTableColsView.itemAtIndex(dropArea.index + 1)?.tabItem ?? null) : (mainItem.exitItem)
+                                                KeyNavigation.backtab: dropArea.index > 0 ? (tiiTableColsView.itemAtIndex(dropArea.index - 1)?.tabItem ?? null) : (kn10)
                                                 id: colSwitch
                                                 text: ""
                                                 checked: dropArea.enabled

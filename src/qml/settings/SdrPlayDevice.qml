@@ -33,6 +33,9 @@ import abracaComponents 1.0
 
 Item {
     id: mainItem
+    property Item entryItem: null
+    property Item exitItem: null
+    readonly property Item firstItem: kn1
     implicitHeight: contentLayout.implicitHeight + 2*UI.standardMargin
     implicitWidth: contentLayout.implicitWidth + 2*UI.standardMargin
 
@@ -57,6 +60,9 @@ Item {
             readonly property bool mobileView: mainItem.width <= UI.narrowViewWidth
 
             AbracaComboBox {
+                id: kn1
+                KeyNavigation.tab: kn2
+                KeyNavigation.backtab: mainItem.entryItem
                 accessibleName: qsTr("SDRplay device")
                 Layout.columnSpan: 4
                 Layout.fillWidth: true
@@ -71,6 +77,9 @@ Item {
                 }
             }
             AbracaButton {
+                id: kn2
+                KeyNavigation.tab: kn3
+                KeyNavigation.backtab: kn1
                 Layout.preferredWidth: antennaCombo.width
                 enabled: settingsBackend.isSdrplayControlEnabled === false
                 text: qsTr("Reload")
@@ -82,6 +91,9 @@ Item {
                 enabled: mainItem.isDeviceInfoLoaded && !settingsBackend.isSdrplayControlEnabled
             }
             AbracaComboBox {
+                id: kn3
+                KeyNavigation.tab: antennaCombo
+                KeyNavigation.backtab: kn2
                 accessibleName: qsTr("RX channel number:")
                 enabled: mainItem.isDeviceInfoLoaded && !settingsBackend.isSdrplayControlEnabled
                 // Layout.columnSpan: deviceSelectionGrid.mobileView ? 3 : 1
@@ -103,6 +115,8 @@ Item {
                 enabled: mainItem.isDeviceInfoLoaded
             }
             AbracaComboBox {
+                KeyNavigation.tab: fallbackSwitch
+                KeyNavigation.backtab: kn3
                 accessibleName: qsTr("Antenna:")
                 id: antennaCombo
                 // Layout.columnSpan: deviceSelectionGrid.mobileView ? 3 : 1
@@ -122,6 +136,8 @@ Item {
             Layout.fillWidth: true
             implicitHeight: fallbackSwitch.implicitHeight
             AbracaSwitch {
+                KeyNavigation.tab: gainModeRepeater.count > 0 ? gainModeRepeater.itemAt(0) : rfGainSlider
+                KeyNavigation.backtab: antennaCombo
                 id: fallbackSwitch
                 anchors.fill: parent
                 text: qsTr("Use any available SDRplay device if the selected one fails")
@@ -179,6 +195,8 @@ Item {
                     id: gainModeRepeater
                     model: [qsTr("Software"), qsTr("Manual")]
                     delegate: AbracaRadioButton {
+                        KeyNavigation.tab: index + 1 < gainModeRepeater.count ? gainModeRepeater.itemAt(index + 1) : (rfGainSlider)
+                        KeyNavigation.backtab: index > 0 ? gainModeRepeater.itemAt(index - 1) : (fallbackSwitch)
                         id: button
                         required property int index
                         required property string modelData
@@ -208,6 +226,8 @@ Item {
                     text: qsTr("RF gain")
                 }
                 AbracaSlider {
+                    KeyNavigation.tab: kn4
+                    KeyNavigation.backtab: gainModeRepeater.count > 0 ? gainModeRepeater.itemAt(gainModeRepeater.count - 1) : fallbackSwitch
                     accessibleName: qsTr("RF gain")
                     id: rfGainSlider
                     Layout.fillWidth: true
@@ -236,6 +256,9 @@ Item {
                     enabled: settingsBackend.sdrplayGainMode === 0 || settingsBackend.isSdrplayIfAgcChecked === false
                 }
                 AbracaSlider {
+                    id: kn4
+                    KeyNavigation.tab: kn5
+                    KeyNavigation.backtab: rfGainSlider
                     accessibleName: qsTr("IF gain")
                     Layout.fillWidth: true
                     enabled: settingsBackend.sdrplayGainMode === 1 && settingsBackend.isSdrplayIfAgcChecked === false
@@ -255,6 +278,9 @@ Item {
                     enabled: settingsBackend.sdrplayGainMode === 0 || settingsBackend.isSdrplayIfAgcChecked === false
                 }
                 AbracaSwitch {
+                    id: kn5
+                    KeyNavigation.tab: freqCorrSpinBox
+                    KeyNavigation.backtab: kn4
                     text: qsTr("AGC")
                     enabled: settingsBackend.sdrplayGainMode === 1
                     checked: settingsBackend.isSdrplayIfAgcChecked
@@ -289,6 +315,8 @@ Item {
                     text: qsTr("Frequency correction:")
                 }
                 AbracaSpinBox {
+                    KeyNavigation.tab: kn6
+                    KeyNavigation.backtab: kn5
                     accessibleName: qsTr("Frequency correction:")
                     id: freqCorrSpinBox
                     Layout.fillWidth: true
@@ -303,6 +331,9 @@ Item {
                     suffix: " PPM"
                 }
                 AbracaButton {
+                    id: kn6
+                    KeyNavigation.tab: kn7
+                    KeyNavigation.backtab: freqCorrSpinBox
                     Layout.fillWidth: true
                     Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                     // Layout.minimumWidth: implicitWidth
@@ -316,6 +347,9 @@ Item {
                     text: qsTr("Bias Tee:")
                 }
                 AbracaSwitch {
+                    id: kn7
+                    KeyNavigation.tab: mainItem.exitItem
+                    KeyNavigation.backtab: kn6
                     Layout.alignment: Qt.AlignHCenter
                     text: ""
                     checked: settingsBackend.sdrplayBiasT

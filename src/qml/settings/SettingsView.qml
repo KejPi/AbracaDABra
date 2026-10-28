@@ -34,6 +34,71 @@ import abracaComponents 1.0
 Item {
     id: mainItem
 
+    // Tab / Shift+Tab inside a page follows KeyNavigation.tab / backtab declared on every control.
+    // Page controls start at the current tab button (entryItem) and end at tabEnd (exitItem).
+    // Keys not consumed by KeyNavigation (Shift+Tab on the tab button) leave settings to the main window cycle.
+    Keys.onTabPressed: (event) => UI.handleTab("settings", event, true)
+    Keys.onBacktabPressed: (event) => UI.handleTab("settings", event, false)
+
+    // Always focusable end of every page, hands focus over to the next part of the main window
+    Item {
+        id: tabEnd
+        width: 0
+        height: 0
+        onActiveFocusChanged: {
+            if (activeFocus) {
+                Qt.callLater(() => UI.handleTab("settings", {accepted: false}, true));
+            }
+        }
+    }
+
+    readonly property var pageList: [deviceTab, audioTab, announcementTab, uaTab, tiiTab, otherTab]
+
+    function ensureVisible(item) {
+        let f = item.parent;
+        while (f && !(f.contentItem && f.contentY !== undefined)) {
+            f = f.parent;
+        }
+        if (!f) {
+            return;
+        }
+        const y = item.mapToItem(f.contentItem, 0, 0).y;
+        const margin = UI.standardMargin;
+        if (y < f.contentY + margin) {
+            f.contentY = Math.max(0, y - margin);
+        } else if (y + item.height > f.contentY + f.height - margin) {
+            f.contentY = Math.min(f.contentHeight - f.height, y + item.height - f.height + margin);
+        }
+    }
+
+    Connections {
+        target: mainItem.Window.window
+        function onActiveFocusItemChanged() {
+            const fi = mainItem.Window.window.activeFocusItem;
+            if (fi && fi !== bar.currentItem && mainItem.isInside(fi)) {
+                mainItem.ensureVisible(fi);
+            }
+        }
+    }
+
+    function isInside(item) {
+        for (let it = item; it; it = it.parent) {
+            if (it === mainItem) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Assigned once all pages exist, a binding declared on the button would be evaluated before the pages are created
+    Component.onCompleted: {
+        UI.registerTabStop("settings", () => bar ? bar.currentItem : null);
+        for (let i = 0; i < bar.count; ++i) {
+            bar.itemAt(i).KeyNavigation.tab = Qt.binding(() => mainItem.pageList[i].firstItem ?? tabEnd);
+        }
+    }
+    Component.onDestruction: UI.unregisterTabStop("settings")
+
     AbracaTabBar {
         id: bar
         width: parent.width
@@ -49,12 +114,15 @@ Item {
                 required property int index
                 required property string itemName
                 width: implicitWidth
+                // only the current tab is a tab stop, other tabs are selected by arrow keys
+                focusPolicy: checked ? Qt.StrongFocus : Qt.ClickFocus
                 index: index
                 text: itemName
             }
         }
     }
     StackLayout {
+        id: pages
         anchors.top: bar.bottom
         anchors.bottom: mainItem.bottom
         anchors.left: mainItem.left
@@ -65,21 +133,33 @@ Item {
         currentIndex: bar.currentIndex
         DeviceSettings {
             id: deviceTab
+            entryItem: bar.currentItem
+            exitItem: tabEnd
         }
         AudioSettings {
             id: audioTab
+            entryItem: bar.currentItem
+            exitItem: tabEnd
         }
         AnnouncementSettings {
             id: announcementTab
+            entryItem: bar.currentItem
+            exitItem: tabEnd
         }
         UaSettings {
             id: uaTab
+            entryItem: bar.currentItem
+            exitItem: tabEnd
         }
         TiiSettings {
             id: tiiTab
+            entryItem: bar.currentItem
+            exitItem: tabEnd
         }
         OtherSettings {
             id: otherTab
+            entryItem: bar.currentItem
+            exitItem: tabEnd
         }
     }
 }

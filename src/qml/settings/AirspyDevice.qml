@@ -33,6 +33,9 @@ import abracaComponents 1.0
 
 Item {
     id: mainItem
+    property Item entryItem: null
+    property Item exitItem: null
+    readonly property Item firstItem: airspyCombo
     implicitHeight: contentLayout.implicitHeight + 2*UI.standardMargin
     implicitWidth: contentLayout.implicitWidth + 2*UI.standardMargin
     ColumnLayout {
@@ -45,6 +48,8 @@ Item {
             Layout.fillWidth: true
             spacing: UI.standardMargin
             AbracaComboBox {
+                KeyNavigation.tab: kn1
+                KeyNavigation.backtab: mainItem.entryItem
                 accessibleName: qsTr("Airspy device")
                 id: airspyCombo
                 Layout.preferredWidth: 100
@@ -61,6 +66,9 @@ Item {
                 elideMode: Text.ElideMiddle
             }
             AbracaButton {
+                id: kn1
+                KeyNavigation.tab: airspyFallbackSwitch
+                KeyNavigation.backtab: airspyCombo
                 text: qsTr("Reload")
                 onClicked: settingsBackend.airspyReloadDeviceList()
             }
@@ -69,6 +77,8 @@ Item {
             Layout.fillWidth: true
             implicitHeight: airspyFallbackSwitch.implicitHeight
             AbracaSwitch {
+                KeyNavigation.tab: gainModeRepeater.count > 0 ? gainModeRepeater.itemAt(0) : kn2
+                KeyNavigation.backtab: kn1
                 id: airspyFallbackSwitch
                 anchors.fill: parent
                 text: qsTr("Use any available Airspy device if the selected one fails")
@@ -123,6 +133,8 @@ Item {
                     id: gainModeRepeater
                     model: [qsTr("Software"), qsTr("Hybrid"), qsTr("Sensitivity"), qsTr("Manual")]
                     delegate: AbracaRadioButton {
+                        KeyNavigation.tab: index + 1 < gainModeRepeater.count ? gainModeRepeater.itemAt(index + 1) : (kn2)
+                        KeyNavigation.backtab: index > 0 ? gainModeRepeater.itemAt(index - 1) : (airspyFallbackSwitch)
                         id: button
                         required property int index
                         required property string modelData
@@ -153,6 +165,9 @@ Item {
                     enabled: settingsBackend.airspyGainMode === 0 || settingsBackend.isAirspySensitivityGainEnabled
                 }
                 AbracaSlider {
+                    id: kn2
+                    KeyNavigation.tab: kn3
+                    KeyNavigation.backtab: gainModeRepeater.count > 0 ? gainModeRepeater.itemAt(gainModeRepeater.count - 1) : airspyFallbackSwitch
                     accessibleName: qsTr("Sensitivity gain")
                     Layout.fillWidth: true
                     from: 0
@@ -175,6 +190,9 @@ Item {
                     enabled: settingsBackend.isAirspyManualGainEnabled && settingsBackend.isAirspyLnaAgcChecked === false
                 }
                 AbracaSlider {
+                    id: kn3
+                    KeyNavigation.tab: lnaAgcSwitch
+                    KeyNavigation.backtab: kn2
                     accessibleName: qsTr("LNA gain")
                     Layout.fillWidth: true
                     enabled: settingsBackend.isAirspyManualGainEnabled && settingsBackend.isAirspyLnaAgcChecked === false
@@ -192,6 +210,8 @@ Item {
                     enabled: settingsBackend.isAirspyManualGainEnabled && settingsBackend.isAirspyLnaAgcChecked === false
                 }
                 AbracaSwitch {
+                    KeyNavigation.tab: kn4
+                    KeyNavigation.backtab: kn3
                     id: lnaAgcSwitch
                     text: qsTr("AGC")
                     enabled: settingsBackend.isAirspyManualGainEnabled
@@ -206,6 +226,9 @@ Item {
                     enabled: settingsBackend.isAirspyManualGainEnabled && settingsBackend.isAirspyMixerAgcChecked === false
                 }
                 AbracaSlider {
+                    id: kn4
+                    KeyNavigation.tab: kn5
+                    KeyNavigation.backtab: lnaAgcSwitch
                     accessibleName: qsTr("Mixer gain")
                     Layout.fillWidth: true
                     enabled: settingsBackend.isAirspyManualGainEnabled && settingsBackend.isAirspyMixerAgcChecked === false
@@ -223,6 +246,9 @@ Item {
                     enabled: settingsBackend.isAirspyManualGainEnabled && settingsBackend.isAirspyMixerAgcChecked === false
                 }
                 AbracaSwitch {
+                    id: kn5
+                    KeyNavigation.tab: kn6
+                    KeyNavigation.backtab: kn4
                     text: qsTr("AGC")
                     enabled: settingsBackend.isAirspyManualGainEnabled
                     checked: settingsBackend.isAirspyMixerAgcChecked
@@ -236,6 +262,9 @@ Item {
                     enabled: settingsBackend.airspyGainMode === 1 || settingsBackend.isAirspyManualGainEnabled
                 }
                 AbracaSlider {
+                    id: kn6
+                    KeyNavigation.tab: kn7
+                    KeyNavigation.backtab: kn5
                     accessibleName: qsTr("IF gain")
                     Layout.fillWidth: true
                     from: 0
@@ -275,6 +304,9 @@ Item {
                     text: qsTr("Bias Tee:")
                 }
                 AbracaSwitch {
+                    id: kn7
+                    KeyNavigation.tab: kn8
+                    KeyNavigation.backtab: kn6
                     //Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
                     text: ""
@@ -291,6 +323,9 @@ Item {
                     text: qsTr("Prefer 4096kHz rate:")
                 }
                 AbracaSwitch {
+                    id: kn8
+                    KeyNavigation.tab: mainItem.exitItem
+                    KeyNavigation.backtab: kn7
                     //Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
                     text: ""

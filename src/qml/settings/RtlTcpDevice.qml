@@ -33,6 +33,9 @@ import abracaComponents
 
 Item {
     id: mainItem
+    property Item entryItem: null
+    property Item exitItem: null
+    readonly property Item firstItem: ipAddressField
     implicitHeight: contentLayout.implicitHeight + 2 * UI.standardMargin
     implicitWidth: contentLayout.implicitWidth + 2*UI.standardMargin
     ColumnLayout {
@@ -50,6 +53,8 @@ Item {
                 text: qsTr("IP address:")
             }
             AbracaTextField {
+                KeyNavigation.tab: kn1
+                KeyNavigation.backtab: mainItem.entryItem
                 accessibleName: qsTr("IP address:")
                 id: ipAddressField
                 Layout.fillWidth: true
@@ -71,6 +76,9 @@ Item {
                 text: qsTr("Port:")
             }
             AbracaSpinBox {
+                id: kn1
+                KeyNavigation.tab: kn2
+                KeyNavigation.backtab: ipAddressField
                 accessibleName: qsTr("Port:")
                 from: 0
                 to: 65535
@@ -84,6 +92,9 @@ Item {
             }
         }
         AbracaSwitch {
+            id: kn2
+            KeyNavigation.tab: gainModeRepeater.count > 0 ? gainModeRepeater.itemAt(0) : kn3
+            KeyNavigation.backtab: kn1
             text: qsTr("Connect to control socket if available")
             wrapMode: Text.WordWrap
             checked: settingsBackend.isRtlTcpControlSocketChecked
@@ -140,6 +151,8 @@ Item {
                     id: gainModeRepeater
                     model: [qsTr("Software"), qsTr("Device"), qsTr("Manual")]
                     delegate: AbracaRadioButton {
+                        KeyNavigation.tab: index + 1 < gainModeRepeater.count ? gainModeRepeater.itemAt(index + 1) : (kn3)
+                        KeyNavigation.backtab: index > 0 ? gainModeRepeater.itemAt(index - 1) : (kn2)
                         id: button
                         required property int index
                         required property string modelData
@@ -162,6 +175,9 @@ Item {
                 text: qsTr("Gain")
             }
             AbracaSlider {
+                id: kn3
+                KeyNavigation.tab: bandwidthSpinBox
+                KeyNavigation.backtab: gainModeRepeater.count > 0 ? gainModeRepeater.itemAt(gainModeRepeater.count - 1) : kn2
                 accessibleName: qsTr("Gain")
                 Layout.fillWidth: true
                 from: 0
@@ -207,6 +223,8 @@ Item {
                         text: qsTr("Bandwidth:")
                     }
                     AbracaSpinBox {
+                        KeyNavigation.tab: kn4
+                        KeyNavigation.backtab: kn3
                         accessibleName: qsTr("Bandwidth:")
                         id: bandwidthSpinBox
                         Layout.fillWidth: true
@@ -223,6 +241,9 @@ Item {
                         specialValueString: qsTr("Default")
                     }
                     AbracaButton {
+                        id: kn4
+                        KeyNavigation.tab: agcThrSpinBox
+                        KeyNavigation.backtab: bandwidthSpinBox
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
@@ -245,6 +266,8 @@ Item {
                         text: qsTr("SW AGC level threshold:")
                     }
                     AbracaSpinBox {
+                        KeyNavigation.tab: kn5
+                        KeyNavigation.backtab: kn4
                         accessibleName: qsTr("SW AGC level threshold:")
                         id: agcThrSpinBox
                         Layout.fillWidth: true
@@ -260,6 +283,9 @@ Item {
                         specialValueString: qsTr("Default")
                     }
                     AbracaButton {
+                        id: kn5
+                        KeyNavigation.tab: freqCorrSpinBox
+                        KeyNavigation.backtab: agcThrSpinBox
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
@@ -273,6 +299,8 @@ Item {
                         text: qsTr("Frequency correction:")
                     }
                     AbracaSpinBox {
+                        KeyNavigation.tab: kn6
+                        KeyNavigation.backtab: kn5
                         accessibleName: qsTr("Frequency correction:")
                         id: freqCorrSpinBox
                         Layout.fillWidth: true
@@ -287,6 +315,9 @@ Item {
                         suffix: " PPM"
                     }
                     AbracaButton {
+                        id: kn6
+                        KeyNavigation.tab: rfLevelCorrSpinBox
+                        KeyNavigation.backtab: freqCorrSpinBox
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
@@ -300,6 +331,8 @@ Item {
                         text: qsTr("RF level correction:")
                     }
                     AbracaDoubleSpinBox {
+                        KeyNavigation.tab: rfLevelCorrResetButton
+                        KeyNavigation.backtab: kn6
                         accessibleName: qsTr("RF level correction:")
                         id: rfLevelCorrSpinBox
                         Layout.fillWidth: true
@@ -317,6 +350,8 @@ Item {
                         suffix: " dB"
                     }
                     AbracaButton {
+                        KeyNavigation.tab: mainItem.exitItem
+                        KeyNavigation.backtab: rfLevelCorrSpinBox
                         id: rfLevelCorrResetButton
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth

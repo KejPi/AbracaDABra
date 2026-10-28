@@ -33,6 +33,9 @@ import abracaComponents 1.0
 
 Item {
     id: mainItem
+    property Item entryItem: null
+    property Item exitItem: null
+    readonly property Item firstItem: ipAddressField
     implicitHeight: contentLayout.implicitHeight + 2*UI.standardMargin
     implicitWidth: contentLayout.implicitWidth + 2*UI.standardMargin
     ColumnLayout {
@@ -47,6 +50,8 @@ Item {
                 text: qsTr("IP address:")
             }
             AbracaTextField {
+                KeyNavigation.tab: kn1
+                KeyNavigation.backtab: mainItem.entryItem
                 accessibleName: qsTr("IP address:")
                 id: ipAddressField
                 Layout.fillWidth: true
@@ -65,6 +70,9 @@ Item {
                 text: qsTr("Port:")
             }
             AbracaSpinBox {
+                id: kn1
+                KeyNavigation.tab: mainItem.exitItem
+                KeyNavigation.backtab: ipAddressField
                 accessibleName: qsTr("Port:")
                 from: 1000
                 to: 99999

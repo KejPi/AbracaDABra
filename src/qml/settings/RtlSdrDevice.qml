@@ -33,6 +33,9 @@ import abracaComponents
 
 Item {
     id: mainItem
+    property Item entryItem: null
+    property Item exitItem: null
+    readonly property Item firstItem: rtlSdrCombo
     implicitHeight: contentLayout.implicitHeight + 2*UI.standardMargin
     implicitWidth: contentLayout.implicitWidth + 2*UI.standardMargin
     ColumnLayout {
@@ -45,6 +48,8 @@ Item {
             Layout.fillWidth: true
             spacing: UI.standardMargin
             AbracaComboBox {
+                KeyNavigation.tab: kn1
+                KeyNavigation.backtab: mainItem.entryItem
                 accessibleName: qsTr("RTL-SDR device")
                 id: rtlSdrCombo
                 Layout.preferredWidth: 100
@@ -61,6 +66,9 @@ Item {
                 elideMode: Text.ElideMiddle
             }
             AbracaButton {
+                id: kn1
+                KeyNavigation.tab: rtlSdrFallbackSwitch
+                KeyNavigation.backtab: rtlSdrCombo
                 text: qsTr("Reload")
                 onClicked: settingsBackend.rtlSdrReloadDeviceList()
             }
@@ -69,6 +77,8 @@ Item {
             Layout.fillWidth: true
             implicitHeight: rtlSdrFallbackSwitch.implicitHeight
             AbracaSwitch {
+                KeyNavigation.tab: gainModeRepeater.count > 0 ? gainModeRepeater.itemAt(0) : kn2
+                KeyNavigation.backtab: kn1
                 id: rtlSdrFallbackSwitch
                 anchors.fill: parent
                 text: qsTr("Use any available RTL-SDR device if the selected one fails")
@@ -135,6 +145,8 @@ Item {
                     id: gainModeRepeater
                     model: [qsTr("Software"), qsTr("Driver"), qsTr("Device"), qsTr("Manual")]
                     delegate: AbracaRadioButton {
+                        KeyNavigation.tab: index + 1 < gainModeRepeater.count ? gainModeRepeater.itemAt(index + 1) : (kn2)
+                        KeyNavigation.backtab: index > 0 ? gainModeRepeater.itemAt(index - 1) : (rtlSdrFallbackSwitch)
                         id: button
                         required property int index
                         required property string modelData
@@ -159,6 +171,9 @@ Item {
                 text: qsTr("Gain")
             }
             AbracaSlider {
+                id: kn2
+                KeyNavigation.tab: bandwidthSpinBox
+                KeyNavigation.backtab: gainModeRepeater.count > 0 ? gainModeRepeater.itemAt(gainModeRepeater.count - 1) : rtlSdrFallbackSwitch
                 accessibleName: qsTr("Gain")
                 Layout.fillWidth: true
                 from: 0
@@ -203,6 +218,8 @@ Item {
                         text: qsTr("Bandwidth:")
                     }
                     AbracaSpinBox {
+                        KeyNavigation.tab: kn3
+                        KeyNavigation.backtab: kn2
                         accessibleName: qsTr("Bandwidth:")
                         id: bandwidthSpinBox
                         Layout.fillWidth: true
@@ -219,6 +236,9 @@ Item {
                         specialValueString: qsTr("Default")
                     }
                     AbracaButton {
+                        id: kn3
+                        KeyNavigation.tab: agcThrSpinBox
+                        KeyNavigation.backtab: bandwidthSpinBox
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
@@ -232,6 +252,8 @@ Item {
                         text: qsTr("SW AGC level threshold:")
                     }
                     AbracaSpinBox {
+                        KeyNavigation.tab: kn4
+                        KeyNavigation.backtab: kn3
                         accessibleName: qsTr("SW AGC level threshold:")
                         id: agcThrSpinBox
                         Layout.fillWidth: true
@@ -247,6 +269,9 @@ Item {
                         specialValueString: qsTr("Default")
                     }
                     AbracaButton {
+                        id: kn4
+                        KeyNavigation.tab: freqCorrSpinBox
+                        KeyNavigation.backtab: agcThrSpinBox
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
@@ -260,6 +285,8 @@ Item {
                         text: qsTr("Frequency correction:")
                     }
                     AbracaSpinBox {
+                        KeyNavigation.tab: freqCorrResetButton
+                        KeyNavigation.backtab: kn4
                         accessibleName: qsTr("Frequency correction:")
                         id: freqCorrSpinBox
                         Layout.fillWidth: true
@@ -274,6 +301,8 @@ Item {
                         suffix: " PPM"
                     }
                     AbracaButton {
+                        KeyNavigation.tab: kn5
+                        KeyNavigation.backtab: freqCorrSpinBox
                         id: freqCorrResetButton
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
@@ -289,6 +318,9 @@ Item {
                         visible: settingsBackend.haveRtlSdrOldDabDriver
                     }
                     AbracaSwitch {
+                        id: kn5
+                        KeyNavigation.tab: rfLevelCorrSpinBox
+                        KeyNavigation.backtab: freqCorrResetButton
                         Layout.alignment: Qt.AlignHCenter
                         text: ""
                         checked: settingsBackend.isRtlSdrRfLevelEna
@@ -306,6 +338,8 @@ Item {
                         visible: settingsBackend.haveRtlSdrOldDabDriver
                     }
                     AbracaDoubleSpinBox {
+                        KeyNavigation.tab: kn6
+                        KeyNavigation.backtab: kn5
                         accessibleName: qsTr("RF level correction:")
                         id: rfLevelCorrSpinBox
                         Layout.fillWidth: true
@@ -325,6 +359,9 @@ Item {
                         visible: settingsBackend.haveRtlSdrOldDabDriver
                     }
                     AbracaButton {
+                        id: kn6
+                        KeyNavigation.tab: kn7
+                        KeyNavigation.backtab: rfLevelCorrSpinBox
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
@@ -339,6 +376,9 @@ Item {
                         text: qsTr("Bias Tee:")
                     }
                     AbracaSwitch {
+                        id: kn7
+                        KeyNavigation.tab: mainItem.exitItem
+                        KeyNavigation.backtab: kn6
                         Layout.alignment: Qt.AlignHCenter
                         text: ""
                         checked: settingsBackend.rtlSdrBiasT
