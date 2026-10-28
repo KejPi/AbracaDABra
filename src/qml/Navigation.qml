@@ -98,6 +98,7 @@ FocusScope {
             readonly property ListView listview: ListView.view
             required property string iconName
             required property string shortLabel            
+            required property string longLabel
             required property var model
             required property int functionalityId
             required property bool isEnabled
@@ -106,7 +107,7 @@ FocusScope {
             readonly property bool isSelectedItem: index === listview.selectedRow
 
             Accessible.role: Accessible.RadioButton
-            Accessible.name: shortLabel
+            Accessible.name: qsTr("Page: ") + longLabel
             Accessible.checkable: true
             Accessible.checked: isSelectedItem
             Accessible.focusable: true
@@ -175,7 +176,7 @@ FocusScope {
             readonly property bool isSelectedItem: index === listview.selectedRow
 
             Accessible.role: Accessible.RadioButton
-            Accessible.name: shortLabel
+            Accessible.name: qsTr("Page: ") + longLabel
             Accessible.checkable: true
             Accessible.checked: isSelectedItem
             Accessible.focusable: true
