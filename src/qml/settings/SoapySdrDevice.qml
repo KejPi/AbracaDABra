@@ -271,6 +271,7 @@ Item {
                     id: kn4
                     KeyNavigation.tab: freqCorrSpinBox
                     KeyNavigation.backtab: bandwidthSpinBox
+                    accessibleDescription: qsTr("Set default bandwidth")
                     Layout.fillWidth: true
                     Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                     // Layout.minimumWidth: implicitWidth
@@ -303,6 +304,7 @@ Item {
                     id: kn5
                     KeyNavigation.tab: mainItem.exitItem
                     KeyNavigation.backtab: freqCorrSpinBox
+                    accessibleDescription: qsTr("Reset frequency correction to 0 PPM")
                     Layout.fillWidth: true
                     Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                     // Layout.minimumWidth: implicitWidth

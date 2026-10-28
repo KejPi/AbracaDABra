@@ -307,7 +307,7 @@ Item {
                     id: kn7
                     KeyNavigation.tab: kn8
                     KeyNavigation.backtab: kn6
-                    //Layout.fillWidth: true
+                    accessibleName: qsTr("Bias Tee")
                     Layout.alignment: Qt.AlignHCenter
                     text: ""
                     enabled: settingsBackend.isAirspyControlEnabled
@@ -326,6 +326,7 @@ Item {
                     id: kn8
                     KeyNavigation.tab: mainItem.exitItem
                     KeyNavigation.backtab: kn7
+                    accessibleName: qsTr("Prefer 4096kHz rate")
                     //Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
                     text: ""

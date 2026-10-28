@@ -317,7 +317,7 @@ Item {
                 AbracaSpinBox {
                     KeyNavigation.tab: kn6
                     KeyNavigation.backtab: kn5
-                    accessibleName: qsTr("Frequency correction:")
+                    accessibleName: qsTr("Frequency correction")
                     id: freqCorrSpinBox
                     Layout.fillWidth: true
                     from: -100
@@ -334,6 +334,7 @@ Item {
                     id: kn6
                     KeyNavigation.tab: kn7
                     KeyNavigation.backtab: freqCorrSpinBox
+                    accessibleDescription: qsTr("Reset frequency correction to 0 PPM")
                     Layout.fillWidth: true
                     Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                     // Layout.minimumWidth: implicitWidth
@@ -350,6 +351,7 @@ Item {
                     id: kn7
                     KeyNavigation.tab: mainItem.exitItem
                     KeyNavigation.backtab: kn6
+                    accessibleName: qsTr("Bias Tee")
                     Layout.alignment: Qt.AlignHCenter
                     text: ""
                     checked: settingsBackend.sdrplayBiasT

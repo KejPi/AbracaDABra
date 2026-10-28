@@ -90,7 +90,7 @@ SpinBox {
 
     rightPadding: UI.standardMargin + 2 * control.height + (suffixVisible ? fontMetrics.boundingRect(control.suffix).width : 0)
 
-    contentItem: Item {
+    contentItem: FocusScope {
         id: contentItem
         // the SpinBox forwards its active focus to this item, so it has to follow the same links as the SpinBox
         KeyNavigation.tab: control.KeyNavigation.tab
@@ -105,7 +105,11 @@ SpinBox {
             anchors.verticalCenter: contentItem.verticalCenter
             TextInput {
                 id: textInput
-                // focus lands here when the text is clicked
+                // takes the focus from the SpinBox, so assistive technologies follow it
+                focus: true
+                Accessible.name: control.accessibleName !== "" ? control.accessibleName : text
+                Accessible.description: control.accessibleDescription
+                Accessible.editable: control.editable
                 KeyNavigation.tab: control.KeyNavigation.tab
                 KeyNavigation.backtab: control.KeyNavigation.backtab
                 z: 2

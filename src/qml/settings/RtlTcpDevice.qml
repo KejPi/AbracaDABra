@@ -225,7 +225,7 @@ Item {
                     AbracaSpinBox {
                         KeyNavigation.tab: kn4
                         KeyNavigation.backtab: kn3
-                        accessibleName: qsTr("Bandwidth:")
+                        accessibleName: qsTr("Bandwidth")
                         id: bandwidthSpinBox
                         Layout.fillWidth: true
                         from: 0
@@ -244,6 +244,7 @@ Item {
                         id: kn4
                         KeyNavigation.tab: agcThrSpinBox
                         KeyNavigation.backtab: bandwidthSpinBox
+                        accessibleDescription: qsTr("Set default bandwidth")
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
@@ -268,7 +269,7 @@ Item {
                     AbracaSpinBox {
                         KeyNavigation.tab: kn5
                         KeyNavigation.backtab: kn4
-                        accessibleName: qsTr("SW AGC level threshold:")
+                        accessibleName: qsTr("SW AGC level threshold")
                         id: agcThrSpinBox
                         Layout.fillWidth: true
                         from: 0
@@ -286,6 +287,7 @@ Item {
                         id: kn5
                         KeyNavigation.tab: freqCorrSpinBox
                         KeyNavigation.backtab: agcThrSpinBox
+                        accessibleDescription: qsTr("Reset SW AGC level threshold to default")
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
@@ -301,7 +303,7 @@ Item {
                     AbracaSpinBox {
                         KeyNavigation.tab: kn6
                         KeyNavigation.backtab: kn5
-                        accessibleName: qsTr("Frequency correction:")
+                        accessibleName: qsTr("Frequency correction")
                         id: freqCorrSpinBox
                         Layout.fillWidth: true
                         from: -300
@@ -318,6 +320,7 @@ Item {
                         id: kn6
                         KeyNavigation.tab: rfLevelCorrSpinBox
                         KeyNavigation.backtab: freqCorrSpinBox
+                        accessibleDescription: qsTr("Reset frequency correction to 0 PPM")
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
@@ -333,7 +336,7 @@ Item {
                     AbracaDoubleSpinBox {
                         KeyNavigation.tab: rfLevelCorrResetButton
                         KeyNavigation.backtab: kn6
-                        accessibleName: qsTr("RF level correction:")
+                        accessibleName: qsTr("RF level correction")
                         id: rfLevelCorrSpinBox
                         Layout.fillWidth: true
                         stepSizeReal: 1.0
@@ -352,6 +355,7 @@ Item {
                     AbracaButton {
                         KeyNavigation.tab: mainItem.exitItem
                         KeyNavigation.backtab: rfLevelCorrSpinBox
+                        accessibleDescription: qsTr("Reset RF level correction to 0 dB")
                         id: rfLevelCorrResetButton
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth

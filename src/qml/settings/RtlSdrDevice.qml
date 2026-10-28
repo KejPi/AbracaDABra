@@ -220,7 +220,7 @@ Item {
                     AbracaSpinBox {
                         KeyNavigation.tab: kn3
                         KeyNavigation.backtab: kn2
-                        accessibleName: qsTr("Bandwidth:")
+                        accessibleName: qsTr("Bandwidth")
                         id: bandwidthSpinBox
                         Layout.fillWidth: true
                         from: 0
@@ -239,6 +239,7 @@ Item {
                         id: kn3
                         KeyNavigation.tab: agcThrSpinBox
                         KeyNavigation.backtab: bandwidthSpinBox
+                        accessibleDescription: qsTr("Set default bandwidth")
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
@@ -254,7 +255,7 @@ Item {
                     AbracaSpinBox {
                         KeyNavigation.tab: kn4
                         KeyNavigation.backtab: kn3
-                        accessibleName: qsTr("SW AGC level threshold:")
+                        accessibleName: qsTr("SW AGC level threshold")
                         id: agcThrSpinBox
                         Layout.fillWidth: true
                         from: 0
@@ -272,6 +273,7 @@ Item {
                         id: kn4
                         KeyNavigation.tab: freqCorrSpinBox
                         KeyNavigation.backtab: agcThrSpinBox
+                        accessibleDescription: qsTr("Reset SW AGC level threshold to default")
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
@@ -287,7 +289,7 @@ Item {
                     AbracaSpinBox {
                         KeyNavigation.tab: freqCorrResetButton
                         KeyNavigation.backtab: kn4
-                        accessibleName: qsTr("Frequency correction:")
+                        accessibleName: qsTr("Frequency correction")
                         id: freqCorrSpinBox
                         Layout.fillWidth: true
                         from: -300
@@ -303,6 +305,7 @@ Item {
                     AbracaButton {
                         KeyNavigation.tab: kn5
                         KeyNavigation.backtab: freqCorrSpinBox
+                        accessibleDescription: qsTr("Reset frequency correction to 0 PPM")
                         id: freqCorrResetButton
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
@@ -322,6 +325,7 @@ Item {
                         KeyNavigation.tab: rfLevelCorrSpinBox
                         KeyNavigation.backtab: freqCorrResetButton
                         Layout.alignment: Qt.AlignHCenter
+                        accessibleName: qsTr("RF level estimation")
                         text: ""
                         checked: settingsBackend.isRtlSdrRfLevelEna
                         onCheckedChanged: if (settingsBackend.isRtlSdrRfLevelEna !== checked) {
@@ -340,7 +344,7 @@ Item {
                     AbracaDoubleSpinBox {
                         KeyNavigation.tab: kn6
                         KeyNavigation.backtab: kn5
-                        accessibleName: qsTr("RF level correction:")
+                        accessibleName: qsTr("RF level correction")
                         id: rfLevelCorrSpinBox
                         Layout.fillWidth: true
                         stepSizeReal: 1.0
@@ -362,6 +366,7 @@ Item {
                         id: kn6
                         KeyNavigation.tab: kn7
                         KeyNavigation.backtab: rfLevelCorrSpinBox
+                        accessibleDescription: qsTr("Reset RF level correction to 0 dB")
                         Layout.fillWidth: true
                         Layout.preferredWidth: expertSettingsLayout.showIcon ? 2*UI.iconSize : implicitWidth
                         // Layout.minimumWidth: implicitWidth
@@ -379,6 +384,7 @@ Item {
                         id: kn7
                         KeyNavigation.tab: mainItem.exitItem
                         KeyNavigation.backtab: kn6
+                        accessibleName: qsTr("Bias Tee")
                         Layout.alignment: Qt.AlignHCenter
                         text: ""
                         checked: settingsBackend.rtlSdrBiasT
