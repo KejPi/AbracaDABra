@@ -262,11 +262,11 @@ QVariant TxTableModel::data(const QModelIndex &index, int role) const
                     }
                     return QVariant("");
                 case ColRxCoordinatesLat:
-                    return QString("%1").arg(static_cast<double>(m_coordinates.latitude()), 0, 'f');
+                    return m_coordinates.isValid() ? QString("%1").arg(static_cast<double>(m_coordinates.latitude()), 0, 'f') : QString{};
                 case ColRxCoordinatesLon:
-                    return QString("%1").arg(static_cast<double>(m_coordinates.longitude()), 0, 'f');
+                    return m_coordinates.isValid() ? QString("%1").arg(static_cast<double>(m_coordinates.longitude()), 0, 'f') : QString{};
                 case ColRxAltitude:
-                    return QString("%1").arg(static_cast<int>(qRound(m_coordinates.altitude())));
+                    return m_coordinates.isValid() ? QString("%1").arg(static_cast<int>(qRound(m_coordinates.altitude()))) : QString{};
                 case ColTxCoordinatesLat:
                     if (item.hasTxData())
                     {

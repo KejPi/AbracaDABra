@@ -41,9 +41,20 @@ void GeolocationBackend::doLocationUpdate(bool ena)
 {
     m_locUpdateCounter += ena ? 1 : -1;
 
-    if (ena && m_locUpdateCounter == 1)
+    if (ena)
     {  // start location update
-        initGeolocationSource();
+        if (m_locUpdateCounter == 1)
+        {
+            initGeolocationSource();
+        }
+        else
+        {  // location update already active
+            // send current position to the new listener
+            if (m_currentPosition.isValid())
+            {
+                emit positionUpdated(m_currentPosition);
+            }
+        }
     }
     else if (m_locUpdateCounter <= 0)
     {  // stop location update
