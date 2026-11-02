@@ -48,7 +48,7 @@ AudioOutputQt::AudioOutputQt(QObject *parent) : AudioOutput(parent)
     m_audioSink = nullptr;
     m_ioDevice = nullptr;
     m_linearVolume = 1.0;
-    m_ioDevice = new AudioIODevice();
+    m_ioDevice = new AudioIODevice(this);
     m_consecutiveRestarts = 0;
     m_lastRestartTimer.start();
 }
@@ -419,8 +419,8 @@ void AudioIODevice::setOutputFormat(const QAudioFormat &format)
     m_outChannels = format.channelCount();
     m_outBytesPerFrame = format.bytesPerFrame();
 
-    const bool sameFormat = (QAudioFormat::Int16 == format.sampleFormat()) && (uint32_t(format.sampleRate()) == m_inFifoPtr->sampleRate)
-                            && (m_outChannels == m_numChannels);
+    const bool sameFormat = (QAudioFormat::Int16 == format.sampleFormat()) && (uint32_t(format.sampleRate()) == m_inFifoPtr->sampleRate) &&
+                            (m_outChannels == m_numChannels);
     m_convert = !sameFormat && canConvertTo(format) && (m_outBytesPerFrame > 0);
     m_ratio = double(m_inFifoPtr->sampleRate) / double(format.sampleRate());
 
