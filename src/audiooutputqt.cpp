@@ -906,8 +906,6 @@ qint64 AudioIODevice::bytesAvailable() const
     int64_t count = m_inFifoPtr->count;
     m_inFifoPtr->mutex.unlock();
 
-#ifdef Q_OS_ANDROID
-    // On Android, always report data available when device is open and not stopping.
     // readData() handles producing silence when FIFO is empty.
     // Returning 0 causes some Android audio implementations to transition to IdleState,
     // which stops pulling data and creates a deadlock when the decoder recovers.
@@ -915,7 +913,6 @@ qint64 AudioIODevice::bytesAvailable() const
     {
         return 4096;
     }
-#endif
 
     if (m_convert)
     {  // report number of bytes in output format
