@@ -32,6 +32,9 @@
 #include <QElapsedTimer>
 #include <QLoggingCategory>
 #include <QThread>
+#include <algorithm>
+#include <cmath>
+#include <cstring>
 
 #ifdef Q_OS_ANDROID
 #include <QCoreApplication>
@@ -87,11 +90,18 @@ void AudioOutputQt::start(audioFifo_t *buffer)
         format.setChannelConfig(QAudioFormat::ChannelConfigMono);
     }
 
+    const QAudioFormat requestedFormat = format;
     if (!m_currentAudioDevice.isFormatSupported(format))
     {
-        qWarning() << "Default format not supported - trying to use preferred";
+        qCWarning(audioOutput) << "Default format not supported - trying to use preferred";
         format = m_currentAudioDevice.preferredFormat();
+        if (!AudioIODevice::canConvertTo(format))
+        {  // cannot convert to preferred format => keep requested one and hope for the best
+            qCWarning(audioOutput) << "Cannot convert to preferred format" << format << "- using requested format anyway";
+            format = requestedFormat;
+        }
     }
+    qCInfo(audioOutput) << "Device:" << m_currentAudioDevice.description() << "requested" << requestedFormat << "using" << format;
 
     if (nullptr != m_audioSink)
     {
@@ -115,6 +125,7 @@ void AudioOutputQt::start(audioFifo_t *buffer)
     // start IO device
     m_ioDevice->close();
     m_ioDevice->setBuffer(m_currentFifoPtr);
+    m_ioDevice->setOutputFormat(format);
     m_ioDevice->start();
     m_audioSink->start(m_ioDevice);
 
@@ -375,10 +386,54 @@ void AudioIODevice::setBuffer(audioFifo_t *buffer)
     // unmute ramp is then calculated as 2.0 - m_muteFactor in runtime
     // m_muteFactor is calculated for change from 0dB to AUDIOOUTPUT_FADE_MIN_DB in AUDIOOUTPUT_FADE_TIME_MS
     m_muteFactor = powf(10, AUDIOOUTPUT_FADE_MIN_DB / (20.0 * AUDIOOUTPUT_FADE_TIME_MS * m_sampleRate_kHz));
+
+    // conversion is disabled until setOutputFormat() is called
+    m_convert = false;
+    m_inBuf.clear();
+    m_resPos = 0.0;
+}
+
+bool AudioIODevice::canConvertTo(const QAudioFormat &format)
+{
+    if (!format.isValid() || (format.sampleRate() <= 0) || (format.channelCount() <= 0))
+    {
+        return false;
+    }
+    switch (format.sampleFormat())
+    {
+        case QAudioFormat::UInt8:
+        case QAudioFormat::Int16:
+        case QAudioFormat::Int32:
+        case QAudioFormat::Float:
+            return true;
+        default:
+            return false;
+    }
+}
+
+void AudioIODevice::setOutputFormat(const QAudioFormat &format)
+{
+    m_inBuf.clear();
+    m_resPos = 0.0;
+    m_outFormat = format;
+    m_outChannels = format.channelCount();
+    m_outBytesPerFrame = format.bytesPerFrame();
+
+    const bool sameFormat = (QAudioFormat::Int16 == format.sampleFormat()) && (uint32_t(format.sampleRate()) == m_inFifoPtr->sampleRate)
+                            && (m_outChannels == m_numChannels);
+    m_convert = !sameFormat && canConvertTo(format) && (m_outBytesPerFrame > 0);
+    m_ratio = double(m_inFifoPtr->sampleRate) / double(format.sampleRate());
+
+    if (m_convert)
+    {
+        qCWarning(audioOutput) << "Converting audio:" << m_inFifoPtr->sampleRate << "Hz," << m_numChannels << "ch, Int16 ->" << format;
+    }
 }
 
 void AudioIODevice::start()
 {
+    m_inBuf.clear();
+    m_resPos = 0.0;
     m_stopFlag = false;
     m_doStop = false;
     m_playbackState = AudioOutputPlaybackState::Muted;
@@ -413,6 +468,118 @@ void AudioIODevice::stop()
 }
 
 qint64 AudioIODevice::readData(char *data, qint64 len)
+{
+    return m_convert ? readConverted(data, len) : readNative(data, len);
+}
+
+// Writes one sample (value in Int16 scale) in the requested output format
+static inline void writeSample(char *&p, QAudioFormat::SampleFormat fmt, float v)
+{
+    switch (fmt)
+    {
+        case QAudioFormat::Float:
+        {
+            const float f = v * (1.0f / 32768.0f);
+            memcpy(p, &f, sizeof(f));
+            p += sizeof(f);
+            break;
+        }
+        case QAudioFormat::Int32:
+        {
+            const double s = std::clamp(double(v) * 65536.0, -2147483648.0, 2147483647.0);
+            const int32_t i = int32_t(std::lrint(s));
+            memcpy(p, &i, sizeof(i));
+            p += sizeof(i);
+            break;
+        }
+        case QAudioFormat::UInt8:
+        {
+            *reinterpret_cast<uint8_t *>(p) = uint8_t(std::clamp(int(std::lrintf(v * (1.0f / 256.0f))) + 128, 0, 255));
+            p += 1;
+            break;
+        }
+        case QAudioFormat::Int16:
+        default:
+        {
+            const int16_t i = int16_t(std::clamp(int(std::lrintf(v)), -32768, 32767));
+            memcpy(p, &i, sizeof(i));
+            p += sizeof(i);
+            break;
+        }
+    }
+}
+
+// Reads from FIFO (via readNative, so mute/unmute ramps and underrun handling are preserved)
+// and converts sample rate (linear interpolation), channel count and sample format.
+qint64 AudioIODevice::readConverted(char *data, qint64 len)
+{
+    const qint64 outFrames = len / m_outBytesPerFrame;
+    if (outFrames <= 0)
+    {
+        return 0;
+    }
+
+    // number of input frames needed: interpolation of last output frame needs index+1
+    const double total = m_resPos + double(outFrames) * m_ratio;
+    const qint64 lastIdx = qint64(m_resPos + double(outFrames - 1) * m_ratio);
+    const qint64 needFrames = std::max<qint64>(lastIdx + 2, qint64(total));
+    const qint64 haveFrames = qint64(m_inBuf.size() / m_numChannels);
+
+    if (haveFrames < needFrames)
+    {
+        const qint64 missing = needFrames - haveFrames;
+        m_inBuf.resize(size_t(needFrames) * m_numChannels);
+        const qint64 bytes = missing * m_bytesPerFrame;
+        const qint64 got = readNative(reinterpret_cast<char *>(m_inBuf.data() + haveFrames * m_numChannels), bytes);
+        if (got != bytes)
+        {  // stop requested (readNative returned 0)
+            m_inBuf.resize(size_t(haveFrames) * m_numChannels);
+            return 0;
+        }
+    }
+
+    const QAudioFormat::SampleFormat sf = m_outFormat.sampleFormat();
+    const int inCh = m_numChannels;
+    const int16_t *in = m_inBuf.data();
+    char *out = data;
+    double pos = m_resPos;
+
+    for (qint64 i = 0; i < outFrames; ++i)
+    {
+        const qint64 idx = qint64(pos);
+        const float frac = float(pos - double(idx));
+        const int16_t *s0 = in + idx * inCh;
+        const int16_t *s1 = s0 + inCh;
+
+        // interpolated input frame (first two channels are used)
+        const float l = float(s0[0]) + frac * float(s1[0] - s0[0]);
+        const float r = (inCh > 1) ? (float(s0[1]) + frac * float(s1[1] - s0[1])) : l;
+
+        if (1 == m_outChannels)
+        {
+            writeSample(out, sf, 0.5f * (l + r));
+        }
+        else
+        {
+            writeSample(out, sf, l);
+            writeSample(out, sf, r);
+            for (int c = 2; c < m_outChannels; ++c)
+            {  // other channels are silent
+                writeSample(out, sf, 0.0f);
+            }
+        }
+        pos += m_ratio;
+    }
+
+    // drop consumed input frames, keep fractional position
+    const qint64 consumed = std::min<qint64>(qint64(pos), qint64(m_inBuf.size() / m_numChannels));
+    m_resPos = pos - double(consumed);
+    m_inBuf.erase(m_inBuf.begin(), m_inBuf.begin() + consumed * inCh);
+
+    return outFrames * m_outBytesPerFrame;
+}
+
+qint64 AudioIODevice::readNative(char *data, qint64 len)
 {
     if (m_doStop || (0 == len))
     {
@@ -750,6 +917,11 @@ qint64 AudioIODevice::bytesAvailable() const
     }
 #endif
 
+    if (m_convert)
+    {  // report number of bytes in output format
+        const int64_t inFrames = count / m_bytesPerFrame + int64_t(m_inBuf.size() / m_numChannels);
+        return int64_t(double(inFrames) / m_ratio) * m_outBytesPerFrame;
+    }
     return count;
 }
 
