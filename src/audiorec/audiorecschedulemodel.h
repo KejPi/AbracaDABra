@@ -49,7 +49,7 @@ public:
         DurationRole,
         ServiceRole
     };
-    Q_ENUMS(AudioRecScheduleRoles)
+    Q_ENUM(AudioRecScheduleRoles)
 
     explicit AudioRecScheduleModel(QObject *parent = nullptr);
 

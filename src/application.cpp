@@ -91,7 +91,7 @@
 #include "slsbackend.h"
 
 #if HAVE_QTWIDGETS
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
 #include <QMenu>
 #endif
 #include <QSystemTrayIcon>
@@ -408,7 +408,7 @@ Application::Application(const QString &iniFilename, const QString &iniSlFilenam
 
     connect(m_ui, &ApplicationUI::audioVolumeChanged, this, &Application::onAudioVolumeChanged);
 
-#if HAVE_QTWIDGETS && defined(Q_OS_MAC)
+#if HAVE_QTWIDGETS && defined(Q_OS_MACOS)
     QMenu *dockMenu = new QMenu();
     QAction *muteAction = new QAction(tr("Mute"), dockMenu);
     dockMenu->addAction(muteAction);
@@ -3376,7 +3376,7 @@ void Application::loadSettings()
     m_settings->audioRec.dl = settings->value("AudioRecording/DL", false).toBool();
     m_settings->audioRec.dlAbsTime = settings->value("AudioRecording/DLAbsTime", false).toBool();
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
     m_settings->trayIconEna = settings->value("showTrayIcon", false).toBool();
 #else
     m_settings->trayIconEna = settings->value("showTrayIcon", true).toBool();
