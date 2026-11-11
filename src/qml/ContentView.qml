@@ -394,7 +394,7 @@ Item {
             }
             delegate: AbracaMenuItem {
                 iconSource: UI.imagesUrl + "icon-audio.svg"
-                visible: UI.isAndroid === false && application.audioOutputMenuModel.rowCount > 0
+                visible: UI.isAndroid === false && application.audioOutputMenuModel && application.audioOutputMenuModel.rowCount > 0
                 height: visible ? implicitHeight : 0
             }
 
