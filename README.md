@@ -670,6 +670,9 @@ There are instructions on the internet that explain how to make this setting per
 
 [abracadabra-tii-heatmapper](https://github.com/itewreed/abracadabra-tii-heatmapper) is a Python script created by [@itewreed](https://github.com/itewreed) to visualize TII log as a heatmap. 
 
+[DAB-Notify](https://github.com/jojoradio/DAB-Notify) is a Python script created by [@jojoradio](https://github.com/jojoradio) to notify user about distant transmitters received by AbracaDABra.
+
+
        
 
 
